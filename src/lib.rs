@@ -32,13 +32,14 @@
 //!
 //! # Making comparisons
 //!
-//! The `float_eq!`, `float_ne!`, `assert_float_eq!` and `assert_float_ne!` macros
-//! compare two floating point expressions for equality based on the result of one
-//! or more different kinds of check. Each check is invoked by name and a upper
-//! boundary, so for example `rel <= 0.1` will perform a relative epsilon check
-//! with a `max_diff` of `0.1`. If multiple checks are provided then they are
-//! executed in order from left to right, shortcutting to return early if one
-//! passes:
+//! The [`float_eq!`] and [`float_ne!`] macros compare two floating point
+//! expressions for equality based on the result of one or more different kinds
+//! of check. Each check is invoked by name and an upper boundary, so for example
+//! `rel <= 0.1`, should be read as *"a [relative epsilon comparison](#relative-epsilon-comparison)
+//! with a maximum difference of less than or equal to `0.1`"*. If multiple checks
+//! are provided then they are executed in order from left to right, shortcutting
+//! to return early if one passes. The corresponding [`assert_float_eq!`] and
+//! [`assert_float_ne!`] use the same interface:
 //!
 //! ```rust
 //! use float_eq::{assert_float_eq, assert_float_ne, float_eq, float_ne};
@@ -65,13 +66,12 @@
 //! of these margins, and it can be worth seeing if code might be rearranged to
 //! reduce loss of precision if you find yourself using large bounds.
 //!
-//! Relative epsilon comparisons (`ulps` and `rel`) are usually a good choice for
-//! comparing [normal floats] (e.g. when [`f32::is_normal`] is true). However, they
-//! become far too strict for comparisons of very small numbers with zero, where
-//! the relative differences are very large but the absolute difference is tiny.
-//! This is where you might choose to use an absolute epsilon (`abs`) comparison
-//! instead. There are also potential performance implications based on the target
-//! hardware.
+//! Relative comparisons (`ulps` and `rel`) are usually a good choice for comparing
+//! [normal floats] (e.g. when [`f32::is_normal`] is true). However, they become
+//! far too strict for comparisons of very small numbers with zero, where the
+//! relative differences are very large but the absolute difference is tiny. This
+//! is where you might choose to use an absolute epsilon (`abs`) comparison instead.
+//! There are also potential performance implications based on the target hardware.
 //!
 //! Be prepared to research, test, benchmark and iterate on your comparisons. The
 //! [floating point comparison] article which informed this crate's implementation
@@ -243,11 +243,19 @@
 //!
 //! # Comparing custom types
 //!
-//! The `FloatEq` trait does most of the work in calculating comparisons. The
-//! `FloatDiff` trait is used by the assert macros to provide intermediate context
-//! for calculations in the case of failure, although it could also be used to
-//! directly calculate differences if you wish. Equality checking of custom types
-//! may be supported by implementing both of these traits on them.
+//! Comparison of new types is supported by implementing both [`FloatEq`] and
+//! [`FloatDiff`]:
+//! - [`FloatEq`] does most of the work in calculating comparisons.
+//! - [`FloatDiff`] is used by the assert macros to provide intermediate context
+//!   for calculations in the case of failure, although it could also be used to
+//!   directly calculate differences if you wish.
+//!
+//! [`assert_float_eq!`]: macro.assert_float_eq.html
+//! [`assert_float_ne!`]: macro.assert_float_ne.html
+//! [`float_eq!`]: macro.float_eq.html
+//! [`float_ne!`]: macro.float_ne.html
+//! [`FloatEq`]: trait.FloatEq.html
+//! [`FloatDiff`]: trait.FloatDiff.html
 //!
 //! [catastrophic cancellation]: https://en.wikipedia.org/wiki/Loss_of_significance
 //! [denormalised value]: https://en.wikipedia.org/wiki/Denormal_number
