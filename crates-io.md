@@ -47,8 +47,8 @@ assert_float_ne!(0.0_f32, 0.0001, abs <= 0.00005, ulps <= 4);
 ```
 
 See the [API documentation] for a long form introduction to the different kinds
-of checks, their uses and limitations. Comparison of new types may be supported
-by implementing the `FloatEq` and `FloatDiff` traits.
+of checks, their uses and limitations. Comparison of new types is supported by 
+implementing the `FloatEq` and `FloatDiff` traits.
 
 ## Related efforts
 
