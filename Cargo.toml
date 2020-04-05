@@ -6,6 +6,7 @@ license = "MIT OR Apache-2.0"
 description = "Explicit and deliberate comparison of IEEE floating point numbers."
 homepage = "https://github.com/jtempest/float_eq-rs"
 repository = "https://github.com/jtempest/float_eq-rs"
+documentation = "https://docs.rs/float_eq/"
 keywords = ["approximate", "assert", "comparison", "equality", "float"]
 categories = ["algorithms"]
 readme = "crates-io.md"
