@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.1.1] - 2020-04-05
 ### Added
 - Added this changelog.
 - Reworked the READMEs to be a bit more granular and provide more appropriate 
@@ -22,5 +24,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/jtempest/float_eq-rs/compare/0.1.0...HEAD
+[Unreleased]: https://github.com/jtempest/float_eq-rs/compare/0.1.1...HEAD
+[0.1.1]: https://github.com/jtempest/float_eq-rs/releases/tag/0.1.1
 [0.1.0]: https://github.com/jtempest/float_eq-rs/releases/tag/0.1.0
