@@ -8,17 +8,6 @@ specific algorithm's inputs and error margins. This API provides a toolbox
 of components to make your options clear and your choices explicit to
 future maintainers.
 
-## Table of Contents
-
-- [Background](#background)
-- [Making comparisons](#making-comparisons)
-    - [Absolute epsilon comparison](#absolute-epsilon-comparison)
-    - [Relative epsilon comparison](#relative-epsilon-comparison)
-    - [Units in the Last Place (ULPs) comparison](#units-in-the-last-place-ulps-comparison)
-- [Implementing custom types](#implementing-custom-types)
-- [Related efforts](#related-efforts)
-- [Future plans](#future-plans)
-
 ## Background
 
 Given how widely algorithmic requirements can vary, `float_eq` explores the
@@ -34,209 +23,32 @@ And yes, this is yet another crate built on the principles described in *that*
 Random ASCII [floating point comparison] article, which is highly recommended
 background reading 🙂.
 
-## Making comparisons
+## Example Usage
 
-The `float_eq!`, `float_ne!`, `assert_float_eq!` and `assert_float_ne!` macros
-compare two floating point expressions for equality based on the result of one
-or more different kinds of check. Each check is invoked by name and a upper
-boundary, so for example `rel <= 0.1` will perform a relative epsilon check
-with a `max_diff` of `0.1`. If multiple checks are provided then they are
-executed in order from left to right, shortcutting to return early if one
-passes:
+This crate provides boolean comparison operations:
 
 ```rust
-use float_eq::{assert_float_eq, assert_float_ne, float_eq, float_ne};
-use std::f32;
-
 assert!(float_eq!(1000.0_f32, 1000.0002, ulps <= 4));
 
-const ROUNDING_ERROR: f32 = 0.00034526698; // f32::EPSILON.sqrt()
+// f32::EPSILON.sqrt()
+const ROUNDING_ERROR: f32 = 0.00034526698;
 assert!(float_ne!(4.0_f32, 4.1, rel <= ROUNDING_ERROR));
+```
 
-const RECIP_REL_EPSILON: f32 = 0.00036621094; // 1.5 * 2_f32.powi(-12)
-assert_float_eq!(0.1_f32.recip(), 10.0, rel <= RECIP_REL_EPSILON);
+And asserts:
+
+```rust
+// 1.5 * 2_f32.powi(-12), as per SSE intrinsics documentation
+const RECIP_REL_EPSILON: f32 = 0.00036621094; 
+let recip = 0.1_f32.recip();
+assert_float_eq!(recip, 10.0, rel <= RECIP_REL_EPSILON);
 
 assert_float_ne!(0.0_f32, 0.0001, abs <= 0.00005, ulps <= 4);
 ```
 
-The ideal choice of comparison will vary on a case by case basis, and depends
-on the input range and error margins of the expressions to be compared. For
-example, a test of the result of [finite difference approximation of
-derivatives] might use a relative epsilon check with a `max_diff` of the `sqrt`
-of machine epsilon, whereas a test of the SSE [`_mm_rcp_ps` operation] could
-instead opt for a maximum relative error of `1.5 * 2^(-12)` based on the
-available documentation. Algorithm stability can play a big part in the size
-of these margins, and it can be worth seeing if code might be rearranged to
-reduce loss of precision if you find yourself using large bounds.
-
-Relative epsilon comparisons (`ulps` and `rel`) are usually a good choice for
-comparing [normal floats] (e.g. when [`f32::is_normal`] is true). However, they
-become far too strict for comparisons of very small numbers with zero, where
-the relative differences are very large but the absolute difference is tiny.
-This is where you might choose to use an absolute epsilon (`abs`) comparison
-instead. There are also potential performance implications based on the target
-hardware.
-
-Be prepared to research, test, benchmark and iterate on your comparisons. The
-[floating point comparison] article which informed this crate's implementation
-is a good place to start.
-
-### Absolute epsilon comparison
-
-A check to see how far apart two expressions are by comparing the absolute
-difference between them to an absolute, unscaled epsilon. Equivalent to, using
-`f32` as an example:
-
-```rust
-fn float_eq_abs(a: f32, b: f32, max_diff: f32) -> bool {
-    (a - b).abs() <= max_diff
-}
-```
-
-Absolute epsilon tests *do not* work well for general floating point comparison,
-because they do not take into account that floating point values' precision
-changes with their magnitude. Thus `max_diff` must be very specific and
-dependent on the exact values being compared:
-
-```rust
-let a = 1.0;
-let b = 1.0000001; // the next representable value above 1.0
-assert_float_eq!(a, b, abs <= 0.0000002);             // equal
-assert_float_ne!(a * 4.0, b * 4.0, abs <= 0.0000002); // not equal
-assert_float_eq!(a * 4.0, b * 4.0, abs <= 0.0000005); // equal
-```
-
-Whereas a relative epsilon comparison could cope with this since it scales by
-the size of the largest input parameter:
-
-```rust
-assert_float_eq!(a, b, rel <= 0.0000002);
-assert_float_eq!(a * 4.0, b * 4.0, rel <= 0.0000002);
-```
-
-However, absolute epsilon comparison is often the best choice when comparing
-values directly against zero, especially when those values have undergone
-[catastrophic cancellation], like the subtractions below. In this case, the
-relative comparison methods break down due to the relative ratio between values
-being so high compared to their absolute difference:
-
-```rust
-assert_float_eq!(1.0_f32 - 1.0000001, 0.0, abs <= 0.0000002); // equal
-assert_float_ne!(1.0_f32 - 1.0000001, 0.0, rel <= 0.0000002); // not equal
-assert_float_ne!(1.0_f32 - 1.0000001, 0.0, ulps <= 1);        // not equal
-```
-
-Absolute epsilon comparisons:
-- Are useful for checking if a float is equal to zero, especially if it has
-  undergone an operation that suffers from [catastrophic cancellation] or is
-  a [denormalised value] (a subnormal, in Rust terminology).
-- Are almost certainly not what you want to use when testing [normal floats]
-  for equality. `rel` and `ulps` checks can be easier to parameterise and
-  reason about.
-
-### Relative epsilon comparison
-
-A check to see how far apart two expressions are by comparing the absolute
-difference between them to an epsilon that is scaled to the precision of the
-larger input. Equivalent to, using `f32` as an example:
-
-```rust
-fn float_eq_rel(a: f32, b: f32, max_diff: f32) -> bool {
-    let largest = a.abs().max(b.abs());
-    (a - b).abs() <= (largest * max_diff)
-}
-```
-
-This makes it suitable for general comparison of values where the ratio between
-those values is relatively stable (e.g. [normal floats], excluding
-infinity):
-
-```rust
-let a = 1.0;
-let b = 1.0000001; // the next representable value above 1.0
-assert_float_eq!(a, b, rel <= 0.0000002);
-assert_float_eq!(a * 4.0, b * 4.0, rel <= 0.0000002);
-```
-
-However, relative epsilon comparison becomes far too strict when the numbers
-being checked are too close to zero, since the relative ratio between the values
-can be huge whilst the absolute difference remains tiny. In these circumstances,
-it is usually better to make an absolute epsilon check instead, especially if
-your algorithm contains some form of [catastrophic cancellation], like these
-subtractions:
-
-```rust
-assert_float_ne!(1.0_f32 - 1.0000001, 0.0, rel <= 0.0000002); // not equal
-assert_float_eq!(1.0_f32 - 1.0000001, 0.0, abs <= 0.0000002); // equal
-```
-
-Relative epsilon comparisons:
-- Are useful for checking if two [normal floats] are equal.
-- Aren't a good choice when checking values against zero, where `abs` is often
-  far better.
-
-### Units in the Last Place (ULPs) comparison
-
-A check to see how far apart two expressions are by comparing the number of
-discrete values that can be expressed between them. This works by interpreting
-the bitwise representation of the input values as integers and comparing the
-absolute difference between those. Equivalent to, using `f32` as an example:
-
-```rust
-fn float_eq_ulps(a: f32, b: f32, max_diff: u32) -> bool {
-    // values are only comparable if they have the same sign
-    if a.is_sign_positive() != b.is_sign_positive() {
-        a == b // account for zero == negative zero
-    } else {
-        let a_bits = a.to_bits() as u32;
-        let b_bits = b.to_bits() as u32;
-        let max = a_bits.max(b_bits);
-        let min = a_bits.min(b_bits);
-        (max - min) <= max_diff
-    }
-}
-```
-
-Thanks to a deliberate quirk in the way the [underlying format] of IEEE floats
-was designed, this is good measure of how near two values are that scales with
-their relative precision:
-
-```rust
-assert_float_eq!(1.0_f32, 1.0000001, ulps <= 1);
-assert_float_eq!(4.0_f32, 4.0000005, ulps <= 1);
-assert_float_eq!(-1_000_000.0_f32, -1_000_000.06, ulps <= 1);
-```
-
-However, it becames far too strict when both expressions are close to zero,
-since the relative difference between them can be very large, whilst the
-absolute difference remains small. In these circumstances, it is usually better
-to make an absolute epsilon check instead, especially if your algorithm contains
-some form of [catastrophic cancellation], like these subtractions:
-
-```rust
-assert_float_ne!(1.0_f32 - 1.0000001, 0.0, ulps <= 1);        // not equal
-assert_float_eq!(1.0_f32 - 1.0000001, 0.0, abs <= 0.0000002); // equal
-```
-
-ULPs based comparisons:
-- Are useful for checking if two [normal floats] are equal.
-- Aren't a good choice when checking values against zero, where `abs` is often
-  far better.
-- Provide a way to precisely tweak `max_diff` margins, since they have a 1-to-1
-  correlation with the underlying representation.
-- Have slightly counterintuitive results around powers of two values, where
-  the relative precision ratio changes due to way the floating point exponent
-  works.
-- Do not work at all if the two values being checked have different signs.
-- Do not respect the behaviour of special floating point values like NaN.
-
-## Implementing custom types
-
-The `FloatEq` trait does most of the work in calculating comparisons. The
-`FloatDiff` trait is used by the assert macros to provide intermediate context
-for calculations in the case of failure, although it could also be used to
-directly calculate differences if you wish. Equality checking of custom types
-may be supported by implementing both of these traits on them.
+See the [API documentation] for a long form introduction to the different kinds
+of checks, their uses and limitations. Comparison of new types may be supported
+by implementing the `FloatEq` and `FloatDiff` traits.
 
 ## Related efforts
 
@@ -261,17 +73,10 @@ applied.
 
 - Benchmark performance, especially the implications of chaining multiple tests.
 
-[catastrophic cancellation]: https://en.wikipedia.org/wiki/Loss_of_significance
-[condition numbers]: https://en.wikipedia.org/wiki/Condition_number
-[denormalised value]: https://en.wikipedia.org/wiki/Denormal_number
-[finite difference approximation of derivatives]: https://scicomp.stackexchange.com/questions/14355/choosing-epsilons
+[API documentation]: https://docs.rs/float_eq
 [floating point comparison]: https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
-[normal floats]: https://en.wikipedia.org/wiki/Normal_number_(computing)
-[underlying format]: https://randomascii.wordpress.com/2012/01/23/stupid-float-tricks-2/
-[`_mm_rcp_ps` operation]: https://software.intel.com/sites/landingpage/IntrinsicsGuide/#text=_mm_rcp_ps&expand=4482
 [`almost`]: https://crates.io/crates/almost
 [`approx`]: https://crates.io/crates/approx
-[`efloat`]: https://crates.io/crates/efloat
-[`f32::is_normal`]: https://doc.rust-lang.org/std/primitive.f32.html#method.is_normal
-[`float-cmp`]: https://crates.io/crates/float-cmp
 [`assert_float_eq`]: https://crates.io/crates/assert_float_eq
+[`efloat`]: https://crates.io/crates/efloat
+[`float-cmp`]: https://crates.io/crates/float-cmp

@@ -3,8 +3,8 @@ cargo test --quiet
 
 
 echo Generating README...
-cargo readme --no-license > crates-io.md
-cargo readme --no-license > README.md
+type crates-io.md > README.md
+echo ^<br^>
 echo. >> README.md
 type LICENSE.md >> README.md
 
