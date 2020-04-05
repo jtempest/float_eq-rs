@@ -80,7 +80,7 @@ applied.
 [`assert_float_eq`]: https://crates.io/crates/assert_float_eq
 [`efloat`]: https://crates.io/crates/efloat
 [`float-cmp`]: https://crates.io/crates/float-cmp
- 
+
 <br>
 
 #### License

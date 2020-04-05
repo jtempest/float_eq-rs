@@ -1,5 +1,3 @@
-<br>
-
 #### License
 
 <sup>
