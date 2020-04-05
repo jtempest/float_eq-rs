@@ -331,7 +331,7 @@ pub trait FloatDiff {
     fn ulps_diff(&self, other: &Self) -> Self::UlpsDiff;
 }
 
-/// Algorithms to compare two IEEE floating point values.
+/// Algorithms to compare two IEEE floating point values for equality.
 pub trait FloatEq {
     /// Type of the maximum allowed difference between two values for them to be
     /// considered equal in terms of their native type.
