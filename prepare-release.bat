@@ -4,8 +4,9 @@ cargo test --quiet
 
 echo Generating README...
 type crates-io.md > README.md
-echo ^<br^>
-echo. >> README.md
+echo.>> README.md
+echo ^<br^>>> README.md
+echo.>> README.md
 type LICENSE.md >> README.md
 
 echo.
