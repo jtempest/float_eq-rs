@@ -13,9 +13,7 @@
 //!     - [Absolute epsilon comparison](#absolute-epsilon-comparison)
 //!     - [Relative epsilon comparison](#relative-epsilon-comparison)
 //!     - [Units in the Last Place (ULPs) comparison](#units-in-the-last-place-ulps-comparison)
-//! - [Implementing custom types](#implementing-custom-types)
-//! - [Related efforts](#related-efforts)
-//! - [Future plans](#future-plans)
+//! - [Comparing custom types](#comparing-custom-types)
 //!
 //! # Background
 //!
@@ -243,7 +241,7 @@
 //! - Do not work at all if the two values being checked have different signs.
 //! - Do not respect the behaviour of special floating point values like NaN.
 //!
-//! # Implementing custom types
+//! # Comparing custom types
 //!
 //! The `FloatEq` trait does most of the work in calculating comparisons. The
 //! `FloatDiff` trait is used by the assert macros to provide intermediate context
@@ -251,43 +249,14 @@
 //! directly calculate differences if you wish. Equality checking of custom types
 //! may be supported by implementing both of these traits on them.
 //!
-//! # Related efforts
-//!
-//! There are a number of existing crates that implement these kinds of comparisons
-//! if you're looking for a more mature solution or simply a different approach.
-//! The [`approx`], [`float-cmp`] and [`almost`] crates all provide a similar style
-//! of general comparison operations, whereas [`assert_float_eq`] focuses
-//! specifically on assertions. In contrast, [`efloat`] comes at the problem from a
-//! different angle, instead tracking the error bounds of values as operations are
-//! applied.
-//!
-//! # Future plans
-//!
-//! - Support for `no_std`.
-//!
-//! - Investigate the safety guarantees of the ulps check. Currently, it doesn't
-//!   act like the default floating point checks when it comes to NaNs and other
-//!   special values.
-//!
-//! - More exhaustive testing. Tests currently cover all basic functionality, but
-//!   there are lots of edge cases that aren't being tested yet.
-//!
-//! - Benchmark performance, especially the implications of chaining multiple tests.
-//!
 //! [catastrophic cancellation]: https://en.wikipedia.org/wiki/Loss_of_significance
-//! [condition numbers]: https://en.wikipedia.org/wiki/Condition_number
 //! [denormalised value]: https://en.wikipedia.org/wiki/Denormal_number
 //! [finite difference approximation of derivatives]: https://scicomp.stackexchange.com/questions/14355/choosing-epsilons
 //! [floating point comparison]: https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
 //! [normal floats]: https://en.wikipedia.org/wiki/Normal_number_(computing)
 //! [underlying format]: https://randomascii.wordpress.com/2012/01/23/stupid-float-tricks-2/
 //! [`_mm_rcp_ps` operation]: https://software.intel.com/sites/landingpage/IntrinsicsGuide/#text=_mm_rcp_ps&expand=4482
-//! [`almost`]: https://crates.io/crates/almost
-//! [`approx`]: https://crates.io/crates/approx
-//! [`efloat`]: https://crates.io/crates/efloat
 //! [`f32::is_normal`]: https://doc.rust-lang.org/std/primitive.f32.html#method.is_normal
-//! [`float-cmp`]: https://crates.io/crates/float-cmp
-//! [`assert_float_eq`]: https://crates.io/crates/assert_float_eq
 
 #![warn(missing_docs)]
 
