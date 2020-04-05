@@ -1,0 +1,17 @@
+[package]
+name = "float_eq"
+version = "0.1.0"
+authors = ["jtempest"]
+license = "MIT OR Apache-2.0"
+description = "Explicit and deliberate comparison of IEEE floating point numbers."
+homepage = "https://github.com/jtempest/float_eq-rs"
+repository = "https://github.com/jtempest/float_eq-rs"
+keywords = ["approximate", "assert", "comparison", "equal", "equality", "float", "ulps"]
+categories = ["algorithms"]
+readme = "crates-io.md"
+include = ["Cargo.toml", "src/**/*.rs", "crates-io.md", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
