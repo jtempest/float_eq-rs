@@ -6,8 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- no_std stupport.
-- Tests for Float::abs_diff on NaNs.
+- Support for `no_std`.
+- Added the crate to the No Standard Library crates.io category.
+- Tests for `Float::abs_diff` on NaNs.
 - Travis CI build.
 - A Contributing section to the readme.
 
