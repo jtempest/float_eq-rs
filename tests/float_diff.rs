@@ -14,6 +14,11 @@ macro_rules! impl_tests {
                 check(1., 1., 0.);
                 check(1., 1.5, 0.5);
                 check(1., -1., 2.);
+
+                let nan = std::$float::NAN;
+                assert!(nan.abs_diff(&1.0).is_nan());
+                assert!(1.0.abs_diff(&nan).is_nan());
+                assert!(nan.abs_diff(&nan).is_nan());
             }
 
             #[test]

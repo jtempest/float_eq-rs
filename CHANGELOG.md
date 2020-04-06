@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Tests for Float::abs_diff on NaNs.
 - Travis CI build
 - A Contributing section to the readme.
 
