@@ -10,6 +10,16 @@ os:
   - osx
   - windows
 
+script:
+  # using std:
+  - cargo build --verbose
+  - cargo test --verbose
+  - cargo doc --verbose
+  # using no_std:
+  - cargo build --verbose --no-default-features
+  - cargo test --verbose --no-default-features
+  - cargo doc --verbose --no-default-features
+
 matrix:
   allow_failures:
     - rust: nightly

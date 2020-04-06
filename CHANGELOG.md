@@ -6,12 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- no_std stupport.
 - Tests for Float::abs_diff on NaNs.
-- Travis CI build
+- Travis CI build.
 - A Contributing section to the readme.
 
 ### Fixed
-- FloatDiff tests for f64 no longer test f32 values.
+- FloatDiff tests for f64 no longer test f32 values (oops!).
 
 ## [0.1.1] - 2020-04-05
 ### Added

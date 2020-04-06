@@ -267,6 +267,7 @@
 //! [`f32::is_normal`]: https://doc.rust-lang.org/std/primitive.f32.html#method.is_normal
 
 #![warn(missing_docs)]
+#![cfg_attr(not(feature = "std"), no_std)]
 
 /// Algorithms to compute the difference between two IEEE floating point values.
 pub trait FloatDiff {
@@ -1125,13 +1126,30 @@ impl FloatCmpOpEpsilon {
 
 macro_rules! impl_traits {
     ($float:ident, $uint:ident) => {
+        mod $float {
+            #[cfg(feature = "std")]
+            #[inline]
+            pub(crate) fn abs(value: $float) -> $float {
+                // use the intrinsic for std builds
+                value.abs()
+            }
+
+            #[cfg(not(feature = "std"))]
+            pub(crate) fn abs(value: $float) -> $float {
+                // mask away only the sign bit for no_std builds since the abs
+                // method is not available
+                const MASK: $uint = !(1 << ((core::mem::size_of::<$float>() * 8) - 1));
+                $float::from_bits(value.to_bits() & MASK)
+            }
+        }
+
         impl FloatDiff for $float {
             type AbsDiff = $float;
             type UlpsDiff = $uint;
 
             #[inline]
             fn abs_diff(&self, other: &Self) -> Self::AbsDiff {
-                (self - other).abs()
+                $float::abs(self - other)
             }
 
             #[inline]
@@ -1155,7 +1173,7 @@ macro_rules! impl_traits {
 
             #[inline]
             fn rel_epsilon(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> Self::DiffEpsilon {
-                self.abs().max(other.abs()) * max_diff
+                $float::abs(*self).max($float::abs(*other)) * max_diff
             }
 
             #[inline]

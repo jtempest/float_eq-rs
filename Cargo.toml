@@ -16,4 +16,8 @@ edition = "2018"
 [badges]
 travis-ci = { repository = "jtempest/float_eq-rs" }
 
+[features]
+default = ["std"]
+std = []
+
 [dependencies]

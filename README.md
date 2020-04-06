@@ -55,6 +55,10 @@ See the [API documentation] for a long form introduction to the different kinds
 of checks, their uses and limitations. Comparison of new types is supported by 
 implementing the `FloatEq` and `FloatDiff` traits.
 
+## Features
+
+- **std**: Enabled by default, turn it off for `no_std` support.
+
 ## Related efforts
 
 There are a number of existing crates that implement these kinds of comparisons
@@ -66,8 +70,6 @@ different angle, instead tracking the error bounds of values as operations are
 applied.
 
 ## Future plans
-
-- Support for `no_std`.
 
 - Investigate the safety guarantees of the ulps check. Currently, it doesn't
   act like the default floating point checks when it comes to NaNs and other
