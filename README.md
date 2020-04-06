@@ -1,3 +1,8 @@
+<!--
+    THIS FILE IS GENERATED FROM crates-io.md AND LICENSE.md.
+    DO NOT EDIT IT DIRECTLY.
+-->
+
 # float_eq
 
 Explicit and deliberate comparison of IEEE floating point numbers.
@@ -73,8 +78,14 @@ applied.
 
 - Benchmark performance, especially the implications of chaining multiple tests.
 
+## Contributing 
+
+Constructive feedback, suggestions and contributions welcomed, please
+[open an issue].
+
 [API documentation]: https://docs.rs/float_eq
 [floating point comparison]: https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
+[open an issue]: https://github.com/jtempest/float_eq-rs/issues/new
 [`almost`]: https://crates.io/crates/almost
 [`approx`]: https://crates.io/crates/approx
 [`assert_float_eq`]: https://crates.io/crates/assert_float_eq
