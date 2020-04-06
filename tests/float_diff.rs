@@ -7,8 +7,9 @@ macro_rules! impl_tests {
 
             #[test]
             fn abs_diff() {
-                let check =
-                    |a: f32, b, expected| assert!(a.abs_diff(&b) - expected <= std::f32::EPSILON);
+                let check = |a: $float, b, expected| {
+                    assert!(a.abs_diff(&b) - expected <= std::$float::EPSILON)
+                };
 
                 check(1., 1., 0.);
                 check(1., 1.5, 0.5);
@@ -17,16 +18,16 @@ macro_rules! impl_tests {
 
             #[test]
             fn ulps_diff() {
-                let check = |a: f32, b, expected| assert_eq!(a.ulps_diff(&b), expected);
+                let check = |a: $float, b, expected| assert_eq!(a.ulps_diff(&b), expected);
 
-                let one: f32 = 1.;
+                let one: $float = 1.;
                 check(one, one, 0);
 
-                let next = f32::from_bits(one.to_bits() + 1);
+                let next = $float::from_bits(one.to_bits() + 1);
                 check(one, next, 1);
                 check(next, one, 1);
 
-                let prev = f32::from_bits(one.to_bits() - 1);
+                let prev = $float::from_bits(one.to_bits() - 1);
                 check(one, prev, 1);
                 check(prev, one, 1);
                 check(next, prev, 2);

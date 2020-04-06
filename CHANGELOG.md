@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Travis CI build
 
+### Fixed
+- FloatDiff tests for f64 no longer test f32 values.
+
 ## [0.1.1] - 2020-04-05
 ### Added
 - Added this changelog.
