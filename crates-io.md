@@ -92,6 +92,10 @@ specifically on assertions. In contrast, [`efloat`] comes at the problem from a
 different angle, instead tracking the error bounds of values as operations are
 applied.
 
+## Changelog
+
+Release information is available in [CHANGELOG.md](CHANGELOG.md).
+
 ## Future plans
 
 - `#[derive]` support for comparison of custom types that are composed of 
