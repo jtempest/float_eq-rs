@@ -92,6 +92,11 @@ specifically on assertions. In contrast, [`efloat`] comes at the problem from a
 different angle, instead tracking the error bounds of values as operations are
 applied.
 
+## Contributing 
+
+Constructive feedback, suggestions and contributions welcomed, please
+[open an issue].
+
 ## Changelog
 
 Release information is available in [CHANGELOG.md](CHANGELOG.md).
@@ -111,11 +116,6 @@ Release information is available in [CHANGELOG.md](CHANGELOG.md).
   there are lots of edge cases that aren't being tested yet.
 
 - Benchmark performance, especially the implications of chaining multiple tests.
-
-## Contributing 
-
-Constructive feedback, suggestions and contributions welcomed, please
-[open an issue].
 
 [API documentation]: https://docs.rs/float_eq
 [floating point comparison]: https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
