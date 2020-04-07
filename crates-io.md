@@ -1,8 +1,3 @@
-<!--
-    THIS FILE IS GENERATED FROM crates-io.md AND LICENSE.md.
-    DO NOT EDIT IT DIRECTLY.
--->
-
 # float_eq
 
 Explicit and deliberate comparison of IEEE floating point numbers.
@@ -126,20 +121,3 @@ Constructive feedback, suggestions and contributions welcomed, please
 [`assert_float_eq`]: https://crates.io/crates/assert_float_eq
 [`efloat`]: https://crates.io/crates/efloat
 [`float-cmp`]: https://crates.io/crates/float-cmp
-
-<br>
-
-#### License
-
-<sup>
-Licensed under either of <a href="LICENSE-APACHE">Apache License, Version
-2.0</a> or <a href="LICENSE-MIT">MIT license</a> at your option.
-</sup>
-
-<br>
-
-<sub>
-Unless you explicitly state otherwise, any contribution intentionally submitted
-for inclusion in float_eq by you, as defined in the Apache-2.0 license, shall be
-dual licensed as above, without any additional terms or conditions.
-</sub>

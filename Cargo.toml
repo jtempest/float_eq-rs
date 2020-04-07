@@ -9,8 +9,8 @@ repository = "https://github.com/jtempest/float_eq-rs"
 documentation = "https://docs.rs/float_eq/"
 keywords = ["approximate", "assert", "comparison", "equality", "float"]
 categories = ["algorithms", "development-tools::debugging", "no-std"]
-readme = "README.md"
-include = ["Cargo.toml", "src/**/*.rs", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
+readme = "crates-io.md"
+include = ["Cargo.toml", "src/**/*.rs", "crates-io.md", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
 edition = "2018"
 
 [badges]
