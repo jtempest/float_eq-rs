@@ -17,8 +17,8 @@ rust:
   - nightly
 
 env:
-  - CARGO_PARAMS="--no-default-features"
   - CARGO_PARAMS=""
+  - CARGO_PARAMS="--no-default-features"
 
 matrix:
   allow_failures:
