@@ -14,7 +14,7 @@ include = ["Cargo.toml", "src/**/*.rs", "crates-io.md", "README.md", "LICENSE-AP
 edition = "2018"
 
 [badges]
-maintenance = { status = "experimental" }
+maintenance = { status = "actively-developed" }
 travis-ci = { repository = "jtempest/float_eq-rs" }
 codecov = { repository = "jtempest/float_eq-rs" }
 coveralls = { repository = "jtempest/float_eq-rs" }
