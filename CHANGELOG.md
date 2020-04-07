@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added codecov.io and coveralls.io support.
 - Added 'experimental' maintenance badge.
+- Basic usage documentation.
 
 ## [0.1.2] - 2020-04-07
 ### Added

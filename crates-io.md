@@ -23,7 +23,28 @@ And yes, this is yet another crate built on the principles described in *that*
 Random ASCII [floating point comparison] article, which is highly recommended
 background reading 🙂.
 
-## Example Usage
+## Usage
+
+Add this to your cargo.toml:
+
+```
+[dependencies]
+float_eq = "0.1"
+```
+
+and, if you're using the 2015 edition, this to your crate root:
+
+```rust
+extern crate float_eq;
+```
+
+then, you can import items with `use`:
+
+```rust
+use float_eq::{assert_float_eq, float_eq};
+```
+
+## Comparisons
 
 This crate provides boolean comparison operations:
 
@@ -52,7 +73,14 @@ implementing the `FloatEq` and `FloatDiff` traits.
 
 ## Features
 
-- **std**: Enabled by default, turn it off for `no_std` support.
+This crate can be used without the standard library (`#![no_std]`) by disabling
+the default `std` feature. Use this in `Cargo.toml`:
+
+```
+[dependencies.float_eq]
+version = "0.1"
+default-features = false
+```
 
 ## Related efforts
 
