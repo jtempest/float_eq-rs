@@ -1,8 +1,3 @@
-<!--
-    THIS FILE IS GENERATED FROM crates-io.md AND LICENSE.md.
-    DO NOT EDIT IT DIRECTLY.
--->
-
 # float_eq
 
 Explicit and deliberate comparison of IEEE floating point numbers.
@@ -97,6 +92,10 @@ specifically on assertions. In contrast, [`efloat`] comes at the problem from a
 different angle, instead tracking the error bounds of values as operations are
 applied.
 
+## Changelog
+
+Release information is available in [CHANGELOG.md](CHANGELOG.md).
+
 ## Future plans
 
 - `#[derive]` support for comparison of custom types that are composed of 
@@ -127,13 +126,11 @@ Constructive feedback, suggestions and contributions welcomed, please
 [`efloat`]: https://crates.io/crates/efloat
 [`float-cmp`]: https://crates.io/crates/float-cmp
 
-<br>
-
 #### License
 
 <sup>
-Licensed under either of <a href="LICENSE-APACHE">Apache License, Version
-2.0</a> or <a href="LICENSE-MIT">MIT license</a> at your option.
+Licensed under either of [Apache License, Version 2.0](LICENSE-APACHE) or [MIT 
+license](LICENSE-MIT) at your option.
 </sup>
 
 <br>
