@@ -1,6 +1,6 @@
 [package]
 name = "float_eq"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["jtempest"]
 license = "MIT OR Apache-2.0"
 description = "Explicit and deliberate comparison of IEEE floating point numbers."
