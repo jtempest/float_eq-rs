@@ -23,7 +23,11 @@ mod assert_float_eq {
     #[should_panic]
     fn fail_with_message() {
         assert_float_eq!(0_f32, 1., abs <= 0.1, "testing: {} != {}", 0_f32, 1_f32);
-        // and with trailing comma
+    }
+
+    #[test]
+    #[should_panic]
+    fn fail_with_message_trailing_comma() {
         assert_float_eq!(0_f32, 1., abs <= 0.1, "testing: {} != {}", 0_f32, 1_f32,);
     }
 
@@ -142,7 +146,11 @@ mod assert_float_ne {
     #[should_panic]
     fn fail_with_message() {
         assert_float_ne!(0_f32, 1., abs <= 1., "testing: {} != {}", 0_f32, 1_f32);
-        // and with trailing comma
+    }
+
+    #[test]
+    #[should_panic]
+    fn fail_with_message_trailing_comma() {
         assert_float_ne!(0_f32, 1., abs <= 1., "testing: {} != {}", 0_f32, 1_f32,);
     }
 
@@ -207,7 +215,11 @@ mod debug_assert_float_eq {
     #[cfg_attr(debug_assertions, should_panic)]
     fn fail_with_message() {
         debug_assert_float_eq!(0_f32, 1., abs <= 0.1, "testing: {} != {}", 0_f32, 1_f32);
-        // and with trailing comma
+    }
+
+    #[test]
+    #[cfg_attr(debug_assertions, should_panic)]
+    fn fail_with_message_trailing_comma() {
         debug_assert_float_eq!(0_f32, 1., abs <= 0.1, "testing: {} != {}", 0_f32, 1_f32,);
     }
 
@@ -326,7 +338,11 @@ mod debug_assert_float_ne {
     #[cfg_attr(debug_assertions, should_panic)]
     fn fail_with_message() {
         debug_assert_float_ne!(0_f32, 1., abs <= 1., "testing: {} != {}", 0_f32, 1_f32);
-        // and with trailing comma
+    }
+
+    #[test]
+    #[cfg_attr(debug_assertions, should_panic)]
+    fn fail_with_message_trailing_comma() {
         debug_assert_float_ne!(0_f32, 1., abs <= 1., "testing: {} != {}", 0_f32, 1_f32,);
     }
 
