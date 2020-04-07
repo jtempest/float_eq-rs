@@ -1,13 +1,15 @@
 # Built upon minimal .travis.yml from https://github.com/xd009642/tarpaulin
 
 language: rust
-sudo: required # required for some configurations
 # tarpaulin has only been tested on bionic and trusty other distros may have issues
 dist: bionic
 addons:
   apt:
     packages:
       - libssl-dev
+
+os:
+  - linux
 
 cache: cargo
 
@@ -20,7 +22,7 @@ env:
   - CARGO_PARAMS=""
   - CARGO_PARAMS="--no-default-features"
 
-matrix:
+jobs:
   allow_failures:
     - rust: nightly
   fast_finish: true
