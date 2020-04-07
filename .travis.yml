@@ -1,25 +1,46 @@
+# Built upon minimal .travis.yml from https://github.com/xd009642/tarpaulin
+
 language: rust
+sudo: required # required for some configurations
+# tarpaulin has only been tested on bionic and trusty other distros may have issues
+dist: bionic
+addons:
+  apt:
+    packages:
+      - libssl-dev
+
+cache: cargo
 
 rust:
   - stable
   - beta
   - nightly
 
-os:
-  - linux
-  - osx
-  - windows
-
-script:
-  # using std:
-  - cargo build --verbose
-  - cargo test --verbose
-  - cargo doc --verbose
-  # using no_std:
-  - cargo build --verbose --no-default-features
-  - cargo test --verbose --no-default-features
-  - cargo doc --verbose --no-default-features
+env:
+  - CARGO_PARAMS="--no-default-features"
+  - CARGO_PARAMS=""
 
 matrix:
   allow_failures:
     - rust: nightly
+  fast_finish: true
+
+before_script: |
+  if [[ "$TRAVIS_RUST_VERSION" == stable ]]; then
+    cargo install cargo-tarpaulin
+  fi
+
+script:
+- cargo clean
+- cargo build $CARGO_PARAMS
+- cargo test $CARGO_PARAMS
+
+after_success: |
+  if [[ "$TRAVIS_RUST_VERSION" == stable ]]; then
+    # Uncomment the following line for coveralls.io
+    cargo tarpaulin --ciserver travis-ci --coveralls $TRAVIS_JOB_ID
+
+    # Uncomment the following two lines create and upload a report for codecov.io
+    # cargo tarpaulin --out Xml
+    # bash <(curl -s https://codecov.io/bash)
+  fi
