@@ -250,8 +250,6 @@
 //!   for calculations in the case of failure, although it could also be used to
 //!   directly calculate differences if you wish.
 //!
-//! TODO: mention FloatUlps.
-//!
 //! [`assert_float_eq!`]: macro.assert_float_eq.html
 //! [`assert_float_ne!`]: macro.assert_float_ne.html
 //! [`float_eq!`]: macro.float_eq.html
@@ -274,8 +272,6 @@
 use core::mem::MaybeUninit;
 
 /// Algorithms to compute the difference between two IEEE floating point values.
-///
-/// # Example Usage
 ///
 /// This trait is implemented for `f32` and `f64` values:
 ///
@@ -445,94 +441,6 @@ pub trait FloatEq {
     ///
     /// [`FloatDiff`]: trait.FloatDiff.html
     fn rel_epsilon(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> Self::DiffEpsilon;
-}
-
-/// Increment and decrement IEEE floating point values via [ULPs].
-///
-/// This is useful for writing thorough tests over the full range of representable
-/// values for a type, amoung other things.
-///
-/// # Example Usage
-///
-/// This trait is implemented for `f32` and `f64` values:
-///
-/// ```rust
-/// use float_eq::FloatUlps;
-///
-/// assert_eq!(1.0_f32.next_ulp(), 1.0000001);
-/// assert_eq!(1.0_f64.next_ulp(), 1.0000000000000002);
-///
-/// assert_eq!(1.0_f32.prev_ulp(), 0.99999995);
-/// assert_eq!(1.0_f64.prev_ulp(), 0.9999999999999999);
-///
-/// assert_eq!(1.0_f32.inc_ulps(&5), 1.0000006);
-/// assert_eq!(1.0_f64.inc_ulps(&20), 1.0000000000000044);
-///
-/// assert_eq!(1.0_f32.dec_ulps(&5), 0.9999997);
-/// assert_eq!(1.0_f64.dec_ulps(&20), 0.9999999999999978);
-/// ```
-///
-/// [ULPs]: https://randomascii.wordpress.com/2012/01/23/stupid-float-tricks-2/
-pub trait FloatUlps {
-    /// Type of the absolute difference between two values in terms of [ULPs].
-    ///
-    /// This ought to match [`<Self as FloatDiff>::UlpsDiff`].
-    ///
-    /// [`<Self as FloatDiff>::UlpsDiff`]: trait.FloatDiff.html#associatedtype.UlpsDiff
-    /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
-    type UlpsDiff;
-
-    /// Increment by one ULP away from zero.
-    ///
-    /// Note that this means negative numbers will *decrease* in value.
-    ///
-    /// # Example Usage
-    ///
-    /// ```rust
-    /// # use float_eq::FloatUlps;
-    /// assert_eq!(1.0_f32.next_ulp(), 1.0000001);
-    /// assert_eq!((-1.0_f32).next_ulp(), -1.0000001);
-    /// ```
-    fn next_ulp(&self) -> Self;
-
-    /// Increment by one ULP towards zero.
-    ///
-    /// Note that this means negative numbers will *increase* in value.
-    ///
-    /// # Example Usage
-    ///
-    /// ```rust
-    /// # use float_eq::FloatUlps;
-    /// assert_eq!(1.0_f32.prev_ulp(), 0.99999995);
-    /// assert_eq!((-1.0_f32).prev_ulp(), -0.99999995);
-    /// ```
-    fn prev_ulp(&self) -> Self;
-
-    /// Increment by `n` ULPs away from zero.
-    ///
-    /// Note that this means negative numbers will *decrease* in value.
-    ///
-    /// # Example Usage
-    ///
-    /// ```rust
-    /// # use float_eq::FloatUlps;
-    /// assert_eq!(1.0_f32.inc_ulps(&5), 1.0000006);
-    /// assert_eq!((-1.0_f32).inc_ulps(&25), -1.000003);
-    /// ```
-    fn inc_ulps(&self, n: &Self::UlpsDiff) -> Self;
-
-    /// Decrement by `n` ULPs towards zero.
-    ///
-    /// Note that this means negative numbers will *increase* in value.
-    ///
-    /// # Example Usage
-    ///
-    /// ```rust
-    /// # use float_eq::FloatUlps;
-    /// assert_eq!(1.0_f32.dec_ulps(&5), 0.9999997);
-    /// assert_eq!((-1.0_f32).dec_ulps(&25), -0.9999985);
-    /// ```
-    fn dec_ulps(&self, n: &Self::UlpsDiff) -> Self;
 }
 
 /// Checks whether two floating point expressions are equal to each other (using [`FloatEq`]).
@@ -1304,30 +1212,6 @@ macro_rules! impl_traits {
                 } else {
                     self.ulps_diff(other).le(max_diff)
                 }
-            }
-        }
-
-        impl FloatUlps for $float {
-            type UlpsDiff = <$float as FloatDiff>::UlpsDiff;
-
-            #[inline]
-            fn next_ulp(&self) -> $float {
-                self.inc_ulps(&1)
-            }
-
-            #[inline]
-            fn prev_ulp(&self) -> $float {
-                self.dec_ulps(&1)
-            }
-
-            #[inline]
-            fn inc_ulps(&self, n: &Self::UlpsDiff) -> Self {
-                $float::from_bits(self.to_bits() + n)
-            }
-
-            #[inline]
-            fn dec_ulps(&self, n: &Self::UlpsDiff) -> Self {
-                $float::from_bits(self.to_bits() - n)
             }
         }
     };

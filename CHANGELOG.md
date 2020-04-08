@@ -6,8 +6,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- A `FloatUlps` trait that allows easy increment and decrement of floating point
-  values in terms of ULPs.
 - Implementation of `FloatDiff` for arrays of size 0 to 32 (inclusive) where the
   type allows it.
 
