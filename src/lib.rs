@@ -1234,6 +1234,8 @@ macro_rules! impl_array_method {
     };
 }
 
+//TODO: Should this be publically available for users to conditionally implement
+// support if they need it?
 macro_rules! impl_float_diff_for_array {
     ($n:literal) => {
         #[doc(hidden)]
