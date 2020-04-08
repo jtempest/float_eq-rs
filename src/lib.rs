@@ -269,7 +269,31 @@
 #![warn(missing_docs)]
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use core::mem::MaybeUninit;
+
 /// Algorithms to compute the difference between two IEEE floating point values.
+///
+/// This trait is implemented for `f32` and `f64` values:
+///
+/// ```rust
+/// use float_eq::FloatDiff;
+///
+/// assert_eq!(1.0_f32.abs_diff(&-1.0), 2.0);
+/// assert_eq!(1.0_f64.abs_diff(&-1.0), 2.0);
+///
+/// assert_eq!(1.0_f32.ulps_diff(&1.0000001), 1);
+/// assert_eq!(1.0_f64.ulps_diff(&1.0000000000000002), 1);
+/// ```
+///
+/// And on arrays of size 0 to 32 (inclusive) if the element type allows it:
+///
+/// ```rust
+/// # use float_eq::FloatDiff;
+/// let a = [0.0_f32, 2.0, -2.0];
+/// let b = [0.0_f32, -1.0, 2.0];
+/// assert_eq!(a.abs_diff(&b), [0.0, 3.0, 4.0]);
+/// ```
+///
 pub trait FloatDiff {
     /// Type of the absolute difference between two values.
     ///
@@ -1195,3 +1219,73 @@ macro_rules! impl_traits {
 
 impl_traits!(f32, u32);
 impl_traits!(f64, u64);
+
+// arrays
+macro_rules! impl_array_method {
+    ($name:ident -> $result_type:ty, $n:literal) => {
+        #[inline]
+        fn $name(&self, other: &Self) -> $result_type {
+            let mut result: $result_type = unsafe { MaybeUninit::uninit().assume_init() };
+            for i in 0..$n {
+                result[i] = self[i].$name(&other[i])
+            }
+            result
+        }
+    };
+}
+
+macro_rules! impl_float_diff_for_array {
+    ($n:literal) => {
+        #[doc(hidden)]
+        impl<T: FloatDiff> FloatDiff for [T; $n] {
+            type AbsDiff = [T::AbsDiff; $n];
+            type UlpsDiff = [T::UlpsDiff; $n];
+
+            impl_array_method!(abs_diff -> Self::AbsDiff, $n);
+            impl_array_method!(ulps_diff -> Self::UlpsDiff, $n);
+        }
+    };
+}
+
+// 0 to 32 as per primitive array traits
+//TODO: Use const generics once they're stable
+/// This is also implemented on other arrays up to size 32 (inclusive).
+impl<T: FloatDiff> FloatDiff for [T; 0] {
+    type AbsDiff = [T::AbsDiff; 0];
+    type UlpsDiff = [T::UlpsDiff; 0];
+
+    impl_array_method!(abs_diff -> Self::AbsDiff, 0);
+    impl_array_method!(ulps_diff -> Self::UlpsDiff, 0);
+}
+impl_float_diff_for_array!(1);
+impl_float_diff_for_array!(2);
+impl_float_diff_for_array!(3);
+impl_float_diff_for_array!(4);
+impl_float_diff_for_array!(5);
+impl_float_diff_for_array!(6);
+impl_float_diff_for_array!(7);
+impl_float_diff_for_array!(8);
+impl_float_diff_for_array!(9);
+impl_float_diff_for_array!(10);
+impl_float_diff_for_array!(11);
+impl_float_diff_for_array!(12);
+impl_float_diff_for_array!(13);
+impl_float_diff_for_array!(14);
+impl_float_diff_for_array!(15);
+impl_float_diff_for_array!(16);
+impl_float_diff_for_array!(17);
+impl_float_diff_for_array!(18);
+impl_float_diff_for_array!(19);
+impl_float_diff_for_array!(20);
+impl_float_diff_for_array!(21);
+impl_float_diff_for_array!(22);
+impl_float_diff_for_array!(23);
+impl_float_diff_for_array!(24);
+impl_float_diff_for_array!(25);
+impl_float_diff_for_array!(26);
+impl_float_diff_for_array!(27);
+impl_float_diff_for_array!(28);
+impl_float_diff_for_array!(29);
+impl_float_diff_for_array!(30);
+impl_float_diff_for_array!(31);
+impl_float_diff_for_array!(32);
