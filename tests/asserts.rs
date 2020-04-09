@@ -9,14 +9,32 @@ mod assert_float_eq {
 
     #[test]
     #[should_panic]
+    fn array_abs_fail() {
+        assert_float_eq!([1.0_f32, 2.], [1.0000001, 3.], abs <= 0.0000001);
+    }
+
+    #[test]
+    #[should_panic]
     fn rel_fail() {
         assert_float_eq!(0_f32, 1., rel <= 0.1);
     }
 
     #[test]
     #[should_panic]
+    fn array_rel_fail() {
+        assert_float_eq!([1.0_f32, 2.], [1.0000001, 3.], rel <= std::f32::EPSILON);
+    }
+
+    #[test]
+    #[should_panic]
     fn ulps_fail() {
         assert_float_eq!(1_f32, 1.000_000_2, ulps <= 1);
+    }
+
+    #[test]
+    #[should_panic]
+    fn array_ulps_fail() {
+        assert_float_eq!([1.0_f32, 2.], [1.0000001, 3.], ulps <= 1);
     }
 
     #[test]

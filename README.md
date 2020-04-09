@@ -34,7 +34,7 @@ Add this to your cargo.toml:
 
 ```
 [dependencies]
-float_eq = "0.1"
+float_eq = "0.2"
 ```
 
 and, if you're using the 2015 edition, this to your crate root:
@@ -72,9 +72,17 @@ assert_float_eq!(recip, 10.0, rel <= RECIP_REL_EPSILON);
 assert_float_ne!(0.0_f32, 0.0001, abs <= 0.00005, ulps <= 4);
 ```
 
+Arrays of compatible types are also supported, from size 0 to 32 (inclusive):
+
+```rust
+assert_float_eq!([1.0000001_f32, 2.0], [1.0, 2.0], ulps <= 1);
+```
+
 See the [API documentation] for a long form introduction to the different kinds
 of checks, their uses and limitations. Comparison of new types is supported by 
-implementing the `FloatEq` and `FloatDiff` traits.
+implementing the `FloatEq` trait. Asserts may be supported by additionally 
+implementing the `FloatDiff` and `FloatEqDebug` traits, which provide additional
+debugging context info.
 
 ## Features
 

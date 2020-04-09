@@ -56,6 +56,14 @@
 //! assert_float_ne!(0.0_f32, 0.0001, abs <= 0.00005, ulps <= 4);
 //! ```
 //!
+//! Arrays of `FloatEq` compatible types are also supported, from size 0 to 32
+//! (inclusive):
+//!
+//! ```rust
+//! # use float_eq::{assert_float_eq, assert_float_ne, float_eq, float_ne};
+//! assert_float_eq!([1.0000001_f32, 2.0], [1.0, 2.0], ulps <= 1);
+//! ```
+//!
 //! The ideal choice of comparison will vary on a case by case basis, and depends
 //! on the input range and error margins of the expressions to be compared. For
 //! example, a test of the result of [finite difference approximation of
@@ -243,12 +251,9 @@
 //!
 //! # Comparing custom types
 //!
-//! Comparison of new types is supported by implementing both [`FloatEq`] and
-//! [`FloatDiff`]:
-//! - [`FloatEq`] does most of the work in calculating comparisons.
-//! - [`FloatDiff`] is used by the assert macros to provide intermediate context
-//!   for calculations in the case of failure, although it could also be used to
-//!   directly calculate differences if you wish.
+//! Comparison of new types is supported by implementing [`FloatEq`]. If assert
+//! support is required, then [`FloatDiff`] and [`FloatEqDebug`] should also be
+//! implemented, as they provide important context information on failure.
 //!
 //! [`assert_float_eq!`]: macro.assert_float_eq.html
 //! [`assert_float_ne!`]: macro.assert_float_ne.html
@@ -256,6 +261,7 @@
 //! [`float_ne!`]: macro.float_ne.html
 //! [`FloatEq`]: trait.FloatEq.html
 //! [`FloatDiff`]: trait.FloatDiff.html
+//! [`FloatEqDebug`]: trait.FloatEqDebug.html
 //!
 //! [catastrophic cancellation]: https://en.wikipedia.org/wiki/Loss_of_significance
 //! [denormalised value]: https://en.wikipedia.org/wiki/Denormal_number
@@ -269,6 +275,7 @@
 #![warn(missing_docs)]
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use core::fmt;
 use core::mem::MaybeUninit;
 
 /// Algorithms to compute the difference between two IEEE floating point values.
@@ -384,7 +391,9 @@ pub trait FloatEq {
     /// The implementation should be the equivalent of (using [`FloatDiff`]):
     ///
     /// ```text
-    /// self.abs_diff(other) <= self.rel_epsilon(other, max_diff)
+    /// let largest = self.abs().max(other.abs());
+    /// let epsilon = largest * max_diff;
+    /// self.abs_diff(other) <= epsilon
     /// ```
     ///
     /// [`FloatDiff`]: trait.FloatDiff.html
@@ -427,20 +436,57 @@ pub trait FloatEq {
     fn ne_ulps(&self, other: &Self, max_diff: &Self::UlpsDiffEpsilon) -> bool {
         !self.eq_ulps(other, max_diff)
     }
+}
 
-    /// Calculates the epsilon value used by an `eq_rel` comparison relative to
-    /// the larger of the two values being compared. This is used to provide
-    /// additional context when an assert fails.
+/// Provides additional context for debugging when an assert fires.
+///
+/// This is used internally by `float_eq` assert macros, and the epsilons do not
+/// necessarily match those used directly in the calculations. Implementations of
+/// this trait should try to provide context information for the overall calculation
+/// as an aid to the user. For example, arrays being compared may expose their
+/// debug info as an array of epsilon values, whereas their `FloatEq` methods
+/// perform calculations one by one to allow shortcutting.
+pub trait FloatEqDebug: FloatEq {
+    /// Displayed to the user when an assert fails, using `fmt::Debug`.
     ///
-    /// The implementation should be the equivalent of (using [`FloatDiff`]):
+    /// This should display [`Self::DiffEpsilon`] in an appropriate form to the
+    /// user. For example, when implemented for an array type, it should be an
+    /// array of the epsilon values so the user can see the link between the diff
+    /// items to the values tested against.
     ///
-    /// ```text
-    /// let largest = self.abs().max(other.abs())
-    /// largest * max_diff
-    /// ```
+    /// [`Self::DiffEpsilon`]: trait.FloatEq.html#associatedtype.DiffEpsilon
+    type DebugEpsilon: fmt::Debug;
+
+    /// Displayed to the user when an assert fails, using `fmt::Debug`.
     ///
-    /// [`FloatDiff`]: trait.FloatDiff.html
-    fn rel_epsilon(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> Self::DiffEpsilon;
+    /// This should display [`Self::DiffEpsilon`] in an appropriate form to the
+    /// user. For example, when implemented for an array type, it should be an
+    /// array of the epsilon values so the user can see the link between the diff
+    /// items to the values tested against.
+    ///
+    /// [`Self::DiffEpsilon`]: trait.FloatEq.html#associatedtype.DiffEpsilon
+    type DebugUlpsEpsilon: fmt::Debug;
+
+    /// The epsilon used by an [absolute epsilon comparison], displayed when an
+    /// assert fails.
+    ///
+    /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
+    fn debug_abs_epsilon(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> Self::DebugEpsilon;
+
+    /// The epsilon used by a [relative epsilon comparison], displayed when an
+    /// assert fails.
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
+    fn debug_rel_epsilon(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> Self::DebugEpsilon;
+
+    /// The epsilon used by an [ULPs comparison], displayed when an assert fails.
+    ///
+    /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
+    fn debug_ulps_epsilon(
+        &self,
+        other: &Self,
+        max_diff: &Self::UlpsDiffEpsilon,
+    ) -> Self::DebugUlpsEpsilon;
 }
 
 /// Checks whether two floating point expressions are equal to each other (using [`FloatEq`]).
@@ -1129,22 +1175,22 @@ pub struct FloatCmpOpEpsilon;
 #[doc(hidden)]
 impl FloatCmpOpEpsilon {
     #[inline]
-    pub fn abs<'a, T: FloatEq>(_: &T, _: &T, max_diff: &'a T::DiffEpsilon) -> &'a T::DiffEpsilon {
-        max_diff
+    pub fn abs<T: FloatEqDebug>(a: &T, b: &T, max_diff: &T::DiffEpsilon) -> T::DebugEpsilon {
+        FloatEqDebug::debug_abs_epsilon(a, b, max_diff)
     }
 
     #[inline]
-    pub fn rel<T: FloatEq>(a: &T, b: &T, max_diff: &T::DiffEpsilon) -> T::DiffEpsilon {
-        FloatEq::rel_epsilon(a, b, max_diff)
+    pub fn rel<T: FloatEqDebug>(a: &T, b: &T, max_diff: &T::DiffEpsilon) -> T::DebugEpsilon {
+        FloatEqDebug::debug_rel_epsilon(a, b, max_diff)
     }
 
     #[inline]
-    pub fn ulps<'a, T: FloatEq>(
-        _: &T,
-        _: &T,
-        max_diff: &'a T::UlpsDiffEpsilon,
-    ) -> &'a T::UlpsDiffEpsilon {
-        max_diff
+    pub fn ulps<T: FloatEqDebug>(
+        a: &T,
+        b: &T,
+        max_diff: &T::UlpsDiffEpsilon,
+    ) -> T::DebugUlpsEpsilon {
+        FloatEqDebug::debug_ulps_epsilon(a, b, max_diff)
     }
 }
 
@@ -1196,13 +1242,10 @@ macro_rules! impl_traits {
             }
 
             #[inline]
-            fn rel_epsilon(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> Self::DiffEpsilon {
-                $float::abs(*self).max($float::abs(*other)) * max_diff
-            }
-
-            #[inline]
             fn eq_rel(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
-                self.abs_diff(other) <= self.rel_epsilon(other, max_diff)
+                let largest = $float::abs(*self).max($float::abs(*other));
+                let epsilon = largest * max_diff;
+                self.abs_diff(other) <= epsilon
             }
 
             #[inline]
@@ -1212,6 +1255,35 @@ macro_rules! impl_traits {
                 } else {
                     self.ulps_diff(other).le(max_diff)
                 }
+            }
+        }
+
+        impl FloatEqDebug for $float {
+            type DebugEpsilon = <Self as FloatEq>::DiffEpsilon;
+            type DebugUlpsEpsilon = <Self as FloatEq>::UlpsDiffEpsilon;
+
+            fn debug_abs_epsilon(
+                &self,
+                _other: &Self,
+                max_diff: &<Self as FloatEq>::DiffEpsilon,
+            ) -> Self::DebugEpsilon {
+                *max_diff
+            }
+
+            fn debug_rel_epsilon(
+                &self,
+                other: &Self,
+                max_diff: &<Self as FloatEq>::DiffEpsilon,
+            ) -> Self::DebugEpsilon {
+                $float::abs(*self).max($float::abs(*other)) * max_diff
+            }
+
+            fn debug_ulps_epsilon(
+                &self,
+                _other: &Self,
+                max_diff: &<Self as FloatEq>::UlpsDiffEpsilon,
+            ) -> Self::DebugUlpsEpsilon {
+                *max_diff
             }
         }
     };
@@ -1283,16 +1355,48 @@ macro_rules! impl_float_eq_traits_for_array {
                 }
                 true
             }
+        }
 
-            //TODO: Should this be debug_rel_epsilon? It isn't used here and
-            // probably ought to be changed to reflect that fact.
-            #[inline]
-            fn rel_epsilon(
+        #[doc(hidden)]
+        impl<T: FloatEqDebug> FloatEqDebug for [T; $n] {
+            type DebugEpsilon = [<T as FloatEqDebug>::DebugEpsilon; $n];
+            type DebugUlpsEpsilon = [<T as FloatEqDebug>::DebugUlpsEpsilon; $n];
+
+            fn debug_abs_epsilon(
                 &self,
-                _other: &Self,
-                _max_diff: &Self::DiffEpsilon,
-            ) -> Self::DiffEpsilon {
-                unimplemented!()
+                other: &Self,
+                max_diff: &<Self as FloatEq>::DiffEpsilon,
+            ) -> Self::DebugEpsilon {
+                let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+                for i in 0..$n {
+                    result[i] = self[i].debug_abs_epsilon(&other[i], max_diff)
+                }
+                result
+            }
+
+            fn debug_rel_epsilon(
+                &self,
+                other: &Self,
+                max_diff: &<Self as FloatEq>::DiffEpsilon,
+            ) -> Self::DebugEpsilon {
+                let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+                for i in 0..$n {
+                    result[i] = self[i].debug_rel_epsilon(&other[i], max_diff)
+                }
+                result
+            }
+
+            fn debug_ulps_epsilon(
+                &self,
+                other: &Self,
+                max_diff: &<Self as FloatEq>::UlpsDiffEpsilon,
+            ) -> Self::DebugUlpsEpsilon {
+                let mut result: Self::DebugUlpsEpsilon =
+                    unsafe { MaybeUninit::uninit().assume_init() };
+                for i in 0..$n {
+                    result[i] = self[i].debug_ulps_epsilon(&other[i], max_diff)
+                }
+                result
             }
         }
     };
@@ -1316,6 +1420,7 @@ impl<T: FloatDiff> FloatDiff for [T; 0] {
     }
 }
 
+/// This is also implemented on other arrays up to size 32 (inclusive).
 impl<T: FloatEq> FloatEq for [T; 0] {
     type DiffEpsilon = T::DiffEpsilon;
     type UlpsDiffEpsilon = T::UlpsDiffEpsilon;
@@ -1334,12 +1439,35 @@ impl<T: FloatEq> FloatEq for [T; 0] {
     fn eq_ulps(&self, _other: &Self, _max_diff: &Self::UlpsDiffEpsilon) -> bool {
         true
     }
+}
 
-    //TODO: Should this be debug_rel_epsilon? It isn't used here and
-    // probably ought to be changed to reflect that fact.
-    #[inline]
-    fn rel_epsilon(&self, _other: &Self, _max_diff: &Self::DiffEpsilon) -> Self::DiffEpsilon {
-        unimplemented!()
+/// This is also implemented on other arrays up to size 32 (inclusive).
+impl<T: FloatEqDebug> FloatEqDebug for [T; 0] {
+    type DebugEpsilon = [<T as FloatEqDebug>::DebugEpsilon; 0];
+    type DebugUlpsEpsilon = [<T as FloatEqDebug>::DebugUlpsEpsilon; 0];
+
+    fn debug_abs_epsilon(
+        &self,
+        _other: &Self,
+        _max_diff: &<Self as FloatEq>::DiffEpsilon,
+    ) -> Self::DebugEpsilon {
+        []
+    }
+
+    fn debug_rel_epsilon(
+        &self,
+        _other: &Self,
+        _max_diff: &<Self as FloatEq>::DiffEpsilon,
+    ) -> Self::DebugEpsilon {
+        []
+    }
+
+    fn debug_ulps_epsilon(
+        &self,
+        _other: &Self,
+        _max_diff: &<Self as FloatEq>::UlpsDiffEpsilon,
+    ) -> Self::DebugUlpsEpsilon {
+        []
     }
 }
 

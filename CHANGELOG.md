@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implementation of `FloatEq` and `FloatDiff` for arrays of size 0 to 32
   (inclusive) where the type allows it.
 
+### Changed
+- Bumped up the minor version number since this release includes a breaking API 
+  change: The somewhat awkward `FloatEq::rel_epsilon` was removed in favour of a 
+  more equitable `FloatEqDebug` trait for displaying debug information.
+
 ## [0.1.3] - 2020-04-07
 ### Added
 - Added codecov.io and coveralls.io support.
