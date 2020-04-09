@@ -277,10 +277,6 @@
 
 use core::fmt;
 
-#[macro_use]
-mod assert;
-pub use crate::assert::*;
-
 /// Algorithms to compute the difference between two IEEE floating point values.
 ///
 /// This trait is implemented for `f32` and `f64` values:
@@ -560,6 +556,10 @@ macro_rules! float_ne {
         !$crate::float_eq!($a, $b $(, $eq <= $max_diff)+)
     });
 }
+
+#[macro_use]
+mod assert;
+pub use crate::assert::*;
 
 // implementations of traits
 mod arrays;
