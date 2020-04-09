@@ -246,9 +246,9 @@ macro_rules! impl_tests {
                 check_array!(32);
 
                 // nested
-                // let a = [[1_f32, 2.], [1., 2.]];
-                // let b = [[1_f32, 2.], [-1., -2.]];
-                // assert_eq!(a.abs_diff(&b), [[0., 0.], [2., 4.]]);
+                let a = [[1_f32, 2.], [1., 2.]];
+                let b = [[1_f32, 2.], [-1., -2.]];
+                assert_float_eq!(a, b, abs <= 5.);
             }
         }
     };
