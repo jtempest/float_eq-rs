@@ -580,13 +580,13 @@ ulps_diff: `{:?}`,
                         $crate::FloatDiff::ulps_diff(&*left_val, &right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpDiffName::$eq1(),
-                        $crate::FloatCmpOpEpsilon::$eq1(left_val, right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         concat!("[", stringify!($eq2), "]"),
                         $crate::FloatCmpDiffName::$eq2(),
-                        $crate::FloatCmpOpEpsilon::$eq2(left_val, right_val, &*max_diff_2_val),
+                        $crate::FloatCmpOpEpsilon::$eq2(&*left_val, &*right_val, &*max_diff_2_val),
                         concat!("[", stringify!($eq3), "]"),
                         $crate::FloatCmpDiffName::$eq3(),
-                        $crate::FloatCmpOpEpsilon::$eq3(left_val, right_val, &*max_diff_3_val)
+                        $crate::FloatCmpOpEpsilon::$eq3(&*left_val, &*right_val, &*max_diff_3_val)
                     )
                 }
             }
@@ -615,10 +615,10 @@ ulps_diff: `{:?}`,
                         $crate::FloatDiff::ulps_diff(&*left_val, &right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpDiffName::$eq1(),
-                        $crate::FloatCmpOpEpsilon::$eq1(left_val, right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         concat!("[", stringify!($eq2), "]"),
                         $crate::FloatCmpDiffName::$eq2(),
-                        $crate::FloatCmpOpEpsilon::$eq2(left_val, right_val, &*max_diff_2_val),
+                        $crate::FloatCmpOpEpsilon::$eq2(&*left_val, &*right_val, &*max_diff_2_val),
                     )
                 }
             }
@@ -645,7 +645,7 @@ ulps_diff: `{:?}`,
                         $crate::FloatDiff::ulps_diff(&*left_val, &right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpDiffName::$eq1(),
-                        $crate::FloatCmpOpEpsilon::$eq1(left_val, right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                     )
                 }
             }
@@ -679,13 +679,13 @@ ulps_diff: `{:?}`,
                         $crate::FloatDiff::ulps_diff(&*left_val, &right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpDiffName::$eq1(),
-                        $crate::FloatCmpOpEpsilon::$eq1(left_val, right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         concat!("[", stringify!($eq2), "]"),
                         $crate::FloatCmpDiffName::$eq2(),
-                        $crate::FloatCmpOpEpsilon::$eq2(left_val, right_val, &*max_diff_2_val),
+                        $crate::FloatCmpOpEpsilon::$eq2(&*left_val, &*right_val, &*max_diff_2_val),
                         concat!("[", stringify!($eq3), "]"),
                         $crate::FloatCmpDiffName::$eq3(),
-                        $crate::FloatCmpOpEpsilon::$eq3(left_val, right_val, &*max_diff_3_val),
+                        $crate::FloatCmpOpEpsilon::$eq3(&*left_val, &*right_val, &*max_diff_3_val),
                         format_args!($($arg)+)
                     )
                 }
@@ -715,10 +715,10 @@ ulps_diff: `{:?}`,
                         $crate::FloatDiff::ulps_diff(&*left_val, &right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpDiffName::$eq1(),
-                        $crate::FloatCmpOpEpsilon::$eq1(left_val, right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         concat!("[", stringify!($eq2), "]"),
                         $crate::FloatCmpDiffName::$eq2(),
-                        $crate::FloatCmpOpEpsilon::$eq2(left_val, right_val, &*max_diff_2_val),
+                        $crate::FloatCmpOpEpsilon::$eq2(&*left_val, &*right_val, &*max_diff_2_val),
                         format_args!($($arg)+)
                     )
                 }
@@ -746,7 +746,7 @@ ulps_diff: `{:?}`,
                         $crate::FloatDiff::ulps_diff(&*left_val, &right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpDiffName::$eq1(),
-                        $crate::FloatCmpOpEpsilon::$eq1(left_val, right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         format_args!($($arg)+)
                     )
                 }
@@ -818,13 +818,13 @@ ulps_diff: `{:?}`,
                         $crate::FloatDiff::ulps_diff(&*left_val, &right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpDiffName::$eq1(),
-                        $crate::FloatCmpOpEpsilon::$eq1(left_val, right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         concat!("[", stringify!($eq2), "]"),
                         $crate::FloatCmpDiffName::$eq2(),
-                        $crate::FloatCmpOpEpsilon::$eq2(left_val, right_val, &*max_diff_2_val),
+                        $crate::FloatCmpOpEpsilon::$eq2(&*left_val, &*right_val, &*max_diff_2_val),
                         concat!("[", stringify!($eq3), "]"),
                         $crate::FloatCmpDiffName::$eq3(),
-                        $crate::FloatCmpOpEpsilon::$eq3(left_val, right_val, &*max_diff_3_val)
+                        $crate::FloatCmpOpEpsilon::$eq3(&*left_val, &*right_val, &*max_diff_3_val)
                     )
                 }
             }
@@ -853,10 +853,10 @@ ulps_diff: `{:?}`,
                         $crate::FloatDiff::ulps_diff(&*left_val, &right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpDiffName::$eq1(),
-                        $crate::FloatCmpOpEpsilon::$eq1(left_val, right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         concat!("[", stringify!($eq2), "]"),
                         $crate::FloatCmpDiffName::$eq2(),
-                        $crate::FloatCmpOpEpsilon::$eq2(left_val, right_val, &*max_diff_2_val),
+                        $crate::FloatCmpOpEpsilon::$eq2(&*left_val, &*right_val, &*max_diff_2_val),
                     )
                 }
             }
@@ -883,7 +883,7 @@ ulps_diff: `{:?}`,
                         $crate::FloatDiff::ulps_diff(&*left_val, &right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpDiffName::$eq1(),
-                        $crate::FloatCmpOpEpsilon::$eq1(left_val, right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                     )
                 }
             }
@@ -917,13 +917,13 @@ ulps_diff: `{:?}`,
                         $crate::FloatDiff::ulps_diff(&*left_val, &right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpDiffName::$eq1(),
-                        $crate::FloatCmpOpEpsilon::$eq1(left_val, right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         concat!("[", stringify!($eq2), "]"),
                         $crate::FloatCmpDiffName::$eq2(),
-                        $crate::FloatCmpOpEpsilon::$eq2(left_val, right_val, &*max_diff_2_val),
+                        $crate::FloatCmpOpEpsilon::$eq2(&*left_val, &*right_val, &*max_diff_2_val),
                         concat!("[", stringify!($eq3), "]"),
                         $crate::FloatCmpDiffName::$eq3(),
-                        $crate::FloatCmpOpEpsilon::$eq3(left_val, right_val, &*max_diff_3_val),
+                        $crate::FloatCmpOpEpsilon::$eq3(&*left_val, &*right_val, &*max_diff_3_val),
                         format_args!($($arg)+)
                     )
                 }
@@ -953,10 +953,10 @@ ulps_diff: `{:?}`,
                         $crate::FloatDiff::ulps_diff(&*left_val, &right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpDiffName::$eq1(),
-                        $crate::FloatCmpOpEpsilon::$eq1(left_val, right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         concat!("[", stringify!($eq2), "]"),
                         $crate::FloatCmpDiffName::$eq2(),
-                        $crate::FloatCmpOpEpsilon::$eq2(left_val, right_val, &*max_diff_2_val),
+                        $crate::FloatCmpOpEpsilon::$eq2(&*left_val, &*right_val, &*max_diff_2_val),
                         format_args!($($arg)+)
                     )
                 }
@@ -984,7 +984,7 @@ ulps_diff: `{:?}`,
                         $crate::FloatDiff::ulps_diff(&*left_val, &right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpDiffName::$eq1(),
-                        $crate::FloatCmpOpEpsilon::$eq1(left_val, right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         format_args!($($arg)+)
                     )
                 }
