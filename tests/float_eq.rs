@@ -180,6 +180,76 @@ macro_rules! impl_tests {
                 check_ne(one, nan, 1);
                 check_eq(nan, nan, 1);
             }
+
+            macro_rules! check_array {
+                ($n:literal) => {{
+                    let mut a: [$float; $n] = [0.; $n];
+                    for i in 0..$n {
+                        a[i] = (i as $float + 1.);
+                    }
+
+                    assert_float_eq!(a, a, abs <= 0.0);
+                    assert_float_eq!(a, a, rel <= 0.0);
+                    assert_float_eq!(a, a, ulps <= 0);
+
+                    for i in 0..$n {
+                        let mut b = a;
+                        b[i] = a[i] + 0.5;
+                        assert_float_eq!(a, b, abs <= 0.5);
+                        assert_float_ne!(a, b, abs <= 0.0);
+
+                        let mut b = a;
+                        b[i] = $float::from_bits(a[i].to_bits() + 1);
+                        assert_float_eq!(a, b, rel <= std::$float::EPSILON);
+                        assert_float_ne!(a, b, rel <= 0.0);
+                        assert_float_eq!(a, b, ulps <= 1);
+                        assert_float_ne!(a, b, ulps <= 0);
+                    }
+                }};
+            }
+
+            #[test]
+            fn float_diff_array() {
+                //TODO: Use const generics once they're stable
+                check_array!(0);
+                check_array!(1);
+                check_array!(2);
+                check_array!(3);
+                check_array!(4);
+                check_array!(5);
+                check_array!(6);
+                check_array!(7);
+                check_array!(8);
+                check_array!(9);
+                check_array!(10);
+                check_array!(11);
+                check_array!(12);
+                check_array!(13);
+                check_array!(14);
+                check_array!(15);
+                check_array!(16);
+                check_array!(17);
+                check_array!(18);
+                check_array!(19);
+                check_array!(20);
+                check_array!(21);
+                check_array!(22);
+                check_array!(23);
+                check_array!(24);
+                check_array!(25);
+                check_array!(26);
+                check_array!(27);
+                check_array!(28);
+                check_array!(29);
+                check_array!(30);
+                check_array!(31);
+                check_array!(32);
+
+                // nested
+                // let a = [[1_f32, 2.], [1., 2.]];
+                // let b = [[1_f32, 2.], [-1., -2.]];
+                // assert_eq!(a.abs_diff(&b), [[0., 0.], [2., 4.]]);
+            }
         }
     };
 }

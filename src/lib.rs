@@ -1221,30 +1221,79 @@ impl_traits!(f32, u32);
 impl_traits!(f64, u64);
 
 // arrays
-macro_rules! impl_array_method {
-    ($name:ident -> $result_type:ty, $n:literal) => {
-        #[inline]
-        fn $name(&self, other: &Self) -> $result_type {
-            let mut result: $result_type = unsafe { MaybeUninit::uninit().assume_init() };
-            for i in 0..$n {
-                result[i] = self[i].$name(&other[i])
-            }
-            result
-        }
-    };
-}
-
 //TODO: Should this be publically available for users to conditionally implement
 // support if they need it?
-macro_rules! impl_float_diff_for_array {
+macro_rules! impl_float_eq_traits_for_array {
     ($n:literal) => {
         #[doc(hidden)]
         impl<T: FloatDiff> FloatDiff for [T; $n] {
             type AbsDiff = [T::AbsDiff; $n];
             type UlpsDiff = [T::UlpsDiff; $n];
 
-            impl_array_method!(abs_diff -> Self::AbsDiff, $n);
-            impl_array_method!(ulps_diff -> Self::UlpsDiff, $n);
+            #[inline]
+            fn abs_diff(&self, other: &Self) -> Self::AbsDiff {
+                let mut result: Self::AbsDiff = unsafe { MaybeUninit::uninit().assume_init() };
+                for i in 0..$n {
+                    result[i] = self[i].abs_diff(&other[i])
+                }
+                result
+            }
+
+            #[inline]
+            fn ulps_diff(&self, other: &Self) -> Self::UlpsDiff {
+                let mut result: Self::UlpsDiff = unsafe { MaybeUninit::uninit().assume_init() };
+                for i in 0..$n {
+                    result[i] = self[i].ulps_diff(&other[i])
+                }
+                result
+            }
+        }
+
+        #[doc(hidden)]
+        impl<T: FloatEq> FloatEq for [T; $n] {
+            type DiffEpsilon = T::DiffEpsilon;
+            type UlpsDiffEpsilon = T::UlpsDiffEpsilon;
+
+            #[inline]
+            fn eq_abs(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+                for i in 0..$n {
+                    if !self[i].eq_abs(&other[i], max_diff) {
+                        return false;
+                    }
+                }
+                true
+            }
+
+            #[inline]
+            fn eq_rel(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+                for i in 0..$n {
+                    if !self[i].eq_rel(&other[i], max_diff) {
+                        return false;
+                    }
+                }
+                true
+            }
+
+            #[inline]
+            fn eq_ulps(&self, other: &Self, max_diff: &Self::UlpsDiffEpsilon) -> bool {
+                for i in 0..$n {
+                    if !self[i].eq_ulps(&other[i], max_diff) {
+                        return false;
+                    }
+                }
+                true
+            }
+
+            //TODO: Should this be debug_rel_epsilon? It isn't used here and
+            // probably ought to be changed to reflect that fact.
+            #[inline]
+            fn rel_epsilon(
+                &self,
+                _other: &Self,
+                _max_diff: &Self::DiffEpsilon,
+            ) -> Self::DiffEpsilon {
+                unimplemented!()
+            }
         }
     };
 }
@@ -1256,38 +1305,73 @@ impl<T: FloatDiff> FloatDiff for [T; 0] {
     type AbsDiff = [T::AbsDiff; 0];
     type UlpsDiff = [T::UlpsDiff; 0];
 
-    impl_array_method!(abs_diff -> Self::AbsDiff, 0);
-    impl_array_method!(ulps_diff -> Self::UlpsDiff, 0);
+    #[inline]
+    fn abs_diff(&self, _other: &Self) -> Self::AbsDiff {
+        []
+    }
+
+    #[inline]
+    fn ulps_diff(&self, _other: &Self) -> Self::UlpsDiff {
+        []
+    }
 }
-impl_float_diff_for_array!(1);
-impl_float_diff_for_array!(2);
-impl_float_diff_for_array!(3);
-impl_float_diff_for_array!(4);
-impl_float_diff_for_array!(5);
-impl_float_diff_for_array!(6);
-impl_float_diff_for_array!(7);
-impl_float_diff_for_array!(8);
-impl_float_diff_for_array!(9);
-impl_float_diff_for_array!(10);
-impl_float_diff_for_array!(11);
-impl_float_diff_for_array!(12);
-impl_float_diff_for_array!(13);
-impl_float_diff_for_array!(14);
-impl_float_diff_for_array!(15);
-impl_float_diff_for_array!(16);
-impl_float_diff_for_array!(17);
-impl_float_diff_for_array!(18);
-impl_float_diff_for_array!(19);
-impl_float_diff_for_array!(20);
-impl_float_diff_for_array!(21);
-impl_float_diff_for_array!(22);
-impl_float_diff_for_array!(23);
-impl_float_diff_for_array!(24);
-impl_float_diff_for_array!(25);
-impl_float_diff_for_array!(26);
-impl_float_diff_for_array!(27);
-impl_float_diff_for_array!(28);
-impl_float_diff_for_array!(29);
-impl_float_diff_for_array!(30);
-impl_float_diff_for_array!(31);
-impl_float_diff_for_array!(32);
+
+impl<T: FloatEq> FloatEq for [T; 0] {
+    type DiffEpsilon = T::DiffEpsilon;
+    type UlpsDiffEpsilon = T::UlpsDiffEpsilon;
+
+    #[inline]
+    fn eq_abs(&self, _other: &Self, _max_diff: &Self::DiffEpsilon) -> bool {
+        true
+    }
+
+    #[inline]
+    fn eq_rel(&self, _other: &Self, _max_diff: &Self::DiffEpsilon) -> bool {
+        true
+    }
+
+    #[inline]
+    fn eq_ulps(&self, _other: &Self, _max_diff: &Self::UlpsDiffEpsilon) -> bool {
+        true
+    }
+
+    //TODO: Should this be debug_rel_epsilon? It isn't used here and
+    // probably ought to be changed to reflect that fact.
+    #[inline]
+    fn rel_epsilon(&self, _other: &Self, _max_diff: &Self::DiffEpsilon) -> Self::DiffEpsilon {
+        unimplemented!()
+    }
+}
+
+impl_float_eq_traits_for_array!(1);
+impl_float_eq_traits_for_array!(2);
+impl_float_eq_traits_for_array!(3);
+impl_float_eq_traits_for_array!(4);
+impl_float_eq_traits_for_array!(5);
+impl_float_eq_traits_for_array!(6);
+impl_float_eq_traits_for_array!(7);
+impl_float_eq_traits_for_array!(8);
+impl_float_eq_traits_for_array!(9);
+impl_float_eq_traits_for_array!(10);
+impl_float_eq_traits_for_array!(11);
+impl_float_eq_traits_for_array!(12);
+impl_float_eq_traits_for_array!(13);
+impl_float_eq_traits_for_array!(14);
+impl_float_eq_traits_for_array!(15);
+impl_float_eq_traits_for_array!(16);
+impl_float_eq_traits_for_array!(17);
+impl_float_eq_traits_for_array!(18);
+impl_float_eq_traits_for_array!(19);
+impl_float_eq_traits_for_array!(20);
+impl_float_eq_traits_for_array!(21);
+impl_float_eq_traits_for_array!(22);
+impl_float_eq_traits_for_array!(23);
+impl_float_eq_traits_for_array!(24);
+impl_float_eq_traits_for_array!(25);
+impl_float_eq_traits_for_array!(26);
+impl_float_eq_traits_for_array!(27);
+impl_float_eq_traits_for_array!(28);
+impl_float_eq_traits_for_array!(29);
+impl_float_eq_traits_for_array!(30);
+impl_float_eq_traits_for_array!(31);
+impl_float_eq_traits_for_array!(32);
