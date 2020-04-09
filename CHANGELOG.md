@@ -20,6 +20,8 @@ changes.
 - The `FloatDiff::AbsDiff` associated type was removed since it ought to be
   `Self`. If a compelling use case for allowing it to vary appears then I'll be
   happy to add it back again.
+- Somewhat more streamlined assert error messages that allow for easier direct
+  comparison of diffs and epsilons.
 
 ## [0.1.3] - 2020-04-07
 ### Added
