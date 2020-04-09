@@ -84,16 +84,20 @@ implementing the `FloatEq` trait. Asserts may be supported by additionally
 implementing the `FloatDiff` and `FloatEqDebug` traits, which provide additional
 debugging context info.
 
-## Features
+## Optional Features
 
 This crate can be used without the standard library (`#![no_std]`) by disabling
 the default `std` feature. Use this in `Cargo.toml`:
 
 ```
 [dependencies.float_eq]
-version = "0.1"
+version = "0.2"
 default-features = false
 ```
+
+Other optional features:
+- **num** — implements `FloatEq`, `FloatEqDebug` and `FloatDiff` for 
+  `num::Complex` where it is instanced with a compatible type.
 
 ## Related efforts
 
