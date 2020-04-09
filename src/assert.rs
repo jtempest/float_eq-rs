@@ -610,7 +610,7 @@ mod tests {
         #[test]
         #[should_panic]
         fn array_rel_fail() {
-            assert_float_eq!([1.0_f32, 2.], [1.0000001, 3.], rel <= std::f32::EPSILON);
+            assert_float_eq!([1.0_f32, 2.], [1.0000001, 3.], rel <= core::f32::EPSILON);
         }
 
         #[test]

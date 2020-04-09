@@ -276,7 +276,6 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use core::fmt;
-use core::mem::MaybeUninit;
 
 #[macro_use]
 mod assert;
@@ -312,7 +311,7 @@ pub trait FloatDiff {
     /// floating point type, for example `f32` uses `u32`.
     ///
     /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
-    type UlpsDiff: fmt::Debug;
+    type UlpsDiff;
 
     /// Always positive absolute difference between two values.
     ///
@@ -454,7 +453,7 @@ pub trait FloatEqDebug: FloatEq {
     /// items to the values tested against.
     ///
     /// [`Self::DiffEpsilon`]: trait.FloatEq.html#associatedtype.DiffEpsilon
-    type DebugEpsilon;
+    type DebugEpsilon: fmt::Debug;
 
     /// Displayed to the user when an assert fails, using `fmt::Debug`.
     ///
@@ -464,7 +463,7 @@ pub trait FloatEqDebug: FloatEq {
     /// items to the values tested against.
     ///
     /// [`Self::DiffEpsilon`]: trait.FloatEq.html#associatedtype.DiffEpsilon
-    type DebugUlpsEpsilon;
+    type DebugUlpsEpsilon: fmt::Debug;
 
     /// The epsilon used by an [absolute epsilon comparison], displayed when an
     /// assert fails.
@@ -562,312 +561,9 @@ macro_rules! float_ne {
     });
 }
 
-macro_rules! impl_traits {
-    ($float:ident, $uint:ident) => {
-        mod $float {
-            #[cfg(feature = "std")]
-            #[inline]
-            pub(crate) fn abs(value: $float) -> $float {
-                // use the intrinsic for std builds
-                value.abs()
-            }
-
-            #[cfg(not(feature = "std"))]
-            pub(crate) fn abs(value: $float) -> $float {
-                // mask away only the sign bit for no_std builds since the abs
-                // method is not available
-                const MASK: $uint = !(1 << ((core::mem::size_of::<$float>() * 8) - 1));
-                $float::from_bits(value.to_bits() & MASK)
-            }
-        }
-
-        impl FloatDiff for $float {
-            type UlpsDiff = $uint;
-
-            #[inline]
-            fn abs_diff(&self, other: &Self) -> Self {
-                $float::abs(self - other)
-            }
-
-            #[inline]
-            fn ulps_diff(&self, other: &Self) -> Self::UlpsDiff {
-                let a = (self.to_bits()) as $uint;
-                let b = (other.to_bits()) as $uint;
-                let max = a.max(b);
-                let min = a.min(b);
-                max - min
-            }
-        }
-
-        impl FloatEq for $float {
-            type DiffEpsilon = $float;
-            type UlpsDiffEpsilon = $uint;
-
-            #[inline]
-            fn eq_abs(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
-                self.abs_diff(other).le(max_diff)
-            }
-
-            #[inline]
-            fn eq_rel(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
-                let largest = $float::abs(*self).max($float::abs(*other));
-                let epsilon = largest * max_diff;
-                self.abs_diff(other) <= epsilon
-            }
-
-            #[inline]
-            fn eq_ulps(&self, other: &Self, max_diff: &Self::UlpsDiffEpsilon) -> bool {
-                if self.is_sign_positive() != other.is_sign_positive() {
-                    self == other // account for zero == negative zero
-                } else {
-                    self.ulps_diff(other).le(max_diff)
-                }
-            }
-        }
-
-        impl FloatEqDebug for $float {
-            type DebugEpsilon = <Self as FloatEq>::DiffEpsilon;
-            type DebugUlpsEpsilon = <Self as FloatEq>::UlpsDiffEpsilon;
-
-            fn debug_abs_epsilon(
-                &self,
-                _other: &Self,
-                max_diff: &<Self as FloatEq>::DiffEpsilon,
-            ) -> Self::DebugEpsilon {
-                *max_diff
-            }
-
-            fn debug_rel_epsilon(
-                &self,
-                other: &Self,
-                max_diff: &<Self as FloatEq>::DiffEpsilon,
-            ) -> Self::DebugEpsilon {
-                $float::abs(*self).max($float::abs(*other)) * max_diff
-            }
-
-            fn debug_ulps_epsilon(
-                &self,
-                _other: &Self,
-                max_diff: &<Self as FloatEq>::UlpsDiffEpsilon,
-            ) -> Self::DebugUlpsEpsilon {
-                *max_diff
-            }
-        }
-    };
-}
-
-impl_traits!(f32, u32);
-impl_traits!(f64, u64);
-
-// arrays
-//TODO: Should this be publically available for users to conditionally implement
-// support if they need it?
-macro_rules! impl_float_eq_traits_for_array {
-    ($n:literal) => {
-        #[doc(hidden)]
-        impl<T: FloatDiff> FloatDiff for [T; $n] {
-            type UlpsDiff = [T::UlpsDiff; $n];
-
-            #[inline]
-            fn abs_diff(&self, other: &Self) -> Self {
-                let mut result: Self = unsafe { MaybeUninit::uninit().assume_init() };
-                for i in 0..$n {
-                    result[i] = self[i].abs_diff(&other[i])
-                }
-                result
-            }
-
-            #[inline]
-            fn ulps_diff(&self, other: &Self) -> Self::UlpsDiff {
-                let mut result: Self::UlpsDiff = unsafe { MaybeUninit::uninit().assume_init() };
-                for i in 0..$n {
-                    result[i] = self[i].ulps_diff(&other[i])
-                }
-                result
-            }
-        }
-
-        #[doc(hidden)]
-        impl<T: FloatEq> FloatEq for [T; $n] {
-            type DiffEpsilon = T::DiffEpsilon;
-            type UlpsDiffEpsilon = T::UlpsDiffEpsilon;
-
-            #[inline]
-            fn eq_abs(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
-                for i in 0..$n {
-                    if !self[i].eq_abs(&other[i], max_diff) {
-                        return false;
-                    }
-                }
-                true
-            }
-
-            #[inline]
-            fn eq_rel(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
-                for i in 0..$n {
-                    if !self[i].eq_rel(&other[i], max_diff) {
-                        return false;
-                    }
-                }
-                true
-            }
-
-            #[inline]
-            fn eq_ulps(&self, other: &Self, max_diff: &Self::UlpsDiffEpsilon) -> bool {
-                for i in 0..$n {
-                    if !self[i].eq_ulps(&other[i], max_diff) {
-                        return false;
-                    }
-                }
-                true
-            }
-        }
-
-        #[doc(hidden)]
-        impl<T: FloatEqDebug> FloatEqDebug for [T; $n] {
-            type DebugEpsilon = [<T as FloatEqDebug>::DebugEpsilon; $n];
-            type DebugUlpsEpsilon = [<T as FloatEqDebug>::DebugUlpsEpsilon; $n];
-
-            fn debug_abs_epsilon(
-                &self,
-                other: &Self,
-                max_diff: &<Self as FloatEq>::DiffEpsilon,
-            ) -> Self::DebugEpsilon {
-                let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
-                for i in 0..$n {
-                    result[i] = self[i].debug_abs_epsilon(&other[i], max_diff)
-                }
-                result
-            }
-
-            fn debug_rel_epsilon(
-                &self,
-                other: &Self,
-                max_diff: &<Self as FloatEq>::DiffEpsilon,
-            ) -> Self::DebugEpsilon {
-                let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
-                for i in 0..$n {
-                    result[i] = self[i].debug_rel_epsilon(&other[i], max_diff)
-                }
-                result
-            }
-
-            fn debug_ulps_epsilon(
-                &self,
-                other: &Self,
-                max_diff: &<Self as FloatEq>::UlpsDiffEpsilon,
-            ) -> Self::DebugUlpsEpsilon {
-                let mut result: Self::DebugUlpsEpsilon =
-                    unsafe { MaybeUninit::uninit().assume_init() };
-                for i in 0..$n {
-                    result[i] = self[i].debug_ulps_epsilon(&other[i], max_diff)
-                }
-                result
-            }
-        }
-    };
-}
-
-// 0 to 32 as per primitive array traits
-//TODO: Use const generics once they're stable
-/// This is also implemented on other arrays up to size 32 (inclusive).
-impl<T: FloatDiff> FloatDiff for [T; 0] {
-    type UlpsDiff = [T::UlpsDiff; 0];
-
-    #[inline]
-    fn abs_diff(&self, _other: &Self) -> Self {
-        []
-    }
-
-    #[inline]
-    fn ulps_diff(&self, _other: &Self) -> Self::UlpsDiff {
-        []
-    }
-}
-
-/// This is also implemented on other arrays up to size 32 (inclusive).
-impl<T: FloatEq> FloatEq for [T; 0] {
-    type DiffEpsilon = T::DiffEpsilon;
-    type UlpsDiffEpsilon = T::UlpsDiffEpsilon;
-
-    #[inline]
-    fn eq_abs(&self, _other: &Self, _max_diff: &Self::DiffEpsilon) -> bool {
-        true
-    }
-
-    #[inline]
-    fn eq_rel(&self, _other: &Self, _max_diff: &Self::DiffEpsilon) -> bool {
-        true
-    }
-
-    #[inline]
-    fn eq_ulps(&self, _other: &Self, _max_diff: &Self::UlpsDiffEpsilon) -> bool {
-        true
-    }
-}
-
-/// This is also implemented on other arrays up to size 32 (inclusive).
-impl<T: FloatEqDebug> FloatEqDebug for [T; 0] {
-    type DebugEpsilon = [<T as FloatEqDebug>::DebugEpsilon; 0];
-    type DebugUlpsEpsilon = [<T as FloatEqDebug>::DebugUlpsEpsilon; 0];
-
-    fn debug_abs_epsilon(
-        &self,
-        _other: &Self,
-        _max_diff: &<Self as FloatEq>::DiffEpsilon,
-    ) -> Self::DebugEpsilon {
-        []
-    }
-
-    fn debug_rel_epsilon(
-        &self,
-        _other: &Self,
-        _max_diff: &<Self as FloatEq>::DiffEpsilon,
-    ) -> Self::DebugEpsilon {
-        []
-    }
-
-    fn debug_ulps_epsilon(
-        &self,
-        _other: &Self,
-        _max_diff: &<Self as FloatEq>::UlpsDiffEpsilon,
-    ) -> Self::DebugUlpsEpsilon {
-        []
-    }
-}
-
-impl_float_eq_traits_for_array!(1);
-impl_float_eq_traits_for_array!(2);
-impl_float_eq_traits_for_array!(3);
-impl_float_eq_traits_for_array!(4);
-impl_float_eq_traits_for_array!(5);
-impl_float_eq_traits_for_array!(6);
-impl_float_eq_traits_for_array!(7);
-impl_float_eq_traits_for_array!(8);
-impl_float_eq_traits_for_array!(9);
-impl_float_eq_traits_for_array!(10);
-impl_float_eq_traits_for_array!(11);
-impl_float_eq_traits_for_array!(12);
-impl_float_eq_traits_for_array!(13);
-impl_float_eq_traits_for_array!(14);
-impl_float_eq_traits_for_array!(15);
-impl_float_eq_traits_for_array!(16);
-impl_float_eq_traits_for_array!(17);
-impl_float_eq_traits_for_array!(18);
-impl_float_eq_traits_for_array!(19);
-impl_float_eq_traits_for_array!(20);
-impl_float_eq_traits_for_array!(21);
-impl_float_eq_traits_for_array!(22);
-impl_float_eq_traits_for_array!(23);
-impl_float_eq_traits_for_array!(24);
-impl_float_eq_traits_for_array!(25);
-impl_float_eq_traits_for_array!(26);
-impl_float_eq_traits_for_array!(27);
-impl_float_eq_traits_for_array!(28);
-impl_float_eq_traits_for_array!(29);
-impl_float_eq_traits_for_array!(30);
-impl_float_eq_traits_for_array!(31);
-impl_float_eq_traits_for_array!(32);
+// implementations of traits
+mod arrays;
+mod primitives;
 
 #[cfg(feature = "num")]
 mod num_complex;
