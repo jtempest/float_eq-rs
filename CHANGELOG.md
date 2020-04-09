@@ -13,6 +13,7 @@ changes.
   (inclusive) where the type allows it.
 - The 'num' feature, which when enabled provides support for comparison of
   `num::Complex` instances.
+- Documentation to help with implementing FloatDiff.
 
 ### Changed
 - The somewhat awkward `FloatEq::rel_epsilon` was removed in favour of a more 

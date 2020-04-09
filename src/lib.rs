@@ -279,27 +279,83 @@ use core::fmt;
 
 /// Algorithms to compute the difference between two IEEE floating point values.
 ///
-/// This trait is implemented for `f32` and `f64` values:
+/// By default this trait is implemented on `f32` and `f64`, and for arrays of
+/// compatible type which have size 0 to 32 (inclusive).
+///
+/// ## How can I implement `FloatDiff`?
+///
+/// Implementing `FloatDiff` on your types is straightfoward if they're already
+/// composed of compatible types. You'll need some way to represent difference in
+/// [ULPs] for your type, probably following the same structure as the type itself.
+/// For example, `Point` here has `x` and `y` fields and `PointUlpsDiff` follows
+/// that layout. Once you have this type, implementing the methods is a case of
+/// calling through to the underlying implementation of each member:
 ///
 /// ```rust
-/// use float_eq::FloatDiff;
+/// # use float_eq::FloatDiff;
+/// struct Point {
+///     x: f32,
+///     y: f32,
+/// }
 ///
+/// struct PointUlpsDiff {
+///     x: <f32 as FloatDiff>::UlpsDiff,
+///     y: <f32 as FloatDiff>::UlpsDiff,
+/// }
+///
+/// impl FloatDiff for Point {
+///     type UlpsDiff = PointUlpsDiff;
+///
+///     fn abs_diff(&self, other: &Self) -> Self {
+///         Self {
+///             x: self.x.abs_diff(&other.x),
+///             y: self.y.abs_diff(&other.y),
+///         }
+///     }
+///
+///     fn ulps_diff(&self, other: &Self) -> Self::UlpsDiff {
+///         Self::UlpsDiff {
+///             x: self.x.ulps_diff(&other.x),
+///             y: self.y.ulps_diff(&other.y),
+///         }
+///     }
+/// }
+///
+/// let a = Point { x: 1., y: 2. };
+/// let b = Point {
+///     x: 1.0000001,
+///     y: 2.0000004,
+/// };
+///
+/// let abs_diff = a.abs_diff(&b);
+/// assert_eq!(abs_diff.x, 0.00000011920929);
+/// assert_eq!(abs_diff.y, 0.00000047683716);
+///
+/// let ulps_diff = a.ulps_diff(&b);
+/// assert_eq!(ulps_diff.x, 1);
+/// assert_eq!(ulps_diff.y, 2);
+/// ```
+///
+/// If your type does *not* already have an underlying implementation of `FloatDiff`
+/// for its members, then you'll need to take a close look at the descriptions of
+/// the algorithms on a member by member basis.
+///
+/// ## Examples
+///
+/// ```rust
+/// # use float_eq::FloatDiff;
 /// assert_eq!(1.0_f32.abs_diff(&-1.0), 2.0);
 /// assert_eq!(1.0_f64.abs_diff(&-1.0), 2.0);
 ///
 /// assert_eq!(1.0_f32.ulps_diff(&1.0000001), 1);
 /// assert_eq!(1.0_f64.ulps_diff(&1.0000000000000002), 1);
-/// ```
 ///
-/// And on arrays of size 0 to 32 (inclusive) if the element type allows it:
-///
-/// ```rust
-/// # use float_eq::FloatDiff;
 /// let a = [0.0_f32, 2.0, -2.0];
 /// let b = [0.0_f32, -1.0, 2.0];
 /// assert_eq!(a.abs_diff(&b), [0.0, 3.0, 4.0]);
 /// ```
 ///
+/// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
 pub trait FloatDiff {
     /// Type of the absolute difference between two values in terms of [ULPs].
     ///

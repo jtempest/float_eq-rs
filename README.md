@@ -125,6 +125,8 @@ Release information is available in [CHANGELOG.md](CHANGELOG.md).
 
 ## Future plans
 
+- Look into implementing the traits to diff/compare to different types than `Self`.
+
 - `#[derive]` support for comparison of custom types that are composed of 
   already comparable floating point values.
 
