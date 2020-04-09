@@ -20,7 +20,9 @@ rust:
 
 env:
   - CARGO_PARAMS=""
+  - CARGO_PARAMS="--features num"
   - CARGO_PARAMS="--no-default-features"
+  - CARGO_PARAMS="--no-default-features --features num" 
 
 jobs:
   allow_failures:

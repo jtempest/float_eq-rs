@@ -24,5 +24,8 @@ coveralls = { repository = "jtempest/float_eq-rs" }
 [features]
 default = ["std"]
 std = []
+num = ["num-complex"]
 
-[dependencies]
+[dependencies.num-complex]
+version = "0.2"
+optional = true

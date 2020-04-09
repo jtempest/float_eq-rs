@@ -119,8 +119,6 @@ Release information is available in [CHANGELOG.md](CHANGELOG.md).
 - `#[derive]` support for comparison of custom types that are composed of 
   already comparable floating point values.
 
-- Support for `num::Complex`.
-
 - Investigate the safety guarantees of the ulps check. Currently, it doesn't
   act like the default floating point checks when it comes to NaNs and other
   special values.

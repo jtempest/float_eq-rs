@@ -5,14 +5,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+Bumped up the minor version number since this release includes breaking API 
+changes.
+
 ### Added
 - Implementation of `FloatEq` and `FloatDiff` for arrays of size 0 to 32
   (inclusive) where the type allows it.
+- The 'num' feature, which when enabled provides support for comparison of
+  `num::Complex` instances.
 
 ### Changed
-- Bumped up the minor version number since this release includes a breaking API 
-  change: The somewhat awkward `FloatEq::rel_epsilon` was removed in favour of a 
-  more equitable `FloatEqDebug` trait for displaying debug information.
+- The somewhat awkward `FloatEq::rel_epsilon` was removed in favour of a more 
+  equitable `FloatEqDebug` trait for displaying debug information. 
+- The `FloatDiff::AbsDiff` associated type was removed since it ought to be
+  `Self`. If a compelling use case for allowing it to vary appears then I'll be
+  happy to add it back again.
 
 ## [0.1.3] - 2020-04-07
 ### Added

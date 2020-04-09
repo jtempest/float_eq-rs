@@ -302,18 +302,13 @@ use core::mem::MaybeUninit;
 /// ```
 ///
 pub trait FloatDiff {
-    /// Type of the absolute difference between two values.
-    ///
-    /// This is almost always `Self`.
-    type AbsDiff;
-
     /// Type of the absolute difference between two values in terms of [ULPs].
     ///
     /// This should be an unsigned integer of the same size as the underlying
     /// floating point type, for example `f32` uses `u32`.
     ///
     /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
-    type UlpsDiff;
+    type UlpsDiff: fmt::Debug;
 
     /// Always positive absolute difference between two values.
     ///
@@ -322,7 +317,7 @@ pub trait FloatDiff {
     /// ```text
     /// (self - other).abs()
     /// ```
-    fn abs_diff(&self, other: &Self) -> Self::AbsDiff;
+    fn abs_diff(&self, other: &Self) -> Self;
 
     /// Always positive absolute difference between two values in terms of [ULPs]
     ///
@@ -455,7 +450,7 @@ pub trait FloatEqDebug: FloatEq {
     /// items to the values tested against.
     ///
     /// [`Self::DiffEpsilon`]: trait.FloatEq.html#associatedtype.DiffEpsilon
-    type DebugEpsilon: fmt::Debug;
+    type DebugEpsilon;
 
     /// Displayed to the user when an assert fails, using `fmt::Debug`.
     ///
@@ -465,7 +460,7 @@ pub trait FloatEqDebug: FloatEq {
     /// items to the values tested against.
     ///
     /// [`Self::DiffEpsilon`]: trait.FloatEq.html#associatedtype.DiffEpsilon
-    type DebugUlpsEpsilon: fmt::Debug;
+    type DebugUlpsEpsilon;
 
     /// The epsilon used by an [absolute epsilon comparison], displayed when an
     /// assert fails.
@@ -1214,11 +1209,10 @@ macro_rules! impl_traits {
         }
 
         impl FloatDiff for $float {
-            type AbsDiff = $float;
             type UlpsDiff = $uint;
 
             #[inline]
-            fn abs_diff(&self, other: &Self) -> Self::AbsDiff {
+            fn abs_diff(&self, other: &Self) -> Self {
                 $float::abs(self - other)
             }
 
@@ -1299,12 +1293,11 @@ macro_rules! impl_float_eq_traits_for_array {
     ($n:literal) => {
         #[doc(hidden)]
         impl<T: FloatDiff> FloatDiff for [T; $n] {
-            type AbsDiff = [T::AbsDiff; $n];
             type UlpsDiff = [T::UlpsDiff; $n];
 
             #[inline]
-            fn abs_diff(&self, other: &Self) -> Self::AbsDiff {
-                let mut result: Self::AbsDiff = unsafe { MaybeUninit::uninit().assume_init() };
+            fn abs_diff(&self, other: &Self) -> Self {
+                let mut result: Self = unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..$n {
                     result[i] = self[i].abs_diff(&other[i])
                 }
@@ -1406,11 +1399,10 @@ macro_rules! impl_float_eq_traits_for_array {
 //TODO: Use const generics once they're stable
 /// This is also implemented on other arrays up to size 32 (inclusive).
 impl<T: FloatDiff> FloatDiff for [T; 0] {
-    type AbsDiff = [T::AbsDiff; 0];
     type UlpsDiff = [T::UlpsDiff; 0];
 
     #[inline]
-    fn abs_diff(&self, _other: &Self) -> Self::AbsDiff {
+    fn abs_diff(&self, _other: &Self) -> Self {
         []
     }
 
@@ -1503,3 +1495,8 @@ impl_float_eq_traits_for_array!(29);
 impl_float_eq_traits_for_array!(30);
 impl_float_eq_traits_for_array!(31);
 impl_float_eq_traits_for_array!(32);
+
+#[cfg(feature = "num")]
+mod num_complex;
+#[cfg(feature = "num")]
+pub use crate::num_complex::*;

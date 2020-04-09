@@ -1,8 +1,10 @@
 @echo off
-cargo test --quiet
-cargo doc
-cargo test --quiet --no-default-features
-cargo doc --no-default-features
+cargo test
+cargo test --features num
+cargo test --no-default-features
+cargo test --no-default-features --features num
+
+cargo doc --all-features
 
 echo Generating README...
 echo ^<!--> README.md
