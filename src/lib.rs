@@ -56,7 +56,7 @@
 //! assert_float_ne!(0.0_f32, 0.0001, abs <= 0.00005, ulps <= 4);
 //! ```
 //!
-//! Arrays of `FloatEq` compatible types are also supported, from size 0 to 32
+//! Arrays of [`FloatEq`] compatible types are also supported, from size 0 to 32
 //! (inclusive):
 //!
 //! ```rust
@@ -322,10 +322,7 @@ use core::fmt;
 /// }
 ///
 /// let a = Point { x: 1., y: 2. };
-/// let b = Point {
-///     x: 1.0000001,
-///     y: 2.0000004,
-/// };
+/// let b = Point { x: 1.0000001, y: 2.0000004 };
 ///
 /// let abs_diff = a.abs_diff(&b);
 /// assert_eq!(abs_diff.x, 0.00000011920929);
