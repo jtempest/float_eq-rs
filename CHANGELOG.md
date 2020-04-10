@@ -20,6 +20,7 @@ changes.
   to be specified instead of assuming it is always `Self`.
 - The somewhat awkward `FloatEq::rel_epsilon` was removed in favour of a more 
   equitable `FloatEqDebug` trait for displaying debug information. 
+- Asserts now correctly dereference parameters.
 - Somewhat more streamlined assert error messages that allow for easier direct
   comparison of diffs and epsilons.
 
