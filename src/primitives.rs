@@ -20,6 +20,7 @@ macro_rules! impl_traits {
         }
 
         impl FloatDiff for $float {
+            type AbsDiff = Self;
             type UlpsDiff = $uint;
 
             #[inline]
@@ -97,6 +98,7 @@ macro_rules! impl_traits {
 impl_traits!(f32, u32);
 impl_traits!(f64, u64);
 
+// tests
 #[cfg(test)]
 mod tests {
     use crate::{FloatDiff, FloatEq};

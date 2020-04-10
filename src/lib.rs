@@ -106,8 +106,8 @@
 //!
 //! ```rust
 //! # use float_eq::{assert_float_eq, assert_float_ne};
-//! let a = 1.0;
-//! let b = 1.0000001; // the next representable value above 1.0
+//! let a = 1.0_f32;
+//! let b = 1.0000001_f32; // the next representable value above 1.0
 //! assert_float_eq!(a, b, abs <= 0.0000002);             // equal
 //! assert_float_ne!(a * 4.0, b * 4.0, abs <= 0.0000002); // not equal
 //! assert_float_eq!(a * 4.0, b * 4.0, abs <= 0.0000005); // equal
@@ -118,8 +118,8 @@
 //!
 //! ```rust
 //! # use float_eq::{assert_float_eq, assert_float_ne};
-//! # let a = 1.0;
-//! # let b = 1.0000001;
+//! # let a: f32 = 1.0;
+//! # let b: f32 = 1.0000001;
 //! assert_float_eq!(a, b, rel <= 0.0000002);
 //! assert_float_eq!(a * 4.0, b * 4.0, rel <= 0.0000002);
 //! ```
@@ -166,8 +166,8 @@
 //!
 //! ```rust
 //! # use float_eq::{assert_float_eq, assert_float_ne};
-//! let a = 1.0;
-//! let b = 1.0000001; // the next representable value above 1.0
+//! let a: f32 = 1.0;
+//! let b: f32 = 1.0000001; // the next representable value above 1.0
 //! assert_float_eq!(a, b, rel <= 0.0000002);
 //! assert_float_eq!(a * 4.0, b * 4.0, rel <= 0.0000002);
 //! ```
@@ -287,50 +287,52 @@ use core::fmt;
 /// Implementing `FloatDiff` on your types is straightfoward if they're already
 /// composed of compatible types. You'll need some way to represent difference in
 /// [ULPs] for your type, probably following the same structure as the type itself.
-/// For example, `Point` here has `x` and `y` fields and `PointUlpsDiff` follows
-/// that layout. Once you have this type, implementing the methods is a case of
-/// calling through to the underlying implementation of each member:
+/// For example, `MyComplex32` here has `re` and `im` fields and `MyComplex32UlpsDiff`
+/// follows that layout. Once you have this type, implementing the methods is a case
+/// of calling through to the underlying implementation of each member:
 ///
 /// ```rust
 /// # use float_eq::FloatDiff;
-/// struct Point {
-///     x: f32,
-///     y: f32,
+/// struct MyComplex32 {
+///     re: f32,
+///     im: f32,
 /// }
 ///
-/// struct PointUlpsDiff {
-///     x: <f32 as FloatDiff>::UlpsDiff,
-///     y: <f32 as FloatDiff>::UlpsDiff,
+/// struct MyComplex32UlpsDiff {
+///     re: u32,
+///     im: u32,
 /// }
 ///
-/// impl FloatDiff for Point {
-///     type UlpsDiff = PointUlpsDiff;
+/// impl FloatDiff for MyComplex32 {
+///     type AbsDiff = Self;
+///     type UlpsDiff = MyComplex32UlpsDiff;
 ///
-///     fn abs_diff(&self, other: &Self) -> Self {
-///         Self {
-///             x: self.x.abs_diff(&other.x),
-///             y: self.y.abs_diff(&other.y),
+///     fn abs_diff(&self, other: &Self) -> Self::AbsDiff {
+///         MyComplex32 {
+///             re: self.re.abs_diff(&other.re),
+///             im: self.im.abs_diff(&other.im),
 ///         }
 ///     }
 ///
 ///     fn ulps_diff(&self, other: &Self) -> Self::UlpsDiff {
-///         Self::UlpsDiff {
-///             x: self.x.ulps_diff(&other.x),
-///             y: self.y.ulps_diff(&other.y),
+///         MyComplex32UlpsDiff {
+///             re: self.re.ulps_diff(&other.re),
+///             im: self.im.ulps_diff(&other.im),
 ///         }
 ///     }
 /// }
 ///
-/// let a = Point { x: 1., y: 2. };
-/// let b = Point { x: 1.0000001, y: 2.0000004 };
+/// let a = MyComplex32 { re: 1.0, im: 2.0000036, };
+/// let b = MyComplex32 { re: 1.0000001, im: 2.0, };
 ///
 /// let abs_diff = a.abs_diff(&b);
-/// assert_eq!(abs_diff.x, 0.00000011920929);
-/// assert_eq!(abs_diff.y, 0.00000047683716);
+/// assert_eq!(abs_diff.re, 0.00000011920929);
+/// assert_eq!(abs_diff.im, 0.0000035762787);
 ///
 /// let ulps_diff = a.ulps_diff(&b);
-/// assert_eq!(ulps_diff.x, 1);
-/// assert_eq!(ulps_diff.y, 2);
+/// assert_eq!(ulps_diff.re, 1);
+/// assert_eq!(ulps_diff.im, 15);
+///
 /// ```
 ///
 /// If your type does *not* already have an underlying implementation of `FloatDiff`
@@ -353,11 +355,20 @@ use core::fmt;
 /// ```
 ///
 /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
-pub trait FloatDiff {
+pub trait FloatDiff<Rhs: ?Sized = Self> {
+    /// Type of the absolute difference between two values.
+    ///
+    /// This is often `Self`, unless comparing two different types. Composite types
+    /// should probably use a type that follows the same structure as the inputs,
+    /// to make error messages more legible.
+    type AbsDiff;
+
     /// Type of the absolute difference between two values in terms of [ULPs].
     ///
     /// This should be an unsigned integer of the same size as the underlying
-    /// floating point type, for example `f32` uses `u32`.
+    /// floating point type, for example `f32` uses `u32`. Composite types should
+    /// probably use a type that follows the same structure as the inputs, to make
+    /// error messages more legible.
     ///
     /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
     type UlpsDiff;
@@ -369,7 +380,7 @@ pub trait FloatDiff {
     /// ```text
     /// (self - other).abs()
     /// ```
-    fn abs_diff(&self, other: &Self) -> Self;
+    fn abs_diff(&self, other: &Rhs) -> Self::AbsDiff;
 
     /// Always positive absolute difference between two values in terms of [ULPs]
     ///
@@ -384,11 +395,11 @@ pub trait FloatDiff {
     /// ```
     ///
     /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
-    fn ulps_diff(&self, other: &Self) -> Self::UlpsDiff;
+    fn ulps_diff(&self, other: &Rhs) -> Self::UlpsDiff;
 }
 
 /// Algorithms to compare two IEEE floating point values for equality.
-pub trait FloatEq {
+pub trait FloatEq<Rhs: ?Sized = Self> {
     /// Type of the maximum allowed difference between two values for them to be
     /// considered equal in terms of their native type.
     ///
@@ -419,7 +430,7 @@ pub trait FloatEq {
     ///
     /// [`FloatDiff`]: trait.FloatDiff.html
     /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
-    fn eq_abs(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool;
+    fn eq_abs(&self, other: &Rhs, max_diff: &Self::DiffEpsilon) -> bool;
 
     /// Check whether `self` is not equal to `other`, using an [absolute epsilon
     /// comparison].
@@ -428,7 +439,7 @@ pub trait FloatEq {
     /// this for your own types.
     ///
     /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
-    fn ne_abs(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+    fn ne_abs(&self, other: &Rhs, max_diff: &Self::DiffEpsilon) -> bool {
         !self.eq_abs(other, max_diff)
     }
 
@@ -445,7 +456,7 @@ pub trait FloatEq {
     ///
     /// [`FloatDiff`]: trait.FloatDiff.html
     /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
-    fn eq_rel(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool;
+    fn eq_rel(&self, other: &Rhs, max_diff: &Self::DiffEpsilon) -> bool;
 
     /// Check whether `self` is not equal to `other`, using a [relative epsilon
     /// comparison].
@@ -454,7 +465,7 @@ pub trait FloatEq {
     /// this for your own types.
     ///
     /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
-    fn ne_rel(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+    fn ne_rel(&self, other: &Rhs, max_diff: &Self::DiffEpsilon) -> bool {
         !self.eq_rel(other, max_diff)
     }
 
@@ -472,7 +483,7 @@ pub trait FloatEq {
     ///
     /// [`FloatDiff`]: trait.FloatDiff.html
     /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
-    fn eq_ulps(&self, other: &Self, max_diff: &Self::UlpsDiffEpsilon) -> bool;
+    fn eq_ulps(&self, other: &Rhs, max_diff: &Self::UlpsDiffEpsilon) -> bool;
 
     /// Check whether `self` is not equal to `other`, using an [ULPs comparison].
     ///
@@ -480,7 +491,7 @@ pub trait FloatEq {
     /// this for your own types.
     ///
     /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
-    fn ne_ulps(&self, other: &Self, max_diff: &Self::UlpsDiffEpsilon) -> bool {
+    fn ne_ulps(&self, other: &Rhs, max_diff: &Self::UlpsDiffEpsilon) -> bool {
         !self.eq_ulps(other, max_diff)
     }
 }
@@ -493,7 +504,7 @@ pub trait FloatEq {
 /// as an aid to the user. For example, arrays being compared may expose their
 /// debug info as an array of epsilon values, whereas their `FloatEq` methods
 /// perform calculations one by one to allow shortcutting.
-pub trait FloatEqDebug: FloatEq {
+pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq {
     /// Displayed to the user when an assert fails, using `fmt::Debug`.
     ///
     /// This should display [`Self::DiffEpsilon`] in an appropriate form to the
@@ -518,20 +529,20 @@ pub trait FloatEqDebug: FloatEq {
     /// assert fails.
     ///
     /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
-    fn debug_abs_epsilon(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> Self::DebugEpsilon;
+    fn debug_abs_epsilon(&self, other: &Rhs, max_diff: &Self::DiffEpsilon) -> Self::DebugEpsilon;
 
     /// The epsilon used by a [relative epsilon comparison], displayed when an
     /// assert fails.
     ///
     /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
-    fn debug_rel_epsilon(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> Self::DebugEpsilon;
+    fn debug_rel_epsilon(&self, other: &Rhs, max_diff: &Self::DiffEpsilon) -> Self::DebugEpsilon;
 
     /// The epsilon used by an [ULPs comparison], displayed when an assert fails.
     ///
     /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
     fn debug_ulps_epsilon(
         &self,
-        other: &Self,
+        other: &Rhs,
         max_diff: &Self::UlpsDiffEpsilon,
     ) -> Self::DebugUlpsEpsilon;
 }

@@ -8,11 +8,12 @@ macro_rules! impl_float_eq_traits_for_array {
     ($n:literal) => {
         #[doc(hidden)]
         impl<T: FloatDiff> FloatDiff for [T; $n] {
-            type UlpsDiff = [T::UlpsDiff; $n];
+            type AbsDiff = [<T as $crate::FloatDiff>::AbsDiff; $n];
+            type UlpsDiff = [<T as $crate::FloatDiff>::UlpsDiff; $n];
 
             #[inline]
-            fn abs_diff(&self, other: &Self) -> Self {
-                let mut result: Self = unsafe { MaybeUninit::uninit().assume_init() };
+            fn abs_diff(&self, other: &Self) -> Self::AbsDiff {
+                let mut result: Self::AbsDiff = unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..$n {
                     result[i] = self[i].abs_diff(&other[i])
                 }
@@ -114,10 +115,11 @@ macro_rules! impl_float_eq_traits_for_array {
 //TODO: Use const generics once they're stable
 /// This is also implemented on other arrays up to size 32 (inclusive).
 impl<T: FloatDiff> FloatDiff for [T; 0] {
-    type UlpsDiff = [T::UlpsDiff; 0];
+    type AbsDiff = [<T as crate::FloatDiff>::AbsDiff; 0];
+    type UlpsDiff = [<T as crate::FloatDiff>::UlpsDiff; 0];
 
     #[inline]
-    fn abs_diff(&self, _other: &Self) -> Self {
+    fn abs_diff(&self, _other: &Self) -> Self::AbsDiff {
         []
     }
 

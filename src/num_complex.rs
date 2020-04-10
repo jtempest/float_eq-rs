@@ -18,10 +18,14 @@ impl<T> FloatDiff for Complex<T>
 where
     T: FloatDiff,
 {
+    type AbsDiff = Complex<<T as FloatDiff>::AbsDiff>;
     type UlpsDiff = ComplexUlpsDiff<<T as FloatDiff>::UlpsDiff>;
 
-    fn abs_diff(&self, other: &Self) -> Self {
-        Self::new(self.re.abs_diff(&other.re), self.im.abs_diff(&other.im))
+    fn abs_diff(&self, other: &Self) -> Self::AbsDiff {
+        Self::AbsDiff {
+            re: self.re.abs_diff(&other.re),
+            im: self.im.abs_diff(&other.im),
+        }
     }
 
     fn ulps_diff(&self, other: &Self) -> Self::UlpsDiff {

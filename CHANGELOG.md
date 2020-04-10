@@ -16,11 +16,10 @@ changes.
 - Documentation to help with implementing FloatDiff.
 
 ### Changed
+- `FloatDiff`, `FloatEq` and `FloatEqDebug` now allow for a different Rhs value
+  to be specified instead of assuming it is always `Self`.
 - The somewhat awkward `FloatEq::rel_epsilon` was removed in favour of a more 
   equitable `FloatEqDebug` trait for displaying debug information. 
-- The `FloatDiff::AbsDiff` associated type was removed since it ought to be
-  `Self`. If a compelling use case for allowing it to vary appears then I'll be
-  happy to add it back again.
 - Somewhat more streamlined assert error messages that allow for easier direct
   comparison of diffs and epsilons.
 
