@@ -324,20 +324,21 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// Type of the maximum allowed difference between two values for them to be
     /// considered equal in terms of their native type.
     ///
-    /// This is usually `Self` but in some cases might differ, for example when
-    /// comparing two SIMD values you might provide a single value that is then
-    /// broadcast across each lane.
+    /// This is the type of the `max_diff` parameter passed to `abs` and `rel`
+    /// checks in methods and via the [`float_eq!`] macros.
+    ///
+    /// [`float_eq!`]: macro.float_eq.html
     type DiffEpsilon;
 
     /// Type of the maximum allowed difference between two values for them to be
     /// considered equal in terms of an [ULPs comparison].
     ///
-    /// This is usually an unsigned integer of the same width as `Self` (e.g.
-    /// `f32` uses `u32`), but in some cases might differ, for example when
-    /// comparing two SIMD values you might provide a single value that is then
-    /// broadcast across each lane.
+    /// This is the type of the `max_diff` parameter passed to `ulps` checks in
+    /// methods and via the [`float_eq!`] macros. This is usually an unsigned
+    /// integer of the same width as the float value (e.g. `f32` uses `u32`).
     ///
     /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
+    /// [`float_eq!`]: macro.float_eq.html
     type UlpsDiffEpsilon;
 
     /// Check whether `self` is equal to `other`, using an [absolute epsilon
