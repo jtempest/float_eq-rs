@@ -1,4 +1,6 @@
-use float_eq::{FloatDiff, FloatEq, FloatEqDebug};
+use float_eq::{
+    assert_float_eq, assert_float_ne, float_eq, float_ne, FloatDiff, FloatEq, FloatEqDebug,
+};
 
 //------------------------------------------------------------------------------
 // MyComplex32
@@ -200,6 +202,60 @@ fn float_eq_self() {
     assert!(c.eq_ulps(&a, &1));
 }
 
+#[test]
+fn float_eq_macro_self() {
+    let a = MyComplex32 {
+        re: 1.0,
+        im: 1_000_000.,
+    };
+
+    assert!(float_eq!(a, a, abs <= 0.0));
+    assert!(float_eq!(a, a, abs <= 0.0));
+    assert!(float_eq!(a, a, ulps <= 0));
+
+    let b = MyComplex32 {
+        re: 1.0000001,
+        im: 1_000_000.,
+    };
+
+    assert!(float_ne!(a, b, abs <= 0.0));
+    assert!(float_ne!(a, b, rel <= 0.0));
+    assert!(float_ne!(a, b, ulps <= 0));
+
+    assert!(float_eq!(a, b, abs <= 0.00000012));
+    assert!(float_eq!(a, b, rel <= 0.00000012));
+    assert!(float_eq!(a, b, ulps <= 2));
+
+    assert!(float_ne!(b, a, abs <= 0.0));
+    assert!(float_ne!(b, a, rel <= 0.0));
+    assert!(float_ne!(b, a, ulps <= 0));
+
+    assert!(float_eq!(b, a, abs <= 0.00000012));
+    assert!(float_eq!(b, a, rel <= 0.00000012));
+    assert!(float_eq!(b, a, ulps <= 2));
+
+    let c = MyComplex32 {
+        re: 1.0,
+        im: 1_000_000.06,
+    };
+
+    assert!(float_ne!(a, c, abs <= 0.0));
+    assert!(float_ne!(a, c, rel <= 0.0));
+    assert!(float_ne!(a, c, ulps <= 0));
+
+    assert!(float_eq!(a, c, abs <= 0.07));
+    assert!(float_eq!(a, c, rel <= 0.0000002));
+    assert!(float_eq!(a, c, ulps <= 1));
+
+    assert!(float_ne!(c, a, abs <= 0.0));
+    assert!(float_ne!(c, a, rel <= 0.0));
+    assert!(float_ne!(c, a, ulps <= 0));
+
+    assert!(float_eq!(c, a, abs <= 0.07));
+    assert!(float_eq!(c, a, rel <= 0.0000002));
+    assert!(float_eq!(c, a, ulps <= 1));
+}
+
 //------------------------------------------------------------------------------
 // FloatEq with f32
 //------------------------------------------------------------------------------
@@ -279,6 +335,50 @@ fn float_eq_f32() {
     assert!(d.eq_abs(&c, &0.0000005));
     assert!(d.eq_rel(&c, &0.00000024));
     assert!(d.eq_ulps(&c, &2));
+}
+
+#[test]
+fn float_eq_macro_f32() {
+    let a = 1_000_000.06_f32;
+    let b = MyComplex32 {
+        re: 1_000_000.0,
+        im: 2.0,
+    };
+
+    assert!(float_ne!(a, b, abs <= 0.07));
+    assert!(float_ne!(a, b, rel <= 0.00000012));
+    assert!(float_ne!(a, b, ulps <= 1));
+
+    assert!(float_eq!(a, b, abs <= 2.0));
+    assert!(float_eq!(a, b, rel <= 2.0));
+    assert!(float_eq!(a, b, ulps <= 1_073_741_824));
+
+    assert!(float_ne!(b, a, abs <= 0.07));
+    assert!(float_ne!(b, a, rel <= 0.00000012));
+    assert!(float_ne!(b, a, ulps <= 1));
+
+    assert!(float_eq!(b, a, abs <= 2.0));
+    assert!(float_eq!(b, a, rel <= 2.0));
+    assert!(float_eq!(b, a, ulps <= 1_073_741_824));
+
+    let c = 2.0000004_f32;
+    let d = MyComplex32 { re: 2.0, im: 0.0 };
+
+    assert!(float_ne!(c, d, abs <= 0.00000004));
+    assert!(float_ne!(c, d, rel <= 0.000000023));
+    assert!(float_ne!(c, d, ulps <= 1));
+
+    assert!(float_eq!(c, d, abs <= 0.0000005));
+    assert!(float_eq!(c, d, rel <= 0.00000024));
+    assert!(float_eq!(c, d, ulps <= 2));
+
+    assert!(float_ne!(d, c, abs <= 0.00000004));
+    assert!(float_ne!(d, c, rel <= 0.000000023));
+    assert!(float_ne!(d, c, ulps <= 1));
+
+    assert!(float_eq!(d, c, abs <= 0.0000005));
+    assert!(float_eq!(d, c, rel <= 0.00000024));
+    assert!(float_eq!(d, c, ulps <= 2));
 }
 
 //------------------------------------------------------------------------------
@@ -480,5 +580,108 @@ fn float_eq_debug_f32() {
     );
 }
 
-// assert_float_eq!/assert_float_ne! with Self
+//------------------------------------------------------------------------------
+//TODO: assert_float_eq!/assert_float_ne! with Self
+//------------------------------------------------------------------------------
+
+#[test]
+fn assert_float_eq_self() {
+    let a = MyComplex32 {
+        re: 1.0,
+        im: 1_000_000.,
+    };
+
+    assert_float_eq!(a, a, abs <= 0.0);
+    assert_float_eq!(a, a, abs <= 0.0);
+    assert_float_eq!(a, a, ulps <= 0);
+
+    let b = MyComplex32 {
+        re: 1.0000001,
+        im: 1_000_000.,
+    };
+
+    assert_float_ne!(a, b, abs <= 0.0);
+    assert_float_ne!(a, b, rel <= 0.0);
+    assert_float_ne!(a, b, ulps <= 0);
+
+    assert_float_eq!(a, b, abs <= 0.00000012);
+    assert_float_eq!(a, b, rel <= 0.00000012);
+    assert_float_eq!(a, b, ulps <= 2);
+
+    assert_float_ne!(b, a, abs <= 0.0);
+    assert_float_ne!(b, a, rel <= 0.0);
+    assert_float_ne!(b, a, ulps <= 0);
+
+    assert_float_eq!(b, a, abs <= 0.00000012);
+    assert_float_eq!(b, a, rel <= 0.00000012);
+    assert_float_eq!(b, a, ulps <= 2);
+
+    let c = MyComplex32 {
+        re: 1.0,
+        im: 1_000_000.06,
+    };
+
+    assert_float_ne!(a, c, abs <= 0.0);
+    assert_float_ne!(a, c, rel <= 0.0);
+    assert_float_ne!(a, c, ulps <= 0);
+
+    assert_float_eq!(a, c, abs <= 0.07);
+    assert_float_eq!(a, c, rel <= 0.0000002);
+    assert_float_eq!(a, c, ulps <= 1);
+
+    assert_float_ne!(c, a, abs <= 0.0);
+    assert_float_ne!(c, a, rel <= 0.0);
+    assert_float_ne!(c, a, ulps <= 0);
+
+    assert_float_eq!(c, a, abs <= 0.07);
+    assert_float_eq!(c, a, rel <= 0.0000002);
+    assert_float_eq!(c, a, ulps <= 1);
+}
+
+//------------------------------------------------------------------------------
 // assert_float_eq!/assert_float_ne! with f32
+//------------------------------------------------------------------------------
+
+#[test]
+fn assert_float_eq_f32() {
+    let a = 1_000_000.06_f32;
+    let b = MyComplex32 {
+        re: 1_000_000.0,
+        im: 2.0,
+    };
+
+    assert_float_ne!(a, b, abs <= 0.07);
+    assert_float_ne!(a, b, rel <= 0.00000012);
+    assert_float_ne!(a, b, ulps <= 1);
+
+    assert_float_eq!(a, b, abs <= 2.0);
+    assert_float_eq!(a, b, rel <= 2.0);
+    assert_float_eq!(a, b, ulps <= 1_073_741_824);
+
+    assert_float_ne!(b, a, abs <= 0.07);
+    assert_float_ne!(b, a, rel <= 0.00000012);
+    assert_float_ne!(b, a, ulps <= 1);
+
+    assert_float_eq!(b, a, abs <= 2.0);
+    assert_float_eq!(b, a, rel <= 2.0);
+    assert_float_eq!(b, a, ulps <= 1_073_741_824);
+
+    let c = 2.0000004_f32;
+    let d = MyComplex32 { re: 2.0, im: 0.0 };
+
+    assert_float_ne!(c, d, abs <= 0.00000004);
+    assert_float_ne!(c, d, rel <= 0.000000023);
+    assert_float_ne!(c, d, ulps <= 1);
+
+    assert_float_eq!(c, d, abs <= 0.0000005);
+    assert_float_eq!(c, d, rel <= 0.00000024);
+    assert_float_eq!(c, d, ulps <= 2);
+
+    assert_float_ne!(d, c, abs <= 0.00000004);
+    assert_float_ne!(d, c, rel <= 0.000000023);
+    assert_float_ne!(d, c, ulps <= 1);
+
+    assert_float_eq!(d, c, abs <= 0.0000005);
+    assert_float_eq!(d, c, rel <= 0.00000024);
+    assert_float_eq!(d, c, ulps <= 2);
+}

@@ -546,17 +546,38 @@ pub struct FloatEqCmp;
 #[doc(hidden)]
 impl FloatEqCmp {
     #[inline]
-    pub fn abs<T: FloatEq>(a: &T, b: &T, max_diff: &T::DiffEpsilon) -> bool {
+    pub fn abs<A: ?Sized, B: ?Sized>(
+        a: &A,
+        b: &B,
+        max_diff: &<A as FloatEq<B>>::DiffEpsilon,
+    ) -> bool
+    where
+        A: FloatEq<B>,
+    {
         FloatEq::eq_abs(a, b, max_diff)
     }
 
     #[inline]
-    pub fn rel<T: FloatEq>(a: &T, b: &T, max_diff: &T::DiffEpsilon) -> bool {
+    pub fn rel<A: ?Sized, B: ?Sized>(
+        a: &A,
+        b: &B,
+        max_diff: &<A as FloatEq<B>>::DiffEpsilon,
+    ) -> bool
+    where
+        A: FloatEq<B>,
+    {
         FloatEq::eq_rel(a, b, max_diff)
     }
 
     #[inline]
-    pub fn ulps<T: FloatEq>(a: &T, b: &T, max_diff: &T::UlpsDiffEpsilon) -> bool {
+    pub fn ulps<A: ?Sized, B: ?Sized>(
+        a: &A,
+        b: &B,
+        max_diff: &<A as FloatEq<B>>::UlpsDiffEpsilon,
+    ) -> bool
+    where
+        A: FloatEq<B>,
+    {
         FloatEq::eq_ulps(a, b, max_diff)
     }
 }
@@ -567,22 +588,39 @@ pub struct FloatCmpOpEpsilon;
 #[doc(hidden)]
 impl FloatCmpOpEpsilon {
     #[inline]
-    pub fn abs<T: FloatEqDebug>(a: &T, b: &T, max_diff: &T::DiffEpsilon) -> T::DebugEpsilon {
-        FloatEqDebug::debug_abs_epsilon(a, b, max_diff)
+    pub fn abs<A: ?Sized, B: ?Sized>(
+        a: &A,
+        b: &B,
+        max_diff: &<A as FloatEq<B>>::DiffEpsilon,
+    ) -> <A as FloatEqDebug<B>>::DebugEpsilon
+    where
+        A: FloatEq<B> + FloatEqDebug<B>,
+    {
+        <A as FloatEqDebug<B>>::debug_abs_epsilon(a, b, max_diff)
     }
 
     #[inline]
-    pub fn rel<T: FloatEqDebug>(a: &T, b: &T, max_diff: &T::DiffEpsilon) -> T::DebugEpsilon {
-        FloatEqDebug::debug_rel_epsilon(a, b, max_diff)
+    pub fn rel<A: ?Sized, B: ?Sized>(
+        a: &A,
+        b: &B,
+        max_diff: &<A as FloatEq<B>>::DiffEpsilon,
+    ) -> <A as FloatEqDebug<B>>::DebugEpsilon
+    where
+        A: FloatEq<B> + FloatEqDebug<B>,
+    {
+        <A as FloatEqDebug<B>>::debug_rel_epsilon(a, b, max_diff)
     }
 
     #[inline]
-    pub fn ulps<T: FloatEqDebug>(
-        a: &T,
-        b: &T,
-        max_diff: &T::UlpsDiffEpsilon,
-    ) -> T::DebugUlpsEpsilon {
-        FloatEqDebug::debug_ulps_epsilon(a, b, max_diff)
+    pub fn ulps<A: ?Sized, B: ?Sized>(
+        a: &A,
+        b: &B,
+        max_diff: &<A as FloatEq<B>>::UlpsDiffEpsilon,
+    ) -> <A as FloatEqDebug<B>>::DebugUlpsEpsilon
+    where
+        A: FloatEq<B> + FloatEqDebug<B>,
+    {
+        <A as FloatEqDebug<B>>::debug_ulps_epsilon(a, b, max_diff)
     }
 }
 

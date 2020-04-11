@@ -565,7 +565,7 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
 /// as an aid to the user. For example, arrays being compared may expose their
 /// debug info as an array of epsilon values, whereas their `FloatEq` methods
 /// perform calculations one by one to allow shortcutting.
-pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq {
+pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
     /// Displayed to the user when an assert fails, using `fmt::Debug`.
     ///
     /// This should display [`Self::DiffEpsilon`] in an appropriate form to the
@@ -638,7 +638,7 @@ macro_rules! float_eq {
     ($a:expr, $b:expr, $($eq:ident <= $max_diff:expr),+) => ({
         match (&$a, &$b) {
             (a_val, b_val) => {
-                false $(|| $crate::FloatEqCmp::$eq(a_val, &b_val, &$max_diff))+
+                false $(|| $crate::FloatEqCmp::$eq(a_val, b_val, &$max_diff))+
             }
         }
     });
