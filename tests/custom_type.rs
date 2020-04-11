@@ -132,8 +132,8 @@ fn float_diff_f32() {
 // FloatEq with Self
 //------------------------------------------------------------------------------
 impl FloatEq for MyComplex32 {
-    type DiffEpsilon = f32;
-    type UlpsDiffEpsilon = u32;
+    type DiffEpsilon = <f32 as FloatEq>::DiffEpsilon;
+    type UlpsDiffEpsilon = <f32 as FloatEq>::UlpsDiffEpsilon;
 
     fn eq_abs(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
         self.re.eq_abs(&other.re, max_diff) && self.im.eq_abs(&other.im, max_diff)
@@ -260,8 +260,8 @@ fn float_eq_macro_self() {
 // FloatEq with f32
 //------------------------------------------------------------------------------
 impl FloatEq<f32> for MyComplex32 {
-    type DiffEpsilon = f32;
-    type UlpsDiffEpsilon = u32;
+    type DiffEpsilon = <MyComplex32 as FloatEq<MyComplex32>>::DiffEpsilon;
+    type UlpsDiffEpsilon = <MyComplex32 as FloatEq<MyComplex32>>::UlpsDiffEpsilon;
 
     fn eq_abs(&self, other: &f32, max_diff: &Self::DiffEpsilon) -> bool {
         self.re.eq_abs(other, max_diff) && self.im.eq_abs(&0.0, max_diff)

@@ -13,7 +13,7 @@ changes.
   (inclusive) where the type allows it.
 - The 'num' feature, which when enabled provides support for comparison of
   `num::Complex` instances.
-- Documentation to help with implementing FloatDiff.
+- Documentation to help with implementing `FloatDiff` and `FloatEq`.
 
 ### Changed
 - `FloatDiff`, `FloatEq` and `FloatEqDebug` along with the macros that use them 

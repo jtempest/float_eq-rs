@@ -8,7 +8,7 @@ use core::fmt;
 /// ## How can I implement `FloatDiff`?
 ///
 /// Implementing `FloatDiff` on your types is straightfoward if they're already
-/// composed of compatible types. You'll need some way to represent difference in
+/// composed of compatible types. You will need some way to represent difference in
 /// [ULPs] for your type, probably following the same structure as the type itself.
 /// For example, `MyComplex32` here has `re` and `im` fields and `MyComplex32UlpsDiff`
 /// follows that layout. Once you have this type, implementing the methods is a case
@@ -58,10 +58,10 @@ use core::fmt;
 /// ```
 ///
 /// If your type does *not* already have an underlying implementation of `FloatDiff`
-/// for its members, then you'll need to take a close look at the descriptions of
+/// for its members, then you will need to take a close look at the descriptions of
 /// the algorithms on a member by member basis.
 ///
-/// ## How can I implement `FloatDiff` between two different types?
+/// ## How can I compare two different types?
 ///
 /// The type you can `diff` with is controlled by `FloatDiff`'s parameter. Following
 /// on from our previous example, if we wanted to treat `f32` as a complex number
@@ -183,6 +183,137 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
 }
 
 /// Algorithms to compare two IEEE floating point values for equality.
+///
+/// ## How can I implement `FloatEq`?
+///
+/// Implementing `FloatEq` on your types is straightfoward if they're already
+/// composed of compatible types. You will need to choose the types of `DiffEpsilon`
+/// and `UlpsDiffEpsilon` that users will specify to provide bounds on their
+/// comparisons. For example, `MyComplex32` uses the same types as a single `f32`
+/// comparison does, and passes them through to each individual components'
+/// comparisons. This means that only a single number is needed to bound both real
+/// and imaginary parts in a comparison:
+///
+/// ```
+/// # use float_eq::{float_eq, float_ne, FloatEq};
+/// struct MyComplex32 {
+///     re: f32,
+///     im: f32,
+/// }
+///
+/// impl FloatEq for MyComplex32 {
+///     type DiffEpsilon = <f32 as FloatEq>::DiffEpsilon;
+///     type UlpsDiffEpsilon = <f32 as FloatEq>::UlpsDiffEpsilon;
+///
+///     fn eq_abs(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+///         self.re.eq_abs(&other.re, max_diff) && self.im.eq_abs(&other.im, max_diff)
+///     }
+///
+///     fn eq_rel(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+///         self.re.eq_rel(&other.re, max_diff) && self.im.eq_rel(&other.im, max_diff)
+///     }
+///
+///     fn eq_ulps(&self, other: &Self, max_diff: &Self::UlpsDiffEpsilon) -> bool {
+///         self.re.eq_ulps(&other.re, max_diff) && self.im.eq_ulps(&other.im, max_diff)
+///     }
+/// }
+///
+/// let a = MyComplex32 { re: 1.0, im: 2.0000036, };
+/// let b = MyComplex32 { re: 1.0000001, im: 2.0, };
+///
+/// assert!(float_eq!(a, b, abs <= 0.0000036));
+/// assert!(float_ne!(a, b, abs <= 0.0000035));
+///
+/// assert!(float_eq!(a, b, rel <= 0.0000018));
+/// assert!(float_ne!(a, b, rel <= 0.0000017));
+///
+/// assert!(float_eq!(a, b, ulps <= 15));
+/// assert!(float_ne!(a, b, ulps <= 14));
+/// ```
+///
+/// If your type does *not* already have an underlying implementation of `FloatEq`
+/// for its members, then you will need to take a close look at the descriptions of
+/// the algorithms on a member by member basis.
+///
+/// ## How can I compare two different types?
+///
+/// The type to be compared with is controlled by `FloatEq`'s parameter. Following
+/// on from our previous example, if we wanted to treat `f32` as a complex number
+/// with no imaginary component:
+///
+/// ```
+/// # use float_eq::{float_eq, float_ne, FloatEq};
+/// struct MyComplex32 {
+///     re: f32,
+///     im: f32,
+/// }
+///
+/// impl FloatEq<f32> for MyComplex32 {
+///     type DiffEpsilon = <f32 as FloatEq>::DiffEpsilon;
+///     type UlpsDiffEpsilon = <f32 as FloatEq>::UlpsDiffEpsilon;
+///
+///     fn eq_abs(&self, other: &f32, max_diff: &Self::DiffEpsilon) -> bool {
+///         self.re.eq_abs(other, max_diff) && self.im.eq_abs(&0.0, max_diff)
+///     }
+///
+///     fn eq_rel(&self, other: &f32, max_diff: &Self::DiffEpsilon) -> bool {
+///         self.re.eq_rel(other, max_diff) && self.im.eq_rel(&0.0, max_diff)
+///     }
+///
+///     fn eq_ulps(&self, other: &f32, max_diff: &Self::UlpsDiffEpsilon) -> bool {
+///         self.re.eq_ulps(other, max_diff) && self.im.eq_ulps(&0.0, max_diff)
+///     }
+/// }
+///
+/// impl FloatEq<MyComplex32> for f32 {
+///     type DiffEpsilon = <MyComplex32 as FloatEq<f32>>::DiffEpsilon;
+///     type UlpsDiffEpsilon = <MyComplex32 as FloatEq<f32>>::UlpsDiffEpsilon;
+///
+///     fn eq_abs(&self, other: &MyComplex32, max_diff: &Self::DiffEpsilon) -> bool {
+///         other.eq_abs(self, max_diff)
+///     }
+///
+///     fn eq_rel(&self, other: &MyComplex32, max_diff: &Self::DiffEpsilon) -> bool {
+///         other.eq_rel(self, max_diff)
+///     }
+///
+///     fn eq_ulps(&self, other: &MyComplex32, max_diff: &Self::UlpsDiffEpsilon) -> bool {
+///         other.eq_ulps(self, max_diff)
+///     }
+/// }
+///
+/// let a = 4.0_f32;
+/// let b = MyComplex32 { re: 4.0000005, im: 0.0, };
+///
+/// assert!(float_eq!(a, b, abs <= 0.0000008));
+/// assert!(float_ne!(a, b, abs <= 0.0000004));
+///
+/// assert!(float_eq!(a, b, rel <= 0.00000012));
+/// assert!(float_ne!(a, b, rel <= 0.00000011));
+///
+/// assert!(float_eq!(a, b, ulps <= 1));
+/// assert!(float_ne!(a, b, ulps <= 0));
+/// ```
+///
+/// # Examples
+///
+/// This trait may be called directly, but [`float_eq!`] and [`float_ne!`] usually
+/// provide a friendlier interface.
+///
+/// ```
+/// # use float_eq::FloatEq;
+/// assert!(4.0_f32.eq_abs(&4.0000015, &0.0000016));
+/// assert!(4.0_f32.ne_abs(&4.0000015, &0.0000014));
+///
+/// assert!(4.0_f32.eq_rel(&4.0000015, &0.0000004));
+/// assert!(4.0_f32.ne_rel(&4.0000015, &0.0000003));
+///
+/// assert!(4.0_f32.eq_ulps(&4.0000015, &3));
+/// assert!(4.0_f32.ne_ulps(&4.0000015, &2));
+/// ```
+///
+/// [`float_eq`]: macro.float_eq.html
+/// [`float_ne`]: macro.float_ne.html
 pub trait FloatEq<Rhs: ?Sized = Self> {
     /// Type of the maximum allowed difference between two values for them to be
     /// considered equal in terms of their native type.
