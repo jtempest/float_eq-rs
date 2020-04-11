@@ -24,6 +24,8 @@ changes.
 - Asserts now correctly dereference parameters.
 - Somewhat more streamlined assert error messages that allow for easier direct
   comparison of diffs and epsilons.
+- Switched back to being 'experimental' on crates.io since the API might change
+  a lot in the next few versions.
 
 ## [0.1.3] - 2020-04-07
 ### Added

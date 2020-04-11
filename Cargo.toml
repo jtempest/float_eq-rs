@@ -14,7 +14,7 @@ include = ["Cargo.toml", "src/**/*.rs", "crates-io.md", "README.md", "LICENSE-AP
 edition = "2018"
 
 [badges]
-maintenance = { status = "actively-developed" }
+maintenance = { status = "experimental" }
 travis-ci = { repository = "jtempest/float_eq-rs" }
 # Turned off for now since coveralls has better support for testing multiple 
 # feature sets, and thus is more representative.
