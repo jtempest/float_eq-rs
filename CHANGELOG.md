@@ -9,11 +9,11 @@ Bumped up the minor version number since this release includes breaking API
 changes.
 
 ### Added
-- Implementation of `FloatEq` and `FloatDiff` for arrays of size 0 to 32
-  (inclusive) where the type allows it.
+- Implementation of traits for arrays of size 0 to 32 (inclusive) where the type
+  allows it. Epsilon is assumed to be uniform across the array being compared.
 - The 'num' feature, which when enabled provides support for comparison of
   `num::Complex` instances.
-- Documentation to help with implementing `FloatDiff` and `FloatEq`.
+- Documentation to help with implementing the traits.
 
 ### Changed
 - `FloatDiff`, `FloatEq` and `FloatEqDebug` along with the macros that use them 

@@ -12,11 +12,11 @@ use core::fmt;
 /// ## How can I implement `FloatDiff`?
 ///
 /// Implementing `FloatDiff` on your types is straightfoward if they're already
-/// composed of compatible types. You will need some way to represent difference in
+/// composed of compatible fields. You will need some way to represent difference in
 /// [ULPs] for your type, probably following the same structure as the type itself.
 /// For example, `MyComplex32` here has `re` and `im` fields and `MyComplex32UlpsDiff`
 /// follows that layout. Once you have this type, implementing the methods is a case
-/// of calling through to the underlying implementation of each member:
+/// of calling through to the underlying implementation:
 ///
 /// ```rust
 /// # use float_eq::FloatDiff;
@@ -61,9 +61,9 @@ use core::fmt;
 /// assert_eq!(ulps_diff.im, 15);
 /// ```
 ///
-/// If your type does *not* already have an underlying implementation of `FloatDiff`
-/// for its members, then you will need to take a close look at the descriptions of
-/// the algorithms on a member by member basis.
+/// If your type does *not* already have an underlying implementation of `FloatDiff`,
+/// then you will need to take a close look at the descriptions of the algorithms on
+/// a method by method basis.
 ///
 /// ## How can I compare two different types?
 ///
@@ -196,7 +196,7 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
 /// ## How can I implement `FloatEq`?
 ///
 /// Implementing `FloatEq` on your types is straightfoward if they're already
-/// composed of compatible types. You will need to choose the types of `DiffEpsilon`
+/// composed of compatible fields. You will need to choose the types of `DiffEpsilon`
 /// and `UlpsDiffEpsilon` that users will specify to provide bounds on their
 /// comparisons. For example, `MyComplex32` uses the same types as a single `f32`
 /// comparison does, and passes them through to each individual components'
@@ -240,9 +240,9 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
 /// assert!(float_ne!(a, b, ulps <= 14));
 /// ```
 ///
-/// If your type does *not* already have an underlying implementation of `FloatEq`
-/// for its members, then you will need to take a close look at the descriptions of
-/// the algorithms on a member by member basis.
+/// If your type does *not* already have an underlying implementation of `FloatEq`,
+/// then you will need to take a close look at the descriptions of the algorithms on
+/// a method by method basis.
 ///
 /// ## How can I compare two different types?
 ///
@@ -417,18 +417,252 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     }
 }
 
-/// Provides additional context for debugging when an assert fires.
+/// Provides additional context for debugging when an assert fails.
 ///
 /// This is used internally by the [`assert_float_eq!`] family of macros to provide
-/// debug context information to the user when they fail, and the structure of its
-/// epsilon types do  not necessarily match those used directly in the calculations.
-/// This is because the calculations may work member by member to provide shortcutting
-/// behaviour, whereas the debug context information should display every epsilon
-/// value  potentially tested to give the user a better idea of what went wrong. For
-/// example, arrays may expose their debug epsilons as arrays of values corresponding
-/// to each pair of elements being compared.
+/// debug context information to the user when they fail.
+///
+/// ## How can I implement `FloatEqDebug`?
+///
+/// Implementing `FloatEqDebug` on your types is straightfoward if they're already
+/// composed of compatible fields. First, you will need to implement [`FloatEq`].
+/// You will then need to choose the types of `DebugEpsilon` and `DebugUlpsEpsilon`
+/// to provide debug context when an assert fails. These ought to display the values
+/// of [`DiffEpsilon`] and [`UlpsDiffEpsilon`] for each field of your type, following
+/// the same structure so as to make it easier to see which values are being compared
+/// for the checks. For example, `MyComplex32` here has `re` and `im` fields and
+/// `MyComplex32UlpsDiff` follows that layout:
+///
+/// ```
+/// # use float_eq::{FloatEq, FloatEqDebug};
+/// #[derive(Debug)]
+/// struct MyComplex32 {
+///     re: f32,
+///     im: f32,
+/// }
+///
+/// #[derive(Debug)]
+/// struct MyComplex32UlpsDiff {
+///     re: u32,
+///     im: u32,
+/// }
+///
+/// impl FloatEq for MyComplex32 {
+///     type DiffEpsilon = <f32 as FloatEq>::DiffEpsilon;
+///     type UlpsDiffEpsilon = <f32 as FloatEq>::UlpsDiffEpsilon;
+///
+///     fn eq_abs(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+///         self.re.eq_abs(&other.re, max_diff) && self.im.eq_abs(&other.im, max_diff)
+///     }
+///
+///     fn eq_rel(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+///         self.re.eq_rel(&other.re, max_diff) && self.im.eq_rel(&other.im, max_diff)
+///     }
+///
+///     fn eq_ulps(&self, other: &Self, max_diff: &Self::UlpsDiffEpsilon) -> bool {
+///         self.re.eq_ulps(&other.re, max_diff) && self.im.eq_ulps(&other.im, max_diff)
+///     }
+/// }
+///
+/// impl FloatEqDebug for MyComplex32 {
+///     type DebugEpsilon = Self;
+///     type DebugUlpsEpsilon = MyComplex32UlpsDiff;
+///
+///     fn debug_abs_epsilon(
+///         &self,
+///         other: &Self,
+///         max_diff: &Self::DiffEpsilon
+///     ) -> Self::DebugEpsilon {
+///         MyComplex32 {
+///             re: self.re.debug_abs_epsilon(&other.re, max_diff),
+///             im: self.im.debug_abs_epsilon(&other.im, max_diff),
+///         }
+///     }
+///
+///     fn debug_rel_epsilon(
+///         &self,
+///         other: &Self,
+///         max_diff: &Self::DiffEpsilon
+///     ) -> Self::DebugEpsilon {
+///         MyComplex32 {
+///             re: self.re.debug_rel_epsilon(&other.re, max_diff),
+///             im: self.im.debug_rel_epsilon(&other.im, max_diff),
+///         }
+///     }
+///
+///     fn debug_ulps_epsilon(
+///         &self,
+///         other: &Self,
+///         max_diff: &Self::UlpsDiffEpsilon,
+///     ) -> Self::DebugUlpsEpsilon {
+///         MyComplex32UlpsDiff {
+///             re: self.re.debug_ulps_epsilon(&other.re, max_diff),
+///             im: self.im.debug_ulps_epsilon(&other.im, max_diff),
+///         }
+///     }
+/// }
+///
+/// let a = MyComplex32 { re: 1.0, im: 200.0 };
+/// let b = MyComplex32 { re: 50.0, im: 1.0 };
+///
+/// let abs_epsilon = a.debug_abs_epsilon(&b, &0.1);
+/// assert_eq!(abs_epsilon.re, 0.1);
+/// assert_eq!(abs_epsilon.im, 0.1);
+///
+/// let rel_epsilon = a.debug_rel_epsilon(&b, &0.1);
+/// assert_eq!(rel_epsilon.re, 5.0);
+/// assert_eq!(rel_epsilon.im, 20.0);
+///
+/// let ulps_epsilon = a.debug_ulps_epsilon(&b, &42);
+/// assert_eq!(ulps_epsilon.re, 42);
+/// assert_eq!(ulps_epsilon.im, 42);
+/// ```
+///
+/// If your type does *not* already have an underlying implementation of `FloatDiff`,
+/// then you will need to take a close look at the descriptions of the algorithms on
+/// a method by method basis.
+///
+/// ## How can I compare two different types?
+///
+/// The type to be compared with is controlled by `FloatEqDebug`'s parameter.
+/// Following on from our previous example, if we wanted to treat `f32` as a
+/// complex number with no imaginary component:
+///
+/// ```
+/// # use float_eq::{FloatEq, FloatEqDebug};
+/// #[derive(Debug)]
+/// struct MyComplex32 {
+///     re: f32,
+///     im: f32,
+/// }
+///
+/// #[derive(Debug)]
+/// struct MyComplex32UlpsDiff {
+///     re: u32,
+///     im: u32,
+/// }
+///
+/// impl FloatEq<f32> for MyComplex32 {
+///     type DiffEpsilon = <f32 as FloatEq>::DiffEpsilon;
+///     type UlpsDiffEpsilon = <f32 as FloatEq>::UlpsDiffEpsilon;
+///
+///     fn eq_abs(&self, other: &f32, max_diff: &Self::DiffEpsilon) -> bool {
+///         self.re.eq_abs(other, max_diff) && self.im.eq_abs(&0.0, max_diff)
+///     }
+///
+///     fn eq_rel(&self, other: &f32, max_diff: &Self::DiffEpsilon) -> bool {
+///         self.re.eq_rel(other, max_diff) && self.im.eq_rel(&0.0, max_diff)
+///     }
+///
+///     fn eq_ulps(&self, other: &f32, max_diff: &Self::UlpsDiffEpsilon) -> bool {
+///         self.re.eq_ulps(other, max_diff) && self.im.eq_ulps(&0.0, max_diff)
+///     }
+/// }
+///
+/// impl FloatEq<MyComplex32> for f32 {
+///     type DiffEpsilon = <MyComplex32 as FloatEq<f32>>::DiffEpsilon;
+///     type UlpsDiffEpsilon = <MyComplex32 as FloatEq<f32>>::UlpsDiffEpsilon;
+///
+///     fn eq_abs(&self, other: &MyComplex32, max_diff: &Self::DiffEpsilon) -> bool {
+///         other.eq_abs(self, max_diff)
+///     }
+///
+///     fn eq_rel(&self, other: &MyComplex32, max_diff: &Self::DiffEpsilon) -> bool {
+///         other.eq_rel(self, max_diff)
+///     }
+///
+///     fn eq_ulps(&self, other: &MyComplex32, max_diff: &Self::UlpsDiffEpsilon) -> bool {
+///         other.eq_ulps(self, max_diff)
+///     }
+/// }
+///
+/// impl FloatEqDebug<f32> for MyComplex32 {
+///     type DebugEpsilon = Self;
+///     type DebugUlpsEpsilon = MyComplex32UlpsDiff;
+///
+///     fn debug_abs_epsilon(
+///         &self,
+///         other: &f32,
+///         max_diff: &Self::DiffEpsilon
+///     ) -> Self::DebugEpsilon {
+///         MyComplex32 {
+///             re: self.re.debug_abs_epsilon(other, max_diff),
+///             im: self.im.debug_abs_epsilon(&0.0, max_diff),
+///         }
+///     }
+///
+///     fn debug_rel_epsilon(
+///         &self,
+///         other: &f32,
+///         max_diff: &Self::DiffEpsilon
+///     ) -> Self::DebugEpsilon {
+///         MyComplex32 {
+///             re: self.re.debug_rel_epsilon(other, max_diff),
+///             im: self.im.debug_rel_epsilon(&0.0, max_diff),
+///         }
+///     }
+///
+///     fn debug_ulps_epsilon(
+///         &self,
+///         other: &f32,
+///         max_diff: &Self::UlpsDiffEpsilon,
+///     ) -> Self::DebugUlpsEpsilon {
+///         MyComplex32UlpsDiff {
+///             re: self.re.debug_ulps_epsilon(other, max_diff),
+///             im: self.im.debug_ulps_epsilon(&0.0, max_diff),
+///         }
+///     }
+/// }
+///
+/// impl FloatEqDebug<MyComplex32> for f32 {
+///     type DebugEpsilon = <MyComplex32 as FloatEqDebug<f32>>::DebugEpsilon;
+///     type DebugUlpsEpsilon = <MyComplex32 as FloatEqDebug<f32>>::DebugUlpsEpsilon;
+///
+///     fn debug_abs_epsilon(
+///         &self,
+///         other: &MyComplex32,
+///         max_diff: &Self::DiffEpsilon,
+///     ) -> Self::DebugEpsilon {
+///         other.debug_abs_epsilon(self, max_diff)
+///     }
+///
+///     fn debug_rel_epsilon(
+///         &self,
+///         other: &MyComplex32,
+///         max_diff: &Self::DiffEpsilon,
+///     ) -> Self::DebugEpsilon {
+///         other.debug_rel_epsilon(self, max_diff)
+///     }
+///
+///     fn debug_ulps_epsilon(
+///         &self,
+///         other: &MyComplex32,
+///         max_diff: &Self::UlpsDiffEpsilon,
+///     ) -> Self::DebugUlpsEpsilon {
+///         other.debug_ulps_epsilon(self, max_diff)
+///     }
+/// }
+///
+/// let a = MyComplex32 { re: 1.0, im: 200.0 };
+/// let b = 9000.0_f32;
+///
+/// let abs_epsilon = a.debug_abs_epsilon(&b, &0.1);
+/// assert_eq!(abs_epsilon.re, 0.1);
+/// assert_eq!(abs_epsilon.im, 0.1);
+///
+/// let rel_epsilon = a.debug_rel_epsilon(&b, &0.1);
+/// assert_eq!(rel_epsilon.re, 900.0);
+/// assert_eq!(rel_epsilon.im, 20.0);
+///
+/// let ulps_epsilon = a.debug_ulps_epsilon(&b, &42);
+/// assert_eq!(ulps_epsilon.re, 42);
+/// assert_eq!(ulps_epsilon.im, 42);
+/// ```
 ///
 /// [`assert_float_eq!`]: macro.assert_float_eq.html
+/// [`FloatEq`]: trait.FloatEq.html
+/// [`DiffEpsilon`]: trait.FloatEq.html#associatedtype.DiffEpsilon
+/// [`UlpsDiffEpsilon`]: trait.FloatEq.html#associatedtype.UlpsDiffEpsilon
 pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
     /// Displayed to the user when an assert fails, using `fmt::Debug`.
     ///
