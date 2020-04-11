@@ -312,8 +312,8 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
 /// assert!(4.0_f32.ne_ulps(&4.0000015, &2));
 /// ```
 ///
-/// [`float_eq`]: macro.float_eq.html
-/// [`float_ne`]: macro.float_ne.html
+/// [`float_eq!`]: macro.float_eq.html
+/// [`float_ne!`]: macro.float_ne.html
 pub trait FloatEq<Rhs: ?Sized = Self> {
     /// Type of the maximum allowed difference between two values for them to be
     /// considered equal in terms of their native type.
