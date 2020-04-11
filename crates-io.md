@@ -80,9 +80,9 @@ assert_float_eq!([1.0000001_f32, 2.0], [1.0, 2.0], ulps <= 1);
 
 See the [API documentation] for a long form introduction to the different kinds
 of checks, their uses and limitations. Comparison of new types is supported by 
-implementing the `FloatEq` trait. Asserts may be supported by additionally 
-implementing the `FloatDiff` and `FloatEqDebug` traits, which provide additional
-debugging context info.
+implementing the `FloatEq` trait. Asserts may be supported by also implementing
+the `FloatDiff` and `FloatEqDebug` traits, which provide additional debugging 
+context info.
 
 ## Optional Features
 
