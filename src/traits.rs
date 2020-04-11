@@ -419,12 +419,16 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
 
 /// Provides additional context for debugging when an assert fires.
 ///
-/// This is used internally by `float_eq` assert macros, and the epsilons do not
-/// necessarily match those used directly in the calculations. Implementations of
-/// this trait should try to provide context information for the overall calculation
-/// as an aid to the user. For example, arrays being compared may expose their
-/// debug info as an array of epsilon values, whereas their `FloatEq` methods
-/// perform calculations one by one to allow shortcutting.
+/// This is used internally by the [`assert_float_eq!`] family of macros to provide
+/// debug context information to the user when they fail, and the structure of its
+/// epsilon types do  not necessarily match those used directly in the calculations.
+/// This is because the calculations may work member by member to provide shortcutting
+/// behaviour, whereas the debug context information should display every epsilon
+/// value  potentially tested to give the user a better idea of what went wrong. For
+/// example, arrays may expose their debug epsilons as arrays of values corresponding
+/// to each pair of elements being compared.
+///
+/// [`assert_float_eq!`]: macro.assert_float_eq.html
 pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
     /// Displayed to the user when an assert fails, using `fmt::Debug`.
     ///
