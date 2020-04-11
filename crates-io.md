@@ -123,6 +123,9 @@ Release information is available in [CHANGELOG.md](CHANGELOG.md).
 - `#[derive]` support for comparison of custom types that are composed of 
   already comparable floating point values.
 
+- Further support for basic Rust language components like tuples and containers
+  of compatible types like `Vec`, likely using `PartialEq`'s support as a guide.
+
 - Investigate the safety guarantees of the ulps check. Currently, it doesn't
   act like the default floating point checks when it comes to NaNs and other
   special values.
