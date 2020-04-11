@@ -1,5 +1,79 @@
 use crate::{FloatEq, FloatEqDebug};
 
+/// Checks whether two floating point expressions are equal to each other (using [`FloatEq`]).
+///
+/// Comparisons are applied in order from left to right, shortcutting to return
+/// early if a positive result is found.
+///
+/// - `abs <= max_diff` is an [absolute epsilon comparison].
+/// - `rel <= max_diff` is a [relative epsilon comparison].
+/// - `ulps <= max_diff` is an [ULPs comparison].
+///
+/// # Examples
+/// ```
+/// # use float_eq::float_eq;
+/// # use std::f32;
+/// let a: f32 = 4.;
+/// let b: f32 = 4.0000025;
+///
+/// assert!( float_eq!(a, 3.9999998, rel <= f32::EPSILON) );
+/// assert!( float_eq!(a - b, 0., abs <= 0.00001, rel <= f32::EPSILON) );
+/// assert!( float_eq!(a - b, 0., abs <= 0.00001, ulps <= 10) );
+/// ```
+///
+/// [`FloatEq`]: trait.FloatEq.html
+/// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
+/// [relative epsilon comparison]: index.html#relative-epsilon-comparison
+/// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
+#[macro_export]
+macro_rules! float_eq {
+    ($a:expr, $b:expr, $($eq:ident <= $max_diff:expr),+) => ({
+        match (&$a, &$b) {
+            (a_val, b_val) => {
+                false $(|| $crate::FloatEqCmp::$eq(a_val, b_val, &$max_diff))+
+            }
+        }
+    });
+    ($a:expr, $b:expr, $($eq:ident <= $max_diff:expr),+,) => ({
+        $crate::float_eq!($a, $b $(, $eq <= $max_diff)+)
+    })
+}
+
+/// Checks whether two floating point expressions are not equal to each other (using [`FloatEq`]).
+///
+/// Comparisons are applied in order from left to right, shortcutting to return
+/// early if a positive result is found.
+///
+/// - `abs <= max_diff` is an [absolute epsilon comparison].
+/// - `rel <= max_diff` is a [relative epsilon comparison].
+/// - `ulps <= max_diff` is an [ULPs comparison].
+///
+/// # Examples
+/// ```
+/// # use float_eq::float_ne;
+/// # use std::f32;
+/// let a: f32 = 4.;
+/// let b: f32 = 4.1;
+///
+/// assert!( float_ne!(a, 3.9999990, rel <= f32::EPSILON) );
+/// assert!( float_ne!(a - b, 0., abs <= 0.00001, rel <= f32::EPSILON) );
+/// assert!( float_ne!(a - b, 0., abs <= 0.00001, ulps <= 10) );
+/// ```
+///
+/// [`FloatEq`]: trait.FloatEq.html
+/// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
+/// [relative epsilon comparison]: index.html#relative-epsilon-comparison
+/// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
+#[macro_export]
+macro_rules! float_ne {
+    ($a:expr, $b:expr, $($eq:ident <= $max_diff:expr),+) => ({
+        !$crate::float_eq!($a, $b $(, $eq <= $max_diff)+)
+    });
+    ($a:expr, $b:expr, $($eq:ident <= $max_diff:expr),+,) => ({
+        !$crate::float_eq!($a, $b $(, $eq <= $max_diff)+)
+    });
+}
+
 /// Asserts that two floating point expressions are equal to each other (using [`float_eq!`]).
 ///
 /// - `abs <= max_diff` is an [absolute epsilon comparison].
