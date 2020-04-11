@@ -1,3 +1,8 @@
+//! A test of implementing `FloatDiff`, `FloatEq` and `FloatDiff` on a foreign type.
+//!
+//! This is also a more thorough test of the example `MyComplex32` type used by
+//! the implementation examples in documentation.
+
 use float_eq::{
     assert_float_eq, assert_float_ne, float_eq, float_ne, FloatDiff, FloatEq, FloatEqDebug,
 };
