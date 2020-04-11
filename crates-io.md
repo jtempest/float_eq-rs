@@ -120,6 +120,11 @@ Release information is available in [CHANGELOG.md](CHANGELOG.md).
 
 ## Future plans
 
+- Investigate whether the epsilon types should be generic parameters as opposed
+  to associated types. It feels like composite types may sometimes want to be
+  compared using a global bound and sometimes on a per-component basis, especially
+  if they are composed of heterogeneous types.
+
 - `#[derive]` support for comparison of custom types that are composed of 
   already comparable floating point values.
 
