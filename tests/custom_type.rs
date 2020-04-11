@@ -1,9 +1,9 @@
-use float_eq::{FloatDiff, FloatEq};
+use float_eq::{FloatDiff, FloatEq, FloatEqDebug};
 
 //------------------------------------------------------------------------------
 // MyComplex32
 //------------------------------------------------------------------------------
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 struct MyComplex32 {
     re: f32,
     im: f32,
@@ -12,7 +12,7 @@ struct MyComplex32 {
 //------------------------------------------------------------------------------
 // FloatDiff with Self
 //------------------------------------------------------------------------------
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 struct MyComplex32UlpsDiff {
     re: u32,
     im: u32,
@@ -281,8 +281,204 @@ fn float_eq_f32() {
     assert!(d.eq_ulps(&c, &2));
 }
 
-//TODO: FloatEqDebug with Self
-//TODO: FloatEqDebug with f32
+//------------------------------------------------------------------------------
+// FloatEqDebug with Self
+//------------------------------------------------------------------------------
+impl FloatEqDebug for MyComplex32 {
+    type DebugEpsilon = Self;
+    type DebugUlpsEpsilon = MyComplex32UlpsDiff;
+
+    fn debug_abs_epsilon(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> Self::DebugEpsilon {
+        MyComplex32 {
+            re: self.re.debug_abs_epsilon(&other.re, max_diff),
+            im: self.im.debug_abs_epsilon(&other.im, max_diff),
+        }
+    }
+
+    fn debug_rel_epsilon(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> Self::DebugEpsilon {
+        MyComplex32 {
+            re: self.re.debug_rel_epsilon(&other.re, max_diff),
+            im: self.im.debug_rel_epsilon(&other.im, max_diff),
+        }
+    }
+
+    fn debug_ulps_epsilon(
+        &self,
+        other: &Self,
+        max_diff: &Self::UlpsDiffEpsilon,
+    ) -> Self::DebugUlpsEpsilon {
+        MyComplex32UlpsDiff {
+            re: self.re.debug_ulps_epsilon(&other.re, max_diff),
+            im: self.im.debug_ulps_epsilon(&other.im, max_diff),
+        }
+    }
+}
+
+#[test]
+fn float_eq_debug_self() {
+    let a = MyComplex32 { re: 1.0, im: 200.0 };
+    let b = MyComplex32 { re: 50.0, im: 1.0 };
+
+    assert_eq!(
+        a.debug_abs_epsilon(&b, &0.1),
+        MyComplex32 { re: 0.1, im: 0.1 }
+    );
+    assert_eq!(
+        b.debug_abs_epsilon(&a, &0.1),
+        MyComplex32 { re: 0.1, im: 0.1 }
+    );
+
+    assert_eq!(
+        a.debug_rel_epsilon(&b, &0.1),
+        MyComplex32 { re: 5.0, im: 20.0 }
+    );
+    assert_eq!(
+        b.debug_rel_epsilon(&a, &0.1),
+        MyComplex32 { re: 5.0, im: 20.0 }
+    );
+
+    assert_eq!(
+        a.debug_ulps_epsilon(&b, &42),
+        MyComplex32UlpsDiff { re: 42, im: 42 }
+    );
+    assert_eq!(
+        b.debug_ulps_epsilon(&a, &42),
+        MyComplex32UlpsDiff { re: 42, im: 42 }
+    );
+}
+
+//------------------------------------------------------------------------------
+// FloatEqDebug with f32
+//------------------------------------------------------------------------------
+impl FloatEqDebug<f32> for MyComplex32 {
+    type DebugEpsilon = Self;
+    type DebugUlpsEpsilon = MyComplex32UlpsDiff;
+
+    fn debug_abs_epsilon(&self, other: &f32, max_diff: &Self::DiffEpsilon) -> Self::DebugEpsilon {
+        MyComplex32 {
+            re: self.re.debug_abs_epsilon(other, max_diff),
+            im: self.im.debug_abs_epsilon(&0.0, max_diff),
+        }
+    }
+
+    fn debug_rel_epsilon(&self, other: &f32, max_diff: &Self::DiffEpsilon) -> Self::DebugEpsilon {
+        MyComplex32 {
+            re: self.re.debug_rel_epsilon(other, max_diff),
+            im: self.im.debug_rel_epsilon(&0.0, max_diff),
+        }
+    }
+
+    fn debug_ulps_epsilon(
+        &self,
+        other: &f32,
+        max_diff: &Self::UlpsDiffEpsilon,
+    ) -> Self::DebugUlpsEpsilon {
+        MyComplex32UlpsDiff {
+            re: self.re.debug_ulps_epsilon(other, max_diff),
+            im: self.im.debug_ulps_epsilon(&0.0, max_diff),
+        }
+    }
+}
+
+impl FloatEqDebug<MyComplex32> for f32 {
+    type DebugEpsilon = <MyComplex32 as FloatEqDebug<f32>>::DebugEpsilon;
+    type DebugUlpsEpsilon = <MyComplex32 as FloatEqDebug<f32>>::DebugUlpsEpsilon;
+
+    fn debug_abs_epsilon(
+        &self,
+        other: &MyComplex32,
+        max_diff: &Self::DiffEpsilon,
+    ) -> Self::DebugEpsilon {
+        other.debug_abs_epsilon(self, max_diff)
+    }
+
+    fn debug_rel_epsilon(
+        &self,
+        other: &MyComplex32,
+        max_diff: &Self::DiffEpsilon,
+    ) -> Self::DebugEpsilon {
+        other.debug_rel_epsilon(self, max_diff)
+    }
+
+    fn debug_ulps_epsilon(
+        &self,
+        other: &MyComplex32,
+        max_diff: &Self::UlpsDiffEpsilon,
+    ) -> Self::DebugUlpsEpsilon {
+        other.debug_ulps_epsilon(self, max_diff)
+    }
+}
+
+#[test]
+fn float_eq_debug_f32() {
+    let a = MyComplex32 {
+        re: 150.0,
+        im: 200.0,
+    };
+    let b = 1.0_f32;
+
+    assert_eq!(
+        a.debug_abs_epsilon(&b, &0.1),
+        MyComplex32 { re: 0.1, im: 0.1 }
+    );
+    assert_eq!(
+        b.debug_abs_epsilon(&a, &0.1),
+        MyComplex32 { re: 0.1, im: 0.1 }
+    );
+
+    assert_eq!(
+        a.debug_rel_epsilon(&b, &0.1),
+        MyComplex32 { re: 15.0, im: 20.0 }
+    );
+    assert_eq!(
+        b.debug_rel_epsilon(&a, &0.1),
+        MyComplex32 { re: 15.0, im: 20.0 }
+    );
+
+    assert_eq!(
+        a.debug_ulps_epsilon(&b, &42),
+        MyComplex32UlpsDiff { re: 42, im: 42 }
+    );
+    assert_eq!(
+        b.debug_ulps_epsilon(&a, &42),
+        MyComplex32UlpsDiff { re: 42, im: 42 }
+    );
+
+    let c = 9000.0_f32;
+
+    assert_eq!(
+        a.debug_abs_epsilon(&c, &0.1),
+        MyComplex32 { re: 0.1, im: 0.1 }
+    );
+    assert_eq!(
+        c.debug_abs_epsilon(&a, &0.1),
+        MyComplex32 { re: 0.1, im: 0.1 }
+    );
+
+    assert_eq!(
+        a.debug_rel_epsilon(&c, &0.1),
+        MyComplex32 {
+            re: 900.0,
+            im: 20.0
+        }
+    );
+    assert_eq!(
+        c.debug_rel_epsilon(&a, &0.1),
+        MyComplex32 {
+            re: 900.0,
+            im: 20.0
+        }
+    );
+
+    assert_eq!(
+        a.debug_ulps_epsilon(&c, &42),
+        MyComplex32UlpsDiff { re: 42, im: 42 }
+    );
+    assert_eq!(
+        c.debug_ulps_epsilon(&a, &42),
+        MyComplex32UlpsDiff { re: 42, im: 42 }
+    );
+}
 
 // assert_float_eq!/assert_float_ne! with Self
 // assert_float_eq!/assert_float_ne! with f32
