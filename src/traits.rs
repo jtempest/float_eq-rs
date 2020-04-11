@@ -2,6 +2,10 @@ use core::fmt;
 
 /// Algorithms to compute the difference between two IEEE floating point values.
 ///
+/// This trait is used by the familiy of [`assert_float_eq!`] macros to provide
+/// debug context information on the differences between types when they fail, but
+/// may also be called directly. Types are displayed to the user with `fmt::Debug`.
+///
 /// By default this trait is implemented on `f32` and `f64`, and for arrays of
 /// compatible type which have size 0 to 32 (inclusive).
 ///
@@ -139,6 +143,7 @@ use core::fmt;
 /// ```
 ///
 /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
+/// [`assert_float_eq!`]: macro.assert_float_eq.html
 pub trait FloatDiff<Rhs: ?Sized = Self> {
     /// Type of the absolute difference between two values.
     ///
@@ -183,6 +188,10 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
 }
 
 /// Algorithms to compare two IEEE floating point values for equality.
+///
+/// This trait is used in the implementation of the [`float_eq!`] and [`assert_float_eq!`]
+/// families of macros. It may be called directly, but the macros usually provide
+/// a friendlier interface.
 ///
 /// ## How can I implement `FloatEq`?
 ///
@@ -295,10 +304,7 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
 /// assert!(float_ne!(a, b, ulps <= 0));
 /// ```
 ///
-/// # Examples
-///
-/// This trait may be called directly, but [`float_eq!`] and [`float_ne!`] usually
-/// provide a friendlier interface.
+/// ## Examples
 ///
 /// ```
 /// # use float_eq::FloatEq;
@@ -312,8 +318,8 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
 /// assert!(4.0_f32.ne_ulps(&4.0000015, &2));
 /// ```
 ///
+/// [`assert_float_eq!`]: macro.assert_float_eq.html
 /// [`float_eq!`]: macro.float_eq.html
-/// [`float_ne!`]: macro.float_ne.html
 pub trait FloatEq<Rhs: ?Sized = Self> {
     /// Type of the maximum allowed difference between two values for them to be
     /// considered equal in terms of their native type.
