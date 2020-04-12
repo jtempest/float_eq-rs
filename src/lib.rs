@@ -1,4 +1,4 @@
-//! Explicit and deliberate comparison of IEEE floating point numbers.
+//! Explicitly bounded comparison of floating point numbers.
 //!
 //! Comparing floating point values for equality is *really hard*. To get it
 //! right requires careful thought and iteration based on the needs of each
