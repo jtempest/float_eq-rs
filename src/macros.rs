@@ -82,7 +82,7 @@ macro_rules! float_ne {
 ///
 /// On panic, this macro will print the values of the expressions with their debug
 /// representations, with additional information from the comparison operations
-/// (using [`FloatEq`] and [`FloatDiff`]).
+/// (using [`FloatEqDebug`] and [`FloatDiff`]).
 ///
 /// Like [`assert!`], this macro has a second form, where a custom panic message can
 /// be provided.
@@ -104,6 +104,7 @@ macro_rules! float_ne {
 /// [`assert!`]: https://doc.rust-lang.org/std/macro.assert.html
 /// [`float_eq!`]: macro.float_eq.html
 /// [`FloatEq`]: trait.FloatEq.html
+/// [`FloatEqDebug`]: trait.FloatEqDebug.html
 /// [`FloatDiff`]: trait.FloatDiff.html
 /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
 /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
@@ -308,7 +309,7 @@ ulps_diff: `{:?}`,
 ///
 /// On panic, this macro will print the values of the expressions with their debug
 /// representations, with additional information from the comparison operations
-/// (using [`FloatEq`] and [`FloatDiff`]).
+/// (using [`FloatEqDebug`] and [`FloatDiff`]).
 ///
 /// Like [`assert!`], this macro has a second form, where a custom panic message can
 /// be provided.
@@ -330,6 +331,7 @@ ulps_diff: `{:?}`,
 /// [`assert!`]: https://doc.rust-lang.org/std/macro.assert.html
 /// [`float_ne!`]: macro.float_ne.html
 /// [`FloatEq`]: trait.FloatEq.html
+/// [`FloatEqDebug`]: trait.FloatEqDebug.html
 /// [`FloatDiff`]: trait.FloatDiff.html
 /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
 /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
@@ -534,7 +536,7 @@ ulps_diff: `{:?}`,
 ///
 /// On panic, this macro will print the values of the expressions with their debug
 /// representations, with additional information from the comparison operations
-/// (using [`FloatEq`] and [`FloatDiff`]).
+/// (using [`FloatEqDebug`] and [`FloatDiff`]).
 ///
 /// Like [`assert!`], this macro has a second form, where a custom panic message can
 /// be provided.
@@ -561,6 +563,7 @@ ulps_diff: `{:?}`,
 /// [`debug_assert_eq!`]: https://doc.rust-lang.org/std/macro.debug_assert_eq.html
 /// [`float_eq!`]: macro.float_eq.html
 /// [`FloatEq`]: trait.FloatEq.html
+/// [`FloatEqDebug`]: trait.FloatEqDebug.html
 /// [`FloatDiff`]: trait.FloatDiff.html
 /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
 /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
@@ -578,7 +581,7 @@ macro_rules! debug_assert_float_eq {
 ///
 /// On panic, this macro will print the values of the expressions with their debug
 /// representations, with additional information from the comparison operations
-/// (using [`FloatEq`] and [`FloatDiff`]).
+/// (using [`FloatEqDebug`] and [`FloatDiff`]).
 ///
 /// Like [`assert!`], this macro has a second form, where a custom panic message can
 /// be provided.
@@ -605,6 +608,7 @@ macro_rules! debug_assert_float_eq {
 /// [`debug_assert_ne!`]: https://doc.rust-lang.org/std/macro.debug_assert_ne.html
 /// [`float_ne!`]: macro.float_ne.html
 /// [`FloatEq`]: trait.FloatEq.html
+/// [`FloatEqDebug`]: trait.FloatEqDebug.html
 /// [`FloatDiff`]: trait.FloatDiff.html
 /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
 /// [relative epsilon comparison]: index.html#relative-epsilon-comparison

@@ -215,7 +215,7 @@
 //! ```
 //!
 //! Thanks to a deliberate quirk in the way the [underlying format] of IEEE floats
-//! was designed, this is good measure of how near two values are that scales with
+//! was designed, this is a good measure of how near two values are that scales with
 //! their relative precision:
 //!
 //! ```rust

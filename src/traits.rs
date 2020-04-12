@@ -26,8 +26,8 @@ use core::fmt;
 /// }
 ///
 /// struct MyComplex32UlpsDiff {
-///     re: u32,
-///     im: u32,
+///     re: <f32 as FloatDiff>::UlpsDiff,
+///     im: <f32 as FloatDiff>::UlpsDiff,
 /// }
 ///
 /// impl FloatDiff for MyComplex32 {
@@ -69,7 +69,7 @@ use core::fmt;
 ///
 /// The type you can `diff` with is controlled by `FloatDiff`'s parameter. Following
 /// on from our previous example, if we wanted to treat `f32` as a complex number
-/// with no imaginary component:
+/// with an imaginary component of `0.0`:
 ///
 /// ```rust
 /// # use float_eq::FloatDiff;
@@ -79,8 +79,8 @@ use core::fmt;
 /// }
 ///
 /// struct MyComplex32UlpsDiff {
-///     re: u32,
-///     im: u32,
+///     re: <f32 as FloatDiff>::UlpsDiff,
+///     im: <f32 as FloatDiff>::UlpsDiff,
 /// }
 ///
 /// impl FloatDiff<f32> for MyComplex32 {
@@ -201,7 +201,7 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
 /// comparisons. For example, `MyComplex32` uses the same types as a single `f32`
 /// comparison does, and passes them through to each individual components'
 /// comparisons. This means that only a single number is needed to bound both real
-/// and imaginary parts in a comparison:
+/// and imaginary parts in a check:
 ///
 /// ```
 /// # use float_eq::{float_eq, float_ne, FloatEq};
@@ -248,7 +248,7 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
 ///
 /// The type to be compared with is controlled by `FloatEq`'s parameter. Following
 /// on from our previous example, if we wanted to treat `f32` as a complex number
-/// with no imaginary component:
+/// with an imaginary component of `0.0`:
 ///
 /// ```
 /// # use float_eq::{float_eq, float_ne, FloatEq};
@@ -435,7 +435,7 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
 /// `MyComplex32UlpsDiff` follows that layout:
 ///
 /// ```
-/// # use float_eq::{FloatEq, FloatEqDebug};
+/// # use float_eq::{FloatDiff, FloatEq, FloatEqDebug};
 /// #[derive(Debug)]
 /// struct MyComplex32 {
 ///     re: f32,
@@ -444,8 +444,8 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
 ///
 /// #[derive(Debug)]
 /// struct MyComplex32UlpsDiff {
-///     re: u32,
-///     im: u32,
+///     re: <f32 as FloatDiff>::UlpsDiff,
+///     im: <f32 as FloatDiff>::UlpsDiff,
 /// }
 ///
 /// impl FloatEq for MyComplex32 {
@@ -527,10 +527,10 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
 ///
 /// The type to be compared with is controlled by `FloatEqDebug`'s parameter.
 /// Following on from our previous example, if we wanted to treat `f32` as a
-/// complex number with no imaginary component:
+/// complex number with an imaginary component of `0.0`:
 ///
 /// ```
-/// # use float_eq::{FloatEq, FloatEqDebug};
+/// # use float_eq::{FloatDiff, FloatEq, FloatEqDebug};
 /// #[derive(Debug)]
 /// struct MyComplex32 {
 ///     re: f32,
@@ -539,8 +539,8 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
 ///
 /// #[derive(Debug)]
 /// struct MyComplex32UlpsDiff {
-///     re: u32,
-///     im: u32,
+///     re: <f32 as FloatDiff>::UlpsDiff,
+///     im: <f32 as FloatDiff>::UlpsDiff,
 /// }
 ///
 /// impl FloatEq<f32> for MyComplex32 {

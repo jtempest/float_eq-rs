@@ -21,8 +21,8 @@ struct MyComplex32 {
 //------------------------------------------------------------------------------
 #[derive(Debug, PartialEq)]
 struct MyComplex32UlpsDiff {
-    re: u32,
-    im: u32,
+    re: <f32 as FloatDiff>::UlpsDiff,
+    im: <f32 as FloatDiff>::UlpsDiff,
 }
 
 impl FloatDiff for MyComplex32 {
