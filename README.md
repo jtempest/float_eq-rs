@@ -10,7 +10,7 @@
 [![Travis status](https://travis-ci.com/jtempest/float_eq-rs.svg?branch=master)](https://travis-ci.com/github/jtempest/float_eq-rs)
 [![Coverage Status](https://coveralls.io/repos/github/jtempest/float_eq-rs/badge.svg?branch=master)](https://coveralls.io/github/jtempest/float_eq-rs?branch=master)
 
-Explicit and deliberate comparison of IEEE floating point numbers.
+Explicitly bounded comparison of floating point numbers.
 
 Comparing floating point values for equality is *really hard*. To get it
 right requires careful thought and iteration based on the needs of each
