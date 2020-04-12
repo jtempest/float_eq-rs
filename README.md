@@ -85,9 +85,9 @@ assert_float_eq!([1.0000001_f32, 2.0], [1.0, 2.0], ulps <= 1);
 
 See the [API documentation] for a long form introduction to the different kinds
 of checks, their uses and limitations. Comparison of new types is supported by 
-implementing the `FloatEq` trait. Asserts may be supported by also implementing
-the `FloatDiff` and `FloatEqDebug` traits, which provide additional debugging 
-context info.
+implementing the `FloatEq` trait. Asserts may be supported by implementing the 
+`FloatDiff` and `FloatEqDebug` traits as well, which provide additional context
+when debugging.
 
 ## Optional Features
 
@@ -106,13 +106,10 @@ Other optional features:
 
 ## Related efforts
 
-There are a number of existing crates that implement these kinds of comparisons
-if you're looking for a more mature solution or simply a different approach.
 The [`approx`], [`float-cmp`] and [`almost`] crates all provide a similar style
-of general comparison operations, whereas [`assert_float_eq`] focuses
-specifically on assertions. In contrast, [`efloat`] comes at the problem from a
-different angle, instead tracking the error bounds of values as operations are
-applied.
+of general comparison operations, whereas [`assert_float_eq`] focuses 
+specifically on assertions. In contrast, [`efloat`] takes the approach of 
+tracking the error bounds of values as operations are applied.
 
 ## Contributing 
 
