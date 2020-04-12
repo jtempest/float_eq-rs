@@ -1,10 +1,10 @@
 use core::fmt;
 
-/// Algorithms to compute the difference between two IEEE floating point values.
+/// Algorithms to compute the difference between IEEE floating point values.
 ///
-/// This trait is used by the familiy of [`assert_float_eq!`] macros to provide
-/// debug context information on the differences between types when they fail, but
-/// may also be called directly. Types are displayed to the user with `fmt::Debug`.
+/// This trait is used by the family of [`assert_float_eq!`] macros to provide
+/// debug context information when they fail, but may also be called directly.
+/// Types are displayed to the user with `fmt::Debug`.
 ///
 /// By default this trait is implemented on `f32` and `f64`, and for arrays of
 /// compatible type which have size 0 to 32 (inclusive).
@@ -187,7 +187,7 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
     fn ulps_diff(&self, other: &Rhs) -> Self::UlpsDiff;
 }
 
-/// Algorithms to compare two IEEE floating point values for equality.
+/// Algorithms to compare IEEE floating point values for equality.
 ///
 /// This trait is used in the implementation of the [`float_eq!`] and [`assert_float_eq!`]
 /// families of macros. It may be called directly, but the macros usually provide
@@ -519,7 +519,7 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
 /// assert_eq!(ulps_epsilon.im, 42);
 /// ```
 ///
-/// If your type does *not* already have an underlying implementation of `FloatDiff`,
+/// If your type does *not* already have an underlying implementation of `FloatEqDebug`,
 /// then you will need to take a close look at the descriptions of the algorithms on
 /// a method by method basis.
 ///
@@ -677,12 +677,12 @@ pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
 
     /// Displayed to the user when an assert fails, using `fmt::Debug`.
     ///
-    /// This should display [`Self::DiffEpsilon`] in an appropriate form to the
+    /// This should display [`Self::UlpsDiffEpsilon`] in an appropriate form to the
     /// user. For example, when implemented for an array type, it should be an
     /// array of the epsilon values so the user can see the link between the diff
     /// items to the values tested against.
     ///
-    /// [`Self::DiffEpsilon`]: trait.FloatEq.html#associatedtype.DiffEpsilon
+    /// [`Self::UlpsDiffEpsilon`]: trait.FloatEq.html#associatedtype.UlpsDiffEpsilon
     type DebugUlpsEpsilon: fmt::Debug;
 
     /// The epsilon used by an [absolute epsilon comparison], displayed when an
