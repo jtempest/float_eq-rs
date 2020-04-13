@@ -13,6 +13,9 @@ readme = "crates-io.md"
 include = ["Cargo.toml", "src/**/*.rs", "crates-io.md", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
 edition = "2018"
 
+[package.metadata.docs.rs]
+all-features = true
+
 [badges]
 maintenance = { status = "experimental" }
 travis-ci = { repository = "jtempest/float_eq-rs" }
