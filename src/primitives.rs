@@ -30,8 +30,8 @@ macro_rules! impl_traits {
 
             #[inline]
             fn ulps_diff(&self, other: &Self) -> Self::UlpsDiff {
-                let a = (self.to_bits()) as $uint;
-                let b = (other.to_bits()) as $uint;
+                let a = self.to_bits();
+                let b = other.to_bits();
                 let max = a.max(b);
                 let min = a.min(b);
                 max - min

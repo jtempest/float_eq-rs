@@ -176,8 +176,8 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
     /// Implementations should be the equivalent of (using `f32` as an example):
     ///
     /// ```text
-    /// let a = (self.to_bits()) as u32;
-    /// let b = (other.to_bits()) as u32;
+    /// let a = self.to_bits();
+    /// let b = other.to_bits();
     /// let max = a.max(b);
     /// let min = a.min(b);
     /// max - min

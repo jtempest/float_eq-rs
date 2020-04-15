@@ -203,8 +203,8 @@
 //!     if a.is_sign_positive() != b.is_sign_positive() {
 //!         a == b // account for zero == negative zero
 //!     } else {
-//!         let a_bits = a.to_bits() as u32;
-//!         let b_bits = b.to_bits() as u32;
+//!         let a_bits = a.to_bits();
+//!         let b_bits = b.to_bits();
 //!         let max = a_bits.max(b_bits);
 //!         let min = a_bits.min(b_bits);
 //!         (max - min) <= max_diff
