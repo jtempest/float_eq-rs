@@ -78,11 +78,14 @@ Arrays of compatible types are also supported, from size 0 to 32 (inclusive):
 assert_float_eq!([1.0000001_f32, 2.0], [1.0, 2.0], ulps <= 1);
 ```
 
-See the [API documentation] for a long form introduction to the different kinds
-of checks, their uses and limitations. Comparison of new types is supported by 
-implementing the `FloatEq` trait. Asserts may be supported by implementing the 
-`FloatDiff` and `FloatEqDebug` traits as well, which provide additional context
-when debugging.
+Where, for example, `rel <= ROUNDING_ERROR` should be read as *"a relative 
+epsilon comparison with a maximum difference of less than or equal to 
+`ROUNDING_ERROR`"*. See the [API documentation] for a long form introduction to 
+the different kinds of checks, their uses and limitations.
+
+Comparison of new types is supported by implementing the `FloatEq` trait. 
+Asserts may be supported by implementing the `FloatDiff` and `FloatEqDebug` 
+traits as well, which provide additional context when debugging.
 
 ## Optional Features
 
