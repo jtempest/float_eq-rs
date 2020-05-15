@@ -88,17 +88,19 @@ where
 
 #[cfg(test)]
 mod tests {
+    #![allow(clippy::float_cmp)]
+
     use super::*;
     use core::f32;
 
     #[test]
     fn float_diff() {
         let a = Complex::<f32>::new(1., 2.);
-        let b = Complex::<f32>::new(1.0000001, 2.0000004);
+        let b = Complex::<f32>::new(1.000_000_1, 2.000_000_5);
 
         let abs_diff = a.abs_diff(&b);
-        assert_eq!(abs_diff.re, 0.00000011920929);
-        assert_eq!(abs_diff.im, 0.00000047683716);
+        assert_eq!(abs_diff.re, 0.000_000_119_209_29);
+        assert_eq!(abs_diff.im, 0.000_000_476_837_16);
 
         let ulps_diff = a.ulps_diff(&b);
         assert_eq!(ulps_diff.re, 1);
@@ -108,8 +110,8 @@ mod tests {
     #[test]
     fn float_eq_methods() {
         let a = Complex::<f32>::new(1., 2.);
-        let b = Complex::<f32>::new(1.0000002, 2.);
-        let c = Complex::<f32>::new(1.0, 2.0000004);
+        let b = Complex::<f32>::new(1.000_000_2, 2.);
+        let c = Complex::<f32>::new(1.0, 2.000_000_5);
 
         assert!(a.eq_abs(&b, &(2. * f32::EPSILON)));
         assert!(a.eq_abs(&c, &(4. * f32::EPSILON)));
@@ -130,8 +132,8 @@ mod tests {
     #[test]
     fn float_eq_macros() {
         let a = Complex::<f32>::new(1., 2.);
-        let b = Complex::<f32>::new(1.0000002, 2.);
-        let c = Complex::<f32>::new(1.0, 2.0000004);
+        let b = Complex::<f32>::new(1.000_000_2, 2.);
+        let c = Complex::<f32>::new(1.0, 2.000_000_5);
 
         assert!(float_eq!(a, b, abs <= (2. * f32::EPSILON)));
         assert!(float_eq!(a, c, abs <= (4. * f32::EPSILON)));
@@ -152,15 +154,15 @@ mod tests {
     #[test]
     fn float_eq_debug() {
         let a = Complex::<f32>::new(1., 2.);
-        let b = Complex::<f32>::new(1.0000001, 2.0000004);
+        let b = Complex::<f32>::new(1.000_000_1, 2.000_000_5);
 
-        let abs_epsilon = a.debug_abs_epsilon(&b, &0.0000001);
-        assert_eq!(abs_epsilon.re, 0.0000001);
-        assert_eq!(abs_epsilon.im, 0.0000001);
+        let abs_epsilon = a.debug_abs_epsilon(&b, &0.000_000_1);
+        assert_eq!(abs_epsilon.re, 0.000_000_1);
+        assert_eq!(abs_epsilon.im, 0.000_000_1);
 
-        let rel_epsilon = a.debug_rel_epsilon(&b, &0.0000001);
-        assert_eq!(rel_epsilon.re, 1.0000001 * 0.0000001);
-        assert_eq!(rel_epsilon.im, 2.0000004 * 0.0000001);
+        let rel_epsilon = a.debug_rel_epsilon(&b, &0.000_000_1);
+        assert_eq!(rel_epsilon.re, 1.000_000_1 * 0.000_000_1);
+        assert_eq!(rel_epsilon.im, 2.000_000_5 * 0.000_000_1);
 
         let ulps_epsilon = a.debug_ulps_epsilon(&b, &2);
         assert_eq!(ulps_epsilon.re, 2);
@@ -170,8 +172,8 @@ mod tests {
     #[test]
     fn assert_float_eq() {
         let a = Complex::<f32>::new(1., 2.);
-        let b = Complex::<f32>::new(1.0000002, 2.);
-        let c = Complex::<f32>::new(1.0, 2.0000004);
+        let b = Complex::<f32>::new(1.000_000_2, 2.);
+        let c = Complex::<f32>::new(1.0, 2.000_000_5);
 
         assert_float_eq!(a, b, abs <= (2. * f32::EPSILON));
         assert_float_eq!(a, c, abs <= (4. * f32::EPSILON));

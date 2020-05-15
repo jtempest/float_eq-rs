@@ -215,6 +215,8 @@ impl_float_eq_traits_for_array!(32);
 
 #[cfg(test)]
 mod tests {
+    #![allow(clippy::float_cmp)]
+
     macro_rules! impl_tests {
         ($float:ident) => {
             mod $float {
