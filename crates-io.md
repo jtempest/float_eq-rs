@@ -87,7 +87,33 @@ Comparison of new types is supported by implementing the `FloatEq` trait.
 Asserts may be supported by implementing the `FloatDiff` and `FloatEqDebug` 
 traits as well, which provide additional context when debugging.
 
-## Optional Features
+## Error messages
+
+Assertion failure output tries to provide useful context information without
+going overboard. For example, running this line:
+
+```rust
+assert_float_eq!(4.0f32, 4.000_008, rel <= 0.000_001);
+```
+
+Gives this error message (ε is the greek letter epsilon):
+
+```
+thread 'test' panicked at 'assertion failed: `float_eq!(left, right, rel <= ε)`
+     left: `4.0`,
+    right: `4.000008`,
+ abs_diff: `0.000008106232`,
+ulps_diff: `17`,
+  [rel] ε: `0.000004000008`', assert_failure.rs:15:5
+```
+
+Note that `abs_diff` and `ulps_diff` are always provided regardless of which
+kinds of checks are chosen. The `[rel] ε` line gives the epsilon value that
+`abs_diff` is checked against in the comparison, which has been scaled based
+on the size of the inputs. Absolute epsilon and ULPs based checks would provide
+different output, see the [API documentation] for more details.
+
+## Optional features
 
 This crate can be used without the standard library (`#![no_std]`) by disabling
 the default `std` feature. Use this in `Cargo.toml`:

@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Added Documentation on how to read assert error messages.
+
+### Changed
+- Directed docs.rs to build documentation for all features.
+
+### Fixed
+- Some of the custom_type tests were using lower values than intended for some
+  checks, these have been changed, although the tests were not previously unsound.
+
 ## [0.2.0] - 2020-04-12
 Bumped up the minor version number since this release includes breaking API 
 changes.

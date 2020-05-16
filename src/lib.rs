@@ -13,6 +13,7 @@
 //!     - [Absolute epsilon comparison](#absolute-epsilon-comparison)
 //!     - [Relative epsilon comparison](#relative-epsilon-comparison)
 //!     - [Units in the Last Place (ULPs) comparison](#units-in-the-last-place-ulps-comparison)
+//! - [Error messages](#error-messages)
 //! - [Comparing custom types](#comparing-custom-types)
 //!
 //! # Background
@@ -248,6 +249,54 @@
 //!   works.
 //! - Do not work at all if the two values being checked have different signs.
 //! - Do not respect the behaviour of special floating point values like NaN.
+//!
+//! # Error messages
+//!
+//! Assertion failure messages provide context information that hopefully helps
+//! in determining how a check failed. The absolute difference (`abs_diff`) and
+//! ULPs difference (`ulps_diff`) between the values are always provided, and
+//! then the epsilon values used in the check are listed afterwards. For example,
+//! this line:
+//!
+//! ```should_panic
+//! # use float_eq::assert_float_eq;
+//! assert_float_eq!(4.0f32, 4.000_008, rel <= 0.000_001);
+//! ```
+//!
+//! Gives this error message, where the relative epsilon, `[rel] ε`, has been
+//! scaled based on the size of the inputs (ε is the greek letter epsilon):
+//!
+//! ```text
+//! thread 'test' panicked at 'assertion failed: `float_eq!(left, right, ulps <= ε)`
+//!      left: `4.0`,
+//!     right: `4.000008`,
+//!  abs_diff: `0.000008106232`,
+//! ulps_diff: `17`,
+//!   [rel] ε: `0.000004000008`', assert_failure.rs:15:5
+//! ```
+//!
+//! If two or more checks are used, then the epsilons are provided in the order
+//! that the checks were made in. For example, this line:
+//!
+//! ```should_panic
+//! # use float_eq::assert_float_eq;
+//! assert_float_eq!(4.0f32, 4.000_008, abs <= 0.000_001, ulps <= 4);
+//! ```
+//!
+//! Gives this error message:
+//!
+//! ```text
+//! thread 'test' panicked at 'assertion failed: `float_eq!(left, right, abs <= ε, ulps <= ε)`
+//!      left: `4.0`,
+//!     right: `4.000008`,
+//!  abs_diff: `0.000008106232`,
+//! ulps_diff: `17`,
+//!   [abs] ε: `0.000001`,
+//!  [ulps] ε: `4`', assert_failure.rs:16:5
+//! ```
+//!
+//! The checks performed are also indicated on the first line, as `abs <= ε,
+//! rel <= ε`.
 //!
 //! # Comparing custom types
 //!
