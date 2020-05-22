@@ -13,6 +13,7 @@
 //!     - [Absolute epsilon comparison](#absolute-epsilon-comparison)
 //!     - [Relative epsilon comparison](#relative-epsilon-comparison)
 //!     - [Units in the Last Place (ULPs) comparison](#units-in-the-last-place-ulps-comparison)
+//! - [Comparing composite types](#comparing-composite-types)
 //! - [Error messages](#error-messages)
 //! - [Comparing custom types](#comparing-custom-types)
 //!
@@ -55,14 +56,6 @@
 //! assert_float_eq!(0.1_f32.recip(), 10.0, rel <= RECIP_REL_EPSILON);
 //!
 //! assert_float_ne!(0.0_f32, 0.0001, abs <= 0.00005, ulps <= 4);
-//! ```
-//!
-//! Arrays of [`FloatEq`] compatible types are also supported, from size 0 to 32
-//! (inclusive):
-//!
-//! ```rust
-//! # use float_eq::{assert_float_eq, assert_float_ne, float_eq, float_ne};
-//! assert_float_eq!([1.0000001_f32, 2.0], [1.0, 2.0], ulps <= 1);
 //! ```
 //!
 //! The ideal choice of comparison will vary on a case by case basis, and depends
@@ -250,6 +243,145 @@
 //! - Do not work at all if the two values being checked have different signs.
 //! - Do not respect the behaviour of special floating point values like NaN.
 //!
+//! # Comparing composite types
+//!
+//! When comparing composite values, it can be helpful to specify thresholds
+//! separately for each individual field. The `abs`, `rel` and `ulps` checks
+//! expect this behaviour. Conversely, the `abs_all`, `rel_all` and `ulps_all`
+//! checks accept a single epsilon that is then used to compare across all fields.
+//! For example, arrays may be compared using an epsilon that covers each index
+//! separately:
+//!
+//! ```
+//! # use float_eq::assert_float_eq;
+//! let a = [1.0, -2.0, 3.0];
+//! let b = [-1.0, 2.0, 3.5];
+//! assert_float_eq!(a, b, abs <= [2.0, 4.0, 0.5]);
+//! ```
+//!
+//! Or with the same threshold across all values:
+//!
+//! ```
+//! # use float_eq::assert_float_eq;
+//! # let a = [1.0, -2.0, 3.0];
+//! # let b = [-1.0, 2.0, 3.5];
+//! assert_float_eq!(a, b, abs_all <= 4.0);
+//! ```
+//!
+//! Similarly, if [`FloatEq`] and [`FloatEqAll`] have been implemented for a
+//! struct type:
+//!
+//! ```
+//! # use float_eq::{
+//! #     assert_float_eq, FloatDiff, FloatEq, FloatEqAll, FloatEqDebug, FloatEqAllDebug
+//! # };
+//! #
+//! # #[derive(Debug, Clone, Copy, PartialEq)]
+//! # struct Complex32 { re: f32, im: f32 }
+//! #
+//! # #[derive(Debug, Clone, Copy, PartialEq)]
+//! # struct Complex32Ulps { re: u32, im: u32 }
+//! #
+//! # impl FloatDiff for Complex32 {
+//! #     type AbsDiff = Complex32;
+//! #     type UlpsDiff = Complex32Ulps;
+//! #     fn abs_diff(&self, other: &Self) -> Complex32 {
+//! #         Complex32 {
+//! #             re: self.re.abs_diff(&other.re),
+//! #             im: self.im.abs_diff(&other.im),
+//! #         }
+//! #     }
+//! #     fn ulps_diff(&self, other: &Self) -> Complex32Ulps {
+//! #         Complex32Ulps {
+//! #             re: self.re.ulps_diff(&other.re),
+//! #             im: self.im.ulps_diff(&other.im),
+//! #         }
+//! #     }
+//! # }
+//! #
+//! # impl FloatEq for Complex32 {
+//! #     type DiffEpsilon = Complex32;
+//! #     type UlpsDiffEpsilon = Complex32Ulps;
+//! #     fn eq_abs(&self, other: &Self, max_diff: &Complex32) -> bool {
+//! #         self.re.eq_abs(&other.re, &max_diff.re) && self.im.eq_abs(&other.im, &max_diff.im)
+//! #     }
+//! #     fn eq_rel(&self, other: &Self, max_diff: &Complex32) -> bool {
+//! #         self.re.eq_rel(&other.re, &max_diff.re) && self.im.eq_rel(&other.im, &max_diff.im)
+//! #     }
+//! #     fn eq_ulps(&self, other: &Self, max_diff: &Complex32Ulps) -> bool {
+//! #         self.re.eq_ulps(&other.re, &max_diff.re) && self.im.eq_ulps(&other.im, &max_diff.im)
+//! #     }
+//! # }
+//! #
+//! # impl FloatEqAll for Complex32 {
+//! #     type DiffEpsilon = f32;
+//! #     type UlpsDiffEpsilon = u32;
+//! #     fn eq_abs_all(&self, other: &Self, max_diff: &f32) -> bool {
+//! #         self.re.eq_abs_all(&other.re, &max_diff) && self.im.eq_abs_all(&other.im, &max_diff)
+//! #     }
+//! #     fn eq_rel_all(&self, other: &Self, max_diff: &f32) -> bool {
+//! #         self.re.eq_rel_all(&other.re, &max_diff) && self.im.eq_rel_all(&other.im, &max_diff)
+//! #     }
+//! #     fn eq_ulps_all(&self, other: &Self, max_diff: &u32) -> bool {
+//! #         self.re.eq_ulps_all(&other.re, &max_diff) && self.im.eq_ulps_all(&other.im, &max_diff)
+//! #     }
+//! # }
+//! #
+//! # impl FloatEqDebug for Complex32 {
+//! #     type DebugEpsilon = Complex32;
+//! #     type DebugUlpsEpsilon = Complex32Ulps;
+//! #     fn debug_abs_epsilon(&self, other: &Self, max_diff: &Complex32) -> Complex32 {
+//! #         Complex32 {
+//! #             re: self.re.debug_abs_epsilon(&other.re, &max_diff.re),
+//! #             im: self.im.debug_abs_epsilon(&other.re, &max_diff.im),
+//! #         }
+//! #     }
+//! #     fn debug_rel_epsilon(&self, other: &Self, max_diff: &Complex32) -> Complex32 {
+//! #         Complex32 {
+//! #             re: self.re.debug_rel_epsilon(&other.re, &max_diff.re),
+//! #             im: self.im.debug_rel_epsilon(&other.re, &max_diff.im),
+//! #         }
+//! #     }
+//! #     fn debug_ulps_epsilon(&self, other: &Self, max_diff: &Complex32Ulps) -> Complex32Ulps {
+//! #         Complex32Ulps {
+//! #             re: self.re.debug_ulps_epsilon(&other.re, &max_diff.re),
+//! #             im: self.im.debug_ulps_epsilon(&other.re, &max_diff.im),
+//! #         }
+//! #     }
+//! # }
+//! #
+//! # impl FloatEqAllDebug for Complex32 {
+//! #     type DebugEpsilon = Complex32;
+//! #     type DebugUlpsEpsilon = Complex32Ulps;
+//! #     fn debug_abs_all_epsilon(&self, other: &Self, max_diff: &f32) -> Complex32 {
+//! #         Complex32 {
+//! #             re: self.re.debug_abs_all_epsilon(&other.re, &max_diff),
+//! #             im: self.im.debug_abs_all_epsilon(&other.re, &max_diff),
+//! #         }
+//! #     }
+//! #     fn debug_rel_all_epsilon(&self, other: &Self, max_diff: &f32) -> Complex32 {
+//! #         Complex32 {
+//! #             re: self.re.debug_rel_all_epsilon(&other.re, &max_diff),
+//! #             im: self.im.debug_rel_all_epsilon(&other.re, &max_diff),
+//! #         }
+//! #     }
+//! #     fn debug_ulps_all_epsilon(&self, other: &Self, max_diff: &u32) -> Complex32Ulps {
+//! #         Complex32Ulps {
+//! #             re: self.re.debug_ulps_all_epsilon(&other.re, &max_diff),
+//! #             im: self.im.debug_ulps_all_epsilon(&other.re, &max_diff),
+//! #         }
+//! #     }
+//! # }
+//! let a = Complex32 { re: 2.0, im: 4.000_002 };
+//! let b = Complex32 { re: 2.000_000_5, im: 4.0 };
+//!
+//! assert_float_eq!(a, b, rel <= Complex32 { re: 0.000_000_25, im: 0.000_000_5 });
+//! assert_float_eq!(a, b, rel_all <= 0.000_000_5);
+//!
+//! assert_float_eq!(a, b, ulps <= Complex32Ulps { re: 2, im: 4 });
+//! assert_float_eq!(a, b, ulps_all <= 4);
+//! ```
+//!
 //! # Error messages
 //!
 //! Assertion failure messages provide context information that hopefully helps
@@ -309,6 +441,7 @@
 //! [`float_eq!`]: macro.float_eq.html
 //! [`float_ne!`]: macro.float_ne.html
 //! [`FloatEq`]: trait.FloatEq.html
+//! [`FloatEqAll`]: trait.FloatEqAll.html
 //! [`FloatDiff`]: trait.FloatDiff.html
 //! [`FloatEqDebug`]: trait.FloatEqDebug.html
 //!

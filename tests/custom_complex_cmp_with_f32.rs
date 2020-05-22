@@ -17,69 +17,18 @@ struct MyComplex32 {
     im: f32,
 }
 
-//------------------------------------------------------------------------------
-// FloatDiff with Self
-//------------------------------------------------------------------------------
 #[derive(Debug, PartialEq)]
-struct MyComplex32UlpsDiff {
+struct MyComplex32Ulps {
     re: <f32 as FloatDiff>::UlpsDiff,
     im: <f32 as FloatDiff>::UlpsDiff,
 }
 
-impl FloatDiff for MyComplex32 {
-    type AbsDiff = Self;
-    type UlpsDiff = MyComplex32UlpsDiff;
-
-    fn abs_diff(&self, other: &Self) -> Self::AbsDiff {
-        MyComplex32 {
-            re: self.re.abs_diff(&other.re),
-            im: self.im.abs_diff(&other.im),
-        }
-    }
-
-    fn ulps_diff(&self, other: &Self) -> Self::UlpsDiff {
-        MyComplex32UlpsDiff {
-            re: self.re.ulps_diff(&other.re),
-            im: self.im.ulps_diff(&other.im),
-        }
-    }
-}
-
-#[test]
-fn float_diff_self() {
-    let a = MyComplex32 {
-        re: 1.0,
-        im: 2.000_003_6,
-    };
-
-    let abs_diff = a.abs_diff(&a);
-    assert_eq!(abs_diff.re, 0.0);
-    assert_eq!(abs_diff.im, 0.0);
-
-    let ulps_diff = a.ulps_diff(&a);
-    assert_eq!(ulps_diff.re, 0);
-    assert_eq!(ulps_diff.im, 0);
-
-    let b = MyComplex32 {
-        re: 1.000_000_1,
-        im: 2.0,
-    };
-
-    let abs_diff = a.abs_diff(&b);
-    assert_eq!(abs_diff.re, 0.000_000_119_209_29);
-    assert_eq!(abs_diff.im, 0.000_003_576_278_7);
-
-    let ulps_diff = a.ulps_diff(&b);
-    assert_eq!(ulps_diff.re, 1);
-    assert_eq!(ulps_diff.im, 15);
-}
-
 //------------------------------------------------------------------------------
-// FloatDiff with f32
+// FloatDiff
 //------------------------------------------------------------------------------
 impl FloatDiff<f32> for MyComplex32 {
     type AbsDiff = MyComplex32;
-    type UlpsDiff = MyComplex32UlpsDiff;
+    type UlpsDiff = MyComplex32Ulps;
 
     fn abs_diff(&self, other: &f32) -> Self::AbsDiff {
         MyComplex32 {
@@ -89,7 +38,7 @@ impl FloatDiff<f32> for MyComplex32 {
     }
 
     fn ulps_diff(&self, other: &f32) -> Self::UlpsDiff {
-        MyComplex32UlpsDiff {
+        MyComplex32Ulps {
             re: self.re.ulps_diff(other),
             im: self.im.ulps_diff(&0.0),
         }
@@ -135,139 +84,11 @@ fn float_diff_f32() {
 }
 
 //------------------------------------------------------------------------------
-// FloatEq with Self
-//------------------------------------------------------------------------------
-impl FloatEq for MyComplex32 {
-    type DiffEpsilon = <f32 as FloatEq>::DiffEpsilon;
-    type UlpsDiffEpsilon = <f32 as FloatEq>::UlpsDiffEpsilon;
-
-    fn eq_abs(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
-        self.re.eq_abs(&other.re, max_diff) && self.im.eq_abs(&other.im, max_diff)
-    }
-
-    fn eq_rel(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
-        self.re.eq_rel(&other.re, max_diff) && self.im.eq_rel(&other.im, max_diff)
-    }
-
-    fn eq_ulps(&self, other: &Self, max_diff: &Self::UlpsDiffEpsilon) -> bool {
-        self.re.eq_ulps(&other.re, max_diff) && self.im.eq_ulps(&other.im, max_diff)
-    }
-}
-
-#[test]
-fn float_eq_self() {
-    let a = MyComplex32 {
-        re: 1.0,
-        im: 1_000_000.,
-    };
-
-    assert!(a.eq_abs(&a, &0.0));
-    assert!(a.eq_rel(&a, &0.0));
-    assert!(a.eq_ulps(&a, &0));
-
-    let b = MyComplex32 {
-        re: 1.000_000_1,
-        im: 1_000_000.,
-    };
-
-    assert!(a.ne_abs(&b, &0.0));
-    assert!(a.ne_rel(&b, &0.0));
-    assert!(a.ne_ulps(&b, &0));
-
-    assert!(a.eq_abs(&b, &0.000_000_12));
-    assert!(a.eq_rel(&b, &0.000_000_12));
-    assert!(a.eq_ulps(&b, &2));
-
-    assert!(b.ne_abs(&a, &0.0));
-    assert!(b.ne_rel(&a, &0.0));
-    assert!(b.ne_ulps(&a, &0));
-
-    assert!(b.eq_abs(&a, &0.000_000_12));
-    assert!(b.eq_rel(&a, &0.000_000_12));
-    assert!(b.eq_ulps(&a, &2));
-
-    let c = MyComplex32 {
-        re: 1.0,
-        im: 1_000_000.06,
-    };
-
-    assert!(a.ne_abs(&c, &0.0));
-    assert!(a.ne_rel(&c, &0.0));
-    assert!(a.ne_ulps(&c, &0));
-
-    assert!(a.eq_abs(&c, &0.07));
-    assert!(a.eq_rel(&c, &0.000_000_2));
-    assert!(a.eq_ulps(&c, &1));
-
-    assert!(c.ne_abs(&a, &0.0));
-    assert!(c.ne_rel(&a, &0.0));
-    assert!(c.ne_ulps(&a, &0));
-
-    assert!(c.eq_abs(&a, &0.07));
-    assert!(c.eq_rel(&a, &0.000_000_2));
-    assert!(c.eq_ulps(&a, &1));
-}
-
-#[test]
-fn float_eq_macro_self() {
-    let a = MyComplex32 {
-        re: 1.0,
-        im: 1_000_000.,
-    };
-
-    assert!(float_eq!(a, a, abs <= 0.0));
-    assert!(float_eq!(a, a, abs <= 0.0));
-    assert!(float_eq!(a, a, ulps <= 0));
-
-    let b = MyComplex32 {
-        re: 1.000_000_1,
-        im: 1_000_000.,
-    };
-
-    assert!(float_ne!(a, b, abs <= 0.0));
-    assert!(float_ne!(a, b, rel <= 0.0));
-    assert!(float_ne!(a, b, ulps <= 0));
-
-    assert!(float_eq!(a, b, abs <= 0.000_000_12));
-    assert!(float_eq!(a, b, rel <= 0.000_000_12));
-    assert!(float_eq!(a, b, ulps <= 2));
-
-    assert!(float_ne!(b, a, abs <= 0.0));
-    assert!(float_ne!(b, a, rel <= 0.0));
-    assert!(float_ne!(b, a, ulps <= 0));
-
-    assert!(float_eq!(b, a, abs <= 0.000_000_12));
-    assert!(float_eq!(b, a, rel <= 0.000_000_12));
-    assert!(float_eq!(b, a, ulps <= 2));
-
-    let c = MyComplex32 {
-        re: 1.0,
-        im: 1_000_000.06,
-    };
-
-    assert!(float_ne!(a, c, abs <= 0.0));
-    assert!(float_ne!(a, c, rel <= 0.0));
-    assert!(float_ne!(a, c, ulps <= 0));
-
-    assert!(float_eq!(a, c, abs <= 0.07));
-    assert!(float_eq!(a, c, rel <= 0.000_000_2));
-    assert!(float_eq!(a, c, ulps <= 1));
-
-    assert!(float_ne!(c, a, abs <= 0.0));
-    assert!(float_ne!(c, a, rel <= 0.0));
-    assert!(float_ne!(c, a, ulps <= 0));
-
-    assert!(float_eq!(c, a, abs <= 0.07));
-    assert!(float_eq!(c, a, rel <= 0.000_000_2));
-    assert!(float_eq!(c, a, ulps <= 1));
-}
-
-//------------------------------------------------------------------------------
-// FloatEq with f32
+// FloatEq
 //------------------------------------------------------------------------------
 impl FloatEq<f32> for MyComplex32 {
-    type DiffEpsilon = <MyComplex32 as FloatEq<MyComplex32>>::DiffEpsilon;
-    type UlpsDiffEpsilon = <MyComplex32 as FloatEq<MyComplex32>>::UlpsDiffEpsilon;
+    type DiffEpsilon = f32;
+    type UlpsDiffEpsilon = <f32 as FloatEq>::UlpsDiffEpsilon;
 
     fn eq_abs(&self, other: &f32, max_diff: &Self::DiffEpsilon) -> bool {
         self.re.eq_abs(other, max_diff) && self.im.eq_abs(&0.0, max_diff)
@@ -388,77 +209,11 @@ fn float_eq_macro_f32() {
 }
 
 //------------------------------------------------------------------------------
-// FloatEqDebug with Self
-//------------------------------------------------------------------------------
-impl FloatEqDebug for MyComplex32 {
-    type DebugEpsilon = Self;
-    type DebugUlpsEpsilon = MyComplex32UlpsDiff;
-
-    fn debug_abs_epsilon(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> Self::DebugEpsilon {
-        MyComplex32 {
-            re: self.re.debug_abs_epsilon(&other.re, max_diff),
-            im: self.im.debug_abs_epsilon(&other.im, max_diff),
-        }
-    }
-
-    fn debug_rel_epsilon(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> Self::DebugEpsilon {
-        MyComplex32 {
-            re: self.re.debug_rel_epsilon(&other.re, max_diff),
-            im: self.im.debug_rel_epsilon(&other.im, max_diff),
-        }
-    }
-
-    fn debug_ulps_epsilon(
-        &self,
-        other: &Self,
-        max_diff: &Self::UlpsDiffEpsilon,
-    ) -> Self::DebugUlpsEpsilon {
-        MyComplex32UlpsDiff {
-            re: self.re.debug_ulps_epsilon(&other.re, max_diff),
-            im: self.im.debug_ulps_epsilon(&other.im, max_diff),
-        }
-    }
-}
-
-#[test]
-fn float_eq_debug_self() {
-    let a = MyComplex32 { re: 1.0, im: 200.0 };
-    let b = MyComplex32 { re: 50.0, im: 1.0 };
-
-    assert_eq!(
-        a.debug_abs_epsilon(&b, &0.1),
-        MyComplex32 { re: 0.1, im: 0.1 }
-    );
-    assert_eq!(
-        b.debug_abs_epsilon(&a, &0.1),
-        MyComplex32 { re: 0.1, im: 0.1 }
-    );
-
-    assert_eq!(
-        a.debug_rel_epsilon(&b, &0.1),
-        MyComplex32 { re: 5.0, im: 20.0 }
-    );
-    assert_eq!(
-        b.debug_rel_epsilon(&a, &0.1),
-        MyComplex32 { re: 5.0, im: 20.0 }
-    );
-
-    assert_eq!(
-        a.debug_ulps_epsilon(&b, &42),
-        MyComplex32UlpsDiff { re: 42, im: 42 }
-    );
-    assert_eq!(
-        b.debug_ulps_epsilon(&a, &42),
-        MyComplex32UlpsDiff { re: 42, im: 42 }
-    );
-}
-
-//------------------------------------------------------------------------------
-// FloatEqDebug with f32
+// FloatEqDebug
 //------------------------------------------------------------------------------
 impl FloatEqDebug<f32> for MyComplex32 {
-    type DebugEpsilon = Self;
-    type DebugUlpsEpsilon = MyComplex32UlpsDiff;
+    type DebugEpsilon = MyComplex32;
+    type DebugUlpsEpsilon = MyComplex32Ulps;
 
     fn debug_abs_epsilon(&self, other: &f32, max_diff: &Self::DiffEpsilon) -> Self::DebugEpsilon {
         MyComplex32 {
@@ -479,7 +234,7 @@ impl FloatEqDebug<f32> for MyComplex32 {
         other: &f32,
         max_diff: &Self::UlpsDiffEpsilon,
     ) -> Self::DebugUlpsEpsilon {
-        MyComplex32UlpsDiff {
+        MyComplex32Ulps {
             re: self.re.debug_ulps_epsilon(other, max_diff),
             im: self.im.debug_ulps_epsilon(&0.0, max_diff),
         }
@@ -543,11 +298,11 @@ fn float_eq_debug_f32() {
 
     assert_eq!(
         a.debug_ulps_epsilon(&b, &42),
-        MyComplex32UlpsDiff { re: 42, im: 42 }
+        MyComplex32Ulps { re: 42, im: 42 }
     );
     assert_eq!(
         b.debug_ulps_epsilon(&a, &42),
-        MyComplex32UlpsDiff { re: 42, im: 42 }
+        MyComplex32Ulps { re: 42, im: 42 }
     );
 
     let c = 9000.0_f32;
@@ -578,76 +333,17 @@ fn float_eq_debug_f32() {
 
     assert_eq!(
         a.debug_ulps_epsilon(&c, &42),
-        MyComplex32UlpsDiff { re: 42, im: 42 }
+        MyComplex32Ulps { re: 42, im: 42 }
     );
     assert_eq!(
         c.debug_ulps_epsilon(&a, &42),
-        MyComplex32UlpsDiff { re: 42, im: 42 }
+        MyComplex32Ulps { re: 42, im: 42 }
     );
-}
-
-//------------------------------------------------------------------------------
-//TODO: assert_float_eq!/assert_float_ne! with Self
-//------------------------------------------------------------------------------
-
-#[test]
-fn assert_float_eq_self() {
-    let a = MyComplex32 {
-        re: 1.0,
-        im: 1_000_000.,
-    };
-
-    assert_float_eq!(a, a, abs <= 0.0);
-    assert_float_eq!(a, a, abs <= 0.0);
-    assert_float_eq!(a, a, ulps <= 0);
-
-    let b = MyComplex32 {
-        re: 1.000_000_1,
-        im: 1_000_000.,
-    };
-
-    assert_float_ne!(a, b, abs <= 0.0);
-    assert_float_ne!(a, b, rel <= 0.0);
-    assert_float_ne!(a, b, ulps <= 0);
-
-    assert_float_eq!(a, b, abs <= 0.000_000_12);
-    assert_float_eq!(a, b, rel <= 0.000_000_12);
-    assert_float_eq!(a, b, ulps <= 2);
-
-    assert_float_ne!(b, a, abs <= 0.0);
-    assert_float_ne!(b, a, rel <= 0.0);
-    assert_float_ne!(b, a, ulps <= 0);
-
-    assert_float_eq!(b, a, abs <= 0.000_000_12);
-    assert_float_eq!(b, a, rel <= 0.000_000_12);
-    assert_float_eq!(b, a, ulps <= 2);
-
-    let c = MyComplex32 {
-        re: 1.0,
-        im: 1_000_000.06,
-    };
-
-    assert_float_ne!(a, c, abs <= 0.0);
-    assert_float_ne!(a, c, rel <= 0.0);
-    assert_float_ne!(a, c, ulps <= 0);
-
-    assert_float_eq!(a, c, abs <= 0.07);
-    assert_float_eq!(a, c, rel <= 0.000_000_2);
-    assert_float_eq!(a, c, ulps <= 1);
-
-    assert_float_ne!(c, a, abs <= 0.0);
-    assert_float_ne!(c, a, rel <= 0.0);
-    assert_float_ne!(c, a, ulps <= 0);
-
-    assert_float_eq!(c, a, abs <= 0.07);
-    assert_float_eq!(c, a, rel <= 0.000_000_2);
-    assert_float_eq!(c, a, ulps <= 1);
 }
 
 //------------------------------------------------------------------------------
 // assert_float_eq!/assert_float_ne! with f32
 //------------------------------------------------------------------------------
-
 #[test]
 fn assert_float_eq_f32() {
     let a = 1_000_000.06_f32;

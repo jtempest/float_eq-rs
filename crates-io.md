@@ -75,7 +75,7 @@ assert_float_ne!(0.0_f32, 0.0001, abs <= 0.00005, ulps <= 4);
 Arrays of compatible types are also supported, from size 0 to 32 (inclusive):
 
 ```rust
-assert_float_eq!([1.0000001_f32, 2.0], [1.0, 2.0], ulps <= 1);
+assert_float_eq!([1.0000001_f32, 2.0], [1.0, 2.0], ulps <= [1; 2]);
 ```
 
 Where, for example, `rel <= ROUNDING_ERROR` should be read as *"a relative 

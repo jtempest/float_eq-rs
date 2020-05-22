@@ -7,9 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Added Documentation on how to read assert error messages.
+- The `FloatEqAll` and `FloatEqAllDebug` traits, which allow for `abs_all`,
+  `rel_all` and `ulps_all` to be used in the `float_eq` and `assert_float_eq`
+  families of macros. This allows for checks that use the same epsilon threshold
+  across all fields being checked. This used to be the implicit behaviour of the
+  original checks, but these have been redefined to perform a structural check
+  with a threshold specified per field. This means that existing implementations
+  of `FloatEq` and `FloatEqDebug` ought to be updated to the new form. Despite
+  being more disruptive, this default was changed since it is a more general
+  case (e.g. tuples can generally be `FloatEq` but not `FloatEqAll`).
+- Added documentation on how to read assert error messages.
 
 ### Changed
+- `FloatEq` now more specifically means equality based on a structurally defined
+  epsilon type. See the notes on `FloatEqAll` above.
 - Directed docs.rs to build documentation for all features.
 
 ### Fixed

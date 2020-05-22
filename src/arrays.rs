@@ -1,4 +1,4 @@
-use crate::{FloatDiff, FloatEq, FloatEqDebug};
+use crate::{FloatDiff, FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug};
 use core::mem::MaybeUninit;
 
 // arrays
@@ -32,13 +32,13 @@ macro_rules! impl_float_eq_traits_for_array {
 
         #[doc(hidden)]
         impl<T: FloatEq> FloatEq for [T; $n] {
-            type DiffEpsilon = T::DiffEpsilon;
-            type UlpsDiffEpsilon = T::UlpsDiffEpsilon;
+            type DiffEpsilon = [T::DiffEpsilon; $n];
+            type UlpsDiffEpsilon = [T::UlpsDiffEpsilon; $n];
 
             #[inline]
             fn eq_abs(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
                 for i in 0..$n {
-                    if !self[i].eq_abs(&other[i], max_diff) {
+                    if !self[i].eq_abs(&other[i], &max_diff[i]) {
                         return false;
                     }
                 }
@@ -48,7 +48,7 @@ macro_rules! impl_float_eq_traits_for_array {
             #[inline]
             fn eq_rel(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
                 for i in 0..$n {
-                    if !self[i].eq_rel(&other[i], max_diff) {
+                    if !self[i].eq_rel(&other[i], &max_diff[i]) {
                         return false;
                     }
                 }
@@ -58,7 +58,7 @@ macro_rules! impl_float_eq_traits_for_array {
             #[inline]
             fn eq_ulps(&self, other: &Self, max_diff: &Self::UlpsDiffEpsilon) -> bool {
                 for i in 0..$n {
-                    if !self[i].eq_ulps(&other[i], max_diff) {
+                    if !self[i].eq_ulps(&other[i], &max_diff[i]) {
                         return false;
                     }
                 }
@@ -67,18 +67,45 @@ macro_rules! impl_float_eq_traits_for_array {
         }
 
         #[doc(hidden)]
+        impl<T: FloatEqAll> FloatEqAll for [T; $n] {
+            type DiffEpsilon = T::DiffEpsilon;
+            type UlpsDiffEpsilon = T::UlpsDiffEpsilon;
+
+            #[inline]
+            fn eq_abs_all(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+                self.iter()
+                    .zip(other.iter())
+                    .all(|(a, b)| a.eq_abs_all(b, max_diff))
+            }
+
+            #[inline]
+            fn eq_rel_all(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+                self.iter()
+                    .zip(other.iter())
+                    .all(|(a, b)| a.eq_rel_all(b, max_diff))
+            }
+
+            #[inline]
+            fn eq_ulps_all(&self, other: &Self, max_diff: &Self::UlpsDiffEpsilon) -> bool {
+                self.iter()
+                    .zip(other.iter())
+                    .all(|(a, b)| a.eq_ulps_all(b, max_diff))
+            }
+        }
+
+        #[doc(hidden)]
         impl<T: FloatEqDebug> FloatEqDebug for [T; $n] {
-            type DebugEpsilon = [<T as FloatEqDebug>::DebugEpsilon; $n];
-            type DebugUlpsEpsilon = [<T as FloatEqDebug>::DebugUlpsEpsilon; $n];
+            type DebugEpsilon = [T::DebugEpsilon; $n];
+            type DebugUlpsEpsilon = [T::DebugUlpsEpsilon; $n];
 
             fn debug_abs_epsilon(
                 &self,
                 other: &Self,
-                max_diff: &<Self as FloatEq>::DiffEpsilon,
+                max_diff: &Self::DiffEpsilon,
             ) -> Self::DebugEpsilon {
                 let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..$n {
-                    result[i] = self[i].debug_abs_epsilon(&other[i], max_diff)
+                    result[i] = self[i].debug_abs_epsilon(&other[i], &max_diff[i])
                 }
                 result
             }
@@ -86,11 +113,11 @@ macro_rules! impl_float_eq_traits_for_array {
             fn debug_rel_epsilon(
                 &self,
                 other: &Self,
-                max_diff: &<Self as FloatEq>::DiffEpsilon,
+                max_diff: &Self::DiffEpsilon,
             ) -> Self::DebugEpsilon {
                 let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..$n {
-                    result[i] = self[i].debug_rel_epsilon(&other[i], max_diff)
+                    result[i] = self[i].debug_rel_epsilon(&other[i], &max_diff[i])
                 }
                 result
             }
@@ -98,12 +125,55 @@ macro_rules! impl_float_eq_traits_for_array {
             fn debug_ulps_epsilon(
                 &self,
                 other: &Self,
-                max_diff: &<Self as FloatEq>::UlpsDiffEpsilon,
+                max_diff: &Self::UlpsDiffEpsilon,
             ) -> Self::DebugUlpsEpsilon {
                 let mut result: Self::DebugUlpsEpsilon =
                     unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..$n {
-                    result[i] = self[i].debug_ulps_epsilon(&other[i], max_diff)
+                    result[i] = self[i].debug_ulps_epsilon(&other[i], &max_diff[i])
+                }
+                result
+            }
+        }
+
+        #[doc(hidden)]
+        impl<T: FloatEqAllDebug> FloatEqAllDebug for [T; $n] {
+            type DebugEpsilon = [T::DebugEpsilon; $n];
+            type DebugUlpsEpsilon = [T::DebugUlpsEpsilon; $n];
+
+            fn debug_abs_all_epsilon(
+                &self,
+                other: &Self,
+                max_diff: &Self::DiffEpsilon,
+            ) -> Self::DebugEpsilon {
+                let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+                for i in 0..$n {
+                    result[i] = self[i].debug_abs_all_epsilon(&other[i], max_diff)
+                }
+                result
+            }
+
+            fn debug_rel_all_epsilon(
+                &self,
+                other: &Self,
+                max_diff: &Self::DiffEpsilon,
+            ) -> Self::DebugEpsilon {
+                let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+                for i in 0..$n {
+                    result[i] = self[i].debug_rel_all_epsilon(&other[i], max_diff)
+                }
+                result
+            }
+
+            fn debug_ulps_all_epsilon(
+                &self,
+                other: &Self,
+                max_diff: &Self::UlpsDiffEpsilon,
+            ) -> Self::DebugUlpsEpsilon {
+                let mut result: Self::DebugUlpsEpsilon =
+                    unsafe { MaybeUninit::uninit().assume_init() };
+                for i in 0..$n {
+                    result[i] = self[i].debug_ulps_all_epsilon(&other[i], max_diff)
                 }
                 result
             }
@@ -131,8 +201,8 @@ impl<T: FloatDiff> FloatDiff for [T; 0] {
 
 /// This is also implemented on other arrays up to size 32 (inclusive).
 impl<T: FloatEq> FloatEq for [T; 0] {
-    type DiffEpsilon = T::DiffEpsilon;
-    type UlpsDiffEpsilon = T::UlpsDiffEpsilon;
+    type DiffEpsilon = [T::DiffEpsilon; 0];
+    type UlpsDiffEpsilon = [T::UlpsDiffEpsilon; 0];
 
     #[inline]
     fn eq_abs(&self, _other: &Self, _max_diff: &Self::DiffEpsilon) -> bool {
@@ -151,6 +221,27 @@ impl<T: FloatEq> FloatEq for [T; 0] {
 }
 
 /// This is also implemented on other arrays up to size 32 (inclusive).
+impl<T: FloatEqAll> FloatEqAll for [T; 0] {
+    type DiffEpsilon = T::DiffEpsilon;
+    type UlpsDiffEpsilon = T::UlpsDiffEpsilon;
+
+    #[inline]
+    fn eq_abs_all(&self, _other: &Self, _max_diff: &Self::DiffEpsilon) -> bool {
+        true
+    }
+
+    #[inline]
+    fn eq_rel_all(&self, _other: &Self, _max_diff: &Self::DiffEpsilon) -> bool {
+        true
+    }
+
+    #[inline]
+    fn eq_ulps_all(&self, _other: &Self, _max_diff: &Self::UlpsDiffEpsilon) -> bool {
+        true
+    }
+}
+
+/// This is also implemented on other arrays up to size 32 (inclusive).
 impl<T: FloatEqDebug> FloatEqDebug for [T; 0] {
     type DebugEpsilon = [<T as FloatEqDebug>::DebugEpsilon; 0];
     type DebugUlpsEpsilon = [<T as FloatEqDebug>::DebugUlpsEpsilon; 0];
@@ -158,7 +249,7 @@ impl<T: FloatEqDebug> FloatEqDebug for [T; 0] {
     fn debug_abs_epsilon(
         &self,
         _other: &Self,
-        _max_diff: &<Self as FloatEq>::DiffEpsilon,
+        _max_diff: &Self::DiffEpsilon,
     ) -> Self::DebugEpsilon {
         []
     }
@@ -166,7 +257,7 @@ impl<T: FloatEqDebug> FloatEqDebug for [T; 0] {
     fn debug_rel_epsilon(
         &self,
         _other: &Self,
-        _max_diff: &<Self as FloatEq>::DiffEpsilon,
+        _max_diff: &Self::DiffEpsilon,
     ) -> Self::DebugEpsilon {
         []
     }
@@ -174,7 +265,37 @@ impl<T: FloatEqDebug> FloatEqDebug for [T; 0] {
     fn debug_ulps_epsilon(
         &self,
         _other: &Self,
-        _max_diff: &<Self as FloatEq>::UlpsDiffEpsilon,
+        _max_diff: &Self::UlpsDiffEpsilon,
+    ) -> Self::DebugUlpsEpsilon {
+        []
+    }
+}
+
+/// This is also implemented on other arrays up to size 32 (inclusive).
+impl<T: FloatEqAllDebug> FloatEqAllDebug for [T; 0] {
+    type DebugEpsilon = [<T as FloatEqAllDebug>::DebugEpsilon; 0];
+    type DebugUlpsEpsilon = [<T as FloatEqAllDebug>::DebugUlpsEpsilon; 0];
+
+    fn debug_abs_all_epsilon(
+        &self,
+        _other: &Self,
+        _max_diff: &Self::DiffEpsilon,
+    ) -> Self::DebugEpsilon {
+        []
+    }
+
+    fn debug_rel_all_epsilon(
+        &self,
+        _other: &Self,
+        _max_diff: &Self::DiffEpsilon,
+    ) -> Self::DebugEpsilon {
+        []
+    }
+
+    fn debug_ulps_all_epsilon(
+        &self,
+        _other: &Self,
+        _max_diff: &Self::UlpsDiffEpsilon,
     ) -> Self::DebugUlpsEpsilon {
         []
     }
@@ -249,35 +370,7 @@ mod tests {
                     check_float_diff!(0);
                     check_float_diff!(1);
                     check_float_diff!(2);
-                    check_float_diff!(3);
-                    check_float_diff!(4);
-                    check_float_diff!(5);
-                    check_float_diff!(6);
-                    check_float_diff!(7);
-                    check_float_diff!(8);
-                    check_float_diff!(9);
-                    check_float_diff!(10);
-                    check_float_diff!(11);
-                    check_float_diff!(12);
-                    check_float_diff!(13);
-                    check_float_diff!(14);
-                    check_float_diff!(15);
-                    check_float_diff!(16);
-                    check_float_diff!(17);
-                    check_float_diff!(18);
-                    check_float_diff!(19);
-                    check_float_diff!(20);
-                    check_float_diff!(21);
-                    check_float_diff!(22);
-                    check_float_diff!(23);
-                    check_float_diff!(24);
-                    check_float_diff!(25);
-                    check_float_diff!(26);
-                    check_float_diff!(27);
-                    check_float_diff!(28);
-                    check_float_diff!(29);
-                    check_float_diff!(30);
-                    check_float_diff!(31);
+                    //we can infer the checks in between work
                     check_float_diff!(32);
 
                     // nested
@@ -293,67 +386,83 @@ mod tests {
                             a[i] = (i as $float + 1.);
                         }
 
-                        assert_float_eq!(a, a, abs <= 0.0);
-                        assert_float_eq!(a, a, rel <= 0.0);
-                        assert_float_eq!(a, a, ulps <= 0);
+                        assert_float_eq!(a, a, abs <= [0.0; $n]);
+                        assert_float_eq!(a, a, rel <= [0.0; $n]);
+                        assert_float_eq!(a, a, ulps <= [0; $n]);
 
                         for i in 0..$n {
                             let mut b = a;
                             b[i] = a[i] + 0.5;
-                            assert_float_eq!(a, b, abs <= 0.5);
-                            assert_float_ne!(a, b, abs <= 0.0);
+
+                            let mut eps = [0.0; $n];
+                            assert_float_ne!(a, b, abs <= eps);
+                            eps[i] = 0.5;
+                            assert_float_eq!(a, b, abs <= eps);
 
                             let mut b = a;
                             b[i] = $float::from_bits(a[i].to_bits() + 1);
-                            assert_float_eq!(a, b, rel <= core::$float::EPSILON);
-                            assert_float_ne!(a, b, rel <= 0.0);
-                            assert_float_eq!(a, b, ulps <= 1);
-                            assert_float_ne!(a, b, ulps <= 0);
+
+                            let mut eps = [0.0; $n];
+                            assert_float_ne!(a, b, rel <= eps);
+                            eps[i] = core::$float::EPSILON;
+                            assert_float_eq!(a, b, rel <= eps);
+
+                            let mut eps = [0; $n];
+                            assert_float_ne!(a, b, ulps <= eps);
+                            eps[i] = 1;
+                            assert_float_eq!(a, b, ulps <= eps);
                         }
                     }};
+                }
+
+                macro_rules! check_float_eq_all {
+                    ($n:literal) => {{
+                        let mut a: [$float; $n] = [0.; $n];
+                        for i in 0..$n {
+                            a[i] = (i as $float + 1.);
+                        }
+
+                        assert_float_eq!(a, a, abs_all <= 0.0);
+                        assert_float_eq!(a, a, rel_all <= 0.0);
+                        assert_float_eq!(a, a, ulps_all <= 0);
+
+                        for i in 0..$n {
+                            let mut b = a;
+                            b[i] = a[i] + 0.5;
+                            assert_float_eq!(a, b, abs_all <= 0.5);
+                            assert_float_ne!(a, b, abs_all <= 0.0);
+
+                            let mut b = a;
+                            b[i] = $float::from_bits(a[i].to_bits() + 1);
+                            assert_float_eq!(a, b, rel_all <= core::$float::EPSILON);
+                            assert_float_ne!(a, b, rel_all <= 0.0);
+                            assert_float_eq!(a, b, ulps_all <= 1);
+                            assert_float_ne!(a, b, ulps_all <= 0);
+                        }
+                    }};
+                }
+
+                macro_rules! check_float_eq_macros {
+                    ($n:literal) => {
+                        check_float_eq!($n);
+                        check_float_eq_all!($n);
+                    };
                 }
 
                 #[test]
                 fn float_eq() {
                     //TODO: Use const generics once they're stable
-                    check_float_eq!(0);
-                    check_float_eq!(1);
-                    check_float_eq!(2);
-                    check_float_eq!(3);
-                    check_float_eq!(4);
-                    check_float_eq!(5);
-                    check_float_eq!(6);
-                    check_float_eq!(7);
-                    check_float_eq!(8);
-                    check_float_eq!(9);
-                    check_float_eq!(10);
-                    check_float_eq!(11);
-                    check_float_eq!(12);
-                    check_float_eq!(13);
-                    check_float_eq!(14);
-                    check_float_eq!(15);
-                    check_float_eq!(16);
-                    check_float_eq!(17);
-                    check_float_eq!(18);
-                    check_float_eq!(19);
-                    check_float_eq!(20);
-                    check_float_eq!(21);
-                    check_float_eq!(22);
-                    check_float_eq!(23);
-                    check_float_eq!(24);
-                    check_float_eq!(25);
-                    check_float_eq!(26);
-                    check_float_eq!(27);
-                    check_float_eq!(28);
-                    check_float_eq!(29);
-                    check_float_eq!(30);
-                    check_float_eq!(31);
-                    check_float_eq!(32);
+                    check_float_eq_macros!(0);
+                    check_float_eq_macros!(1);
+                    check_float_eq_macros!(2);
+                    //we can infer the checks in between work
+                    check_float_eq_macros!(32);
 
                     // nested
-                    let a = [[1_f32, 2.], [1., 2.]];
-                    let b = [[1_f32, 2.], [-1., -2.]];
-                    assert_float_eq!(a, b, abs <= 5.);
+                    let a = [[1_f32, 2.], [1., -2.]];
+                    let b = [[1_f32, 3.], [-1., 2.]];
+                    assert_float_eq!(a, b, abs <= [[0., 1.], [2., 4.]]);
+                    assert_float_eq!(a, b, abs_all <= 4.);
                 }
             }
         };

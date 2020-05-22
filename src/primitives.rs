@@ -1,4 +1,4 @@
-use crate::{FloatDiff, FloatEq, FloatEqDebug};
+use crate::{FloatDiff, FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug};
 
 macro_rules! impl_traits {
     ($float:ident, $uint:ident) => {
@@ -64,6 +64,26 @@ macro_rules! impl_traits {
             }
         }
 
+        impl FloatEqAll for $float {
+            type DiffEpsilon = <$float as FloatEq>::DiffEpsilon;
+            type UlpsDiffEpsilon = <$float as FloatEq>::UlpsDiffEpsilon;
+
+            #[inline]
+            fn eq_abs_all(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+                self.eq_abs(other, max_diff)
+            }
+
+            #[inline]
+            fn eq_rel_all(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+                self.eq_rel(other, max_diff)
+            }
+
+            #[inline]
+            fn eq_ulps_all(&self, other: &Self, max_diff: &Self::UlpsDiffEpsilon) -> bool {
+                self.eq_ulps(other, max_diff)
+            }
+        }
+
         impl FloatEqDebug for $float {
             type DebugEpsilon = <Self as FloatEq>::DiffEpsilon;
             type DebugUlpsEpsilon = <Self as FloatEq>::UlpsDiffEpsilon;
@@ -90,6 +110,35 @@ macro_rules! impl_traits {
                 max_diff: &<Self as FloatEq>::UlpsDiffEpsilon,
             ) -> Self::DebugUlpsEpsilon {
                 *max_diff
+            }
+        }
+
+        impl FloatEqAllDebug for $float {
+            type DebugEpsilon = <Self as FloatEqAll>::DiffEpsilon;
+            type DebugUlpsEpsilon = <Self as FloatEqAll>::UlpsDiffEpsilon;
+
+            fn debug_abs_all_epsilon(
+                &self,
+                other: &Self,
+                max_diff: &<Self as FloatEqAll>::DiffEpsilon,
+            ) -> Self::DebugEpsilon {
+                self.debug_abs_epsilon(other, max_diff)
+            }
+
+            fn debug_rel_all_epsilon(
+                &self,
+                other: &Self,
+                max_diff: &<Self as FloatEq>::DiffEpsilon,
+            ) -> Self::DebugEpsilon {
+                self.debug_rel_epsilon(other, max_diff)
+            }
+
+            fn debug_ulps_all_epsilon(
+                &self,
+                other: &Self,
+                max_diff: &<Self as FloatEq>::UlpsDiffEpsilon,
+            ) -> Self::DebugUlpsEpsilon {
+                self.debug_ulps_epsilon(other, max_diff)
             }
         }
     };
@@ -151,10 +200,15 @@ mod tests {
 
                     let check_eq = |a, b, max_diff| {
                         check(eq, ne, a, b, max_diff, true);
+
                         assert!(float_eq!(a, b, abs <= max_diff));
+                        assert!(float_eq!(a, b, abs_all <= max_diff));
+
                         assert!(!float_ne!(a, b, abs <= max_diff));
+                        assert!(!float_ne!(a, b, abs_all <= max_diff));
 
                         assert_float_eq!(a, b, abs <= max_diff);
+                        assert_float_eq!(a, b, abs_all <= max_diff);
 
                         // trailing comma
                         assert!(float_eq!(a, b, abs <= max_diff,));
@@ -164,10 +218,15 @@ mod tests {
 
                     let check_ne = |a, b, max_diff| {
                         check(eq, ne, a, b, max_diff, false);
+
                         assert!(!float_eq!(a, b, abs <= max_diff));
+                        assert!(!float_eq!(a, b, abs_all <= max_diff));
+
                         assert!(float_ne!(a, b, abs <= max_diff));
+                        assert!(float_ne!(a, b, abs_all <= max_diff));
 
                         assert_float_ne!(a, b, abs <= max_diff);
+                        assert_float_ne!(a, b, abs_all <= max_diff);
 
                         // trailing comma
                         assert_float_ne!(a, b, abs <= max_diff,);
@@ -216,16 +275,27 @@ mod tests {
 
                     let check_eq = |a, b, max_diff| {
                         check(eq, ne, a, b, max_diff, true);
+
                         assert!(float_eq!(a, b, rel <= max_diff));
+                        assert!(float_eq!(a, b, rel_all <= max_diff));
+
                         assert!(!float_ne!(a, b, rel <= max_diff));
+                        assert!(!float_ne!(a, b, rel_all <= max_diff));
+
                         assert_float_eq!(a, b, rel <= max_diff);
+                        assert_float_eq!(a, b, rel_all <= max_diff);
                     };
 
                     let check_ne = |a, b, max_diff| {
                         check(eq, ne, a, b, max_diff, false);
                         assert!(!float_eq!(a, b, rel <= max_diff));
+                        assert!(!float_eq!(a, b, rel_all <= max_diff));
+
                         assert!(float_ne!(a, b, rel <= max_diff));
+                        assert!(float_ne!(a, b, rel_all <= max_diff));
+
                         assert_float_ne!(a, b, rel <= max_diff);
+                        assert_float_ne!(a, b, rel_all <= max_diff);
                     };
 
                     // useful in range where epsilon is relevent
