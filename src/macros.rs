@@ -825,8 +825,8 @@ mod tests {
 
         #[test]
         #[should_panic]
-        fn array_abs_fail() {
-            assert_float_eq!([1.0_f32, 2.], [1.000_000_1, 3.], abs <= [0.000_000_1; 2]);
+        fn abs_all_fail() {
+            assert_float_eq!(0_f32, 1., abs_all <= 0.1);
         }
 
         #[test]
@@ -837,12 +837,8 @@ mod tests {
 
         #[test]
         #[should_panic]
-        fn array_rel_fail() {
-            assert_float_eq!(
-                [1.0_f32, 2.],
-                [1.000_000_1, 3.],
-                rel <= [core::f32::EPSILON; 2]
-            );
+        fn rel_all_fail() {
+            assert_float_eq!(0_f32, 1., rel_all <= 0.1);
         }
 
         #[test]
@@ -853,8 +849,8 @@ mod tests {
 
         #[test]
         #[should_panic]
-        fn array_ulps_fail() {
-            assert_float_eq!([1.0_f32, 2.], [1.000_000_1, 3.], ulps <= [1; 2]);
+        fn ulps_all_fail() {
+            assert_float_eq!(1_f32, 1.000_000_2, ulps_all <= 1);
         }
 
         #[test]
