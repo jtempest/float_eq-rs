@@ -344,6 +344,7 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// this for your own types.
     ///
     /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
+    #[inline]
     fn ne_abs(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
         !self.eq_abs(other, max_diff)
     }
@@ -370,6 +371,7 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// this for your own types.
     ///
     /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
+    #[inline]
     fn ne_rel(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
         !self.eq_rel(other, max_diff)
     }
@@ -396,6 +398,7 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// this for your own types.
     ///
     /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
+    #[inline]
     fn ne_ulps(&self, other: &Rhs, max_diff: &Self::UlpsEpsilon) -> bool {
         !self.eq_ulps(other, max_diff)
     }
@@ -557,6 +560,7 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     /// this for your own types.
     ///
     /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
+    #[inline]
     fn ne_abs_all(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
         !self.eq_abs_all(other, max_diff)
     }
@@ -577,6 +581,7 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     /// this for your own types.
     ///
     /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
+    #[inline]
     fn ne_rel_all(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
         !self.eq_rel_all(other, max_diff)
     }
@@ -595,6 +600,7 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     /// this for your own types.
     ///
     /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
+    #[inline]
     fn ne_ulps_all(&self, other: &Rhs, max_diff: &Self::UlpsEpsilon) -> bool {
         !self.eq_ulps_all(other, max_diff)
     }

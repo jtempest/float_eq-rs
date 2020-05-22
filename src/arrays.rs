@@ -98,6 +98,7 @@ macro_rules! impl_float_eq_traits_for_array {
             type DebugEpsilon = [T::DebugEpsilon; $n];
             type DebugUlpsEpsilon = [T::DebugUlpsEpsilon; $n];
 
+            #[inline]
             fn debug_abs_epsilon(
                 &self,
                 other: &Self,
@@ -110,6 +111,7 @@ macro_rules! impl_float_eq_traits_for_array {
                 result
             }
 
+            #[inline]
             fn debug_rel_epsilon(
                 &self,
                 other: &Self,
@@ -122,6 +124,7 @@ macro_rules! impl_float_eq_traits_for_array {
                 result
             }
 
+            #[inline]
             fn debug_ulps_epsilon(
                 &self,
                 other: &Self,
@@ -141,6 +144,7 @@ macro_rules! impl_float_eq_traits_for_array {
             type DebugEpsilon = [T::DebugEpsilon; $n];
             type DebugUlpsEpsilon = [T::DebugUlpsEpsilon; $n];
 
+            #[inline]
             fn debug_abs_all_epsilon(
                 &self,
                 other: &Self,
@@ -153,6 +157,7 @@ macro_rules! impl_float_eq_traits_for_array {
                 result
             }
 
+            #[inline]
             fn debug_rel_all_epsilon(
                 &self,
                 other: &Self,
@@ -165,6 +170,7 @@ macro_rules! impl_float_eq_traits_for_array {
                 result
             }
 
+            #[inline]
             fn debug_ulps_all_epsilon(
                 &self,
                 other: &Self,
@@ -246,14 +252,17 @@ impl<T: FloatEqDebug> FloatEqDebug for [T; 0] {
     type DebugEpsilon = [<T as FloatEqDebug>::DebugEpsilon; 0];
     type DebugUlpsEpsilon = [<T as FloatEqDebug>::DebugUlpsEpsilon; 0];
 
+    #[inline]
     fn debug_abs_epsilon(&self, _other: &Self, _max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
         []
     }
 
+    #[inline]
     fn debug_rel_epsilon(&self, _other: &Self, _max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
         []
     }
 
+    #[inline]
     fn debug_ulps_epsilon(
         &self,
         _other: &Self,
@@ -268,6 +277,7 @@ impl<T: FloatEqAllDebug> FloatEqAllDebug for [T; 0] {
     type DebugEpsilon = [<T as FloatEqAllDebug>::DebugEpsilon; 0];
     type DebugUlpsEpsilon = [<T as FloatEqAllDebug>::DebugUlpsEpsilon; 0];
 
+    #[inline]
     fn debug_abs_all_epsilon(
         &self,
         _other: &Self,
@@ -276,6 +286,7 @@ impl<T: FloatEqAllDebug> FloatEqAllDebug for [T; 0] {
         []
     }
 
+    #[inline]
     fn debug_rel_all_epsilon(
         &self,
         _other: &Self,
@@ -284,6 +295,7 @@ impl<T: FloatEqAllDebug> FloatEqAllDebug for [T; 0] {
         []
     }
 
+    #[inline]
     fn debug_ulps_all_epsilon(
         &self,
         _other: &Self,
