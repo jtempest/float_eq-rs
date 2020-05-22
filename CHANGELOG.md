@@ -23,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - `FloatEq` now more specifically means equality based on a structurally defined
   epsilon type. See the notes on `FloatEqAll` above.
+- `FloatEq`'s `DiffEpsilon` is now `Epsilon`, and `UlpsDiffEpsilon` is now
+  `UlpsEpsilon`. This reduces visual noise around the usage and harmonizes the
+  naming with `FloatEqDebug`'s associated types.
 - Directed docs.rs to build documentation for all features.
 
 ### Fixed
