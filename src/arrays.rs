@@ -345,7 +345,7 @@ mod tests {
     macro_rules! impl_tests {
         ($float:ident) => {
             mod $float {
-                use crate::FloatDiff;
+                use crate::{FloatDiff, FloatEqAllDebug, FloatEqDebug};
 
                 macro_rules! check_float_diff {
                     ($n:literal) => {{
@@ -474,6 +474,95 @@ mod tests {
                     let a = [[1_f32, 2.], [1., -2.]];
                     let b = [[1_f32, 3.], [-1., 2.]];
                     assert_float_eq!(a, b, abs_all <= 4.);
+                }
+
+                macro_rules! check_float_eq_debug {
+                    ($n:literal) => {{
+                        let mut a: [$float; $n] = [0.; $n];
+                        for i in 0..$n {
+                            a[i] = (i as $float + 1.);
+                        }
+
+                        assert_eq!(a.debug_abs_epsilon(&a, &[0.0; $n]), [0.0; $n]);
+                        assert_eq!(a.debug_rel_epsilon(&a, &[0.0; $n]), [0.0; $n]);
+                        assert_eq!(a.debug_ulps_epsilon(&a, &[0; $n]), [0; $n]);
+
+                        for i in 0..$n {
+                            let mut b = a;
+                            b[i] = a[i] + 0.5;
+
+                            let mut eps = [0.0; $n];
+                            eps[i] = 0.5;
+                            assert_eq!(a.debug_abs_epsilon(&b, &eps), eps);
+
+                            let mut b = a;
+                            b[i] = $float::from_bits(a[i].to_bits() + 1);
+
+                            let mut eps = [0.0; $n];
+                            eps[i] = core::$float::EPSILON;
+                            let mut expected = [0.0; $n];
+                            expected[i] = a[i].debug_rel_epsilon(&b[i], &eps[i]);
+                            assert_eq!(a.debug_rel_epsilon(&b, &eps), expected);
+
+                            let mut eps = [0; $n];
+                            eps[i] = 1;
+                            assert_eq!(a.debug_ulps_epsilon(&b, &eps), eps);
+                        }
+                    }};
+                }
+
+                #[test]
+                fn float_eq_debug() {
+                    //TODO: Use const generics once they're stable
+                    check_float_eq_debug!(0);
+                    check_float_eq_debug!(1);
+                    check_float_eq_debug!(2);
+                    //we can infer the checks in between work
+                    check_float_eq_debug!(32);
+                }
+
+                macro_rules! check_float_eq_all_debug {
+                    ($n:literal) => {{
+                        let mut a: [$float; $n] = [0.; $n];
+                        for i in 0..$n {
+                            a[i] = (i as $float + 1.);
+                        }
+
+                        assert_eq!(a.debug_abs_all_epsilon(&a, &0.0), [0.0; $n]);
+                        assert_eq!(a.debug_rel_all_epsilon(&a, &0.0), [0.0; $n]);
+                        assert_eq!(a.debug_ulps_all_epsilon(&a, &0), [0; $n]);
+
+                        for i in 0..$n {
+                            let mut b = a;
+                            b[i] = a[i] + 0.5;
+
+                            let eps = 0.5;
+                            assert_eq!(a.debug_abs_all_epsilon(&b, &eps), [eps; $n]);
+
+                            let mut b = a;
+                            b[i] = $float::from_bits(a[i].to_bits() + 1);
+
+                            let eps = core::$float::EPSILON;
+                            let mut expected = [0.0; $n];
+                            for j in 0..$n {
+                                expected[j] = a[j].debug_rel_all_epsilon(&b[j], &eps);
+                            }
+                            assert_eq!(a.debug_rel_all_epsilon(&b, &eps), expected);
+
+                            let eps = 1;
+                            assert_eq!(a.debug_ulps_all_epsilon(&b, &eps), [eps; $n]);
+                        }
+                    }};
+                }
+
+                #[test]
+                fn float_eq_all_debug() {
+                    //TODO: Use const generics once they're stable
+                    check_float_eq_all_debug!(0);
+                    check_float_eq_all_debug!(1);
+                    check_float_eq_all_debug!(2);
+                    //we can infer the checks in between work
+                    check_float_eq_all_debug!(32);
                 }
             }
         };
