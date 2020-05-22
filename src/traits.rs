@@ -209,8 +209,8 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
 /// }
 ///
 /// impl FloatEq for MyComplex32 {
-///     type DiffEpsilon = MyComplex32;
-///     type UlpsDiffEpsilon = MyComplex32Ulps;
+///     type Epsilon = MyComplex32;
+///     type UlpsEpsilon = MyComplex32Ulps;
 ///
 ///     fn eq_abs(&self, other: &Self, max_diff: &MyComplex32) -> bool {
 ///         self.re.eq_abs(&other.re, &max_diff.re) && self.im.eq_abs(&other.im, &max_diff.im)
@@ -254,8 +254,8 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
 /// # #[derive(Copy, Clone)]
 /// # struct MyComplex32Ulps { re: <f32 as FloatDiff>::UlpsDiff, im: <f32 as FloatDiff>::UlpsDiff }
 /// impl FloatEq<f32> for MyComplex32 {
-///     type DiffEpsilon = MyComplex32;
-///     type UlpsDiffEpsilon = MyComplex32Ulps;
+///     type Epsilon = MyComplex32;
+///     type UlpsEpsilon = MyComplex32Ulps;
 ///
 ///     fn eq_abs(&self, other: &f32, max_diff: &MyComplex32) -> bool {
 ///         self.re.eq_abs(other, &max_diff.re) && self.im.eq_abs(&0.0, &max_diff.im)
@@ -310,7 +310,7 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// just use `Self`.
     ///
     /// [`float_eq!`]: macro.float_eq.html
-    type DiffEpsilon;
+    type Epsilon;
 
     /// Type of the maximum allowed difference between two values for them to be
     /// considered equal in terms of an [ULPs comparison].
@@ -322,7 +322,7 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     ///
     /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
     /// [`float_eq!`]: macro.float_eq.html
-    type UlpsDiffEpsilon;
+    type UlpsEpsilon;
 
     /// Check whether `self` is equal to `other`, using an [absolute epsilon
     /// comparison].
@@ -335,7 +335,7 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     ///
     /// [`FloatDiff`]: trait.FloatDiff.html
     /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
-    fn eq_abs(&self, other: &Rhs, max_diff: &Self::DiffEpsilon) -> bool;
+    fn eq_abs(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool;
 
     /// Check whether `self` is not equal to `other`, using an [absolute epsilon
     /// comparison].
@@ -344,7 +344,7 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// this for your own types.
     ///
     /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
-    fn ne_abs(&self, other: &Rhs, max_diff: &Self::DiffEpsilon) -> bool {
+    fn ne_abs(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
         !self.eq_abs(other, max_diff)
     }
 
@@ -361,7 +361,7 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     ///
     /// [`FloatDiff`]: trait.FloatDiff.html
     /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
-    fn eq_rel(&self, other: &Rhs, max_diff: &Self::DiffEpsilon) -> bool;
+    fn eq_rel(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool;
 
     /// Check whether `self` is not equal to `other`, using a [relative epsilon
     /// comparison].
@@ -370,7 +370,7 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// this for your own types.
     ///
     /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
-    fn ne_rel(&self, other: &Rhs, max_diff: &Self::DiffEpsilon) -> bool {
+    fn ne_rel(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
         !self.eq_rel(other, max_diff)
     }
 
@@ -388,7 +388,7 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     ///
     /// [`FloatDiff`]: trait.FloatDiff.html
     /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
-    fn eq_ulps(&self, other: &Rhs, max_diff: &Self::UlpsDiffEpsilon) -> bool;
+    fn eq_ulps(&self, other: &Rhs, max_diff: &Self::UlpsEpsilon) -> bool;
 
     /// Check whether `self` is not equal to `other`, using an [ULPs comparison].
     ///
@@ -396,7 +396,7 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// this for your own types.
     ///
     /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
-    fn ne_ulps(&self, other: &Rhs, max_diff: &Self::UlpsDiffEpsilon) -> bool {
+    fn ne_ulps(&self, other: &Rhs, max_diff: &Self::UlpsEpsilon) -> bool {
         !self.eq_ulps(other, max_diff)
     }
 }
@@ -428,8 +428,8 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
 /// }
 ///
 /// impl FloatEqAll for MyComplex32 {
-///     type DiffEpsilon = f32;
-///     type UlpsDiffEpsilon = u32;
+///     type Epsilon = f32;
+///     type UlpsEpsilon = u32;
 ///
 ///     fn eq_abs_all(&self, other: &Self, max_diff: &f32) -> bool {
 ///         self.re.eq_abs_all(&other.re, max_diff) && self.im.eq_abs_all(&other.im, max_diff)
@@ -470,8 +470,8 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
 /// # #[derive(Copy, Clone)]
 /// # struct MyComplex32Ulps { re: <f32 as FloatDiff>::UlpsDiff, im: <f32 as FloatDiff>::UlpsDiff }
 /// impl FloatEqAll<f32> for MyComplex32 {
-///     type DiffEpsilon = f32;
-///     type UlpsDiffEpsilon = u32;
+///     type Epsilon = f32;
+///     type UlpsEpsilon = u32;
 ///
 ///     fn eq_abs_all(&self, other: &f32, max_diff: &f32) -> bool {
 ///         self.re.eq_abs_all(other, max_diff) && self.im.eq_abs_all(&0.0, max_diff)
@@ -528,7 +528,7 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     /// floating point value so is often `f32` or `f64`.
     ///
     /// [`float_eq!`]: macro.float_eq.html
-    type DiffEpsilon;
+    type Epsilon;
 
     /// Type of the maximum allowed difference between two values for them to be
     /// considered equal in terms of an [ULPs comparison].
@@ -539,7 +539,7 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     ///
     /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
     /// [`float_eq!`]: macro.float_eq.html
-    type UlpsDiffEpsilon;
+    type UlpsEpsilon;
 
     /// Check whether `self` is equal to `other`, using an [absolute epsilon
     /// comparison].
@@ -548,7 +548,7 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     ///
     /// [`FloatEq::eq_abs`]: trait.FloatEq.html#tymethod.eq_abs
     /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
-    fn eq_abs_all(&self, other: &Rhs, max_diff: &Self::DiffEpsilon) -> bool;
+    fn eq_abs_all(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool;
 
     /// Check whether `self` is not equal to `other`, using an [absolute epsilon
     /// comparison].
@@ -557,7 +557,7 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     /// this for your own types.
     ///
     /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
-    fn ne_abs_all(&self, other: &Rhs, max_diff: &Self::DiffEpsilon) -> bool {
+    fn ne_abs_all(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
         !self.eq_abs_all(other, max_diff)
     }
 
@@ -568,7 +568,7 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     ///
     /// [`FloatEq::eq_rel`]: trait.FloatEq.html#tymethod.eq_rel
     /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
-    fn eq_rel_all(&self, other: &Rhs, max_diff: &Self::DiffEpsilon) -> bool;
+    fn eq_rel_all(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool;
 
     /// Check whether `self` is not equal to `other`, using a [relative epsilon
     /// comparison].
@@ -577,7 +577,7 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     /// this for your own types.
     ///
     /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
-    fn ne_rel_all(&self, other: &Rhs, max_diff: &Self::DiffEpsilon) -> bool {
+    fn ne_rel_all(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
         !self.eq_rel_all(other, max_diff)
     }
 
@@ -587,7 +587,7 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     ///
     /// [`FloatEq::eq_ulps`]: trait.FloatEq.html#tymethod.eq_ulps
     /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
-    fn eq_ulps_all(&self, other: &Rhs, max_diff: &Self::UlpsDiffEpsilon) -> bool;
+    fn eq_ulps_all(&self, other: &Rhs, max_diff: &Self::UlpsEpsilon) -> bool;
 
     /// Check whether `self` is not equal to `other`, using an [ULPs comparison].
     ///
@@ -595,7 +595,7 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     /// this for your own types.
     ///
     /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
-    fn ne_ulps_all(&self, other: &Rhs, max_diff: &Self::UlpsDiffEpsilon) -> bool {
+    fn ne_ulps_all(&self, other: &Rhs, max_diff: &Self::UlpsEpsilon) -> bool {
         !self.eq_ulps_all(other, max_diff)
     }
 }
@@ -629,8 +629,8 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
 /// }
 ///
 /// impl FloatEq for MyComplex32 {
-///     type DiffEpsilon = MyComplex32;
-///     type UlpsDiffEpsilon = MyComplex32Ulps;
+///     type Epsilon = MyComplex32;
+///     type UlpsEpsilon = MyComplex32Ulps;
 ///
 ///     fn eq_abs(&self, other: &Self, max_diff: &MyComplex32) -> bool {
 ///         self.re.eq_abs(&other.re, &max_diff.re) && self.im.eq_abs(&other.im, &max_diff.im)
@@ -652,7 +652,7 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
 ///     fn debug_abs_epsilon(
 ///         &self,
 ///         other: &Self,
-///         max_diff: &Self::DiffEpsilon
+///         max_diff: &Self::Epsilon
 ///     ) -> Self::DebugEpsilon {
 ///         MyComplex32 {
 ///             re: self.re.debug_abs_epsilon(&other.re, &max_diff.re),
@@ -663,7 +663,7 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
 ///     fn debug_rel_epsilon(
 ///         &self,
 ///         other: &Self,
-///         max_diff: &Self::DiffEpsilon
+///         max_diff: &Self::Epsilon
 ///     ) -> Self::DebugEpsilon {
 ///         MyComplex32 {
 ///             re: self.re.debug_rel_epsilon(&other.re, &max_diff.re),
@@ -674,7 +674,7 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
 ///     fn debug_ulps_epsilon(
 ///         &self,
 ///         other: &Self,
-///         max_diff: &Self::UlpsDiffEpsilon,
+///         max_diff: &Self::UlpsEpsilon,
 ///     ) -> Self::DebugUlpsEpsilon {
 ///         MyComplex32Ulps {
 ///             re: self.re.debug_ulps_epsilon(&other.re, &max_diff.re),
@@ -713,8 +713,8 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
 /// # #[derive(Debug, PartialEq)]
 /// #  struct MyComplex32Ulps { re: <f32 as FloatDiff>::UlpsDiff, im: <f32 as FloatDiff>::UlpsDiff }
 /// impl FloatEq<f32> for MyComplex32 {
-///     type DiffEpsilon = MyComplex32;
-///     type UlpsDiffEpsilon = MyComplex32Ulps;
+///     type Epsilon = MyComplex32;
+///     type UlpsEpsilon = MyComplex32Ulps;
 ///
 ///     fn eq_abs(&self, other: &f32, max_diff: &MyComplex32) -> bool {
 ///         self.re.eq_abs(other, &max_diff.re) && self.im.eq_abs(&0.0, &max_diff.im)
@@ -736,7 +736,7 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
 ///     fn debug_abs_epsilon(
 ///         &self,
 ///         other: &f32,
-///         max_diff: &Self::DiffEpsilon
+///         max_diff: &Self::Epsilon
 ///     ) -> Self::DebugEpsilon {
 ///         MyComplex32 {
 ///             re: self.re.debug_abs_epsilon(other, &max_diff.re),
@@ -747,7 +747,7 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
 ///     fn debug_rel_epsilon(
 ///         &self,
 ///         other: &f32,
-///         max_diff: &Self::DiffEpsilon
+///         max_diff: &Self::Epsilon
 ///     ) -> Self::DebugEpsilon {
 ///         MyComplex32 {
 ///             re: self.re.debug_rel_epsilon(other, &max_diff.re),
@@ -758,7 +758,7 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
 ///     fn debug_ulps_epsilon(
 ///         &self,
 ///         other: &f32,
-///         max_diff: &Self::UlpsDiffEpsilon,
+///         max_diff: &Self::UlpsEpsilon,
 ///     ) -> Self::DebugUlpsEpsilon {
 ///         MyComplex32Ulps {
 ///             re: self.re.debug_ulps_epsilon(other, &max_diff.re),
@@ -791,23 +791,23 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
 pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
     /// Displayed to the user when an assert fails, using `fmt::Debug`.
     ///
-    /// This should match [`Self::DiffEpsilon`].
+    /// This should match [`Self::Epsilon`].
     ///
-    /// [`Self::DiffEpsilon`]: trait.FloatEq.html#associatedtype.DiffEpsilon
+    /// [`Self::Epsilon`]: trait.FloatEq.html#associatedtype.Epsilon
     type DebugEpsilon: fmt::Debug;
 
     /// Displayed to the user when an assert fails, using `fmt::Debug`.
     ///
-    /// This should match [`Self::UlpsDiffEpsilon`].
+    /// This should match [`Self::UlpsEpsilon`].
     ///
-    /// [`Self::UlpsDiffEpsilon`]: trait.FloatEq.html#associatedtype.UlpsDiffEpsilon
+    /// [`Self::UlpsEpsilon`]: trait.FloatEq.html#associatedtype.UlpsEpsilon
     type DebugUlpsEpsilon: fmt::Debug;
 
     /// The epsilon used by an `abs` [absolute epsilon comparison], displayed when
     /// an assert fails.
     ///
     /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
-    fn debug_abs_epsilon(&self, other: &Rhs, max_diff: &Self::DiffEpsilon) -> Self::DebugEpsilon;
+    fn debug_abs_epsilon(&self, other: &Rhs, max_diff: &Self::Epsilon) -> Self::DebugEpsilon;
 
     /// The epsilon used by a `rel` [relative epsilon comparison], displayed when
     /// an assert fails.
@@ -816,7 +816,7 @@ pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
     /// based on the size of their inputs.
     ///
     /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
-    fn debug_rel_epsilon(&self, other: &Rhs, max_diff: &Self::DiffEpsilon) -> Self::DebugEpsilon;
+    fn debug_rel_epsilon(&self, other: &Rhs, max_diff: &Self::Epsilon) -> Self::DebugEpsilon;
 
     /// The epsilon used by an `ulps` [ULPs comparison], displayed when an assert
     /// fails.
@@ -825,7 +825,7 @@ pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
     fn debug_ulps_epsilon(
         &self,
         other: &Rhs,
-        max_diff: &Self::UlpsDiffEpsilon,
+        max_diff: &Self::UlpsEpsilon,
     ) -> Self::DebugUlpsEpsilon;
 }
 
@@ -860,8 +860,8 @@ pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
 /// }
 ///
 /// impl FloatEqAll for MyComplex32 {
-///     type DiffEpsilon = f32;
-///     type UlpsDiffEpsilon = u32;
+///     type Epsilon = f32;
+///     type UlpsEpsilon = u32;
 ///
 ///     fn eq_abs_all(&self, other: &Self, max_diff: &f32) -> bool {
 ///         self.re.eq_abs_all(&other.re, max_diff) && self.im.eq_abs_all(&other.im, max_diff)
@@ -883,7 +883,7 @@ pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
 ///     fn debug_abs_all_epsilon(
 ///         &self,
 ///         other: &Self,
-///         max_diff: &Self::DiffEpsilon
+///         max_diff: &Self::Epsilon
 ///     ) -> Self::DebugEpsilon {
 ///         MyComplex32 {
 ///             re: self.re.debug_abs_all_epsilon(&other.re, max_diff),
@@ -894,7 +894,7 @@ pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
 ///     fn debug_rel_all_epsilon(
 ///         &self,
 ///         other: &Self,
-///         max_diff: &Self::DiffEpsilon
+///         max_diff: &Self::Epsilon
 ///     ) -> Self::DebugEpsilon {
 ///         MyComplex32 {
 ///             re: self.re.debug_rel_all_epsilon(&other.re, max_diff),
@@ -905,7 +905,7 @@ pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
 ///     fn debug_ulps_all_epsilon(
 ///         &self,
 ///         other: &Self,
-///         max_diff: &Self::UlpsDiffEpsilon,
+///         max_diff: &Self::UlpsEpsilon,
 ///     ) -> Self::DebugUlpsEpsilon {
 ///         MyComplex32Ulps {
 ///             re: self.re.debug_ulps_all_epsilon(&other.re, max_diff),
@@ -944,8 +944,8 @@ pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
 /// # #[derive(Debug, PartialEq)]
 /// #  struct MyComplex32Ulps { re: <f32 as FloatDiff>::UlpsDiff, im: <f32 as FloatDiff>::UlpsDiff }
 /// impl FloatEqAll<f32> for MyComplex32 {
-///     type DiffEpsilon = f32;
-///     type UlpsDiffEpsilon = u32;
+///     type Epsilon = f32;
+///     type UlpsEpsilon = u32;
 ///
 ///     fn eq_abs_all(&self, other: &f32, max_diff: &f32) -> bool {
 ///         self.re.eq_abs_all(other, max_diff) && self.im.eq_abs_all(&0.0, max_diff)
@@ -967,7 +967,7 @@ pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
 ///     fn debug_abs_all_epsilon(
 ///         &self,
 ///         other: &f32,
-///         max_diff: &Self::DiffEpsilon
+///         max_diff: &Self::Epsilon
 ///     ) -> Self::DebugEpsilon {
 ///         MyComplex32 {
 ///             re: self.re.debug_abs_all_epsilon(other, max_diff),
@@ -978,7 +978,7 @@ pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
 ///     fn debug_rel_all_epsilon(
 ///         &self,
 ///         other: &f32,
-///         max_diff: &Self::DiffEpsilon
+///         max_diff: &Self::Epsilon
 ///     ) -> Self::DebugEpsilon {
 ///         MyComplex32 {
 ///             re: self.re.debug_rel_all_epsilon(other, max_diff),
@@ -989,7 +989,7 @@ pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
 ///     fn debug_ulps_all_epsilon(
 ///         &self,
 ///         other: &f32,
-///         max_diff: &Self::UlpsDiffEpsilon,
+///         max_diff: &Self::UlpsEpsilon,
 ///     ) -> Self::DebugUlpsEpsilon {
 ///         MyComplex32Ulps {
 ///             re: self.re.debug_ulps_all_epsilon(other, max_diff),
@@ -1035,11 +1035,7 @@ pub trait FloatEqAllDebug<Rhs: ?Sized = Self>: FloatEqAll<Rhs> {
     /// when an assert fails.
     ///
     /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
-    fn debug_abs_all_epsilon(
-        &self,
-        other: &Rhs,
-        max_diff: &Self::DiffEpsilon,
-    ) -> Self::DebugEpsilon;
+    fn debug_abs_all_epsilon(&self, other: &Rhs, max_diff: &Self::Epsilon) -> Self::DebugEpsilon;
 
     /// The epsilon used by a `rel_all` [relative epsilon comparison], displayed
     /// when an assert fails.
@@ -1048,11 +1044,7 @@ pub trait FloatEqAllDebug<Rhs: ?Sized = Self>: FloatEqAll<Rhs> {
     /// based on the size of their inputs.
     ///
     /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
-    fn debug_rel_all_epsilon(
-        &self,
-        other: &Rhs,
-        max_diff: &Self::DiffEpsilon,
-    ) -> Self::DebugEpsilon;
+    fn debug_rel_all_epsilon(&self, other: &Rhs, max_diff: &Self::Epsilon) -> Self::DebugEpsilon;
 
     /// The epsilon used by an `ulps_all` [ULPs comparison], displayed when an assert
     /// fails.
@@ -1061,6 +1053,6 @@ pub trait FloatEqAllDebug<Rhs: ?Sized = Self>: FloatEqAll<Rhs> {
     fn debug_ulps_all_epsilon(
         &self,
         other: &Rhs,
-        max_diff: &Self::UlpsDiffEpsilon,
+        max_diff: &Self::UlpsEpsilon,
     ) -> Self::DebugUlpsEpsilon;
 }

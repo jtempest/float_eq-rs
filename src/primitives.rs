@@ -39,23 +39,23 @@ macro_rules! impl_traits {
         }
 
         impl FloatEq for $float {
-            type DiffEpsilon = $float;
-            type UlpsDiffEpsilon = $uint;
+            type Epsilon = $float;
+            type UlpsEpsilon = $uint;
 
             #[inline]
-            fn eq_abs(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+            fn eq_abs(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
                 self.abs_diff(other).le(max_diff)
             }
 
             #[inline]
-            fn eq_rel(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+            fn eq_rel(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
                 let largest = $float::abs(*self).max($float::abs(*other));
                 let epsilon = largest * max_diff;
                 self.abs_diff(other) <= epsilon
             }
 
             #[inline]
-            fn eq_ulps(&self, other: &Self, max_diff: &Self::UlpsDiffEpsilon) -> bool {
+            fn eq_ulps(&self, other: &Self, max_diff: &Self::UlpsEpsilon) -> bool {
                 if self.is_sign_positive() != other.is_sign_positive() {
                     self == other // account for zero == negative zero
                 } else {
@@ -65,33 +65,33 @@ macro_rules! impl_traits {
         }
 
         impl FloatEqAll for $float {
-            type DiffEpsilon = <$float as FloatEq>::DiffEpsilon;
-            type UlpsDiffEpsilon = <$float as FloatEq>::UlpsDiffEpsilon;
+            type Epsilon = <$float as FloatEq>::Epsilon;
+            type UlpsEpsilon = <$float as FloatEq>::UlpsEpsilon;
 
             #[inline]
-            fn eq_abs_all(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+            fn eq_abs_all(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
                 self.eq_abs(other, max_diff)
             }
 
             #[inline]
-            fn eq_rel_all(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+            fn eq_rel_all(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
                 self.eq_rel(other, max_diff)
             }
 
             #[inline]
-            fn eq_ulps_all(&self, other: &Self, max_diff: &Self::UlpsDiffEpsilon) -> bool {
+            fn eq_ulps_all(&self, other: &Self, max_diff: &Self::UlpsEpsilon) -> bool {
                 self.eq_ulps(other, max_diff)
             }
         }
 
         impl FloatEqDebug for $float {
-            type DebugEpsilon = <Self as FloatEq>::DiffEpsilon;
-            type DebugUlpsEpsilon = <Self as FloatEq>::UlpsDiffEpsilon;
+            type DebugEpsilon = <Self as FloatEq>::Epsilon;
+            type DebugUlpsEpsilon = <Self as FloatEq>::UlpsEpsilon;
 
             fn debug_abs_epsilon(
                 &self,
                 _other: &Self,
-                max_diff: &<Self as FloatEq>::DiffEpsilon,
+                max_diff: &<Self as FloatEq>::Epsilon,
             ) -> Self::DebugEpsilon {
                 *max_diff
             }
@@ -99,7 +99,7 @@ macro_rules! impl_traits {
             fn debug_rel_epsilon(
                 &self,
                 other: &Self,
-                max_diff: &<Self as FloatEq>::DiffEpsilon,
+                max_diff: &<Self as FloatEq>::Epsilon,
             ) -> Self::DebugEpsilon {
                 $float::abs(*self).max($float::abs(*other)) * max_diff
             }
@@ -107,20 +107,20 @@ macro_rules! impl_traits {
             fn debug_ulps_epsilon(
                 &self,
                 _other: &Self,
-                max_diff: &<Self as FloatEq>::UlpsDiffEpsilon,
+                max_diff: &<Self as FloatEq>::UlpsEpsilon,
             ) -> Self::DebugUlpsEpsilon {
                 *max_diff
             }
         }
 
         impl FloatEqAllDebug for $float {
-            type DebugEpsilon = <Self as FloatEqAll>::DiffEpsilon;
-            type DebugUlpsEpsilon = <Self as FloatEqAll>::UlpsDiffEpsilon;
+            type DebugEpsilon = <Self as FloatEqAll>::Epsilon;
+            type DebugUlpsEpsilon = <Self as FloatEqAll>::UlpsEpsilon;
 
             fn debug_abs_all_epsilon(
                 &self,
                 other: &Self,
-                max_diff: &<Self as FloatEqAll>::DiffEpsilon,
+                max_diff: &<Self as FloatEqAll>::Epsilon,
             ) -> Self::DebugEpsilon {
                 self.debug_abs_epsilon(other, max_diff)
             }
@@ -128,7 +128,7 @@ macro_rules! impl_traits {
             fn debug_rel_all_epsilon(
                 &self,
                 other: &Self,
-                max_diff: &<Self as FloatEq>::DiffEpsilon,
+                max_diff: &<Self as FloatEq>::Epsilon,
             ) -> Self::DebugEpsilon {
                 self.debug_rel_epsilon(other, max_diff)
             }
@@ -136,7 +136,7 @@ macro_rules! impl_traits {
             fn debug_ulps_all_epsilon(
                 &self,
                 other: &Self,
-                max_diff: &<Self as FloatEq>::UlpsDiffEpsilon,
+                max_diff: &<Self as FloatEq>::UlpsEpsilon,
             ) -> Self::DebugUlpsEpsilon {
                 self.debug_ulps_epsilon(other, max_diff)
             }

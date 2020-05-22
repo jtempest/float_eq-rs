@@ -675,7 +675,7 @@ impl FloatEqCmp {
     pub fn abs<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &<A as FloatEq<B>>::DiffEpsilon,
+        max_diff: &<A as FloatEq<B>>::Epsilon,
     ) -> bool
     where
         A: FloatEq<B>,
@@ -687,7 +687,7 @@ impl FloatEqCmp {
     pub fn abs_all<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &<A as FloatEqAll<B>>::DiffEpsilon,
+        max_diff: &<A as FloatEqAll<B>>::Epsilon,
     ) -> bool
     where
         A: FloatEqAll<B>,
@@ -699,7 +699,7 @@ impl FloatEqCmp {
     pub fn rel<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &<A as FloatEq<B>>::DiffEpsilon,
+        max_diff: &<A as FloatEq<B>>::Epsilon,
     ) -> bool
     where
         A: FloatEq<B>,
@@ -711,7 +711,7 @@ impl FloatEqCmp {
     pub fn rel_all<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &<A as FloatEqAll<B>>::DiffEpsilon,
+        max_diff: &<A as FloatEqAll<B>>::Epsilon,
     ) -> bool
     where
         A: FloatEqAll<B>,
@@ -723,7 +723,7 @@ impl FloatEqCmp {
     pub fn ulps<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &<A as FloatEq<B>>::UlpsDiffEpsilon,
+        max_diff: &<A as FloatEq<B>>::UlpsEpsilon,
     ) -> bool
     where
         A: FloatEq<B>,
@@ -735,7 +735,7 @@ impl FloatEqCmp {
     pub fn ulps_all<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &<A as FloatEqAll<B>>::UlpsDiffEpsilon,
+        max_diff: &<A as FloatEqAll<B>>::UlpsEpsilon,
     ) -> bool
     where
         A: FloatEqAll<B>,
@@ -753,7 +753,7 @@ impl FloatCmpOpEpsilon {
     pub fn abs<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &<A as FloatEq<B>>::DiffEpsilon,
+        max_diff: &<A as FloatEq<B>>::Epsilon,
     ) -> <A as FloatEqDebug<B>>::DebugEpsilon
     where
         A: FloatEq<B> + FloatEqDebug<B>,
@@ -765,7 +765,7 @@ impl FloatCmpOpEpsilon {
     pub fn abs_all<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &<A as FloatEqAll<B>>::DiffEpsilon,
+        max_diff: &<A as FloatEqAll<B>>::Epsilon,
     ) -> <A as FloatEqAllDebug<B>>::DebugEpsilon
     where
         A: FloatEqAll<B> + FloatEqAllDebug<B>,
@@ -777,7 +777,7 @@ impl FloatCmpOpEpsilon {
     pub fn rel<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &<A as FloatEq<B>>::DiffEpsilon,
+        max_diff: &<A as FloatEq<B>>::Epsilon,
     ) -> <A as FloatEqDebug<B>>::DebugEpsilon
     where
         A: FloatEq<B> + FloatEqDebug<B>,
@@ -789,7 +789,7 @@ impl FloatCmpOpEpsilon {
     pub fn rel_all<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &<A as FloatEqAll<B>>::DiffEpsilon,
+        max_diff: &<A as FloatEqAll<B>>::Epsilon,
     ) -> <A as FloatEqAllDebug<B>>::DebugEpsilon
     where
         A: FloatEqAll<B> + FloatEqAllDebug<B>,
@@ -801,7 +801,7 @@ impl FloatCmpOpEpsilon {
     pub fn ulps<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &<A as FloatEq<B>>::UlpsDiffEpsilon,
+        max_diff: &<A as FloatEq<B>>::UlpsEpsilon,
     ) -> <A as FloatEqDebug<B>>::DebugUlpsEpsilon
     where
         A: FloatEq<B> + FloatEqDebug<B>,
@@ -813,7 +813,7 @@ impl FloatCmpOpEpsilon {
     pub fn ulps_all<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &<A as FloatEqAll<B>>::UlpsDiffEpsilon,
+        max_diff: &<A as FloatEqAll<B>>::UlpsEpsilon,
     ) -> <A as FloatEqAllDebug<B>>::DebugUlpsEpsilon
     where
         A: FloatEqAll<B> + FloatEqAllDebug<B>,

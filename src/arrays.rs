@@ -32,11 +32,11 @@ macro_rules! impl_float_eq_traits_for_array {
 
         #[doc(hidden)]
         impl<T: FloatEq> FloatEq for [T; $n] {
-            type DiffEpsilon = [T::DiffEpsilon; $n];
-            type UlpsDiffEpsilon = [T::UlpsDiffEpsilon; $n];
+            type Epsilon = [T::Epsilon; $n];
+            type UlpsEpsilon = [T::UlpsEpsilon; $n];
 
             #[inline]
-            fn eq_abs(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+            fn eq_abs(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
                 for i in 0..$n {
                     if !self[i].eq_abs(&other[i], &max_diff[i]) {
                         return false;
@@ -46,7 +46,7 @@ macro_rules! impl_float_eq_traits_for_array {
             }
 
             #[inline]
-            fn eq_rel(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+            fn eq_rel(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
                 for i in 0..$n {
                     if !self[i].eq_rel(&other[i], &max_diff[i]) {
                         return false;
@@ -56,7 +56,7 @@ macro_rules! impl_float_eq_traits_for_array {
             }
 
             #[inline]
-            fn eq_ulps(&self, other: &Self, max_diff: &Self::UlpsDiffEpsilon) -> bool {
+            fn eq_ulps(&self, other: &Self, max_diff: &Self::UlpsEpsilon) -> bool {
                 for i in 0..$n {
                     if !self[i].eq_ulps(&other[i], &max_diff[i]) {
                         return false;
@@ -68,25 +68,25 @@ macro_rules! impl_float_eq_traits_for_array {
 
         #[doc(hidden)]
         impl<T: FloatEqAll> FloatEqAll for [T; $n] {
-            type DiffEpsilon = T::DiffEpsilon;
-            type UlpsDiffEpsilon = T::UlpsDiffEpsilon;
+            type Epsilon = T::Epsilon;
+            type UlpsEpsilon = T::UlpsEpsilon;
 
             #[inline]
-            fn eq_abs_all(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+            fn eq_abs_all(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
                 self.iter()
                     .zip(other.iter())
                     .all(|(a, b)| a.eq_abs_all(b, max_diff))
             }
 
             #[inline]
-            fn eq_rel_all(&self, other: &Self, max_diff: &Self::DiffEpsilon) -> bool {
+            fn eq_rel_all(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
                 self.iter()
                     .zip(other.iter())
                     .all(|(a, b)| a.eq_rel_all(b, max_diff))
             }
 
             #[inline]
-            fn eq_ulps_all(&self, other: &Self, max_diff: &Self::UlpsDiffEpsilon) -> bool {
+            fn eq_ulps_all(&self, other: &Self, max_diff: &Self::UlpsEpsilon) -> bool {
                 self.iter()
                     .zip(other.iter())
                     .all(|(a, b)| a.eq_ulps_all(b, max_diff))
@@ -101,7 +101,7 @@ macro_rules! impl_float_eq_traits_for_array {
             fn debug_abs_epsilon(
                 &self,
                 other: &Self,
-                max_diff: &Self::DiffEpsilon,
+                max_diff: &Self::Epsilon,
             ) -> Self::DebugEpsilon {
                 let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..$n {
@@ -113,7 +113,7 @@ macro_rules! impl_float_eq_traits_for_array {
             fn debug_rel_epsilon(
                 &self,
                 other: &Self,
-                max_diff: &Self::DiffEpsilon,
+                max_diff: &Self::Epsilon,
             ) -> Self::DebugEpsilon {
                 let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..$n {
@@ -125,7 +125,7 @@ macro_rules! impl_float_eq_traits_for_array {
             fn debug_ulps_epsilon(
                 &self,
                 other: &Self,
-                max_diff: &Self::UlpsDiffEpsilon,
+                max_diff: &Self::UlpsEpsilon,
             ) -> Self::DebugUlpsEpsilon {
                 let mut result: Self::DebugUlpsEpsilon =
                     unsafe { MaybeUninit::uninit().assume_init() };
@@ -144,7 +144,7 @@ macro_rules! impl_float_eq_traits_for_array {
             fn debug_abs_all_epsilon(
                 &self,
                 other: &Self,
-                max_diff: &Self::DiffEpsilon,
+                max_diff: &Self::Epsilon,
             ) -> Self::DebugEpsilon {
                 let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..$n {
@@ -156,7 +156,7 @@ macro_rules! impl_float_eq_traits_for_array {
             fn debug_rel_all_epsilon(
                 &self,
                 other: &Self,
-                max_diff: &Self::DiffEpsilon,
+                max_diff: &Self::Epsilon,
             ) -> Self::DebugEpsilon {
                 let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..$n {
@@ -168,7 +168,7 @@ macro_rules! impl_float_eq_traits_for_array {
             fn debug_ulps_all_epsilon(
                 &self,
                 other: &Self,
-                max_diff: &Self::UlpsDiffEpsilon,
+                max_diff: &Self::UlpsEpsilon,
             ) -> Self::DebugUlpsEpsilon {
                 let mut result: Self::DebugUlpsEpsilon =
                     unsafe { MaybeUninit::uninit().assume_init() };
@@ -201,42 +201,42 @@ impl<T: FloatDiff> FloatDiff for [T; 0] {
 
 /// This is also implemented on other arrays up to size 32 (inclusive).
 impl<T: FloatEq> FloatEq for [T; 0] {
-    type DiffEpsilon = [T::DiffEpsilon; 0];
-    type UlpsDiffEpsilon = [T::UlpsDiffEpsilon; 0];
+    type Epsilon = [T::Epsilon; 0];
+    type UlpsEpsilon = [T::UlpsEpsilon; 0];
 
     #[inline]
-    fn eq_abs(&self, _other: &Self, _max_diff: &Self::DiffEpsilon) -> bool {
+    fn eq_abs(&self, _other: &Self, _max_diff: &Self::Epsilon) -> bool {
         true
     }
 
     #[inline]
-    fn eq_rel(&self, _other: &Self, _max_diff: &Self::DiffEpsilon) -> bool {
+    fn eq_rel(&self, _other: &Self, _max_diff: &Self::Epsilon) -> bool {
         true
     }
 
     #[inline]
-    fn eq_ulps(&self, _other: &Self, _max_diff: &Self::UlpsDiffEpsilon) -> bool {
+    fn eq_ulps(&self, _other: &Self, _max_diff: &Self::UlpsEpsilon) -> bool {
         true
     }
 }
 
 /// This is also implemented on other arrays up to size 32 (inclusive).
 impl<T: FloatEqAll> FloatEqAll for [T; 0] {
-    type DiffEpsilon = T::DiffEpsilon;
-    type UlpsDiffEpsilon = T::UlpsDiffEpsilon;
+    type Epsilon = T::Epsilon;
+    type UlpsEpsilon = T::UlpsEpsilon;
 
     #[inline]
-    fn eq_abs_all(&self, _other: &Self, _max_diff: &Self::DiffEpsilon) -> bool {
+    fn eq_abs_all(&self, _other: &Self, _max_diff: &Self::Epsilon) -> bool {
         true
     }
 
     #[inline]
-    fn eq_rel_all(&self, _other: &Self, _max_diff: &Self::DiffEpsilon) -> bool {
+    fn eq_rel_all(&self, _other: &Self, _max_diff: &Self::Epsilon) -> bool {
         true
     }
 
     #[inline]
-    fn eq_ulps_all(&self, _other: &Self, _max_diff: &Self::UlpsDiffEpsilon) -> bool {
+    fn eq_ulps_all(&self, _other: &Self, _max_diff: &Self::UlpsEpsilon) -> bool {
         true
     }
 }
@@ -249,7 +249,7 @@ impl<T: FloatEqDebug> FloatEqDebug for [T; 0] {
     fn debug_abs_epsilon(
         &self,
         _other: &Self,
-        _max_diff: &Self::DiffEpsilon,
+        _max_diff: &Self::Epsilon,
     ) -> Self::DebugEpsilon {
         []
     }
@@ -257,7 +257,7 @@ impl<T: FloatEqDebug> FloatEqDebug for [T; 0] {
     fn debug_rel_epsilon(
         &self,
         _other: &Self,
-        _max_diff: &Self::DiffEpsilon,
+        _max_diff: &Self::Epsilon,
     ) -> Self::DebugEpsilon {
         []
     }
@@ -265,7 +265,7 @@ impl<T: FloatEqDebug> FloatEqDebug for [T; 0] {
     fn debug_ulps_epsilon(
         &self,
         _other: &Self,
-        _max_diff: &Self::UlpsDiffEpsilon,
+        _max_diff: &Self::UlpsEpsilon,
     ) -> Self::DebugUlpsEpsilon {
         []
     }
@@ -279,7 +279,7 @@ impl<T: FloatEqAllDebug> FloatEqAllDebug for [T; 0] {
     fn debug_abs_all_epsilon(
         &self,
         _other: &Self,
-        _max_diff: &Self::DiffEpsilon,
+        _max_diff: &Self::Epsilon,
     ) -> Self::DebugEpsilon {
         []
     }
@@ -287,7 +287,7 @@ impl<T: FloatEqAllDebug> FloatEqAllDebug for [T; 0] {
     fn debug_rel_all_epsilon(
         &self,
         _other: &Self,
-        _max_diff: &Self::DiffEpsilon,
+        _max_diff: &Self::Epsilon,
     ) -> Self::DebugEpsilon {
         []
     }
@@ -295,7 +295,7 @@ impl<T: FloatEqAllDebug> FloatEqAllDebug for [T; 0] {
     fn debug_ulps_all_epsilon(
         &self,
         _other: &Self,
-        _max_diff: &Self::UlpsDiffEpsilon,
+        _max_diff: &Self::UlpsEpsilon,
     ) -> Self::DebugUlpsEpsilon {
         []
     }

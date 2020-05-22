@@ -300,8 +300,8 @@
 //! # }
 //! #
 //! # impl FloatEq for Complex32 {
-//! #     type DiffEpsilon = Complex32;
-//! #     type UlpsDiffEpsilon = Complex32Ulps;
+//! #     type Epsilon = Complex32;
+//! #     type UlpsEpsilon = Complex32Ulps;
 //! #     fn eq_abs(&self, other: &Self, max_diff: &Complex32) -> bool {
 //! #         self.re.eq_abs(&other.re, &max_diff.re) && self.im.eq_abs(&other.im, &max_diff.im)
 //! #     }
@@ -314,8 +314,8 @@
 //! # }
 //! #
 //! # impl FloatEqAll for Complex32 {
-//! #     type DiffEpsilon = f32;
-//! #     type UlpsDiffEpsilon = u32;
+//! #     type Epsilon = f32;
+//! #     type UlpsEpsilon = u32;
 //! #     fn eq_abs_all(&self, other: &Self, max_diff: &f32) -> bool {
 //! #         self.re.eq_abs_all(&other.re, &max_diff) && self.im.eq_abs_all(&other.im, &max_diff)
 //! #     }
