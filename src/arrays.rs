@@ -419,6 +419,21 @@ mod tests {
                     }};
                 }
 
+                #[test]
+                fn float_eq() {
+                    //TODO: Use const generics once they're stable
+                    check_float_eq!(0);
+                    check_float_eq!(1);
+                    check_float_eq!(2);
+                    //we can infer the checks in between work
+                    check_float_eq!(32);
+
+                    // nested
+                    let a = [[1_f32, 2.], [1., -2.]];
+                    let b = [[1_f32, 3.], [-1., 2.]];
+                    assert_float_eq!(a, b, abs <= [[0., 1.], [2., 4.]]);
+                }
+
                 macro_rules! check_float_eq_all {
                     ($n:literal) => {{
                         let mut a: [$float; $n] = [0.; $n];
@@ -446,26 +461,18 @@ mod tests {
                     }};
                 }
 
-                macro_rules! check_float_eq_macros {
-                    ($n:literal) => {
-                        check_float_eq!($n);
-                        check_float_eq_all!($n);
-                    };
-                }
-
                 #[test]
-                fn float_eq() {
+                fn float_eq_all() {
                     //TODO: Use const generics once they're stable
-                    check_float_eq_macros!(0);
-                    check_float_eq_macros!(1);
-                    check_float_eq_macros!(2);
+                    check_float_eq_all!(0);
+                    check_float_eq_all!(1);
+                    check_float_eq_all!(2);
                     //we can infer the checks in between work
-                    check_float_eq_macros!(32);
+                    check_float_eq_all!(32);
 
                     // nested
                     let a = [[1_f32, 2.], [1., -2.]];
                     let b = [[1_f32, 3.], [-1., 2.]];
-                    assert_float_eq!(a, b, abs <= [[0., 1.], [2., 4.]]);
                     assert_float_eq!(a, b, abs_all <= 4.);
                 }
             }
