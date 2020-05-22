@@ -15,7 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   with a threshold specified per field. This means that existing implementations
   of `FloatEq` and `FloatEqDebug` ought to be updated to the new form. Despite
   being more disruptive, this default was changed since it is a more general
-  case (e.g. tuples can generally be `FloatEq` but not `FloatEqAll`).
+  case (e.g. tuples can generally be `FloatEq` but not `FloatEqAll`). Existing
+  checks against arrays or `num::Complex` should work again if changed to use the
+  `_all` variants.
 - Added documentation on how to read assert error messages.
 
 ### Changed
