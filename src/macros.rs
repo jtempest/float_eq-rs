@@ -672,11 +672,7 @@ pub struct FloatEqCmp;
 #[doc(hidden)]
 impl FloatEqCmp {
     #[inline]
-    pub fn abs<A: ?Sized, B: ?Sized>(
-        a: &A,
-        b: &B,
-        max_diff: &<A as FloatEq<B>>::Epsilon,
-    ) -> bool
+    pub fn abs<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &<A as FloatEq<B>>::Epsilon) -> bool
     where
         A: FloatEq<B>,
     {
@@ -696,11 +692,7 @@ impl FloatEqCmp {
     }
 
     #[inline]
-    pub fn rel<A: ?Sized, B: ?Sized>(
-        a: &A,
-        b: &B,
-        max_diff: &<A as FloatEq<B>>::Epsilon,
-    ) -> bool
+    pub fn rel<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &<A as FloatEq<B>>::Epsilon) -> bool
     where
         A: FloatEq<B>,
     {

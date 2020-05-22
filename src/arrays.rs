@@ -246,19 +246,11 @@ impl<T: FloatEqDebug> FloatEqDebug for [T; 0] {
     type DebugEpsilon = [<T as FloatEqDebug>::DebugEpsilon; 0];
     type DebugUlpsEpsilon = [<T as FloatEqDebug>::DebugUlpsEpsilon; 0];
 
-    fn debug_abs_epsilon(
-        &self,
-        _other: &Self,
-        _max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
+    fn debug_abs_epsilon(&self, _other: &Self, _max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
         []
     }
 
-    fn debug_rel_epsilon(
-        &self,
-        _other: &Self,
-        _max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
+    fn debug_rel_epsilon(&self, _other: &Self, _max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
         []
     }
 
