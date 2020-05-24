@@ -193,9 +193,10 @@
 //!
 //! ```rust
 //! fn float_eq_ulps(a: f32, b: f32, max_diff: u32) -> bool {
-//!     // values are only comparable if they have the same sign
-//!     if a.is_sign_positive() != b.is_sign_positive() {
-//!         a == b // account for zero == negative zero
+//!     if a.is_nan() || b.is_nan() {
+//!         false // NaNs are never equal
+//!     } else if a.is_sign_positive() != b.is_sign_positive() {
+//!         a == b // values of different signs are only equal if both are zero.
 //!     } else {
 //!         let a_bits = a.to_bits();
 //!         let b_bits = b.to_bits();

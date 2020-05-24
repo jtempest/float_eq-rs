@@ -56,7 +56,9 @@ macro_rules! impl_traits {
 
             #[inline]
             fn eq_ulps(&self, other: &Self, max_diff: &Self::UlpsEpsilon) -> bool {
-                if self.is_sign_positive() != other.is_sign_positive() {
+                if self.is_nan() || other.is_nan() {
+                    false
+                } else if self.is_sign_positive() != other.is_sign_positive() {
                     self == other // account for zero == negative zero
                 } else {
                     self.ulps_diff(other).le(max_diff)
@@ -160,10 +162,19 @@ mod tests {
     use core::fmt;
 
     macro_rules! impl_tests {
-        ($float:ident) => {
+        ($float:ident, $uint:ident, $nan_bits:ident) => {
             mod $float {
                 use super::*;
                 use core::$float;
+
+                fn nan_test_values() -> [$float; 4] {
+                    [
+                        $float::from_bits($nan_bits.pos_min),
+                        $float::from_bits($nan_bits.pos_max),
+                        $float::from_bits($nan_bits.neg_min),
+                        $float::from_bits($nan_bits.neg_max),
+                    ]
+                }
 
                 #[test]
                 fn abs_diff() {
@@ -175,10 +186,14 @@ mod tests {
                     check(1., 1.5, 0.5);
                     check(1., -1., 2.);
 
-                    let nan = $float::NAN;
-                    assert!(nan.abs_diff(&1.0).is_nan());
-                    assert!(1.0.abs_diff(&nan).is_nan());
-                    assert!(nan.abs_diff(&nan).is_nan());
+                    let nans = nan_test_values();
+                    for a in &nans {
+                        assert!(a.abs_diff(&1.0).is_nan());
+                        assert!(1.0.abs_diff(a).is_nan());
+                        for b in &nans {
+                            assert!(a.abs_diff(b).is_nan());
+                        }
+                    }
                 }
 
                 #[test]
@@ -197,6 +212,8 @@ mod tests {
                     check(prev, one, 1);
                     check(next, prev, 2);
                     check(prev, next, 2);
+
+                    //TODO: NaNs?
                 }
 
                 #[test]
@@ -269,9 +286,14 @@ mod tests {
                     check_eq(zero, neg_zero, 0.);
 
                     // NaN
-                    let nan = $float::NAN;
-                    check_ne(one, nan, eps);
-                    check_ne(nan, nan, eps);
+                    let nans = nan_test_values();
+                    for &a in &nans {
+                        check_ne(one, a, eps);
+                        check_ne(a, one, eps);
+                        for &b in &nans {
+                            check_ne(a, b, eps);
+                        }
+                    }
                 }
 
                 #[test]
@@ -336,6 +358,16 @@ mod tests {
                     let nan = $float::NAN;
                     check_ne(one, nan, eps);
                     check_ne(nan, nan, eps);
+
+                    // NaN
+                    let nans = nan_test_values();
+                    for &a in &nans {
+                        check_ne(one, a, eps);
+                        check_ne(a, one, eps);
+                        for &b in &nans {
+                            check_ne(a, b, eps);
+                        }
+                    }
                 }
 
                 #[test]
@@ -389,16 +421,47 @@ mod tests {
                     check_eq(zero, neg_zero, 1);
 
                     // NaN
-                    let nan = $float::NAN;
-                    check_ne(one, nan, 1);
-                    check_eq(nan, nan, 1);
+                    let nans = nan_test_values();
+                    for &a in &nans {
+                        check_ne(one, a, $uint::MAX);
+                        check_ne(a, one, $uint::MAX);
+                        for &b in &nans {
+                            check_ne(a, b, $uint::MAX);
+                        }
+                    }
                 }
             }
         };
     }
 
-    impl_tests!(f32);
-    impl_tests!(f64);
+    // A selection of NaN values from the edges of the ranges of negative and
+    // positive NaN values and their payloads. Testing every single NaN value
+    // is viable in reasonable time for f32, but there are just too many f64
+    // values so this is the compromise.
+    #[derive(Clone, Copy)]
+    struct NaNBits<T> {
+        pos_min: T,
+        pos_max: T,
+        neg_min: T,
+        neg_max: T,
+    }
+
+    const F32_NAN_BITS: NaNBits<u32> = NaNBits {
+        pos_min: 0x7F_80_00_01,
+        pos_max: 0x7F_FF_FF_FF,
+        neg_min: 0xFF_80_00_01,
+        neg_max: 0xFF_FF_FF_FF,
+    };
+
+    const F64_NAN_BITS: NaNBits<u64> = NaNBits {
+        pos_min: 0x7F_F0_00_00_00_00_00_01,
+        pos_max: 0x7F_FF_FF_FF_FF_FF_FF_FF,
+        neg_min: 0xFF_F0_00_00_00_00_00_01,
+        neg_max: 0xFF_FF_FF_FF_FF_FF_FF_FF,
+    };
+
+    impl_tests!(f32, u32, F32_NAN_BITS);
+    impl_tests!(f64, u64, F64_NAN_BITS);
 
     fn check<T, U, EQ, NE>(eq: EQ, ne: NE, a: T, b: T, max_diff: U, expect_equal: bool)
     where

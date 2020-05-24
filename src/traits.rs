@@ -381,6 +381,9 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// The implementation should be the equivalent of (using [`FloatDiff`]):
     ///
     /// ```text
+    /// if self.is_nan() || other.is_nan() {
+    ///     false
+    /// }
     /// if self.is_sign_positive() != other.is_sign_positive() {
     ///     self == other // account for zero == negative zero
     /// } else {

@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added documentation on how to read assert error messages.
 
 ### Changed
+- ULPs based checks now treat `NaN` values as not equal, to match the default
+  partial equality behaviour of floats.
 - `FloatEq` now more specifically means equality based on a structurally defined
   epsilon type. See the notes on `FloatEqAll` above.
 - `FloatEq`'s `DiffEpsilon` is now `Epsilon`, and `UlpsDiffEpsilon` is now
