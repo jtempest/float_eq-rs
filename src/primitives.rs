@@ -223,6 +223,7 @@ mod tests {
 
                     let check_eq = |a, b, max_diff| {
                         check(eq, ne, a, b, max_diff, true);
+                        check(eq, ne, b, a, max_diff, true);
 
                         assert!(float_eq!(a, b, abs <= max_diff));
                         assert!(float_eq!(a, b, abs_all <= max_diff));
@@ -235,12 +236,12 @@ mod tests {
 
                         // trailing comma
                         assert!(float_eq!(a, b, abs <= max_diff,));
-                        assert!(!float_ne!(a, b, abs <= max_diff,));
                         assert_float_eq!(a, b, abs <= max_diff,);
                     };
 
                     let check_ne = |a, b, max_diff| {
                         check(eq, ne, a, b, max_diff, false);
+                        check(eq, ne, b, a, max_diff, false);
 
                         assert!(!float_eq!(a, b, abs <= max_diff));
                         assert!(!float_eq!(a, b, abs_all <= max_diff));
@@ -252,6 +253,7 @@ mod tests {
                         assert_float_ne!(a, b, abs_all <= max_diff);
 
                         // trailing comma
+                        assert!(float_ne!(a, b, abs <= max_diff,));
                         assert_float_ne!(a, b, abs <= max_diff,);
                     };
 
@@ -303,6 +305,7 @@ mod tests {
 
                     let check_eq = |a, b, max_diff| {
                         check(eq, ne, a, b, max_diff, true);
+                        check(eq, ne, b, a, max_diff, true);
 
                         assert!(float_eq!(a, b, rel <= max_diff));
                         assert!(float_eq!(a, b, rel_all <= max_diff));
@@ -316,6 +319,8 @@ mod tests {
 
                     let check_ne = |a, b, max_diff| {
                         check(eq, ne, a, b, max_diff, false);
+                        check(eq, ne, b, a, max_diff, false);
+
                         assert!(!float_eq!(a, b, rel <= max_diff));
                         assert!(!float_eq!(a, b, rel_all <= max_diff));
 
@@ -355,11 +360,6 @@ mod tests {
                     check_eq(zero, neg_zero, 0.);
 
                     // NaN
-                    let nan = $float::NAN;
-                    check_ne(one, nan, eps);
-                    check_ne(nan, nan, eps);
-
-                    // NaN
                     let nans = nan_test_values();
                     for &a in &nans {
                         check_ne(one, a, eps);
@@ -377,6 +377,7 @@ mod tests {
 
                     let check_eq = |a, b, max_diff| {
                         check(eq, ne, a, b, max_diff, true);
+                        check(eq, ne, b, a, max_diff, true);
                         assert!(float_eq!(a, b, ulps <= max_diff));
                         assert!(!float_ne!(a, b, ulps <= max_diff));
                         assert_float_eq!(a, b, ulps <= max_diff);
@@ -384,6 +385,7 @@ mod tests {
 
                     let check_ne = |a, b, max_diff| {
                         check(eq, ne, a, b, max_diff, false);
+                        check(eq, ne, b, a, max_diff, false);
                         assert!(!float_eq!(a, b, ulps <= max_diff));
                         assert!(float_ne!(a, b, ulps <= max_diff));
                         assert_float_ne!(a, b, ulps <= max_diff);
