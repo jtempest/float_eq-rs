@@ -80,16 +80,45 @@ assert_float_ne!(0.0_f32, 0.0001, abs <= 0.00005, ulps <= 4);
 Arrays of compatible types are also supported, from size 0 to 32 (inclusive):
 
 ```rust
-assert_float_eq!([1.0000001_f32, 2.0], [1.0, 2.0], ulps <= 1);
+assert_float_eq!([1.0000001_f32, 2.0], [1.0, 2.0], ulps <= [1; 2]);
 ```
 
-See the [API documentation] for a long form introduction to the different kinds
-of checks, their uses and limitations. Comparison of new types is supported by 
-implementing the `FloatEq` trait. Asserts may be supported by implementing the 
-`FloatDiff` and `FloatEqDebug` traits as well, which provide additional context
-when debugging.
+Where, for example, `rel <= ROUNDING_ERROR` should be read as *"a relative 
+epsilon comparison with a maximum difference of less than or equal to 
+`ROUNDING_ERROR`"*. See the [API documentation] for a long form introduction to 
+the different kinds of checks, their uses and limitations.
 
-## Optional Features
+Comparison of new types is supported by implementing the `FloatEq` trait. 
+Asserts may be supported by implementing the `FloatDiff` and `FloatEqDebug` 
+traits as well, which provide additional context when debugging.
+
+## Error messages
+
+Assertion failure output tries to provide useful context information without
+going overboard. For example, running this line:
+
+```rust
+assert_float_eq!(4.0f32, 4.000_008, rel <= 0.000_001);
+```
+
+Gives this error message (ε is the greek letter epsilon):
+
+```
+thread 'test' panicked at 'assertion failed: `float_eq!(left, right, rel <= ε)`
+     left: `4.0`,
+    right: `4.000008`,
+ abs_diff: `0.000008106232`,
+ulps_diff: `17`,
+  [rel] ε: `0.000004000008`', assert_failure.rs:15:5
+```
+
+Note that `abs_diff` and `ulps_diff` are always provided regardless of which
+kinds of checks are chosen. The `[rel] ε` line gives the epsilon value that
+`abs_diff` is checked against in the comparison, which has been scaled based
+on the size of the inputs. Absolute epsilon and ULPs based checks would provide
+different output, see the [API documentation] for more details.
+
+## Optional features
 
 This crate can be used without the standard library (`#![no_std]`) by disabling
 the default `std` feature. Use this in `Cargo.toml`:
@@ -122,23 +151,11 @@ Release information is available in [CHANGELOG.md](CHANGELOG.md).
 
 ## Future plans
 
-- Investigate whether the epsilon types should be generic parameters as opposed
-  to associated types. It feels like composite types may sometimes want to be
-  compared using a global bound and sometimes on a per-component basis, especially
-  if they are composed of heterogeneous types.
-
 - `#[derive]` support for comparison of custom types that are composed of 
   already comparable floating point values.
 
 - Further support for basic Rust language components like tuples and containers
   of compatible types like `Vec`, likely using `PartialEq`'s support as a guide.
-
-- Investigate the safety guarantees of the ulps check. Currently, it doesn't
-  act like the default floating point checks when it comes to NaNs and other
-  special values.
-
-- More exhaustive testing. Tests currently cover all basic functionality, but
-  there are lots of edge cases that aren't being tested yet.
 
 - Benchmark performance, especially the implications of chaining multiple tests.
 

@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   case (e.g. tuples can generally be `FloatEq` but not `FloatEqAll`). Existing
   checks against arrays or `num::Complex` should work again if changed to use the
   `_all` variants.
+- Many more tests for FloatEq over primitive values, including for subnormals,
+  both ends of the normal float range, infinities and different NaN payloads.
 - Added documentation on how to read assert error messages.
 
 ### Changed

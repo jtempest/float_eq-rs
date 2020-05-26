@@ -816,6 +816,14 @@ impl FloatCmpOpEpsilon {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn trailing_commas() {
+        assert!(float_eq!(1.0, 1.5, abs <= 0.5,));
+        assert!(float_ne!(1.0, 1.5, abs <= 0.4,));
+        assert_float_eq!(1.0, 1.5, abs <= 0.5,);
+        assert_float_ne!(1.0, 1.5, abs <= 0.4);
+    }
+
     mod assert_float_eq {
         #[test]
         #[should_panic]

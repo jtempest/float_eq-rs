@@ -146,23 +146,11 @@ Release information is available in [CHANGELOG.md](CHANGELOG.md).
 
 ## Future plans
 
-- Investigate whether the epsilon types should be generic parameters as opposed
-  to associated types. It feels like composite types may sometimes want to be
-  compared using a global bound and sometimes on a per-component basis, especially
-  if they are composed of heterogeneous types.
-
 - `#[derive]` support for comparison of custom types that are composed of 
   already comparable floating point values.
 
 - Further support for basic Rust language components like tuples and containers
   of compatible types like `Vec`, likely using `PartialEq`'s support as a guide.
-
-- Investigate the safety guarantees of the ulps check. Currently, it doesn't
-  act like the default floating point checks when it comes to NaNs and other
-  special values.
-
-- More exhaustive testing. Tests currently cover all basic functionality, but
-  there are lots of edge cases that aren't being tested yet.
 
 - Benchmark performance, especially the implications of chaining multiple tests.
 

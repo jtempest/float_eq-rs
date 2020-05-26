@@ -87,7 +87,8 @@
 //!
 //! ```rust
 //! fn float_eq_abs(a: f32, b: f32, max_diff: f32) -> bool {
-//!     (a - b).abs() <= max_diff
+//!     // the PartialEq check covers equality of infinities
+//!     a == b || (a - b).abs() <= max_diff
 //! }
 //! # float_eq::assert_float_eq!(4_f32, 4.0000025, abs <= 0.0000025);
 //! # assert!(float_eq_abs(4_f32, 4.0000025, 0.0000025));
@@ -147,8 +148,11 @@
 //!
 //! ```rust
 //! fn float_eq_rel(a: f32, b: f32, max_diff: f32) -> bool {
-//!     let largest = a.abs().max(b.abs());
-//!     (a - b).abs() <= (largest * max_diff)
+//!     // the PartialEq check covers equality of infinities
+//!     a == b || {
+//!         let largest = a.abs().max(b.abs());
+//!         (a - b).abs() <= (largest * max_diff)
+//!     }
 //! }
 //! # float_eq::assert_float_eq!(4_f32, 4.0000025, rel <= 0.0000006);
 //! # assert!(float_eq_rel(4_f32, 4.0000025, 0.0000006));

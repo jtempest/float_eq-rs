@@ -330,7 +330,8 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// Implementations should be the equivalent of (using [`FloatDiff`]):
     ///
     /// ```text
-    /// self.abs_diff(other) <= *max_diff
+    /// // the PartialEq check covers equality of infinities
+    /// self == other || self.abs_diff(other).le(max_diff)
     /// ```
     ///
     /// [`FloatDiff`]: trait.FloatDiff.html
@@ -355,9 +356,12 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// The implementation should be the equivalent of (using [`FloatDiff`]):
     ///
     /// ```text
-    /// let largest = self.abs().max(other.abs());
-    /// let epsilon = largest * max_diff;
-    /// self.abs_diff(other) <= epsilon
+    /// // the PartialEq check covers equality of infinities
+    /// self == other || {
+    ///     let largest = self.abs().max(other.abs());
+    ///     let epsilon = largest * max_diff;
+    ///     self.abs_diff(other) <= epsilon
+    /// }
     /// ```
     ///
     /// [`FloatDiff`]: trait.FloatDiff.html
@@ -382,7 +386,7 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     ///
     /// ```text
     /// if self.is_nan() || other.is_nan() {
-    ///     false
+    ///     false // NaNs are never equal
     /// }
     /// if self.is_sign_positive() != other.is_sign_positive() {
     ///     self == other // account for zero == negative zero
