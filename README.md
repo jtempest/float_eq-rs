@@ -22,7 +22,7 @@ future maintainers.
 
 Given how widely algorithmic requirements can vary, `float_eq` explores the
 idea that there are no generally sensible default margins for comparisons.
-This is in contrast to the approach taken by many existing crates, which often
+This is in contrast to the approach taken by many other crates, which often
 provide default epsilon values in checks or implicitly favour particular
 algorithms. The author's hope is that by exposing the inherent complexity in
 a uniform way, programmers will find it easier to develop an intuition for how
@@ -59,64 +59,82 @@ use float_eq::{assert_float_eq, float_eq};
 This crate provides boolean comparison operations:
 
 ```rust
-assert!(float_eq!(1000.0_f32, 1000.0002, ulps <= 4));
+assert!(float_eq!(1000.0f32, 1000.0002, ulps <= 4));
 
-// f32::EPSILON.sqrt()
-const ROUNDING_ERROR: f32 = 0.00034526698;
-assert!(float_ne!(4.0_f32, 4.1, rel <= ROUNDING_ERROR));
+const ROUNDING_ERROR: f32 = 0.000_345_266_98;
+assert!(float_ne!(4.0f32, 4.1, rel <= ROUNDING_ERROR));
 ```
 
 And asserts:
 
 ```rust
-// 1.5 * 2_f32.powi(-12), as per SSE intrinsics documentation
-const RECIP_REL_EPSILON: f32 = 0.00036621094; 
-let recip = 0.1_f32.recip();
-assert_float_eq!(recip, 10.0, rel <= RECIP_REL_EPSILON);
+const RECIP_REL_EPSILON: f32 = 0.000_366_210_94; 
+assert_float_eq!(0.1f32.recip(), 10.0, rel <= RECIP_REL_EPSILON);
 
-assert_float_ne!(0.0_f32, 0.0001, abs <= 0.00005, ulps <= 4);
+assert_float_ne!(0.0f32, 0.000_1, abs <= 0.000_05, ulps <= 4);
+```
+
+Where `rel <= ROUNDING_ERROR` should be read as *"a relative epsilon comparison
+with a maximum difference of less than or equal to `ROUNDING_ERROR`"*, and
+similarly for `abs` and `ulps`. Multiple checks may be chained together in a 
+comparison expression, and are applied in order from left to right, shortcutting
+if a match is made. See the [API documentation] for a long form introduction to
+the different kinds of checks, their uses and limitations.
+
+## Composite types
+
+Composite types that implement `FloatEq` may be compared on a field-by-field
+basis using the `abs`, `rel`, and `ulps` comparisons, and types that implement
+`FloatEqAll` may be compared with a uniformly applied epsilon value using the
+`abs_all`, `rel_all` and `ulps_all` variants:
+
+```rust
+let a = Complex32 { re: 2.0, im: 4.000_002 };
+let b = Complex32 { re: 2.000_000_5, im: 4.0 };
+
+assert_float_eq!(a, b, ulps <= Complex32Ulps { re: 2, im: 4 });
+assert_float_eq!(a, b, ulps_all <= 4);
 ```
 
 Arrays of compatible types are also supported, from size 0 to 32 (inclusive):
 
 ```rust
-assert_float_eq!([1.0000001_f32, 2.0], [1.0, 2.0], ulps <= [1; 2]);
+let a = [1.0, -2.0, 3.0];
+let b = [-1.0, 2.0, 3.5];
+assert_float_eq!(a, b, abs <= [2.0, 4.0, 0.5]);
+
+assert_float_eq!([1.000_000_2f32, 2.0], [1.0, 2.0], abs_all <= 4.0);
 ```
 
-Where, for example, `rel <= ROUNDING_ERROR` should be read as *"a relative 
-epsilon comparison with a maximum difference of less than or equal to 
-`ROUNDING_ERROR`"*. See the [API documentation] for a long form introduction to 
-the different kinds of checks, their uses and limitations.
-
-Comparison of new types is supported by implementing the `FloatEq` trait. 
-Asserts may be supported by implementing the `FloatDiff` and `FloatEqDebug` 
-traits as well, which provide additional context when debugging.
+Asserts may be supported by implementing the `FloatDiff` and `FloatEqDebug`/
+`FloatEqAllDebug` traits as well, which provide additional context when
+debugging.
 
 ## Error messages
 
 Assertion failure output tries to provide useful context information without
-going overboard. For example, running this line:
+going overboard. For example, this call:
 
 ```rust
 assert_float_eq!(4.0f32, 4.000_008, rel <= 0.000_001);
 ```
 
-Gives this error message (ε is the greek letter epsilon):
+Panics with this error message (ε is the greek letter epsilon):
 
 ```
 thread 'test' panicked at 'assertion failed: `float_eq!(left, right, rel <= ε)`
-     left: `4.0`,
-    right: `4.000008`,
- abs_diff: `0.000008106232`,
-ulps_diff: `17`,
-  [rel] ε: `0.000004000008`', assert_failure.rs:15:5
+        left: `4.0`,
+       right: `4.000008`,
+    abs_diff: `0.000008106232`,
+   ulps_diff: `17`,
+     [rel] ε: `0.000004000008`', assert_failure.rs:15:5
 ```
 
-Note that `abs_diff` and `ulps_diff` are always provided regardless of which
-kinds of checks are chosen. The `[rel] ε` line gives the epsilon value that
-`abs_diff` is checked against in the comparison, which has been scaled based
-on the size of the inputs. Absolute epsilon and ULPs based checks would provide
-different output, see the [API documentation] for more details.
+The message provides `abs_diff` and `ulps_diff` regardless of which kinds of
+checks are chosen. The `[rel] ε` line gives the epsilon value that `abs_diff` is
+checked against in the comparison, which has been scaled based on the size of
+the inputs. Absolute epsilon and ULPs based checks would provide different
+output, see the [API documentation] for more details.
 
 ## Optional features
 
@@ -135,10 +153,11 @@ Other optional features:
 
 ## Related efforts
 
-The [`approx`], [`float-cmp`] and [`almost`] crates all provide a similar style
-of general comparison operations, whereas [`assert_float_eq`] focuses 
-specifically on assertions. In contrast, [`efloat`] takes the approach of 
-tracking the error bounds of values as operations are applied.
+The [`approx`] and [`float-cmp`] crates provide a similar style of general
+comparison operations, whereas [`assert_float_eq`] focuses specifically on
+assertions. The [`almost`] crate instead divides its API into algorithms 
+comparing against zero and non-zero values. In contrast, [`efloat`] takes the
+approach of tracking the error bounds of values as operations are applied.
 
 ## Contributing 
 
@@ -151,13 +170,14 @@ Release information is available in [CHANGELOG.md](CHANGELOG.md).
 
 ## Future plans
 
-- `#[derive]` support for comparison of custom types that are composed of 
-  already comparable floating point values.
+- Add checks that are relative to the precision of the minimum of the input
+  values, or always relative to the first or second operand.
 
 - Further support for basic Rust language components like tuples and containers
   of compatible types like `Vec`, likely using `PartialEq`'s support as a guide.
 
-- Benchmark performance, especially the implications of chaining multiple tests.
+- `#[derive]` support for comparison of custom types that are composed of 
+  already comparable floating point values.
 
 [API documentation]: https://docs.rs/float_eq
 [floating point comparison]: https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/

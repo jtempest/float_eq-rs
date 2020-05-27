@@ -21,7 +21,7 @@
 //!
 //! Given how widely algorithmic requirements can vary, `float_eq` explores the
 //! idea that there are no generally sensible default margins for comparisons.
-//! This is in contrast to the approach taken by many existing crates, which often
+//! This is in contrast to the approach taken by many other crates, which often
 //! provide default epsilon values in checks or implicitly favour particular
 //! algorithms. The author's hope is that by exposing the inherent complexity in
 //! a uniform way, programmers will find it easier to develop an intuition for how
@@ -45,17 +45,16 @@
 //!
 //! ```rust
 //! use float_eq::{assert_float_eq, assert_float_ne, float_eq, float_ne};
-//! use std::f32;
 //!
-//! assert!(float_eq!(1000.0_f32, 1000.0002, ulps <= 4));
+//! assert!(float_eq!(1000.0f32, 1000.0002, ulps <= 4));
 //!
-//! const ROUNDING_ERROR: f32 = 0.00034526698; // f32::EPSILON.sqrt()
-//! assert!(float_ne!(4.0_f32, 4.1, rel <= ROUNDING_ERROR));
+//! const ROUNDING_ERROR: f32 = 0.000_345_266_98; // f32::EPSILON.sqrt()
+//! assert!(float_ne!(4.0f32, 4.1, rel <= ROUNDING_ERROR));
 //!
-//! const RECIP_REL_EPSILON: f32 = 0.00036621094; // 1.5 * 2_f32.powi(-12)
-//! assert_float_eq!(0.1_f32.recip(), 10.0, rel <= RECIP_REL_EPSILON);
+//! const RECIP_REL_EPSILON: f32 = 0.000_366_210_94; // 1.5 * 2f32.powi(-12)
+//! assert_float_eq!(0.1f32.recip(), 10.0, rel <= RECIP_REL_EPSILON);
 //!
-//! assert_float_ne!(0.0_f32, 0.0001, abs <= 0.00005, ulps <= 4);
+//! assert_float_ne!(0.0f32, 0.000_1, abs <= 0.000_05, ulps <= 4);
 //! ```
 //!
 //! The ideal choice of comparison will vary on a case by case basis, and depends
@@ -90,8 +89,8 @@
 //!     // the PartialEq check covers equality of infinities
 //!     a == b || (a - b).abs() <= max_diff
 //! }
-//! # float_eq::assert_float_eq!(4_f32, 4.0000025, abs <= 0.0000025);
-//! # assert!(float_eq_abs(4_f32, 4.0000025, 0.0000025));
+//! # float_eq::assert_float_eq!(4f32, 4.000_002_5, abs <= 0.000_002_5);
+//! # assert!(float_eq_abs(4f32, 4.000_002_5, 0.000_002_5));
 //! ```
 //!
 //! Absolute epsilon tests *do not* work well for general floating point comparison,
@@ -101,11 +100,11 @@
 //!
 //! ```rust
 //! # use float_eq::{assert_float_eq, assert_float_ne};
-//! let a = 1.0_f32;
-//! let b = 1.0000001_f32; // the next representable value above 1.0
-//! assert_float_eq!(a, b, abs <= 0.0000002);             // equal
-//! assert_float_ne!(a * 4.0, b * 4.0, abs <= 0.0000002); // not equal
-//! assert_float_eq!(a * 4.0, b * 4.0, abs <= 0.0000005); // equal
+//! let a = 1.0f32;
+//! let b = 1.000_000_1f32; // the next representable value above 1.0
+//! assert_float_eq!(a, b, abs <= 0.000_000_2);             // equal
+//! assert_float_ne!(a * 4.0, b * 4.0, abs <= 0.000_000_2); // not equal
+//! assert_float_eq!(a * 4.0, b * 4.0, abs <= 0.000_000_5); // equal
 //! ```
 //!
 //! Whereas a relative epsilon comparison could cope with this since it scales by
@@ -114,9 +113,9 @@
 //! ```rust
 //! # use float_eq::{assert_float_eq, assert_float_ne};
 //! # let a: f32 = 1.0;
-//! # let b: f32 = 1.0000001;
-//! assert_float_eq!(a, b, rel <= 0.0000002);
-//! assert_float_eq!(a * 4.0, b * 4.0, rel <= 0.0000002);
+//! # let b: f32 = 1.000_000_1;
+//! assert_float_eq!(a, b, rel <= 0.000_000_2);
+//! assert_float_eq!(a * 4.0, b * 4.0, rel <= 0.000_000_2);
 //! ```
 //!
 //! However, absolute epsilon comparison is often the best choice when comparing
@@ -127,18 +126,19 @@
 //!
 //! ```rust
 //! # use float_eq::{assert_float_eq, assert_float_ne};
-//! assert_float_eq!(1.0_f32 - 1.0000001, 0.0, abs <= 0.0000002); // equal
-//! assert_float_ne!(1.0_f32 - 1.0000001, 0.0, rel <= 0.0000002); // not equal
-//! assert_float_ne!(1.0_f32 - 1.0000001, 0.0, ulps <= 1);        // not equal
+//! assert_float_eq!(1.0f32 - 1.000_000_1, 0.0, abs <= 0.000_000_2); // equal
+//! assert_float_ne!(1.0f32 - 1.000_000_1, 0.0, rel <= 0.000_000_2); // not equal
+//! assert_float_ne!(1.0f32 - 1.000_000_1, 0.0, ulps <= 1);          // not equal
 //! ```
 //!
 //! Absolute epsilon comparisons:
 //! - Are useful for checking if a float is equal to zero, especially if it has
 //!   undergone an operation that suffers from [catastrophic cancellation] or is
-//!   a [denormalised value] (a subnormal, in Rust terminology).
+//!   a [subnormal value].
 //! - Are almost certainly not what you want to use when testing [normal floats]
 //!   for equality. `rel` and `ulps` checks can be easier to parameterise and
 //!   reason about.
+//! - Can be useful for testing equality of infinities.
 //!
 //! ## Relative epsilon comparison
 //!
@@ -154,8 +154,8 @@
 //!         (a - b).abs() <= (largest * max_diff)
 //!     }
 //! }
-//! # float_eq::assert_float_eq!(4_f32, 4.0000025, rel <= 0.0000006);
-//! # assert!(float_eq_rel(4_f32, 4.0000025, 0.0000006));
+//! # float_eq::assert_float_eq!(4.0f32, 4.000_002_5, rel <= 0.000_000_6);
+//! # assert!(float_eq_rel(4.0f32, 4.000_002_5, 0.000_000_6));
 //! ```
 //!
 //! This makes it suitable for general comparison of values where the ratio between
@@ -165,9 +165,9 @@
 //! ```rust
 //! # use float_eq::{assert_float_eq, assert_float_ne};
 //! let a: f32 = 1.0;
-//! let b: f32 = 1.0000001; // the next representable value above 1.0
-//! assert_float_eq!(a, b, rel <= 0.0000002);
-//! assert_float_eq!(a * 4.0, b * 4.0, rel <= 0.0000002);
+//! let b: f32 = 1.000_000_1; // the next representable value above 1.0
+//! assert_float_eq!(a, b, rel <= 0.000_000_2);
+//! assert_float_eq!(a * 4.0, b * 4.0, rel <= 0.000_000_2);
 //! ```
 //!
 //! However, relative epsilon comparison becomes far too strict when the numbers
@@ -179,14 +179,19 @@
 //!
 //! ```rust
 //! # use float_eq::{assert_float_eq, assert_float_ne};
-//! assert_float_ne!(1.0_f32 - 1.0000001, 0.0, rel <= 0.0000002); // not equal
-//! assert_float_eq!(1.0_f32 - 1.0000001, 0.0, abs <= 0.0000002); // equal
+//! assert_float_ne!(1.0f32 - 1.000_000_1, 0.0, rel <= 0.000_000_2); // not equal
+//! assert_float_eq!(1.0f32 - 1.000_000_1, 0.0, abs <= 0.000_000_2); // equal
 //! ```
 //!
 //! Relative epsilon comparisons:
 //! - Are useful for checking if two [normal floats] are equal.
 //! - Aren't a good choice when checking values against zero, where `abs` is often
 //!   far better.
+//! - Have slightly counterintuitive results around powers of two values, where
+//!   the relative precision ratio changes due to way the floating point exponent
+//!   works.
+//! - Are not useful at infinity, where any comparison using a non-zero margin
+//!   will compare true.
 //!
 //! ## Units in the Last Place (ULPs) comparison
 //!
@@ -209,8 +214,8 @@
 //!         (max - min) <= max_diff
 //!     }
 //! }
-//! # float_eq::assert_float_eq!(4_f32, 4.0000025, ulps <= 5);
-//! # assert!(float_eq_ulps(4_f32, 4.0000025, 5));
+//! # float_eq::assert_float_eq!(4f32, 4.000_002_5, ulps <= 5);
+//! # assert!(float_eq_ulps(4f32, 4.000_002_5, 5));
 //! ```
 //!
 //! Thanks to a deliberate quirk in the way the [underlying format] of IEEE floats
@@ -219,9 +224,9 @@
 //!
 //! ```rust
 //! # use float_eq::{assert_float_eq, assert_float_ne};
-//! assert_float_eq!(1.0_f32, 1.0000001, ulps <= 1);
-//! assert_float_eq!(4.0_f32, 4.0000005, ulps <= 1);
-//! assert_float_eq!(-1_000_000.0_f32, -1_000_000.06, ulps <= 1);
+//! assert_float_eq!(1.0f32, 1.000_000_1, ulps <= 1);
+//! assert_float_eq!(4.0f32, 4.000_000_5, ulps <= 1);
+//! assert_float_eq!(-1_000_000.0f32, -1_000_000.06, ulps <= 1);
 //! ```
 //!
 //! However, it becames far too strict when both expressions are close to zero,
@@ -232,21 +237,22 @@
 //!
 //! ```rust
 //! # use float_eq::{assert_float_eq, assert_float_ne};
-//! assert_float_ne!(1.0_f32 - 1.0000001, 0.0, ulps <= 1);        // not equal
-//! assert_float_eq!(1.0_f32 - 1.0000001, 0.0, abs <= 0.0000002); // equal
+//! assert_float_ne!(1.0f32 - 1.000_000_1, 0.0, ulps <= 1);        // not equal
+//! assert_float_eq!(1.0f32 - 1.000_000_1, 0.0, abs <= 0.000_000_2); // equal
 //! ```
 //!
 //! ULPs based comparisons:
 //! - Are useful for checking if two [normal floats] are equal.
 //! - Aren't a good choice when checking values against zero, where `abs` is often
-//!   far better.
+//!   a better choice.
 //! - Provide a way to precisely tweak `max_diff` margins, since they have a 1-to-1
 //!   correlation with the underlying representation.
 //! - Have slightly counterintuitive results around powers of two values, where
 //!   the relative precision ratio changes due to way the floating point exponent
 //!   works.
 //! - Do not work at all if the two values being checked have different signs.
-//! - Do not respect the behaviour of special floating point values like NaN.
+//! - Whilst slightly counterintuitive at infinity (`MAX` is one ULP away from
+//!   `INFINITY`), are more useful than `rel` checks for this.
 //!
 //! # Comparing composite types
 //!
@@ -400,46 +406,24 @@
 //! assert_float_eq!(4.0f32, 4.000_008, rel <= 0.000_001);
 //! ```
 //!
-//! Gives this error message, where the relative epsilon, `[rel] ε`, has been
-//! scaled based on the size of the inputs (ε is the greek letter epsilon):
+//! Panics with this error message, where the relative epsilon, `[rel] ε`, has
+//! been scaled based on the size of the inputs (ε is the greek letter epsilon):
 //!
 //! ```text
-//! thread 'test' panicked at 'assertion failed: `float_eq!(left, right, ulps <= ε)`
-//!      left: `4.0`,
-//!     right: `4.000008`,
-//!  abs_diff: `0.000008106232`,
-//! ulps_diff: `17`,
-//!   [rel] ε: `0.000004000008`', assert_failure.rs:15:5
+//! thread 'test' panicked at 'assertion failed: `float_eq!(left, right, rel <= ε)`
+//!        left: `4.0`,
+//!       right: `4.000008`,
+//!    abs_diff: `0.000008106232`,
+//!   ulps_diff: `17`,
+//!     [rel] ε: `0.000004000008`', assert_failure.rs:15:5
 //! ```
-//!
-//! If two or more checks are used, then the epsilons are provided in the order
-//! that the checks were made in. For example, this line:
-//!
-//! ```should_panic
-//! # use float_eq::assert_float_eq;
-//! assert_float_eq!(4.0f32, 4.000_008, abs <= 0.000_001, ulps <= 4);
-//! ```
-//!
-//! Gives this error message:
-//!
-//! ```text
-//! thread 'test' panicked at 'assertion failed: `float_eq!(left, right, abs <= ε, ulps <= ε)`
-//!      left: `4.0`,
-//!     right: `4.000008`,
-//!  abs_diff: `0.000008106232`,
-//! ulps_diff: `17`,
-//!   [abs] ε: `0.000001`,
-//!  [ulps] ε: `4`', assert_failure.rs:16:5
-//! ```
-//!
-//! The checks performed are also indicated on the first line, as `abs <= ε,
-//! rel <= ε`.
 //!
 //! # Comparing custom types
 //!
-//! Comparison of new types is supported by implementing [`FloatEq`]. If assert
-//! support is required, then [`FloatDiff`] and [`FloatEqDebug`] should also be
-//! implemented, as they provide important context information on failure.
+//! Comparison of new types is supported by implementing [`FloatEq`] and [`FloatEqAll`].
+//! If assert support is required, then [`FloatDiff`] and [`FloatEqDebug`]/[`FloatEqAllDebug`]
+//! should also be implemented, as they provide important context information on
+//! failure.
 //!
 //! [`assert_float_eq!`]: macro.assert_float_eq.html
 //! [`assert_float_ne!`]: macro.assert_float_ne.html
@@ -449,9 +433,10 @@
 //! [`FloatEqAll`]: trait.FloatEqAll.html
 //! [`FloatDiff`]: trait.FloatDiff.html
 //! [`FloatEqDebug`]: trait.FloatEqDebug.html
+//! [`FloatEqAllDebug`]: trait.FloatEqAllDebug.html
 //!
 //! [catastrophic cancellation]: https://en.wikipedia.org/wiki/Loss_of_significance
-//! [denormalised value]: https://en.wikipedia.org/wiki/Denormal_number
+//! [subnormal value]: https://en.wikipedia.org/wiki/Denormal_number
 //! [finite difference approximation of derivatives]: https://scicomp.stackexchange.com/questions/14355/choosing-epsilons
 //! [floating point comparison]: https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
 //! [normal floats]: https://en.wikipedia.org/wiki/Normal_number_(computing)
