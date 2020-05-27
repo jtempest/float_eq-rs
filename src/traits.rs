@@ -158,8 +158,12 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
     ///
     /// Implementations should be the equivalent of:
     ///
-    /// ```text
+    /// ```
+    /// # trait TestFloatDiff { fn abs_diff(&self, other: &Self) -> Self; }
+    /// # impl TestFloatDiff for f32 {
+    /// # fn abs_diff(&self, other: &Self) -> Self {
     /// (self - other).abs()
+    /// # }}
     /// ```
     fn abs_diff(&self, other: &Rhs) -> Self::AbsDiff;
 
@@ -167,12 +171,16 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
     ///
     /// Implementations should be the equivalent of (using `f32` as an example):
     ///
-    /// ```text
+    /// ```
+    /// # trait TestFloatDiff { fn ulps_diff(&self, other: &Self) -> u32; }
+    /// # impl TestFloatDiff for f32 {
+    /// # fn ulps_diff(&self, other: &Self) -> u32 {
     /// let a = self.to_bits();
     /// let b = other.to_bits();
     /// let max = a.max(b);
     /// let min = a.min(b);
     /// max - min
+    /// # }}
     /// ```
     ///
     /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
@@ -327,14 +335,17 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// Check whether `self` is equal to `other`, using an [absolute epsilon
     /// comparison].
     ///
-    /// Implementations should be the equivalent of (using [`FloatDiff`]):
+    /// Implementations should be the equivalent of:
     ///
-    /// ```text
+    /// ```
+    /// # trait TestFloatEq { fn eq_abs(&self, other: &Self, max_diff: &Self) -> bool; }
+    /// # impl TestFloatEq for f32 {
+    /// # fn eq_abs(&self, other: &Self, max_diff: &Self) -> bool {
     /// // the PartialEq check covers equality of infinities
-    /// self == other || self.abs_diff(other).le(max_diff)
+    /// self == other || (self - other).abs().le(max_diff)
+    /// # }}
     /// ```
     ///
-    /// [`FloatDiff`]: trait.FloatDiff.html
     /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
     fn eq_abs(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool;
 
@@ -353,18 +364,21 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// Check whether `self` is equal to `other`, using a [relative epsilon
     /// comparison].
     ///
-    /// The implementation should be the equivalent of (using [`FloatDiff`]):
+    /// The implementation should be the equivalent of:
     ///
-    /// ```text
+    /// ```
+    /// # trait TestFloatEq { fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool; }
+    /// # impl TestFloatEq for f32 {
+    /// # fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool {
     /// // the PartialEq check covers equality of infinities
     /// self == other || {
     ///     let largest = self.abs().max(other.abs());
     ///     let epsilon = largest * max_diff;
-    ///     self.abs_diff(other) <= epsilon
+    ///     (self - other).abs() <= epsilon
     /// }
+    /// # }}
     /// ```
     ///
-    /// [`FloatDiff`]: trait.FloatDiff.html
     /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     fn eq_rel(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool;
 
@@ -382,20 +396,27 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
 
     /// Check whether `self` is equal to `other`, using an [ULPs comparison].
     ///
-    /// The implementation should be the equivalent of (using [`FloatDiff`]):
+    /// The implementation should be the equivalent of:
     ///
-    /// ```text
+    /// ```
+    /// # trait TestFloatEq { fn eq_ulps(&self, other: &Self, max_diff: &u32) -> bool; }
+    /// # impl TestFloatEq for f32 {
+    /// # fn eq_ulps(&self, other: &Self, max_diff: &u32) -> bool {
     /// if self.is_nan() || other.is_nan() {
     ///     false // NaNs are never equal
     /// }
-    /// if self.is_sign_positive() != other.is_sign_positive() {
+    /// else if self.is_sign_positive() != other.is_sign_positive() {
     ///     self == other // account for zero == negative zero
     /// } else {
-    ///     self.ulps_diff(other) <= *max_diff
+    ///     let a = self.to_bits();
+    ///     let b = other.to_bits();
+    ///     let max = a.max(b);
+    ///     let min = a.min(b);
+    ///     (max - min).le(max_diff)
     /// }
+    /// # }}
     /// ```
     ///
-    /// [`FloatDiff`]: trait.FloatDiff.html
     /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
     fn eq_ulps(&self, other: &Rhs, max_diff: &Self::UlpsEpsilon) -> bool;
 
