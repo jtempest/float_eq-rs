@@ -14,6 +14,13 @@ pub struct ComplexUlps<T> {
     im: T,
 }
 
+impl<T> ComplexUlps<T> {
+    /// Create a new ComplexUlps
+    fn new(re: T, im: T) -> Self {
+        ComplexUlps { re, im }
+    }
+}
+
 /// [`ComplexUlps<T>`] type matching [`Complex32`].
 ///
 /// [`ComplexUlps<T>`]: struct.ComplexUlps.html
@@ -169,6 +176,15 @@ mod tests {
     use super::*;
     use core::f32;
     use num_complex::Complex32;
+
+    #[test]
+    fn complex_ulps() {
+        let a = ComplexUlps32::new(1, 2);
+        assert_eq!(a, a);
+        let mut b = a.clone();
+        b.im = 3;
+        assert_ne!(a, b);
+    }
 
     #[test]
     fn float_diff() {
@@ -473,5 +489,45 @@ mod tests {
 
         assert_float_eq!(a, b, ulps_all <= 4);
         assert_float_ne!(a, b, ulps_all <= 3);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"`float_eq!(left, right, abs <= ε, rel <= ε, ulps <= ε)`
+        left: `Complex { re: 1.0, im: 2.0 }`,
+       right: `Complex { re: 3.0, im: 5.0 }`,
+    abs_diff: `Complex { re: 2.0, im: 3.0 }`,
+   ulps_diff: `ComplexUlps { re: 12582912, im: 10485760 }`,
+     [abs] ε: `Complex { re: 0.1, im: 0.25 }`,
+     [rel] ε: `Complex { re: 0.3, im: 1.25 }`,
+    [ulps] ε: `ComplexUlps { re: 1, im: 2 }`"#)]
+    fn assert_fail_message() {
+        assert_float_eq!(
+            Complex32::new(1., 2.),
+            Complex32::new(3., 5.),
+            abs <= Complex32::new(0.1, 0.25),
+            rel <= Complex32::new(0.1, 0.25),
+            ulps <= ComplexUlps32::new(1, 2)
+        );
+    }
+
+    #[test]
+    #[should_panic(
+        expected = r#"`float_eq!(left, right, abs_all <= ε, rel_all <= ε, ulps_all <= ε)`
+        left: `Complex { re: 1.0, im: 2.0 }`,
+       right: `Complex { re: 3.0, im: 5.0 }`,
+    abs_diff: `Complex { re: 2.0, im: 3.0 }`,
+   ulps_diff: `ComplexUlps { re: 12582912, im: 10485760 }`,
+ [abs_all] ε: `Complex { re: 0.25, im: 0.25 }`,
+ [rel_all] ε: `Complex { re: 0.75, im: 1.25 }`,
+[ulps_all] ε: `ComplexUlps { re: 3, im: 3 }`"#
+    )]
+    fn assert_fail_all_message() {
+        assert_float_eq!(
+            Complex32::new(1., 2.),
+            Complex32::new(3., 5.),
+            abs_all <= 0.25,
+            rel_all <= 0.25,
+            ulps_all <= 3
+        );
     }
 }

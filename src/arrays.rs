@@ -448,4 +448,44 @@ mod tests {
 
     impl_tests!(f32);
     impl_tests!(f64);
+
+    #[test]
+    #[should_panic(expected = r#"`float_eq!(left, right, abs <= ε, rel <= ε, ulps <= ε)`
+        left: `[1.0, 2.0]`,
+       right: `[3.0, 5.0]`,
+    abs_diff: `[2.0, 3.0]`,
+   ulps_diff: `[6755399441055744, 5629499534213120]`,
+     [abs] ε: `[0.1, 0.25]`,
+     [rel] ε: `[0.30000000000000004, 1.25]`,
+    [ulps] ε: `[1, 2]`"#)]
+    fn assert_fail_message() {
+        assert_float_eq!(
+            [1., 2.],
+            [3., 5.],
+            abs <= [0.1, 0.25],
+            rel <= [0.1, 0.25],
+            ulps <= [1u64, 2]
+        );
+    }
+
+    #[test]
+    #[should_panic(
+        expected = r#"`float_eq!(left, right, abs_all <= ε, rel_all <= ε, ulps_all <= ε)`
+        left: `[1.0, 2.0]`,
+       right: `[3.0, 5.0]`,
+    abs_diff: `[2.0, 3.0]`,
+   ulps_diff: `[6755399441055744, 5629499534213120]`,
+ [abs_all] ε: `[0.25, 0.25]`,
+ [rel_all] ε: `[0.75, 1.25]`,
+[ulps_all] ε: `[3, 3]"#
+    )]
+    fn assert_fail_all_message() {
+        assert_float_eq!(
+            [1., 2.],
+            [3., 5.],
+            abs_all <= 0.25,
+            rel_all <= 0.25,
+            ulps_all <= 3u64
+        );
+    }
 }
