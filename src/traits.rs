@@ -6,6 +6,10 @@ use core::fmt;
 /// debug context information when they fail, but may also be called directly.
 /// Types are displayed to the user with `fmt::Debug`.
 ///
+/// *Note: the definition of this trait is very much tailored to what the crate
+/// requires in terms of debugging information, and may not be ideal for general
+/// use.*
+///
 /// ## How can I implement `FloatDiff`?
 ///
 /// You will need some way to represent difference in [ULPs] for your type, following
@@ -39,11 +43,11 @@ use core::fmt;
 ///         }
 ///     }
 ///
-///     fn ulps_diff(&self, other: &Self) -> Self::UlpsDiff {
-///         MyComplex32Ulps {
-///             re: self.re.ulps_diff(&other.re),
-///             im: self.im.ulps_diff(&other.im),
-///         }
+///     fn ulps_diff(&self, other: &Self) -> Option<Self::UlpsDiff> {
+///         Some(MyComplex32Ulps {
+///             re: self.re.ulps_diff(&other.re)?,
+///             im: self.im.ulps_diff(&other.im)?,
+///         })
 ///     }
 /// }
 ///
@@ -58,7 +62,7 @@ use core::fmt;
 ///     }
 /// );
 ///
-/// assert_eq!(a.ulps_diff(&b), MyComplex32Ulps { re: 1, im: 15 });
+/// assert_eq!(a.ulps_diff(&b), Some(MyComplex32Ulps { re: 1, im: 15 }));
 /// ```
 ///
 /// ## How can I compare two different types?
@@ -84,11 +88,11 @@ use core::fmt;
 ///         }
 ///     }
 ///
-///     fn ulps_diff(&self, other: &f32) -> Self::UlpsDiff {
-///         MyComplex32Ulps {
-///             re: self.re.ulps_diff(other),
-///             im: self.im.ulps_diff(&0.0),
-///         }
+///     fn ulps_diff(&self, other: &f32) -> Option<Self::UlpsDiff> {
+///         Some(MyComplex32Ulps {
+///             re: self.re.ulps_diff(other)?,
+///             im: self.im.ulps_diff(&0.0)?,
+///         })
 ///     }
 /// }
 ///
@@ -100,7 +104,7 @@ use core::fmt;
 ///         other.abs_diff(self)
 ///     }
 ///
-///     fn ulps_diff(&self, other: &MyComplex32) -> Self::UlpsDiff {
+///     fn ulps_diff(&self, other: &MyComplex32) -> Option<Self::UlpsDiff> {
 ///         other.ulps_diff(self)
 ///     }
 /// }
@@ -116,22 +120,30 @@ use core::fmt;
 ///     }
 /// );
 ///
-/// assert_eq!(a.ulps_diff(&b), MyComplex32Ulps { re: 1, im: 1_073_741_839 });
+/// assert_eq!(a.ulps_diff(&b), Some(MyComplex32Ulps { re: 1, im: 1_073_741_839 }));
 /// ```
 ///
 /// ## Examples
 ///
 /// ```rust
 /// # use float_eq::FloatDiff;
-/// assert_eq!(1.0_f32.abs_diff(&-1.0), 2.0);
-/// assert_eq!(1.0_f64.abs_diff(&-1.0), 2.0);
+/// assert_eq!(1.0f32.abs_diff(&-1.0), 2.0);
+/// assert_eq!(1.0f64.abs_diff(&-1.0), 2.0);
 ///
-/// assert_eq!(1.0_f32.ulps_diff(&1.000_000_1), 1);
-/// assert_eq!(1.0_f64.ulps_diff(&1.000_000_000_000_000_2), 1);
+/// assert_eq!(1.0f32.ulps_diff(&1.000_000_1), Some(1));
+/// assert_eq!(1.0f64.ulps_diff(&1.000_000_000_000_000_2), Some(1));
+///
+/// assert_eq!(1.0f32.ulps_diff(&-1.0), None);
+/// assert_eq!(1.0f64.ulps_diff(&-1.0), None);
 ///
 /// let a = [0.0_f32, 2.0, -2.0];
 /// let b = [0.0_f32, -1.0, 2.0];
 /// assert_eq!(a.abs_diff(&b), [0.0, 3.0, 4.0]);
+/// assert_eq!(a.ulps_diff(&b), None);
+///
+/// let c = [1.000_000_1f32, -2.0];
+/// let d = [1.0f32, -2.000_000_5];
+/// assert_eq!(c.ulps_diff(&d), Some([1, 2]));
 /// ```
 ///
 /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
@@ -167,24 +179,41 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
     /// ```
     fn abs_diff(&self, other: &Rhs) -> Self::AbsDiff;
 
-    /// Always positive absolute difference between two values in terms of [ULPs]
+    /// Always positive absolute difference between two values in terms of [ULPs].
+    ///
+    /// A partial function that returns:
+    /// - `Some(0)` if either argument is `0.0` or `-0.0`
+    /// - `None` if either argument is `NaN`
+    /// - `None` if the arguments have differing signs
+    /// - `Some(bitwise-difference)` otherwise
+    ///
+    /// Implementations on composite types should return `None` if any of their
+    /// parts is an `ulps_diff` of `None`.
     ///
     /// Implementations should be the equivalent of (using `f32` as an example):
     ///
     /// ```
-    /// # trait TestFloatDiff { fn ulps_diff(&self, other: &Self) -> u32; }
+    /// # trait TestFloatDiff { fn ulps_diff(&self, other: &Self) -> Option<u32>; }
     /// # impl TestFloatDiff for f32 {
-    /// # fn ulps_diff(&self, other: &Self) -> u32 {
-    /// let a = self.to_bits();
-    /// let b = other.to_bits();
-    /// let max = a.max(b);
-    /// let min = a.min(b);
-    /// max - min
+    /// # fn ulps_diff(&self, other: &Self) -> Option<u32> {
+    /// if self == other {
+    ///     Some(0)
+    /// } else if self.is_nan() || other.is_nan() {
+    ///     None
+    /// } else if self.is_sign_positive() != other.is_sign_positive() {
+    ///     None
+    /// } else {
+    ///     let a = self.to_bits();
+    ///     let b = other.to_bits();
+    ///     let max = a.max(b);
+    ///     let min = a.min(b);
+    ///     Some(max - min)
+    /// }
     /// # }}
     /// ```
     ///
     /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
-    fn ulps_diff(&self, other: &Rhs) -> Self::UlpsDiff;
+    fn ulps_diff(&self, other: &Rhs) -> Option<Self::UlpsDiff>;
 }
 
 /// Algorithms to compare IEEE floating point values for equality using per-field

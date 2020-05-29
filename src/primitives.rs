@@ -29,12 +29,20 @@ macro_rules! impl_traits {
             }
 
             #[inline]
-            fn ulps_diff(&self, other: &Self) -> Self::UlpsDiff {
-                let a = self.to_bits();
-                let b = other.to_bits();
-                let max = a.max(b);
-                let min = a.min(b);
-                max - min
+            fn ulps_diff(&self, other: &Self) -> Option<Self::UlpsDiff> {
+                if self == other {
+                    Some(0)
+                } else if self.is_nan() || other.is_nan() {
+                    None
+                } else if self.is_sign_positive() != other.is_sign_positive() {
+                    None
+                } else {
+                    let a = self.to_bits();
+                    let b = other.to_bits();
+                    let max = a.max(b);
+                    let min = a.min(b);
+                    Some(max - min)
+                }
             }
         }
 
@@ -45,7 +53,7 @@ macro_rules! impl_traits {
             #[inline]
             fn eq_abs(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
                 // the PartialEq check covers equality of infinities
-                self == other || self.abs_diff(other).le(max_diff)
+                self == other || $float::abs(self - other).le(max_diff)
             }
 
             #[inline]
@@ -65,7 +73,11 @@ macro_rules! impl_traits {
                 } else if self.is_sign_positive() != other.is_sign_positive() {
                     self == other // account for zero == negative zero
                 } else {
-                    self.ulps_diff(other).le(max_diff)
+                    let a = self.to_bits();
+                    let b = other.to_bits();
+                    let max = a.max(b);
+                    let min = a.min(b);
+                    (max - min).le(max_diff)
                 }
             }
         }

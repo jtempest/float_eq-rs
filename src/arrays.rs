@@ -20,12 +20,12 @@ macro_rules! impl_float_eq_traits_for_array {
             }
 
             #[inline]
-            fn ulps_diff(&self, other: &Self) -> Self::UlpsDiff {
+            fn ulps_diff(&self, other: &Self) -> Option<Self::UlpsDiff> {
                 let mut result: Self::UlpsDiff = unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..$n {
-                    result[i] = self[i].ulps_diff(&other[i])
+                    result[i] = self[i].ulps_diff(&other[i])?
                 }
-                result
+                Some(result)
             }
         }
 

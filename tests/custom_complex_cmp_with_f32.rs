@@ -17,10 +17,22 @@ struct MyComplex32 {
     im: f32,
 }
 
+impl MyComplex32 {
+    fn new(re: f32, im: f32) -> MyComplex32 {
+        MyComplex32 { re, im }
+    }
+}
+
 #[derive(Debug, PartialEq)]
 struct MyComplex32Ulps {
     re: <f32 as FloatDiff>::UlpsDiff,
     im: <f32 as FloatDiff>::UlpsDiff,
+}
+
+impl MyComplex32Ulps {
+    fn new(re: u32, im: u32) -> MyComplex32Ulps {
+        MyComplex32Ulps { re, im }
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -37,11 +49,11 @@ impl FloatDiff<f32> for MyComplex32 {
         }
     }
 
-    fn ulps_diff(&self, other: &f32) -> Self::UlpsDiff {
-        MyComplex32Ulps {
-            re: self.re.ulps_diff(other),
-            im: self.im.ulps_diff(&0.0),
-        }
+    fn ulps_diff(&self, other: &f32) -> Option<Self::UlpsDiff> {
+        Some(MyComplex32Ulps {
+            re: self.re.ulps_diff(other)?,
+            im: self.im.ulps_diff(&0.0)?,
+        })
     }
 }
 
@@ -53,7 +65,7 @@ impl FloatDiff<MyComplex32> for f32 {
         other.abs_diff(self)
     }
 
-    fn ulps_diff(&self, other: &MyComplex32) -> Self::UlpsDiff {
+    fn ulps_diff(&self, other: &MyComplex32) -> Option<Self::UlpsDiff> {
         other.ulps_diff(self)
     }
 }
@@ -66,21 +78,23 @@ fn float_diff_f32() {
         im: 2.000_003_6,
     };
 
-    let abs_diff = a.abs_diff(&b);
-    assert_eq!(abs_diff.re, 0.000_000_119_209_29);
-    assert_eq!(abs_diff.im, 2.000_003_6);
+    assert_eq!(
+        a.abs_diff(&b),
+        MyComplex32::new(0.000_000_119_209_29, 2.000_003_6)
+    );
+    assert_eq!(
+        b.abs_diff(&a),
+        MyComplex32::new(0.000_000_119_209_29, 2.000_003_6)
+    );
 
-    let abs_diff = b.abs_diff(&a);
-    assert_eq!(abs_diff.re, 0.000_000_119_209_29);
-    assert_eq!(abs_diff.im, 2.000_003_6);
-
-    let ulps_diff = a.ulps_diff(&b);
-    assert_eq!(ulps_diff.re, 1);
-    assert_eq!(ulps_diff.im, 1_073_741_839);
-
-    let ulps_diff = b.ulps_diff(&a);
-    assert_eq!(ulps_diff.re, 1);
-    assert_eq!(ulps_diff.im, 1_073_741_839);
+    assert_eq!(
+        a.ulps_diff(&b),
+        Some(MyComplex32Ulps::new(1, 1_073_741_839))
+    );
+    assert_eq!(
+        b.ulps_diff(&a),
+        Some(MyComplex32Ulps::new(1, 1_073_741_839))
+    );
 }
 
 //------------------------------------------------------------------------------

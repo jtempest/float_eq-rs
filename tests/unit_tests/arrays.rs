@@ -16,15 +16,24 @@ macro_rules! impl_tests {
 
                     let mut b = [0.; $n];
                     for i in 0..$n {
-                        b[i] = -a[i];
+                        b[i] = a[i] + 0.5;
                     }
 
                     let abs_diff = a.abs_diff(&b);
-                    let ulps_diff = a.ulps_diff(&b);
+                    let ulps_diff = a.ulps_diff(&b).expect(
+                        "Finite numbers of the same sign should always have a valid ULPs diff",
+                    );
                     for i in 0..$n {
                         assert_eq!(abs_diff[i], a[i].abs_diff(&b[i]));
-                        assert_eq!(ulps_diff[i], a[i].ulps_diff(&b[i]));
+                        assert_eq!(ulps_diff[i], a[i].ulps_diff(&b[i]).expect("Finite numbers of the same sign should always have a valid ULPs diff"));
                     }
+
+                    for i in 0..$n {
+                        let mut b = [0.; $n];
+                        b[i] = -a[i];
+                        assert!(a.ulps_diff(&b).is_none());
+                    }
+
                 }};
             }
 
@@ -236,7 +245,7 @@ impl_tests!(f64);
         left: `[1.0, 2.0]`,
        right: `[3.0, 5.0]`,
     abs_diff: `[2.0, 3.0]`,
-   ulps_diff: `[6755399441055744, 5629499534213120]`,
+   ulps_diff: `Some([6755399441055744, 5629499534213120])`,
      [abs] ε: `[0.1, 0.25]`,
      [rel] ε: `[0.30000000000000004, 1.25]`,
     [ulps] ε: `[1, 2]`"#)]
@@ -256,7 +265,7 @@ fn assert_fail_message() {
         left: `[1.0, 2.0]`,
        right: `[3.0, 5.0]`,
     abs_diff: `[2.0, 3.0]`,
-   ulps_diff: `[6755399441055744, 5629499534213120]`,
+   ulps_diff: `Some([6755399441055744, 5629499534213120])`,
  [abs_all] ε: `[0.25, 0.25]`,
  [rel_all] ε: `[0.75, 1.25]`,
 [ulps_all] ε: `[3, 3]"#

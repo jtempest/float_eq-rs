@@ -8,10 +8,29 @@ macro_rules! impl_tests {
             fn abs_diff() {
                 let check = |a: $float, b, expected| assert!(a.abs_diff(&b) - expected <= EPSILON);
 
-                check(1., 1., 0.);
-                check(1., 1.5, 0.5);
-                check(1., -1., 2.);
+                // zeroes
+                check(0.0, 0.0, 0.0);
+                check(0.0, -0.0, 0.0);
+                check(-0.0, 0.0, 0.0);
+                check(-0.0, -0.0, 0.0);
 
+                // self
+                check(1.0, 1.0, 0.0);
+                check(-1.0, -1.0, 0.0);
+
+                // finite numbers
+                check(1.0, 2.0, 1.0);
+                check(1.0, -2.0, 3.0);
+                check(-1.0, 2.0, 3.0);
+                check(-1.0, -2.0, 1.0);
+
+                // infinities
+                assert!(INFINITY.abs_diff(&INFINITY).is_nan());
+                assert_eq!(INFINITY.abs_diff(&(-INFINITY)), INFINITY);
+                assert_eq!((-INFINITY).abs_diff(&(INFINITY)), INFINITY);
+                assert!((-INFINITY).abs_diff(&(-INFINITY)).is_nan());
+
+                // nans
                 let nans = nan_test_values();
                 for a in &nans {
                     assert!(a.abs_diff(&1.0).is_nan());
@@ -26,20 +45,37 @@ macro_rules! impl_tests {
             fn ulps_diff() {
                 let check = |a: $float, b, expected| assert_eq!(a.ulps_diff(&b), expected);
 
-                let one: $float = 1.;
-                check(one, one, 0);
+                // zeroes
+                check(0.0, 0.0, Some(0));
+                check(0.0, -0.0, Some(0));
+                check(-0.0, 0.0, Some(0));
+                check(-0.0, -0.0, Some(0));
 
-                let next = $float::from_bits(one.to_bits() + 1);
-                check(one, next, 1);
-                check(next, one, 1);
+                // self
+                check(1.0, 1.0, Some(0));
+                check(-1.0, -1.0, Some(0));
 
-                let prev = $float::from_bits(one.to_bits() - 1);
-                check(one, prev, 1);
-                check(prev, one, 1);
-                check(next, prev, 2);
-                check(prev, next, 2);
+                // finite numbers
+                check(1.0, next_n(1.0, 10), Some(10));
+                check(next(0.0), next(-0.0), None);
+                check(next(-0.0), next(0.0), None);
+                check(-1.0, next_n(-1.0, 10), Some(10));
 
-                //TODO: NaNs?
+                // infinities
+                check(INFINITY, INFINITY, Some(0));
+                check(INFINITY, -INFINITY, None);
+                check(-INFINITY, INFINITY, None);
+                check(-INFINITY, -INFINITY, Some(0));
+
+                // nans
+                let nans = nan_test_values();
+                for a in &nans {
+                    assert!(a.ulps_diff(&1.0).is_none());
+                    assert!(1.0.ulps_diff(a).is_none());
+                    for b in &nans {
+                        assert!(a.ulps_diff(b).is_none());
+                    }
+                }
             }
         }
     };

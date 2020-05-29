@@ -18,16 +18,21 @@ fn complex_ulps() {
 
 #[test]
 fn float_diff() {
-    let a = Complex32::new(1., 2.);
-    let b = Complex32::new(1.000_000_1, 2.000_000_5);
+    let a = Complex32::new(1., -2.);
+    let b = Complex32::new(1.000_000_1, -2.000_000_5);
+    let c = Complex32::new(1.000_000_1, 2.000_000_5);
 
-    let abs_diff = a.abs_diff(&b);
-    assert_eq!(abs_diff.re, 0.000_000_119_209_29);
-    assert_eq!(abs_diff.im, 0.000_000_476_837_16);
+    assert_eq!(
+        a.abs_diff(&b),
+        Complex32::new(0.000_000_119_209_29, 0.000_000_476_837_16)
+    );
+    assert_eq!(
+        a.abs_diff(&c),
+        Complex32::new(0.000_000_119_209_29, 4.0000005)
+    );
 
-    let ulps_diff = a.ulps_diff(&b);
-    assert_eq!(ulps_diff.re, 1);
-    assert_eq!(ulps_diff.im, 2);
+    assert_eq!(a.ulps_diff(&b), Some(ComplexUlps32::new(1, 2)));
+    assert_eq!(a.ulps_diff(&c), None);
 }
 
 #[test]
@@ -326,7 +331,7 @@ fn assert_float_eq_all() {
         left: `Complex { re: 1.0, im: 2.0 }`,
        right: `Complex { re: 3.0, im: 5.0 }`,
     abs_diff: `Complex { re: 2.0, im: 3.0 }`,
-   ulps_diff: `ComplexUlps { re: 12582912, im: 10485760 }`,
+   ulps_diff: `Some(ComplexUlps { re: 12582912, im: 10485760 })`,
      [abs] ε: `Complex { re: 0.1, im: 0.25 }`,
      [rel] ε: `Complex { re: 0.3, im: 1.25 }`,
     [ulps] ε: `ComplexUlps { re: 1, im: 2 }`"#)]
@@ -346,7 +351,7 @@ fn assert_fail_message() {
         left: `Complex { re: 1.0, im: 2.0 }`,
        right: `Complex { re: 3.0, im: 5.0 }`,
     abs_diff: `Complex { re: 2.0, im: 3.0 }`,
-   ulps_diff: `ComplexUlps { re: 12582912, im: 10485760 }`,
+   ulps_diff: `Some(ComplexUlps { re: 12582912, im: 10485760 })`,
  [abs_all] ε: `Complex { re: 0.25, im: 0.25 }`,
  [rel_all] ε: `Complex { re: 0.75, im: 1.25 }`,
 [ulps_all] ε: `ComplexUlps { re: 3, im: 3 }`"#

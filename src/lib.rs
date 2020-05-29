@@ -302,11 +302,11 @@
 //! #             im: self.im.abs_diff(&other.im),
 //! #         }
 //! #     }
-//! #     fn ulps_diff(&self, other: &Self) -> Complex32Ulps {
-//! #         Complex32Ulps {
-//! #             re: self.re.ulps_diff(&other.re),
-//! #             im: self.im.ulps_diff(&other.im),
-//! #         }
+//! #     fn ulps_diff(&self, other: &Self) -> Option<Complex32Ulps> {
+//! #         Some(Complex32Ulps {
+//! #             re: self.re.ulps_diff(&other.re)?,
+//! #             im: self.im.ulps_diff(&other.im)?,
+//! #         })
 //! #     }
 //! # }
 //! #

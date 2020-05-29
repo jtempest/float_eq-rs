@@ -51,11 +51,11 @@ where
     }
 
     #[inline]
-    fn ulps_diff(&self, other: &Self) -> Self::UlpsDiff {
-        Self::UlpsDiff {
-            re: self.re.ulps_diff(&other.re),
-            im: self.im.ulps_diff(&other.im),
-        }
+    fn ulps_diff(&self, other: &Self) -> Option<Self::UlpsDiff> {
+        Some(Self::UlpsDiff {
+            re: self.re.ulps_diff(&other.re)?,
+            im: self.im.ulps_diff(&other.im)?,
+        })
     }
 }
 

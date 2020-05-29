@@ -19,7 +19,7 @@ mod assert_float_eq {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `0.1`"#)]
     fn abs_fail() {
         assert_float_eq!(0_f32, 1., abs <= 0.1);
@@ -30,7 +30,7 @@ mod assert_float_eq {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
  [abs_all] ε: `0.1`"#)]
     fn abs_all_fail() {
         assert_float_eq!(0_f32, 1., abs_all <= 0.1);
@@ -41,7 +41,7 @@ mod assert_float_eq {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [rel] ε: `0.1`"#)]
     fn rel_fail() {
         assert_float_eq!(0_f32, 1., rel <= 0.1);
@@ -52,7 +52,7 @@ mod assert_float_eq {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
  [rel_all] ε: `0.1`"#)]
     fn rel_all_fail() {
         assert_float_eq!(0_f32, 1., rel_all <= 0.1);
@@ -63,7 +63,7 @@ mod assert_float_eq {
         left: `1.0`,
        right: `1.0000002`,
     abs_diff: `0.00000023841858`,
-   ulps_diff: `2`,
+   ulps_diff: `Some(2)`,
     [ulps] ε: `1`"#)]
     fn ulps_fail() {
         assert_float_eq!(1_f32, 1.000_000_2, ulps <= 1);
@@ -74,7 +74,7 @@ mod assert_float_eq {
         left: `1.0`,
        right: `1.0000002`,
     abs_diff: `0.00000023841858`,
-   ulps_diff: `2`,
+   ulps_diff: `Some(2)`,
 [ulps_all] ε: `1`"#)]
     fn ulps_all_fail() {
         assert_float_eq!(1_f32, 1.000_000_2, ulps_all <= 1);
@@ -85,7 +85,7 @@ mod assert_float_eq {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `0.1`: testing: 0 != 1"#)]
     fn fail_with_message() {
         assert_float_eq!(0_f32, 1., abs <= 0.1, "testing: {} != {}", 0_f32, 1_f32);
@@ -96,7 +96,7 @@ mod assert_float_eq {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `0.1`: testing: 0 != 1"#)]
     fn fail_with_message_trailing_comma() {
         assert_float_eq!(0_f32, 1., abs <= 0.1, "testing: {} != {}", 0_f32, 1_f32,);
@@ -107,7 +107,7 @@ mod assert_float_eq {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `0.1`,
     [ulps] ε: `1`: testing: 0 != 1"#)]
     fn chaining_fail_with_message() {
@@ -127,7 +127,7 @@ mod assert_float_eq {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `0.1`,
     [ulps] ε: `1`: testing: 0 != 1"#)]
     fn chaining_fail_with_message_trailing_comma() {
@@ -240,7 +240,7 @@ mod assert_float_ne {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `1.0`"#)]
     fn abs_fail() {
         assert_float_ne!(0_f32, 1., abs <= 1.);
@@ -251,7 +251,7 @@ mod assert_float_ne {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
  [abs_all] ε: `1.0`"#)]
     fn abs_all_fail() {
         assert_float_ne!(0_f32, 1., abs_all <= 1.);
@@ -262,7 +262,7 @@ mod assert_float_ne {
         left: `0.0`,
        right: `2.0`,
     abs_diff: `2.0`,
-   ulps_diff: `1073741824`,
+   ulps_diff: `Some(1073741824)`,
      [rel] ε: `2.0`"#)]
     fn rel_fail() {
         assert_float_ne!(0_f32, 2., rel <= 1.);
@@ -273,7 +273,7 @@ mod assert_float_ne {
         left: `0.0`,
        right: `2.0`,
     abs_diff: `2.0`,
-   ulps_diff: `1073741824`,
+   ulps_diff: `Some(1073741824)`,
  [rel_all] ε: `2.0`"#)]
     fn rel_all_fail() {
         assert_float_ne!(0_f32, 2., rel_all <= 1.);
@@ -284,7 +284,7 @@ mod assert_float_ne {
         left: `1.0`,
        right: `1.0000001`,
     abs_diff: `0.00000011920929`,
-   ulps_diff: `1`,
+   ulps_diff: `Some(1)`,
     [ulps] ε: `1`"#)]
     fn ulps_fail() {
         assert_float_ne!(1_f32, 1.000_000_1, ulps <= 1);
@@ -295,7 +295,7 @@ mod assert_float_ne {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `1.0`: testing: 0 != 1"#)]
     fn fail_with_message() {
         assert_float_ne!(0_f32, 1., abs <= 1., "testing: {} != {}", 0_f32, 1_f32);
@@ -306,7 +306,7 @@ mod assert_float_ne {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `1.0`: testing: 0 != 1"#)]
     fn fail_with_message_trailing_comma() {
         assert_float_ne!(0_f32, 1., abs <= 1., "testing: {} != {}", 0_f32, 1_f32,);
@@ -317,7 +317,7 @@ mod assert_float_ne {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `1.0`,
     [ulps] ε: `1`: testing: 0 != 1"#)]
     fn chaining_fail_with_message() {
@@ -337,7 +337,7 @@ mod assert_float_ne {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `1.0`,
     [ulps] ε: `1`: testing: 0 != 1"#)]
     fn chaining_fail_with_message_trailing_comma() {
@@ -398,7 +398,7 @@ mod debug_assert_float_eq {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `0.1`"#)
     )]
     fn abs_fail() {
@@ -412,7 +412,7 @@ mod debug_assert_float_eq {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [rel] ε: `0.1`"#)
     )]
     fn rel_fail() {
@@ -426,7 +426,7 @@ mod debug_assert_float_eq {
         left: `1.0`,
        right: `1.0000002`,
     abs_diff: `0.00000023841858`,
-   ulps_diff: `2`,
+   ulps_diff: `Some(2)`,
     [ulps] ε: `1`"#)
     )]
     fn ulps_fail() {
@@ -437,10 +437,24 @@ mod debug_assert_float_eq {
     #[cfg_attr(
         debug_assertions,
         should_panic(expected = r#"`float_eq!(left, right, abs <= ε)`
+        left: `-1.0`,
+       right: `1.0`,
+    abs_diff: `2.0`,
+   ulps_diff: `None`,
+     [abs] ε: `0.1`"#)
+    )]
+    fn fail_ulps_diff_none() {
+        debug_assert_float_eq!(-1.0, 1.0, abs <= 0.1);
+    }
+
+    #[test]
+    #[cfg_attr(
+        debug_assertions,
+        should_panic(expected = r#"`float_eq!(left, right, abs <= ε)`
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `0.1`: testing: 0 != 1"#)
     )]
     fn fail_with_message() {
@@ -454,7 +468,7 @@ mod debug_assert_float_eq {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `0.1`: testing: 0 != 1"#)
     )]
     fn fail_with_message_trailing_comma() {
@@ -468,7 +482,7 @@ mod debug_assert_float_eq {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `0.1`,
     [ulps] ε: `1`: testing: 0 != 1"#)
     )]
@@ -491,7 +505,7 @@ mod debug_assert_float_eq {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `0.1`,
     [ulps] ε: `1`: testing: 0 != 1"#)
     )]
@@ -607,7 +621,7 @@ mod debug_assert_float_ne {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `1.0`"#)
     )]
     fn abs_fail() {
@@ -621,7 +635,7 @@ mod debug_assert_float_ne {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [rel] ε: `1.0`"#)
     )]
     fn rel_fail() {
@@ -635,7 +649,7 @@ mod debug_assert_float_ne {
         left: `1.0`,
        right: `1.0000001`,
     abs_diff: `0.00000011920929`,
-   ulps_diff: `1`,
+   ulps_diff: `Some(1)`,
     [ulps] ε: `1`"#)
     )]
     fn ulps_fail() {
@@ -649,7 +663,7 @@ mod debug_assert_float_ne {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `1.0`: testing: 0 != 1"#)
     )]
     fn fail_with_message() {
@@ -663,7 +677,7 @@ mod debug_assert_float_ne {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `1.0`: testing: 0 != 1"#)
     )]
     fn fail_with_message_trailing_comma() {
@@ -677,7 +691,7 @@ mod debug_assert_float_ne {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `1.0`,
     [ulps] ε: `1`: testing: 0 != 1"#)
     )]
@@ -700,7 +714,7 @@ mod debug_assert_float_ne {
         left: `0.0`,
        right: `1.0`,
     abs_diff: `1.0`,
-   ulps_diff: `1065353216`,
+   ulps_diff: `Some(1065353216)`,
      [abs] ε: `1.0`,
     [ulps] ε: `1`: testing: 0 != 1"#)
     )]
