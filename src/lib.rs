@@ -457,6 +457,7 @@ pub use crate::traits::*;
 // implementations of traits
 mod arrays;
 mod primitives;
+mod tuples;
 
 #[cfg(feature = "num")]
 mod num_complex;

@@ -91,7 +91,7 @@ assert_float_eq!(a, b, ulps <= Complex32Ulps { re: 2, im: 4 });
 assert_float_eq!(a, b, ulps_all <= 4);
 ```
 
-Arrays of compatible types are also supported, from size 0 to 32 (inclusive):
+Arrays of size 0 to 32 (inclusive) are supported:
 
 ```rust
 let a = [1.0, -2.0, 3.0];
@@ -99,6 +99,14 @@ let b = [-1.0, 2.0, 3.5];
 assert_float_eq!(a, b, abs <= [2.0, 4.0, 0.5]);
 
 assert_float_eq!([1.000_000_2f32, 2.0], [1.0, 2.0], abs_all <= 4.0);
+```
+
+As are tuples up to size 12 (inclusive):
+
+```rust
+let a = (1.0f32, 2.0f64);
+let b = (1.5f32, -2.0f64);
+assert_float_eq!(a, b, abs <= (0.5, 4.0));
 ```
 
 Asserts may be supported by implementing the `FloatDiff` and `FloatEqDebug`/

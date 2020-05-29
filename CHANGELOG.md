@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   case (e.g. tuples can generally be `FloatEq` but not `FloatEqAll`). Existing
   checks against arrays or `num::Complex` should work again if changed to use the
   `_all` variants.
+- `FloatEq` support for tuples of up to size 12 (inclusive).
 - Many more tests for FloatEq over primitive values, including for subnormals,
   both ends of the normal float range, infinities and different NaN payloads.
 - Added documentation on how to read assert error messages.
@@ -25,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - ULPs based checks now treat `NaN` values as not equal, to match the default
   partial equality behaviour of floats.
+- Equality of infinities is now consistent, both internally and with respect to
+  general IEEE floating point behaviour.
 - `FloatEq` now more specifically means equality based on a structurally defined
   epsilon type. See the notes on `FloatEqAll` above.
 - `FloatDiff` is much more rigorously defined, in particular `ulps_diff` now

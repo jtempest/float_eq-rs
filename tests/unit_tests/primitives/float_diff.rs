@@ -1,7 +1,7 @@
 macro_rules! impl_tests {
     ($float:ident, $uint:ident) => {
         mod $float {
-            use crate::unit_tests::primitives::$float::*;
+            use crate::$float::*;
             use float_eq::FloatDiff;
 
             #[test]
