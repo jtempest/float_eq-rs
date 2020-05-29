@@ -3,7 +3,7 @@
 macro_rules! impl_tests {
     ($float:ident) => {
         mod $float {
-            use crate::$float::*;
+            use crate::unit_tests::primitives::$float::*;
             use float_eq::{
                 assert_float_eq, assert_float_ne, float_eq, float_ne, FloatEq, FloatEqAll,
             };

@@ -1,4 +1,3 @@
-#![cfg(feature = "num")]
 #![allow(clippy::float_cmp)]
 
 use core::f32;

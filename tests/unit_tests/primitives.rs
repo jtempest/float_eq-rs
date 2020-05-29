@@ -63,12 +63,10 @@ macro_rules! impl_test_helpers {
     };
 }
 
-impl_test_helpers!(f32, u32, crate::F32_NAN_BITS);
-impl_test_helpers!(f64, u64, crate::F64_NAN_BITS);
+impl_test_helpers!(f32, u32, crate::unit_tests::primitives::F32_NAN_BITS);
+impl_test_helpers!(f64, u64, crate::unit_tests::primitives::F64_NAN_BITS);
 
-mod primitives {
-    mod eq_abs;
-    mod eq_rel;
-    mod eq_ulps;
-    mod float_diff;
-}
+mod eq_abs;
+mod eq_rel;
+mod eq_ulps;
+mod float_diff;
