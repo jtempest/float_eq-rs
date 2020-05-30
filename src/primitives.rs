@@ -1,3 +1,5 @@
+#![allow(clippy::float_cmp)]
+
 use crate::{FloatDiff, FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug};
 
 macro_rules! impl_traits {

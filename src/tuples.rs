@@ -6,9 +6,7 @@ impl FloatDiff for () {
     type UlpsDiff = ();
 
     #[inline]
-    fn abs_diff(&self, _other: &()) -> Self::AbsDiff {
-        ()
-    }
+    fn abs_diff(&self, _other: &()) -> Self::AbsDiff {}
 
     #[inline]
     fn ulps_diff(&self, _other: &()) -> Option<Self::UlpsDiff> {
@@ -41,14 +39,10 @@ impl FloatEqDebug for () {
     type DebugUlpsEpsilon = ();
 
     #[inline]
-    fn debug_abs_epsilon(&self, _other: &(), _max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        ()
-    }
+    fn debug_abs_epsilon(&self, _other: &(), _max_diff: &Self::Epsilon) -> Self::DebugEpsilon {}
 
     #[inline]
-    fn debug_rel_epsilon(&self, _other: &(), _max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        ()
-    }
+    fn debug_rel_epsilon(&self, _other: &(), _max_diff: &Self::Epsilon) -> Self::DebugEpsilon {}
 
     #[inline]
     fn debug_ulps_epsilon(
@@ -56,7 +50,6 @@ impl FloatEqDebug for () {
         _other: &(),
         _max_diff: &Self::UlpsEpsilon,
     ) -> Self::DebugUlpsEpsilon {
-        ()
     }
 }
 
