@@ -5,27 +5,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+Bumped up the version number since this release includes breaking API changes.
 
 ### Added
 - The `FloatEqAll` and `FloatEqAllDebug` traits, which allow for `abs_all`,
   `rel_all` and `ulps_all` to be used in the `float_eq` and `assert_float_eq`
-  families of macros. This allows for checks that use the same epsilon threshold
-  across all fields being checked. This used to be the implicit behaviour of the
-  original checks, but these have been redefined to perform a structural check
-  with a threshold specified per field. This means that existing implementations
-  of `FloatEq` and `FloatEqDebug` ought to be updated to the new form. Despite
-  being more disruptive, this default was changed since it is a more general
-  case (e.g. tuples can generally be `FloatEq` but not `FloatEqAll`). Existing
-  checks against arrays or `num::Complex` should work again if changed to use the
-  `_all` variants.
-- `FloatEq` support for tuples of up to size 12 (inclusive).
-- Many more tests for FloatEq over primitive values, including for subnormals,
-  both ends of the normal float range, infinities and different NaN payloads.
-- Added documentation on how to read assert error messages.
+  families of macros, which take a single epsilon value to be applied uniformly
+  across all fields being compared. The behaviour of `FloatEq` has now changed
+  to apply epsilon values structurally, on a per-field basis, since that is a
+  more general behaviour (e.g. all tuples may sensibly be `FloatEq` but not
+  `FloatEqAll`). If existing checks against arrays or `num::Complex` break, 
+  switching to use the `_all` variants ought to fix them.
+- Support for tuples of up to size 12 (inclusive).
+- Documentation on how to interpret assert error messages.
 
 ### Changed
-- ULPs based checks now treat `NaN` values as not equal, to match the default
-  partial equality behaviour of floats.
+- ULPs checks now treat `NaN` values as not equal, to match the default partial
+  equality behaviour of floats.
 - Equality of infinities is now consistent, both internally and with respect to
   general IEEE floating point behaviour.
 - `FloatEq` now more specifically means equality based on a structurally defined
@@ -37,13 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   naming with `FloatEqDebug`'s associated types.
 - Directed docs.rs to build documentation for all features.
 
-### Fixed
-- Some of the custom_type tests were using lower values than intended for some
-  checks, these have been changed, although the tests were not previously unsound.
-
 ## [0.2.0] - 2020-04-12
-Bumped up the minor version number since this release includes breaking API 
-changes.
+Bumped up the version number since this release includes breaking API changes.
 
 ### Added
 - Implementation of traits for arrays of size 0 to 32 (inclusive) where the type

@@ -1,6 +1,6 @@
 use crate::{FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug};
 
-/// Checks whether two floating point expressions are equal to each other (using [`FloatEq`]).
+/// Checks if two floating point expressions are equal to each other.
 ///
 /// Comparisons are applied in order from left to right, shortcutting to return
 /// early if a positive result is found.
@@ -51,7 +51,7 @@ macro_rules! float_eq {
     })
 }
 
-/// Checks whether two floating point expressions are not equal to each other (using [`FloatEq`]).
+/// Checks if two floating point expressions are not equal to each other.
 ///
 /// Comparisons are applied in order from left to right, shortcutting to return
 /// early if a positive result is found.
@@ -98,7 +98,7 @@ macro_rules! float_ne {
     });
 }
 
-/// Asserts that two floating point expressions are equal to each other (using [`float_eq!`]).
+/// Asserts that two floating point expressions are equal to each other.
 ///
 /// - `abs <= max_diff` is an [absolute epsilon comparison].
 /// - `rel <= max_diff` is a [relative epsilon comparison].
@@ -113,7 +113,7 @@ macro_rules! float_ne {
 ///
 /// On panic, this macro will print the values of the expressions with their debug
 /// representations, with additional information from the comparison operations
-/// (using [`FloatEqDebug`] and [`FloatDiff`]).
+/// (using [`FloatEqDebug`], [`FloatEqAllDebug`] and [`FloatDiff`]).
 ///
 /// Like [`assert!`], this macro has a second form, where a custom panic message can
 /// be provided.
@@ -140,6 +140,7 @@ macro_rules! float_ne {
 /// [`float_eq!`]: macro.float_eq.html
 /// [`FloatEq`]: trait.FloatEq.html
 /// [`FloatEqDebug`]: trait.FloatEqDebug.html
+/// [`FloatEqAllDebug`]: trait.FloatEqAllDebug.html
 /// [`FloatDiff`]: trait.FloatDiff.html
 /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
 /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
@@ -337,7 +338,7 @@ macro_rules! assert_float_eq {
     });
 }
 
-/// Asserts that two floating point expressions are not equal to each other (using [`float_ne!`]).
+/// Asserts that two floating point expressions are not equal to each other.
 ///
 /// - `abs <= max_diff` is an [absolute epsilon comparison].
 /// - `rel <= max_diff` is a [relative epsilon comparison].
@@ -352,7 +353,7 @@ macro_rules! assert_float_eq {
 ///
 /// On panic, this macro will print the values of the expressions with their debug
 /// representations, with additional information from the comparison operations
-/// (using [`FloatEqDebug`] and [`FloatDiff`]).
+/// (using [`FloatEqDebug`], [`FloatEqAllDebug`] and [`FloatDiff`]).
 ///
 /// Like [`assert!`], this macro has a second form, where a custom panic message can
 /// be provided.
@@ -379,6 +380,7 @@ macro_rules! assert_float_eq {
 /// [`float_ne!`]: macro.float_ne.html
 /// [`FloatEq`]: trait.FloatEq.html
 /// [`FloatEqDebug`]: trait.FloatEqDebug.html
+/// [`FloatEqAllDebug`]: trait.FloatEqAllDebug.html
 /// [`FloatDiff`]: trait.FloatDiff.html
 /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
 /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
@@ -576,15 +578,22 @@ macro_rules! assert_float_ne {
     });
 }
 
-/// Asserts that two floating point expressions are equal to each other (using [`float_eq!`]).
+/// Asserts that two floating point expressions are equal to each other.
 ///
 /// - `abs <= max_diff` is an [absolute epsilon comparison].
 /// - `rel <= max_diff` is a [relative epsilon comparison].
 /// - `ulps <= max_diff` is an [ULPs comparison].
 ///
+/// When comparing [composite types], variants that use a uniform `max_diff`
+/// value across all fields are also available:
+///
+/// - `abs_all <= max_diff` is an [absolute epsilon comparison].
+/// - `rel_all <= max_diff` is a [relative epsilon comparison].
+/// - `ulps_all <= max_diff` is an [ULPs comparison].
+///
 /// On panic, this macro will print the values of the expressions with their debug
 /// representations, with additional information from the comparison operations
-/// (using [`FloatEqDebug`] and [`FloatDiff`]).
+/// (using [`FloatEqDebug`], [`FloatEqAllDebug`] and [`FloatDiff`]).
 ///
 /// Like [`assert!`], this macro has a second form, where a custom panic message can
 /// be provided.
@@ -612,24 +621,33 @@ macro_rules! assert_float_ne {
 /// [`float_eq!`]: macro.float_eq.html
 /// [`FloatEq`]: trait.FloatEq.html
 /// [`FloatEqDebug`]: trait.FloatEqDebug.html
+/// [`FloatEqAllDebug`]: trait.FloatEqAllDebug.html
 /// [`FloatDiff`]: trait.FloatDiff.html
 /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
 /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
 /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
+/// [composite types]: index.html#comparing-composite-types
 #[macro_export]
 macro_rules! debug_assert_float_eq {
     ($($arg:tt)*) => (if cfg!(debug_assertions) { $crate::assert_float_eq!($($arg)*); })
 }
 
-/// Asserts that two floating point expressions are not equal to each other (using [`float_ne!`]).
+/// Asserts that two floating point expressions are not equal to each other.
 ///
 /// - `abs <= max_diff` is an [absolute epsilon comparison].
 /// - `rel <= max_diff` is a [relative epsilon comparison].
 /// - `ulps <= max_diff` is an [ULPs comparison].
 ///
+/// When comparing [composite types], variants that use a uniform `max_diff`
+/// value across all fields are also available:
+///
+/// - `abs_all <= max_diff` is an [absolute epsilon comparison].
+/// - `rel_all <= max_diff` is a [relative epsilon comparison].
+/// - `ulps_all <= max_diff` is an [ULPs comparison].
+///
 /// On panic, this macro will print the values of the expressions with their debug
 /// representations, with additional information from the comparison operations
-/// (using [`FloatEqDebug`] and [`FloatDiff`]).
+/// (using [`FloatEqDebug`], [`FloatEqAllDebug`] and [`FloatDiff`]).
 ///
 /// Like [`assert!`], this macro has a second form, where a custom panic message can
 /// be provided.
@@ -657,10 +675,12 @@ macro_rules! debug_assert_float_eq {
 /// [`float_ne!`]: macro.float_ne.html
 /// [`FloatEq`]: trait.FloatEq.html
 /// [`FloatEqDebug`]: trait.FloatEqDebug.html
+/// [`FloatEqAllDebug`]: trait.FloatEqAllDebug.html
 /// [`FloatDiff`]: trait.FloatDiff.html
 /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
 /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
 /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
+/// [composite types]: index.html#comparing-composite-types
 #[macro_export]
 macro_rules! debug_assert_float_ne {
     ($($arg:tt)*) => (if cfg!(debug_assertions) { $crate::assert_float_ne!($($arg)*); })

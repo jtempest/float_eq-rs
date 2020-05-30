@@ -96,7 +96,7 @@ assert_float_eq!(a, b, ulps <= Complex32Ulps { re: 2, im: 4 });
 assert_float_eq!(a, b, ulps_all <= 4);
 ```
 
-Arrays of compatible types are also supported, from size 0 to 32 (inclusive):
+Arrays of size 0 to 32 (inclusive) are supported:
 
 ```rust
 let a = [1.0, -2.0, 3.0];
@@ -106,9 +106,16 @@ assert_float_eq!(a, b, abs <= [2.0, 4.0, 0.5]);
 assert_float_eq!([1.000_000_2f32, 2.0], [1.0, 2.0], abs_all <= 4.0);
 ```
 
-Asserts may be supported by implementing the `FloatDiff` and `FloatEqDebug`/
-`FloatEqAllDebug` traits as well, which provide additional context when
-debugging.
+As are tuples up to size 12 (inclusive):
+
+```rust
+let a = (1.0f32, 2.0f64);
+let b = (1.5f32, -2.0f64);
+assert_float_eq!(a, b, abs <= (0.5, 4.0));
+```
+
+Types that also implement `FloatDiff` and `FloatEqDebug`/`FloatEqAllDebug` may
+be used in the assert forms.
 
 ## Error messages
 
@@ -126,7 +133,7 @@ thread 'test' panicked at 'assertion failed: `float_eq!(left, right, rel <= ε)`
         left: `4.0`,
        right: `4.000008`,
     abs_diff: `0.000008106232`,
-   ulps_diff: `17`,
+   ulps_diff: `Some(17)`,
      [rel] ε: `0.000004000008`', assert_failure.rs:15:5
 ```
 
@@ -170,11 +177,10 @@ Release information is available in [CHANGELOG.md](CHANGELOG.md).
 
 ## Future plans
 
-- Add checks that are relative to the precision of the minimum of the input
-  values, or always relative to the first or second operand.
+- Further support for basic Rust container and wrapper types.
 
-- Further support for basic Rust language components like tuples and containers
-  of compatible types like `Vec`, likely using `PartialEq`'s support as a guide.
+- Checks that use a precision relative to the minimum of the two input values,
+  or to the first or second operand.
 
 - `#[derive]` support for comparison of custom types that are composed of 
   already comparable floating point values.

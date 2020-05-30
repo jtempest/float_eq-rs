@@ -109,9 +109,8 @@ let b = (1.5f32, -2.0f64);
 assert_float_eq!(a, b, abs <= (0.5, 4.0));
 ```
 
-Asserts may be supported by implementing the `FloatDiff` and `FloatEqDebug`/
-`FloatEqAllDebug` traits as well, which provide additional context when
-debugging.
+Types that also implement `FloatDiff` and `FloatEqDebug`/`FloatEqAllDebug` may
+be used in the assert forms.
 
 ## Error messages
 
@@ -129,7 +128,7 @@ thread 'test' panicked at 'assertion failed: `float_eq!(left, right, rel <= ε)`
         left: `4.0`,
        right: `4.000008`,
     abs_diff: `0.000008106232`,
-   ulps_diff: `17`,
+   ulps_diff: `Some(17)`,
      [rel] ε: `0.000004000008`', assert_failure.rs:15:5
 ```
 
@@ -173,11 +172,10 @@ Release information is available in [CHANGELOG.md](CHANGELOG.md).
 
 ## Future plans
 
-- Add checks that are relative to the precision of the minimum of the input
-  values, or always relative to the first or second operand.
+- Further support for basic Rust container and wrapper types.
 
-- Further support for basic Rust language components like tuples and containers
-  of compatible types like `Vec`, likely using `PartialEq`'s support as a guide.
+- Checks that use a precision relative to the minimum of the two input values,
+  or to the first or second operand.
 
 - `#[derive]` support for comparison of custom types that are composed of 
   already comparable floating point values.

@@ -1,14 +1,13 @@
 use core::fmt;
 
-/// Algorithms to compute the difference between IEEE floating point values.
+/// Compute the difference between IEEE floating point values.
 ///
 /// This trait is used by the family of [`assert_float_eq!`] macros to provide
 /// debug context information when they fail, but may also be called directly.
-/// Types are displayed to the user with `fmt::Debug`.
+/// Types are displayed to the user with [`fmt::Debug`].
 ///
-/// *Note: the definition of this trait is very much tailored to what the crate
-/// requires in terms of debugging information, and may not be ideal for general
-/// use.*
+/// *Note: the definition of this trait is very much tailored to `float_eq`'s
+/// debug context requirements, and may not be ideal for general use.*
 ///
 /// ## How can I implement `FloatDiff`?
 ///
@@ -148,6 +147,7 @@ use core::fmt;
 ///
 /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
 /// [`assert_float_eq!`]: macro.assert_float_eq.html
+/// [`fmt::Debug`]: https://doc.rust-lang.org/std/fmt/trait.Debug.html
 pub trait FloatDiff<Rhs: ?Sized = Self> {
     /// Type of the absolute difference between two values.
     ///
@@ -216,8 +216,7 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
     fn ulps_diff(&self, other: &Rhs) -> Option<Self::UlpsDiff>;
 }
 
-/// Algorithms to compare IEEE floating point values for equality using per-field
-/// thresholds.
+/// Compare IEEE floating point values for equality using per-field thresholds.
 ///
 /// This trait is used in the implementation of the [`float_eq!`] and [`assert_float_eq!`]
 /// families of macros to provide `abs`, `rel` and `ulps` checks. It may be called
@@ -461,8 +460,7 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     }
 }
 
-/// Algorithms to compare IEEE floating point values for equality using uniform
-/// thresholds.
+/// Compare IEEE floating point values for equality using a uniform threshold.
 ///
 /// This trait is used in the implementation of the [`float_eq!`] and [`assert_float_eq!`]
 /// families of macros to provide `abs_all`, `rel_all` and `ulps_all` checks. It
@@ -663,7 +661,7 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     }
 }
 
-/// Provides additional context for debugging when an assert using [`FloatEq`] fails.
+/// Debug context for when an assert using [`FloatEq`] fails.
 ///
 /// This is used internally by the [`assert_float_eq!`] family of macros to provide
 /// debug context information to the user when `abs`, `rel` or `ulps` checks fail.
@@ -892,7 +890,7 @@ pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
     ) -> Self::DebugUlpsEpsilon;
 }
 
-/// Provides additional context for debugging when an assert using [`FloatEqAll`] fails.
+/// Debug context for when an assert using [`FloatEqAll`] fails.
 ///
 /// This is used internally by the [`assert_float_eq!`] family of macros to provide
 /// debug context information to the user when `abs_all`, `rel_all` or `ulps_all`
