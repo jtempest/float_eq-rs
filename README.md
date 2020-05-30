@@ -39,7 +39,7 @@ Add this to your cargo.toml:
 
 ```
 [dependencies]
-float_eq = "0.2"
+float_eq = "0.3"
 ```
 
 and, if you're using the 2015 edition, this to your crate root:
@@ -150,7 +150,7 @@ the default `std` feature. Use this in `Cargo.toml`:
 
 ```
 [dependencies.float_eq]
-version = "0.2"
+version = "0.3"
 default-features = false
 ```
 
