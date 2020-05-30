@@ -13,6 +13,7 @@ macro_rules! impl_traits {
             }
 
             #[cfg(not(feature = "std"))]
+            #[inline]
             pub(crate) fn abs(value: $float) -> $float {
                 // mask away only the sign bit for no_std builds since the abs
                 // method is not available
