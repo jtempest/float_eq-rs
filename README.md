@@ -119,8 +119,7 @@ Arrays of size 0 to 32 (inclusive) are supported:
 let a = [1.0, -2.0, 3.0];
 let b = [-1.0, 2.0, 3.5];
 assert_float_eq!(a, b, abs <= [2.0, 4.0, 0.5]);
-
-assert_float_eq!([1.000_000_2f32, 2.0], [1.0, 2.0], abs_all <= 4.0);
+assert_float_eq!(a, b, abs_all <= 4.0);
 ```
 
 As are tuples up to size 12 (inclusive):
@@ -143,7 +142,7 @@ going overboard. For example, this call:
 assert_float_eq!(4.0f32, 4.000_008, rel <= 0.000_001);
 ```
 
-Panics with this error message (ε is the greek letter epsilon):
+Panics with this error message:
 
 ```
 thread 'test' panicked at 'assertion failed: `float_eq!(left, right, rel <= ε)`
