@@ -13,6 +13,7 @@
 //!     - [Absolute epsilon comparison](#absolute-epsilon-comparison)
 //!     - [Relative epsilon comparison](#relative-epsilon-comparison)
 //!     - [Units in the Last Place (ULPs) comparison](#units-in-the-last-place-ulps-comparison)
+//! - [Combining checks](#combining-checks)
 //! - [Comparing composite types](#comparing-composite-types)
 //! - [Error messages](#error-messages)
 //! - [Comparing custom types](#comparing-custom-types)
@@ -38,10 +39,8 @@
 //! expressions for equality based on the result of one or more different kinds
 //! of check. Each check is invoked by name and an upper boundary, so for example
 //! `rel <= 0.1`, should be read as *"a [relative epsilon comparison](#relative-epsilon-comparison)
-//! with a maximum difference of less than or equal to `0.1`"*. If multiple checks
-//! are provided then they are executed in order from left to right, shortcutting
-//! to return early if one passes. The corresponding [`assert_float_eq!`] and
-//! [`assert_float_ne!`] use the same interface:
+//! with a maximum difference of less than or equal to `0.1`"*. The corresponding
+//! [`assert_float_eq!`] and [`assert_float_ne!`] use the same interface:
 //!
 //! ```rust
 //! use float_eq::{assert_float_eq, assert_float_ne, float_eq, float_ne};
@@ -237,7 +236,7 @@
 //!
 //! ```rust
 //! # use float_eq::{assert_float_eq, assert_float_ne};
-//! assert_float_ne!(1.0f32 - 1.000_000_1, 0.0, ulps <= 1);        // not equal
+//! assert_float_ne!(1.0f32 - 1.000_000_1, 0.0, ulps <= 1);          // not equal
 //! assert_float_eq!(1.0f32 - 1.000_000_1, 0.0, abs <= 0.000_000_2); // equal
 //! ```
 //!
@@ -253,6 +252,35 @@
 //! - Do not work at all if the two values being checked have different signs.
 //! - Whilst slightly counterintuitive at infinity (`MAX` is one ULP away from
 //!   `INFINITY`), are more useful than `rel` checks for this.
+//!
+//! # Combining checks
+//!
+//! If more than one check is specified by a comparison then they are performed
+//! in order from left to right. If any check is true, then the two values are
+//! considered equal. For example, this expression:
+//!
+//! ```
+//! # use float_eq::float_eq;
+//! # let a = 1.0f32;
+//! # let b = 1.0f32;
+//! float_eq!(a, b, abs <= 0.000_01, ulps <= 4)
+//! # ;
+//! ```
+//!
+//! Is equivalent to:
+//!
+//! ```
+//! # use float_eq::float_eq;
+//! # let a = 1.0f32;
+//! # let b = 1.0f32;
+//! float_eq!(a, b, abs <= 0.000_01) || float_eq!(a, b, ulps <= 4)
+//! # ;
+//! ```
+//!
+//! This allows you to build comparison expressions as needed, only paying for
+//! hat you use. A common case is to have an absolute epsilon comparison for a
+//! check versus zero followed by a relative precision comparison for a check
+//! versus a non-zero value, as shown above.
 //!
 //! # Comparing composite types
 //!

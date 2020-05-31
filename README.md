@@ -76,10 +76,27 @@ assert_float_ne!(0.0f32, 0.000_1, abs <= 0.000_05, ulps <= 4);
 
 Where `rel <= ROUNDING_ERROR` should be read as *"a relative epsilon comparison
 with a maximum difference of less than or equal to `ROUNDING_ERROR`"*, and
-similarly for `abs` and `ulps`. Multiple checks may be chained together in a 
-comparison expression, and are applied in order from left to right, shortcutting
-if a match is made. See the [API documentation] for a long form introduction to
-the different kinds of checks, their uses and limitations.
+similarly for `abs` and `ulps`. See the [API documentation] for a long form
+introduction to the different kinds of checks, their uses and limitations.
+
+## Combining checks
+
+If more than one check is specified by a comparison then they are performed
+in order from left to right. If any check is true, then the two values are
+considered equal. For example, this expression:
+
+```rust
+float_eq!(a, b, abs <= 0.000_01, ulps <= 4)
+```
+
+Is equivalent to:
+
+```rust
+float_eq!(a, b, abs <= 0.000_01) || float_eq!(a, b, ulps <= 4)
+```
+
+This allows you to build comparison expressions as needed, only paying for what
+you use.
 
 ## Composite types
 
