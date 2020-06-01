@@ -70,6 +70,7 @@ mod unit_tests {
     mod arrays;
     mod macros;
     mod primitives;
+    mod refs;
     mod tuples;
 
     #[cfg(feature = "num")]
