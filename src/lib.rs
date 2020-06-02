@@ -482,13 +482,5 @@ pub use crate::macros::*;
 mod traits;
 pub use crate::traits::*;
 
-// implementations of traits
-mod arrays;
-mod primitives;
-mod refs;
-mod tuples;
-
-#[cfg(feature = "num")]
-mod num_complex;
-#[cfg(feature = "num")]
-pub use self::num_complex::*;
+mod trait_impls;
+pub use crate::trait_impls::*;
