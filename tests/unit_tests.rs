@@ -68,6 +68,7 @@ impl_test_helpers!(f64, u64, crate::F64_NAN_BITS);
 
 mod unit_tests {
     mod arrays;
+    mod cells;
     mod macros;
     mod primitives;
     mod refs;

@@ -1,4 +1,5 @@
 mod arrays;
+mod cells;
 mod primitives;
 mod refs;
 mod tuples;
