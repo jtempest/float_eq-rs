@@ -1,8 +1,7 @@
 @echo off
-cargo test
-cargo test --features num
-cargo test --no-default-features
-cargo test --no-default-features --features num
+REM cargo hack test --feature-powerset --lib -q
+cargo hack test --feature-powerset --tests -q
+cargo test --all-features --doc
 
 cargo doc --all-features
 
