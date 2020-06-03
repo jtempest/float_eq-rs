@@ -278,7 +278,7 @@
 //! ```
 //!
 //! This allows you to build comparison expressions as needed, only paying for
-//! hat you use. A common case is to have an absolute epsilon comparison for a
+//! what you use. A common case is to have an absolute epsilon comparison for a
 //! check versus zero followed by a relative precision comparison for a check
 //! versus a non-zero value, as shown above.
 //!
