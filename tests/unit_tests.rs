@@ -74,6 +74,9 @@ mod unit_tests {
     mod refs;
     mod tuples;
 
+    #[cfg(feature = "std")]
+    mod std_types;
+
     #[cfg(feature = "num")]
     mod num_complex;
 }
