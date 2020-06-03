@@ -6,6 +6,7 @@
 
 use float_eq::{
     assert_float_eq, assert_float_ne, float_eq, float_ne, FloatDiff, FloatEq, FloatEqDebug,
+    FloatUlps, Ulps,
 };
 
 //------------------------------------------------------------------------------
@@ -25,32 +26,35 @@ impl MyComplex32 {
 
 #[derive(Debug, PartialEq)]
 struct MyComplex32Ulps {
-    re: <f32 as FloatDiff>::UlpsDiff,
-    im: <f32 as FloatDiff>::UlpsDiff,
+    re: Ulps<f32>,
+    im: Ulps<f32>,
 }
 
 impl MyComplex32Ulps {
-    fn new(re: u32, im: u32) -> MyComplex32Ulps {
+    fn new(re: Ulps<f32>, im: Ulps<f32>) -> MyComplex32Ulps {
         MyComplex32Ulps { re, im }
     }
+}
+
+impl FloatUlps for MyComplex32 {
+    type Ulps = MyComplex32Ulps;
 }
 
 //------------------------------------------------------------------------------
 // FloatDiff
 //------------------------------------------------------------------------------
 impl FloatDiff<f32> for MyComplex32 {
-    type AbsDiff = MyComplex32;
-    type UlpsDiff = MyComplex32Ulps;
+    type Output = MyComplex32;
 
-    fn abs_diff(&self, other: &f32) -> Self::AbsDiff {
+    fn abs_diff(&self, other: &f32) -> Self::Output {
         MyComplex32 {
             re: self.re.abs_diff(other),
             im: self.im.abs_diff(&0.0),
         }
     }
 
-    fn ulps_diff(&self, other: &f32) -> Option<Self::UlpsDiff> {
-        Some(MyComplex32Ulps {
+    fn ulps_diff(&self, other: &f32) -> Option<Ulps<Self::Output>> {
+        Some(Ulps::<MyComplex32> {
             re: self.re.ulps_diff(other)?,
             im: self.im.ulps_diff(&0.0)?,
         })
@@ -58,14 +62,13 @@ impl FloatDiff<f32> for MyComplex32 {
 }
 
 impl FloatDiff<MyComplex32> for f32 {
-    type AbsDiff = <MyComplex32 as FloatDiff<f32>>::AbsDiff;
-    type UlpsDiff = <MyComplex32 as FloatDiff<f32>>::UlpsDiff;
+    type Output = MyComplex32;
 
-    fn abs_diff(&self, other: &MyComplex32) -> Self::AbsDiff {
+    fn abs_diff(&self, other: &MyComplex32) -> Self::Output {
         other.abs_diff(self)
     }
 
-    fn ulps_diff(&self, other: &MyComplex32) -> Option<Self::UlpsDiff> {
+    fn ulps_diff(&self, other: &MyComplex32) -> Option<Ulps<Self::Output>> {
         other.ulps_diff(self)
     }
 }
@@ -102,7 +105,6 @@ fn float_diff_f32() {
 //------------------------------------------------------------------------------
 impl FloatEq<f32> for MyComplex32 {
     type Epsilon = f32;
-    type UlpsEpsilon = <f32 as FloatEq>::UlpsEpsilon;
 
     fn eq_abs(&self, other: &f32, max_diff: &Self::Epsilon) -> bool {
         self.re.eq_abs(other, max_diff) && self.im.eq_abs(&0.0, max_diff)
@@ -112,14 +114,13 @@ impl FloatEq<f32> for MyComplex32 {
         self.re.eq_rel(other, max_diff) && self.im.eq_rel(&0.0, max_diff)
     }
 
-    fn eq_ulps(&self, other: &f32, max_diff: &Self::UlpsEpsilon) -> bool {
+    fn eq_ulps(&self, other: &f32, max_diff: &Ulps<Self::Epsilon>) -> bool {
         self.re.eq_ulps(other, max_diff) && self.im.eq_ulps(&0.0, max_diff)
     }
 }
 
 impl FloatEq<MyComplex32> for f32 {
     type Epsilon = <MyComplex32 as FloatEq<f32>>::Epsilon;
-    type UlpsEpsilon = <MyComplex32 as FloatEq<f32>>::UlpsEpsilon;
 
     fn eq_abs(&self, other: &MyComplex32, max_diff: &Self::Epsilon) -> bool {
         other.eq_abs(self, max_diff)
@@ -129,7 +130,7 @@ impl FloatEq<MyComplex32> for f32 {
         other.eq_rel(self, max_diff)
     }
 
-    fn eq_ulps(&self, other: &MyComplex32, max_diff: &Self::UlpsEpsilon) -> bool {
+    fn eq_ulps(&self, other: &MyComplex32, max_diff: &Ulps<Self::Epsilon>) -> bool {
         other.eq_ulps(self, max_diff)
     }
 }
@@ -227,7 +228,6 @@ fn float_eq_macro_f32() {
 //------------------------------------------------------------------------------
 impl FloatEqDebug<f32> for MyComplex32 {
     type DebugEpsilon = MyComplex32;
-    type DebugUlpsEpsilon = MyComplex32Ulps;
 
     fn debug_abs_epsilon(&self, other: &f32, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
         MyComplex32 {
@@ -246,9 +246,9 @@ impl FloatEqDebug<f32> for MyComplex32 {
     fn debug_ulps_epsilon(
         &self,
         other: &f32,
-        max_diff: &Self::UlpsEpsilon,
-    ) -> Self::DebugUlpsEpsilon {
-        MyComplex32Ulps {
+        max_diff: &Ulps<Self::Epsilon>,
+    ) -> Ulps<Self::DebugEpsilon> {
+        Ulps::<Self::DebugEpsilon> {
             re: self.re.debug_ulps_epsilon(other, max_diff),
             im: self.im.debug_ulps_epsilon(&0.0, max_diff),
         }
@@ -257,7 +257,6 @@ impl FloatEqDebug<f32> for MyComplex32 {
 
 impl FloatEqDebug<MyComplex32> for f32 {
     type DebugEpsilon = <MyComplex32 as FloatEqDebug<f32>>::DebugEpsilon;
-    type DebugUlpsEpsilon = <MyComplex32 as FloatEqDebug<f32>>::DebugUlpsEpsilon;
 
     fn debug_abs_epsilon(
         &self,
@@ -278,8 +277,8 @@ impl FloatEqDebug<MyComplex32> for f32 {
     fn debug_ulps_epsilon(
         &self,
         other: &MyComplex32,
-        max_diff: &Self::UlpsEpsilon,
-    ) -> Self::DebugUlpsEpsilon {
+        max_diff: &Ulps<Self::Epsilon>,
+    ) -> Ulps<Self::DebugEpsilon> {
         other.debug_ulps_epsilon(self, max_diff)
     }
 }

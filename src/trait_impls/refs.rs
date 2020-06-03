@@ -1,23 +1,21 @@
-use crate::{FloatDiff, FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug};
+use crate::{FloatDiff, FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug, Ulps};
 
 //------------------------------------------------------------------------------
 // FloatDiff
 //------------------------------------------------------------------------------
-
 impl<A: ?Sized, B: ?Sized> FloatDiff<&B> for &A
 where
     A: FloatDiff<B>,
 {
-    type AbsDiff = A::AbsDiff;
-    type UlpsDiff = A::UlpsDiff;
+    type Output = A::Output;
 
     #[inline]
-    fn abs_diff(&self, other: &&B) -> Self::AbsDiff {
+    fn abs_diff(&self, other: &&B) -> Self::Output {
         FloatDiff::abs_diff(*self, *other)
     }
 
     #[inline]
-    fn ulps_diff(&self, other: &&B) -> Option<Self::UlpsDiff> {
+    fn ulps_diff(&self, other: &&B) -> Option<Ulps<Self::Output>> {
         FloatDiff::ulps_diff(*self, *other)
     }
 }
@@ -26,16 +24,15 @@ impl<A: ?Sized, B: ?Sized> FloatDiff<&B> for &mut A
 where
     A: FloatDiff<B>,
 {
-    type AbsDiff = A::AbsDiff;
-    type UlpsDiff = A::UlpsDiff;
+    type Output = A::Output;
 
     #[inline]
-    fn abs_diff(&self, other: &&B) -> Self::AbsDiff {
+    fn abs_diff(&self, other: &&B) -> Self::Output {
         FloatDiff::abs_diff(*self, *other)
     }
 
     #[inline]
-    fn ulps_diff(&self, other: &&B) -> Option<Self::UlpsDiff> {
+    fn ulps_diff(&self, other: &&B) -> Option<Ulps<Self::Output>> {
         FloatDiff::ulps_diff(*self, *other)
     }
 }
@@ -44,16 +41,15 @@ impl<A: ?Sized, B: ?Sized> FloatDiff<&mut B> for &A
 where
     A: FloatDiff<B>,
 {
-    type AbsDiff = A::AbsDiff;
-    type UlpsDiff = A::UlpsDiff;
+    type Output = A::Output;
 
     #[inline]
-    fn abs_diff(&self, other: &&mut B) -> Self::AbsDiff {
+    fn abs_diff(&self, other: &&mut B) -> Self::Output {
         FloatDiff::abs_diff(*self, *other)
     }
 
     #[inline]
-    fn ulps_diff(&self, other: &&mut B) -> Option<Self::UlpsDiff> {
+    fn ulps_diff(&self, other: &&mut B) -> Option<Ulps<Self::Output>> {
         FloatDiff::ulps_diff(*self, *other)
     }
 }
@@ -62,16 +58,15 @@ impl<A: ?Sized, B: ?Sized> FloatDiff<&mut B> for &mut A
 where
     A: FloatDiff<B>,
 {
-    type AbsDiff = A::AbsDiff;
-    type UlpsDiff = A::UlpsDiff;
+    type Output = A::Output;
 
     #[inline]
-    fn abs_diff(&self, other: &&mut B) -> Self::AbsDiff {
+    fn abs_diff(&self, other: &&mut B) -> Self::Output {
         FloatDiff::abs_diff(*self, *other)
     }
 
     #[inline]
-    fn ulps_diff(&self, other: &&mut B) -> Option<Self::UlpsDiff> {
+    fn ulps_diff(&self, other: &&mut B) -> Option<Ulps<Self::Output>> {
         FloatDiff::ulps_diff(*self, *other)
     }
 }
@@ -85,7 +80,6 @@ where
     A: FloatEq<B>,
 {
     type Epsilon = A::Epsilon;
-    type UlpsEpsilon = A::UlpsEpsilon;
 
     #[inline]
     fn eq_abs(&self, other: &&B, max_diff: &Self::Epsilon) -> bool {
@@ -98,7 +92,7 @@ where
     }
 
     #[inline]
-    fn eq_ulps(&self, other: &&B, max_diff: &Self::UlpsEpsilon) -> bool {
+    fn eq_ulps(&self, other: &&B, max_diff: &Ulps<Self::Epsilon>) -> bool {
         FloatEq::eq_ulps(*self, *other, max_diff)
     }
 }
@@ -108,7 +102,6 @@ where
     A: FloatEq<B>,
 {
     type Epsilon = A::Epsilon;
-    type UlpsEpsilon = A::UlpsEpsilon;
 
     #[inline]
     fn eq_abs(&self, other: &&B, max_diff: &Self::Epsilon) -> bool {
@@ -121,7 +114,7 @@ where
     }
 
     #[inline]
-    fn eq_ulps(&self, other: &&B, max_diff: &Self::UlpsEpsilon) -> bool {
+    fn eq_ulps(&self, other: &&B, max_diff: &Ulps<Self::Epsilon>) -> bool {
         FloatEq::eq_ulps(*self, *other, max_diff)
     }
 }
@@ -131,7 +124,6 @@ where
     A: FloatEq<B>,
 {
     type Epsilon = A::Epsilon;
-    type UlpsEpsilon = A::UlpsEpsilon;
 
     #[inline]
     fn eq_abs(&self, other: &&mut B, max_diff: &Self::Epsilon) -> bool {
@@ -144,7 +136,7 @@ where
     }
 
     #[inline]
-    fn eq_ulps(&self, other: &&mut B, max_diff: &Self::UlpsEpsilon) -> bool {
+    fn eq_ulps(&self, other: &&mut B, max_diff: &Ulps<Self::Epsilon>) -> bool {
         FloatEq::eq_ulps(*self, *other, max_diff)
     }
 }
@@ -154,7 +146,6 @@ where
     A: FloatEq<B>,
 {
     type Epsilon = A::Epsilon;
-    type UlpsEpsilon = A::UlpsEpsilon;
 
     #[inline]
     fn eq_abs(&self, other: &&mut B, max_diff: &Self::Epsilon) -> bool {
@@ -167,7 +158,7 @@ where
     }
 
     #[inline]
-    fn eq_ulps(&self, other: &&mut B, max_diff: &Self::UlpsEpsilon) -> bool {
+    fn eq_ulps(&self, other: &&mut B, max_diff: &Ulps<Self::Epsilon>) -> bool {
         FloatEq::eq_ulps(*self, *other, max_diff)
     }
 }
@@ -181,7 +172,6 @@ where
     A: FloatEqAll<B>,
 {
     type Epsilon = A::Epsilon;
-    type UlpsEpsilon = A::UlpsEpsilon;
 
     #[inline]
     fn eq_abs_all(&self, other: &&B, max_diff: &Self::Epsilon) -> bool {
@@ -194,7 +184,7 @@ where
     }
 
     #[inline]
-    fn eq_ulps_all(&self, other: &&B, max_diff: &Self::UlpsEpsilon) -> bool {
+    fn eq_ulps_all(&self, other: &&B, max_diff: &Ulps<Self::Epsilon>) -> bool {
         FloatEqAll::eq_ulps_all(*self, *other, max_diff)
     }
 }
@@ -204,7 +194,6 @@ where
     A: FloatEqAll<B>,
 {
     type Epsilon = A::Epsilon;
-    type UlpsEpsilon = A::UlpsEpsilon;
 
     #[inline]
     fn eq_abs_all(&self, other: &&B, max_diff: &Self::Epsilon) -> bool {
@@ -217,7 +206,7 @@ where
     }
 
     #[inline]
-    fn eq_ulps_all(&self, other: &&B, max_diff: &Self::UlpsEpsilon) -> bool {
+    fn eq_ulps_all(&self, other: &&B, max_diff: &Ulps<Self::Epsilon>) -> bool {
         FloatEqAll::eq_ulps_all(*self, *other, max_diff)
     }
 }
@@ -227,7 +216,6 @@ where
     A: FloatEqAll<B>,
 {
     type Epsilon = A::Epsilon;
-    type UlpsEpsilon = A::UlpsEpsilon;
 
     #[inline]
     fn eq_abs_all(&self, other: &&mut B, max_diff: &Self::Epsilon) -> bool {
@@ -240,7 +228,7 @@ where
     }
 
     #[inline]
-    fn eq_ulps_all(&self, other: &&mut B, max_diff: &Self::UlpsEpsilon) -> bool {
+    fn eq_ulps_all(&self, other: &&mut B, max_diff: &Ulps<Self::Epsilon>) -> bool {
         FloatEqAll::eq_ulps_all(*self, *other, max_diff)
     }
 }
@@ -250,7 +238,6 @@ where
     A: FloatEqAll<B>,
 {
     type Epsilon = A::Epsilon;
-    type UlpsEpsilon = A::UlpsEpsilon;
 
     #[inline]
     fn eq_abs_all(&self, other: &&mut B, max_diff: &Self::Epsilon) -> bool {
@@ -263,7 +250,7 @@ where
     }
 
     #[inline]
-    fn eq_ulps_all(&self, other: &&mut B, max_diff: &Self::UlpsEpsilon) -> bool {
+    fn eq_ulps_all(&self, other: &&mut B, max_diff: &Ulps<Self::Epsilon>) -> bool {
         FloatEqAll::eq_ulps_all(*self, *other, max_diff)
     }
 }
@@ -277,7 +264,6 @@ where
     A: FloatEqDebug<B>,
 {
     type DebugEpsilon = A::DebugEpsilon;
-    type DebugUlpsEpsilon = A::DebugUlpsEpsilon;
 
     #[inline]
     fn debug_abs_epsilon(&self, other: &&B, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
@@ -293,8 +279,8 @@ where
     fn debug_ulps_epsilon(
         &self,
         other: &&B,
-        max_diff: &Self::UlpsEpsilon,
-    ) -> Self::DebugUlpsEpsilon {
+        max_diff: &Ulps<Self::Epsilon>,
+    ) -> Ulps<Self::DebugEpsilon> {
         FloatEqDebug::debug_ulps_epsilon(*self, *other, max_diff)
     }
 }
@@ -304,7 +290,6 @@ where
     A: FloatEqDebug<B>,
 {
     type DebugEpsilon = A::DebugEpsilon;
-    type DebugUlpsEpsilon = A::DebugUlpsEpsilon;
 
     #[inline]
     fn debug_abs_epsilon(&self, other: &&B, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
@@ -320,8 +305,8 @@ where
     fn debug_ulps_epsilon(
         &self,
         other: &&B,
-        max_diff: &Self::UlpsEpsilon,
-    ) -> Self::DebugUlpsEpsilon {
+        max_diff: &Ulps<Self::Epsilon>,
+    ) -> Ulps<Self::DebugEpsilon> {
         FloatEqDebug::debug_ulps_epsilon(*self, *other, max_diff)
     }
 }
@@ -331,7 +316,6 @@ where
     A: FloatEqDebug<B>,
 {
     type DebugEpsilon = A::DebugEpsilon;
-    type DebugUlpsEpsilon = A::DebugUlpsEpsilon;
 
     #[inline]
     fn debug_abs_epsilon(&self, other: &&mut B, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
@@ -347,8 +331,8 @@ where
     fn debug_ulps_epsilon(
         &self,
         other: &&mut B,
-        max_diff: &Self::UlpsEpsilon,
-    ) -> Self::DebugUlpsEpsilon {
+        max_diff: &Ulps<Self::Epsilon>,
+    ) -> Ulps<Self::DebugEpsilon> {
         FloatEqDebug::debug_ulps_epsilon(*self, *other, max_diff)
     }
 }
@@ -358,7 +342,6 @@ where
     A: FloatEqDebug<B>,
 {
     type DebugEpsilon = A::DebugEpsilon;
-    type DebugUlpsEpsilon = A::DebugUlpsEpsilon;
 
     #[inline]
     fn debug_abs_epsilon(&self, other: &&mut B, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
@@ -374,8 +357,8 @@ where
     fn debug_ulps_epsilon(
         &self,
         other: &&mut B,
-        max_diff: &Self::UlpsEpsilon,
-    ) -> Self::DebugUlpsEpsilon {
+        max_diff: &Ulps<Self::Epsilon>,
+    ) -> Ulps<Self::DebugEpsilon> {
         FloatEqDebug::debug_ulps_epsilon(*self, *other, max_diff)
     }
 }
@@ -389,7 +372,6 @@ where
     A: FloatEqAllDebug<B>,
 {
     type DebugEpsilon = A::DebugEpsilon;
-    type DebugUlpsEpsilon = A::DebugUlpsEpsilon;
 
     #[inline]
     fn debug_abs_all_epsilon(&self, other: &&B, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
@@ -405,8 +387,8 @@ where
     fn debug_ulps_all_epsilon(
         &self,
         other: &&B,
-        max_diff: &Self::UlpsEpsilon,
-    ) -> Self::DebugUlpsEpsilon {
+        max_diff: &Ulps<Self::Epsilon>,
+    ) -> Ulps<Self::DebugEpsilon> {
         FloatEqAllDebug::debug_ulps_all_epsilon(*self, *other, max_diff)
     }
 }
@@ -416,7 +398,6 @@ where
     A: FloatEqAllDebug<B>,
 {
     type DebugEpsilon = A::DebugEpsilon;
-    type DebugUlpsEpsilon = A::DebugUlpsEpsilon;
 
     #[inline]
     fn debug_abs_all_epsilon(&self, other: &&B, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
@@ -432,8 +413,8 @@ where
     fn debug_ulps_all_epsilon(
         &self,
         other: &&B,
-        max_diff: &Self::UlpsEpsilon,
-    ) -> Self::DebugUlpsEpsilon {
+        max_diff: &Ulps<Self::Epsilon>,
+    ) -> Ulps<Self::DebugEpsilon> {
         FloatEqAllDebug::debug_ulps_all_epsilon(*self, *other, max_diff)
     }
 }
@@ -443,7 +424,6 @@ where
     A: FloatEqAllDebug<B>,
 {
     type DebugEpsilon = A::DebugEpsilon;
-    type DebugUlpsEpsilon = A::DebugUlpsEpsilon;
 
     #[inline]
     fn debug_abs_all_epsilon(
@@ -467,8 +447,8 @@ where
     fn debug_ulps_all_epsilon(
         &self,
         other: &&mut B,
-        max_diff: &Self::UlpsEpsilon,
-    ) -> Self::DebugUlpsEpsilon {
+        max_diff: &Ulps<Self::Epsilon>,
+    ) -> Ulps<Self::DebugEpsilon> {
         FloatEqAllDebug::debug_ulps_all_epsilon(*self, *other, max_diff)
     }
 }
@@ -478,7 +458,6 @@ where
     A: FloatEqAllDebug<B>,
 {
     type DebugEpsilon = A::DebugEpsilon;
-    type DebugUlpsEpsilon = A::DebugUlpsEpsilon;
 
     #[inline]
     fn debug_abs_all_epsilon(
@@ -502,8 +481,8 @@ where
     fn debug_ulps_all_epsilon(
         &self,
         other: &&mut B,
-        max_diff: &Self::UlpsEpsilon,
-    ) -> Self::DebugUlpsEpsilon {
+        max_diff: &Ulps<Self::Epsilon>,
+    ) -> Ulps<Self::DebugEpsilon> {
         FloatEqAllDebug::debug_ulps_all_epsilon(*self, *other, max_diff)
     }
 }

@@ -1,4 +1,4 @@
-use crate::{FloatDiff, FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug};
+use crate::{FloatDiff, FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug, Ulps};
 use std::boxed::Box;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -9,16 +9,15 @@ macro_rules! impl_traits_for_wrapper {
         where
             A: FloatDiff<B>,
         {
-            type AbsDiff = A::AbsDiff;
-            type UlpsDiff = A::UlpsDiff;
+            type Output = A::Output;
 
             #[inline]
-            fn abs_diff(&self, other: &$t<B>) -> Self::AbsDiff {
+            fn abs_diff(&self, other: &$t<B>) -> Self::Output {
                 FloatDiff::abs_diff(&**self, &**other)
             }
 
             #[inline]
-            fn ulps_diff(&self, other: &$t<B>) -> Option<Self::UlpsDiff> {
+            fn ulps_diff(&self, other: &$t<B>) -> Option<Ulps<Self::Output>> {
                 FloatDiff::ulps_diff(&**self, &**other)
             }
         }
@@ -28,7 +27,6 @@ macro_rules! impl_traits_for_wrapper {
             A: FloatEq<B>,
         {
             type Epsilon = A::Epsilon;
-            type UlpsEpsilon = A::UlpsEpsilon;
 
             #[inline]
             fn eq_abs(&self, other: &$t<B>, max_diff: &Self::Epsilon) -> bool {
@@ -41,7 +39,7 @@ macro_rules! impl_traits_for_wrapper {
             }
 
             #[inline]
-            fn eq_ulps(&self, other: &$t<B>, max_diff: &Self::UlpsEpsilon) -> bool {
+            fn eq_ulps(&self, other: &$t<B>, max_diff: &Ulps<Self::Epsilon>) -> bool {
                 FloatEq::eq_ulps(&**self, &**other, max_diff)
             }
         }
@@ -51,7 +49,6 @@ macro_rules! impl_traits_for_wrapper {
             A: FloatEqAll<B>,
         {
             type Epsilon = A::Epsilon;
-            type UlpsEpsilon = A::UlpsEpsilon;
 
             #[inline]
             fn eq_abs_all(&self, other: &$t<B>, max_diff: &Self::Epsilon) -> bool {
@@ -64,7 +61,7 @@ macro_rules! impl_traits_for_wrapper {
             }
 
             #[inline]
-            fn eq_ulps_all(&self, other: &$t<B>, max_diff: &Self::UlpsEpsilon) -> bool {
+            fn eq_ulps_all(&self, other: &$t<B>, max_diff: &Ulps<Self::Epsilon>) -> bool {
                 FloatEqAll::eq_ulps_all(&**self, &**other, max_diff)
             }
         }
@@ -75,7 +72,6 @@ macro_rules! impl_traits_for_wrapper {
             B: Copy,
         {
             type DebugEpsilon = A::DebugEpsilon;
-            type DebugUlpsEpsilon = A::DebugUlpsEpsilon;
 
             #[inline]
             fn debug_abs_epsilon(
@@ -99,8 +95,8 @@ macro_rules! impl_traits_for_wrapper {
             fn debug_ulps_epsilon(
                 &self,
                 other: &$t<B>,
-                max_diff: &Self::UlpsEpsilon,
-            ) -> Self::DebugUlpsEpsilon {
+                max_diff: &Ulps<Self::Epsilon>,
+            ) -> Ulps<Self::DebugEpsilon> {
                 FloatEqDebug::debug_ulps_epsilon(&**self, &**other, max_diff)
             }
         }
@@ -111,7 +107,6 @@ macro_rules! impl_traits_for_wrapper {
             B: Copy,
         {
             type DebugEpsilon = A::DebugEpsilon;
-            type DebugUlpsEpsilon = A::DebugUlpsEpsilon;
 
             #[inline]
             fn debug_abs_all_epsilon(
@@ -135,8 +130,8 @@ macro_rules! impl_traits_for_wrapper {
             fn debug_ulps_all_epsilon(
                 &self,
                 other: &$t<B>,
-                max_diff: &Self::UlpsEpsilon,
-            ) -> Self::DebugUlpsEpsilon {
+                max_diff: &Ulps<Self::Epsilon>,
+            ) -> Ulps<Self::DebugEpsilon> {
                 FloatEqAllDebug::debug_ulps_all_epsilon(&**self, &**other, max_diff)
             }
         }

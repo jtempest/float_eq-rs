@@ -1,4 +1,4 @@
-use crate::{FloatDiff, FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug};
+use crate::{FloatDiff, FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug, Ulps};
 use core::cell::{Cell, RefCell};
 
 //------------------------------------------------------------------------------
@@ -9,16 +9,15 @@ where
     A: FloatDiff<B> + Copy,
     B: Copy,
 {
-    type AbsDiff = A::AbsDiff;
-    type UlpsDiff = A::UlpsDiff;
+    type Output = A::Output;
 
     #[inline]
-    fn abs_diff(&self, other: &Cell<B>) -> Self::AbsDiff {
+    fn abs_diff(&self, other: &Cell<B>) -> Self::Output {
         FloatDiff::abs_diff(&self.get(), &other.get())
     }
 
     #[inline]
-    fn ulps_diff(&self, other: &Cell<B>) -> Option<Self::UlpsDiff> {
+    fn ulps_diff(&self, other: &Cell<B>) -> Option<Ulps<Self::Output>> {
         FloatDiff::ulps_diff(&self.get(), &other.get())
     }
 }
@@ -27,16 +26,15 @@ impl<A: ?Sized, B: ?Sized> FloatDiff<RefCell<B>> for RefCell<A>
 where
     A: FloatDiff<B>,
 {
-    type AbsDiff = A::AbsDiff;
-    type UlpsDiff = A::UlpsDiff;
+    type Output = A::Output;
 
     #[inline]
-    fn abs_diff(&self, other: &RefCell<B>) -> Self::AbsDiff {
+    fn abs_diff(&self, other: &RefCell<B>) -> Self::Output {
         FloatDiff::abs_diff(&*self.borrow(), &*other.borrow())
     }
 
     #[inline]
-    fn ulps_diff(&self, other: &RefCell<B>) -> Option<Self::UlpsDiff> {
+    fn ulps_diff(&self, other: &RefCell<B>) -> Option<Ulps<Self::Output>> {
         FloatDiff::ulps_diff(&*self.borrow(), &*other.borrow())
     }
 }
@@ -50,7 +48,6 @@ where
     B: Copy,
 {
     type Epsilon = A::Epsilon;
-    type UlpsEpsilon = A::UlpsEpsilon;
 
     #[inline]
     fn eq_abs(&self, other: &Cell<B>, max_diff: &Self::Epsilon) -> bool {
@@ -63,7 +60,7 @@ where
     }
 
     #[inline]
-    fn eq_ulps(&self, other: &Cell<B>, max_diff: &Self::UlpsEpsilon) -> bool {
+    fn eq_ulps(&self, other: &Cell<B>, max_diff: &Ulps<Self::Epsilon>) -> bool {
         FloatEq::eq_ulps(&self.get(), &other.get(), max_diff)
     }
 }
@@ -73,7 +70,6 @@ where
     A: FloatEq<B>,
 {
     type Epsilon = A::Epsilon;
-    type UlpsEpsilon = A::UlpsEpsilon;
 
     #[inline]
     fn eq_abs(&self, other: &RefCell<B>, max_diff: &Self::Epsilon) -> bool {
@@ -86,7 +82,7 @@ where
     }
 
     #[inline]
-    fn eq_ulps(&self, other: &RefCell<B>, max_diff: &Self::UlpsEpsilon) -> bool {
+    fn eq_ulps(&self, other: &RefCell<B>, max_diff: &Ulps<Self::Epsilon>) -> bool {
         FloatEq::eq_ulps(&*self.borrow(), &*other.borrow(), max_diff)
     }
 }
@@ -100,7 +96,6 @@ where
     B: Copy,
 {
     type Epsilon = A::Epsilon;
-    type UlpsEpsilon = A::UlpsEpsilon;
 
     #[inline]
     fn eq_abs_all(&self, other: &Cell<B>, max_diff: &Self::Epsilon) -> bool {
@@ -113,7 +108,7 @@ where
     }
 
     #[inline]
-    fn eq_ulps_all(&self, other: &Cell<B>, max_diff: &Self::UlpsEpsilon) -> bool {
+    fn eq_ulps_all(&self, other: &Cell<B>, max_diff: &Ulps<Self::Epsilon>) -> bool {
         FloatEqAll::eq_ulps_all(&self.get(), &other.get(), max_diff)
     }
 }
@@ -123,7 +118,6 @@ where
     A: FloatEqAll<B>,
 {
     type Epsilon = A::Epsilon;
-    type UlpsEpsilon = A::UlpsEpsilon;
 
     #[inline]
     fn eq_abs_all(&self, other: &RefCell<B>, max_diff: &Self::Epsilon) -> bool {
@@ -136,7 +130,7 @@ where
     }
 
     #[inline]
-    fn eq_ulps_all(&self, other: &RefCell<B>, max_diff: &Self::UlpsEpsilon) -> bool {
+    fn eq_ulps_all(&self, other: &RefCell<B>, max_diff: &Ulps<Self::Epsilon>) -> bool {
         FloatEqAll::eq_ulps_all(&*self.borrow(), &*other.borrow(), max_diff)
     }
 }
@@ -150,7 +144,6 @@ where
     B: Copy,
 {
     type DebugEpsilon = A::DebugEpsilon;
-    type DebugUlpsEpsilon = A::DebugUlpsEpsilon;
 
     #[inline]
     fn debug_abs_epsilon(&self, other: &Cell<B>, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
@@ -166,8 +159,8 @@ where
     fn debug_ulps_epsilon(
         &self,
         other: &Cell<B>,
-        max_diff: &Self::UlpsEpsilon,
-    ) -> Self::DebugUlpsEpsilon {
+        max_diff: &Ulps<Self::Epsilon>,
+    ) -> Ulps<Self::DebugEpsilon> {
         FloatEqDebug::debug_ulps_epsilon(&self.get(), &other.get(), max_diff)
     }
 }
@@ -178,7 +171,6 @@ where
     B: Copy,
 {
     type DebugEpsilon = A::DebugEpsilon;
-    type DebugUlpsEpsilon = A::DebugUlpsEpsilon;
 
     #[inline]
     fn debug_abs_epsilon(
@@ -202,8 +194,8 @@ where
     fn debug_ulps_epsilon(
         &self,
         other: &RefCell<B>,
-        max_diff: &Self::UlpsEpsilon,
-    ) -> Self::DebugUlpsEpsilon {
+        max_diff: &Ulps<Self::Epsilon>,
+    ) -> Ulps<Self::DebugEpsilon> {
         FloatEqDebug::debug_ulps_epsilon(&*self.borrow(), &*other.borrow(), max_diff)
     }
 }
@@ -217,7 +209,6 @@ where
     B: Copy,
 {
     type DebugEpsilon = A::DebugEpsilon;
-    type DebugUlpsEpsilon = A::DebugUlpsEpsilon;
 
     #[inline]
     fn debug_abs_all_epsilon(
@@ -241,8 +232,8 @@ where
     fn debug_ulps_all_epsilon(
         &self,
         other: &Cell<B>,
-        max_diff: &Self::UlpsEpsilon,
-    ) -> Self::DebugUlpsEpsilon {
+        max_diff: &Ulps<Self::Epsilon>,
+    ) -> Ulps<Self::DebugEpsilon> {
         FloatEqAllDebug::debug_ulps_all_epsilon(&self.get(), &other.get(), max_diff)
     }
 }
@@ -253,7 +244,6 @@ where
     B: Copy,
 {
     type DebugEpsilon = A::DebugEpsilon;
-    type DebugUlpsEpsilon = A::DebugUlpsEpsilon;
 
     #[inline]
     fn debug_abs_all_epsilon(
@@ -277,8 +267,8 @@ where
     fn debug_ulps_all_epsilon(
         &self,
         other: &RefCell<B>,
-        max_diff: &Self::UlpsEpsilon,
-    ) -> Self::DebugUlpsEpsilon {
+        max_diff: &Ulps<Self::Epsilon>,
+    ) -> Ulps<Self::DebugEpsilon> {
         FloatEqAllDebug::debug_ulps_all_epsilon(&*self.borrow(), &*other.borrow(), max_diff)
     }
 }
