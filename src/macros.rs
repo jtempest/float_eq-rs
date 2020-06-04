@@ -1,4 +1,4 @@
-use crate::{FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug};
+use crate::{FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug, Ulps};
 
 /// Checks if two floating point expressions are equal to each other.
 ///
@@ -735,7 +735,7 @@ impl FloatEqCmp {
     pub fn ulps<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &<A as FloatEq<B>>::UlpsEpsilon,
+        max_diff: &Ulps<<A as FloatEq<B>>::Epsilon>,
     ) -> bool
     where
         A: FloatEq<B>,
@@ -747,7 +747,7 @@ impl FloatEqCmp {
     pub fn ulps_all<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &<A as FloatEqAll<B>>::UlpsEpsilon,
+        max_diff: &Ulps<<A as FloatEqAll<B>>::Epsilon>,
     ) -> bool
     where
         A: FloatEqAll<B>,
@@ -813,8 +813,8 @@ impl FloatCmpOpEpsilon {
     pub fn ulps<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &<A as FloatEq<B>>::UlpsEpsilon,
-    ) -> <A as FloatEqDebug<B>>::DebugUlpsEpsilon
+        max_diff: &Ulps<<A as FloatEq<B>>::Epsilon>,
+    ) -> Ulps<<A as FloatEqDebug<B>>::DebugEpsilon>
     where
         A: FloatEq<B> + FloatEqDebug<B>,
     {
@@ -825,8 +825,8 @@ impl FloatCmpOpEpsilon {
     pub fn ulps_all<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &<A as FloatEqAll<B>>::UlpsEpsilon,
-    ) -> <A as FloatEqAllDebug<B>>::DebugUlpsEpsilon
+        max_diff: &Ulps<<A as FloatEqAll<B>>::Epsilon>,
+    ) -> Ulps<<A as FloatEqAllDebug<B>>::DebugEpsilon>
     where
         A: FloatEqAll<B> + FloatEqAllDebug<B>,
     {

@@ -1,22 +1,24 @@
-use crate::{FloatDiff, FloatEq, FloatEqDebug};
+use crate::{FloatDiff, FloatEq, FloatEqDebug, FloatUlps, Ulps};
 use core::fmt;
 
+impl FloatUlps for () {
+    type Ulps = ();
+}
+
 impl FloatDiff for () {
-    type AbsDiff = ();
-    type UlpsDiff = ();
+    type Output = ();
 
     #[inline]
-    fn abs_diff(&self, _other: &()) -> Self::AbsDiff {}
+    fn abs_diff(&self, _other: &()) -> Self::Output {}
 
     #[inline]
-    fn ulps_diff(&self, _other: &()) -> Option<Self::UlpsDiff> {
+    fn ulps_diff(&self, _other: &()) -> Option<Ulps<Self::Output>> {
         Some(())
     }
 }
 
 impl FloatEq for () {
     type Epsilon = ();
-    type UlpsEpsilon = ();
 
     #[inline]
     fn eq_abs(&self, _other: &(), _max_diff: &Self::Epsilon) -> bool {
@@ -29,14 +31,13 @@ impl FloatEq for () {
     }
 
     #[inline]
-    fn eq_ulps(&self, _other: &(), _max_diff: &Self::UlpsEpsilon) -> bool {
+    fn eq_ulps(&self, _other: &(), _max_diff: &Ulps<Self::Epsilon>) -> bool {
         true
     }
 }
 
 impl FloatEqDebug for () {
     type DebugEpsilon = ();
-    type DebugUlpsEpsilon = ();
 
     #[inline]
     fn debug_abs_epsilon(&self, _other: &(), _max_diff: &Self::Epsilon) -> Self::DebugEpsilon {}
@@ -48,8 +49,8 @@ impl FloatEqDebug for () {
     fn debug_ulps_epsilon(
         &self,
         _other: &(),
-        _max_diff: &Self::UlpsEpsilon,
-    ) -> Self::DebugUlpsEpsilon {
+        _max_diff: &Ulps<Self::Epsilon>,
+    ) -> Ulps<Self::DebugEpsilon> {
     }
 }
 
@@ -61,24 +62,26 @@ macro_rules! tuple_impls {
         }
     )+) => {
         $(
+            impl<$($T:FloatUlps),+> FloatUlps for ($($T,)+) where last_type!($($T,)+): ?Sized {
+                type Ulps = ($(Ulps<$T>,)+);
+            }
+
             impl<$($T:FloatDiff),+> FloatDiff for ($($T,)+) where last_type!($($T,)+): ?Sized {
-                type AbsDiff = ($($T::AbsDiff,)+);
-                type UlpsDiff = ($($T::UlpsDiff,)+);
+                type Output = ($($T::Output,)+);
 
                 #[inline]
-                fn abs_diff(&self, other: &Self) -> Self::AbsDiff {
+                fn abs_diff(&self, other: &Self) -> Self::Output {
                     ($(self.$idx.abs_diff(&other.$idx),)+)
                 }
 
                 #[inline]
-                fn ulps_diff(&self, other: &Self) -> Option<Self::UlpsDiff> {
+                fn ulps_diff(&self, other: &Self) -> Option<Ulps<Self::Output>> {
                     Some(($(self.$idx.ulps_diff(&other.$idx)?,)+))
                 }
             }
 
             impl<$($T:FloatEq),+> FloatEq for ($($T,)+) where last_type!($($T,)+): ?Sized {
                 type Epsilon = ($($T::Epsilon,)+);
-                type UlpsEpsilon = ($($T::UlpsEpsilon,)+);
 
                 #[inline]
                 fn eq_abs(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
@@ -91,14 +94,13 @@ macro_rules! tuple_impls {
                 }
 
                 #[inline]
-                fn eq_ulps(&self, other: &Self, max_diff: &Self::UlpsEpsilon) -> bool {
+                fn eq_ulps(&self, other: &Self, max_diff: &Ulps<Self::Epsilon>) -> bool {
                     $(self.$idx.eq_ulps(&other.$idx, &max_diff.$idx))&&+
                 }
             }
 
             impl<$($T:FloatEqDebug + fmt::Debug),+> FloatEqDebug for ($($T,)+) where last_type!($($T,)+): ?Sized {
                 type DebugEpsilon = ($($T::DebugEpsilon,)+);
-                type DebugUlpsEpsilon = ($($T::DebugUlpsEpsilon,)+);
 
                 #[inline]
                 fn debug_abs_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
@@ -111,7 +113,7 @@ macro_rules! tuple_impls {
                 }
 
                 #[inline]
-                fn debug_ulps_epsilon(&self, other: &Self, max_diff: &Self::UlpsEpsilon) -> Self::DebugUlpsEpsilon {
+                fn debug_ulps_epsilon(&self, other: &Self, max_diff: &Ulps<Self::Epsilon>) -> Ulps<Self::DebugEpsilon> {
                     ($(self.$idx.debug_ulps_epsilon(&other.$idx, &max_diff.$idx),)+)
                 }
             }

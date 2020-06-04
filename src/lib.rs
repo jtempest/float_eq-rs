@@ -312,7 +312,8 @@
 //!
 //! ```
 //! # use float_eq::{
-//! #     assert_float_eq, FloatDiff, FloatEq, FloatEqAll, FloatEqDebug, FloatEqAllDebug
+//! #     assert_float_eq, FloatDiff, FloatEq, FloatEqAll, FloatEqDebug, FloatEqAllDebug,
+//! #     FloatUlps, Ulps
 //! # };
 //! #
 //! # #[derive(Debug, Clone, Copy, PartialEq)]
@@ -321,9 +322,10 @@
 //! # #[derive(Debug, Clone, Copy, PartialEq)]
 //! # struct Complex32Ulps { re: u32, im: u32 }
 //! #
+//! # impl FloatUlps for Complex32 { type Ulps = Complex32Ulps; }
+//! #
 //! # impl FloatDiff for Complex32 {
-//! #     type AbsDiff = Complex32;
-//! #     type UlpsDiff = Complex32Ulps;
+//! #     type Output = Complex32;
 //! #     fn abs_diff(&self, other: &Self) -> Complex32 {
 //! #         Complex32 {
 //! #             re: self.re.abs_diff(&other.re),
@@ -340,7 +342,6 @@
 //! #
 //! # impl FloatEq for Complex32 {
 //! #     type Epsilon = Complex32;
-//! #     type UlpsEpsilon = Complex32Ulps;
 //! #     fn eq_abs(&self, other: &Self, max_diff: &Complex32) -> bool {
 //! #         self.re.eq_abs(&other.re, &max_diff.re) && self.im.eq_abs(&other.im, &max_diff.im)
 //! #     }
@@ -354,7 +355,6 @@
 //! #
 //! # impl FloatEqAll for Complex32 {
 //! #     type Epsilon = f32;
-//! #     type UlpsEpsilon = u32;
 //! #     fn eq_abs_all(&self, other: &Self, max_diff: &f32) -> bool {
 //! #         self.re.eq_abs_all(&other.re, &max_diff) && self.im.eq_abs_all(&other.im, &max_diff)
 //! #     }
@@ -368,7 +368,6 @@
 //! #
 //! # impl FloatEqDebug for Complex32 {
 //! #     type DebugEpsilon = Complex32;
-//! #     type DebugUlpsEpsilon = Complex32Ulps;
 //! #     fn debug_abs_epsilon(&self, other: &Self, max_diff: &Complex32) -> Complex32 {
 //! #         Complex32 {
 //! #             re: self.re.debug_abs_epsilon(&other.re, &max_diff.re),
@@ -391,7 +390,6 @@
 //! #
 //! # impl FloatEqAllDebug for Complex32 {
 //! #     type DebugEpsilon = Complex32;
-//! #     type DebugUlpsEpsilon = Complex32Ulps;
 //! #     fn debug_abs_all_epsilon(&self, other: &Self, max_diff: &f32) -> Complex32 {
 //! #         Complex32 {
 //! #             re: self.re.debug_abs_all_epsilon(&other.re, &max_diff),
@@ -417,7 +415,7 @@
 //! assert_float_eq!(a, b, rel <= Complex32 { re: 0.000_000_25, im: 0.000_000_5 });
 //! assert_float_eq!(a, b, rel_all <= 0.000_000_5);
 //!
-//! assert_float_eq!(a, b, ulps <= Complex32Ulps { re: 2, im: 4 });
+//! assert_float_eq!(a, b, ulps <= Ulps::<Complex32> { re: 2, im: 4 });
 //! assert_float_eq!(a, b, ulps_all <= 4);
 //! ```
 //!
