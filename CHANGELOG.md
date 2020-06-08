@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+Bumped up the version number since this release includes breaking API changes.
+
+### Changed
+- `FloatDiff::abs_diff` now returns an `Option` to allow types for which it is a
+  partial function to be implemented. For example, containers of differing 
+  sizes.
 
 ## [0.3.1] 2020-06-03
 

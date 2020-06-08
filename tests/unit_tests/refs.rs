@@ -6,10 +6,10 @@ fn refs_float_diff() {
     let b = &1.5f32;
     let mut ma = &mut 1.0f32;
     let mut mb = &mut 1.5f32;
-    assert_eq!(FloatDiff::abs_diff(&a, &b), 0.5);
-    assert_eq!(FloatDiff::abs_diff(&mut ma, &b), 0.5);
-    assert_eq!(FloatDiff::abs_diff(&a, &mut mb), 0.5);
-    assert_eq!(FloatDiff::abs_diff(&mut ma, &mut mb), 0.5);
+    assert_eq!(FloatDiff::abs_diff(&a, &b), Some(0.5));
+    assert_eq!(FloatDiff::abs_diff(&mut ma, &b), Some(0.5));
+    assert_eq!(FloatDiff::abs_diff(&a, &mut mb), Some(0.5));
+    assert_eq!(FloatDiff::abs_diff(&mut ma, &mut mb), Some(0.5));
 
     let c = &1.000_000_2f32;
     let mut mc = &mut 1.000_000_2f32;

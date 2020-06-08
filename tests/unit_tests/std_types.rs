@@ -8,7 +8,7 @@ mod rc {
     fn float_diff() {
         let a = Rc::new([1.0f32, 2.0]);
         let b = Rc::new([1.5f32, 2.25]);
-        assert_eq!(a.abs_diff(&b), [0.5, 0.25]);
+        assert_eq!(a.abs_diff(&b), Some([0.5, 0.25]));
 
         let c = Rc::new([1.000_000_1f32, 2.000_000_5]);
         assert_eq!(a.ulps_diff(&c), Some([1, 2]));
@@ -44,6 +44,7 @@ mod rc {
         assert_eq!(a.debug_ulps_all_epsilon(&b, &2), [2, 2]);
     }
 }
+
 mod arc {
     use super::*;
     use std::sync::Arc;
@@ -52,7 +53,7 @@ mod arc {
     fn float_diff() {
         let a = Arc::new([1.0f32, 2.0]);
         let b = Arc::new([1.5f32, 2.25]);
-        assert_eq!(a.abs_diff(&b), [0.5, 0.25]);
+        assert_eq!(a.abs_diff(&b), Some([0.5, 0.25]));
 
         let c = Arc::new([1.000_000_1f32, 2.000_000_5]);
         assert_eq!(a.ulps_diff(&c), Some([1, 2]));
@@ -97,7 +98,7 @@ mod r#box {
     fn float_diff() {
         let a = Box::new([1.0f32, 2.0]);
         let b = Box::new([1.5f32, 2.25]);
-        assert_eq!(a.abs_diff(&b), [0.5, 0.25]);
+        assert_eq!(a.abs_diff(&b), Some([0.5, 0.25]));
 
         let c = Box::new([1.000_000_1f32, 2.000_000_5]);
         assert_eq!(a.ulps_diff(&c), Some([1, 2]));

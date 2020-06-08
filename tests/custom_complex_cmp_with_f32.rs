@@ -46,11 +46,11 @@ impl FloatUlps for MyComplex32 {
 impl FloatDiff<f32> for MyComplex32 {
     type Output = MyComplex32;
 
-    fn abs_diff(&self, other: &f32) -> Self::Output {
-        MyComplex32 {
-            re: self.re.abs_diff(other),
-            im: self.im.abs_diff(&0.0),
-        }
+    fn abs_diff(&self, other: &f32) -> Option<Self::Output> {
+        Some(MyComplex32 {
+            re: self.re.abs_diff(other)?,
+            im: self.im.abs_diff(&0.0)?,
+        })
     }
 
     fn ulps_diff(&self, other: &f32) -> Option<Ulps<Self::Output>> {
@@ -64,7 +64,7 @@ impl FloatDiff<f32> for MyComplex32 {
 impl FloatDiff<MyComplex32> for f32 {
     type Output = MyComplex32;
 
-    fn abs_diff(&self, other: &MyComplex32) -> Self::Output {
+    fn abs_diff(&self, other: &MyComplex32) -> Option<Self::Output> {
         other.abs_diff(self)
     }
 
@@ -83,11 +83,11 @@ fn float_diff_f32() {
 
     assert_eq!(
         a.abs_diff(&b),
-        MyComplex32::new(0.000_000_119_209_29, 2.000_003_6)
+        Some(MyComplex32::new(0.000_000_119_209_29, 2.000_003_6))
     );
     assert_eq!(
         b.abs_diff(&a),
-        MyComplex32::new(0.000_000_119_209_29, 2.000_003_6)
+        Some(MyComplex32::new(0.000_000_119_209_29, 2.000_003_6))
     );
 
     assert_eq!(

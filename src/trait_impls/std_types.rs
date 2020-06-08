@@ -12,7 +12,7 @@ macro_rules! impl_traits_for_wrapper {
             type Output = A::Output;
 
             #[inline]
-            fn abs_diff(&self, other: &$t<B>) -> Self::Output {
+            fn abs_diff(&self, other: &$t<B>) -> Option<Self::Output> {
                 FloatDiff::abs_diff(&**self, &**other)
             }
 

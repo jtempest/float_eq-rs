@@ -109,7 +109,7 @@ basis using the `abs`, `rel`, and `ulps` comparisons, and types that implement
 let a = Complex32 { re: 2.0, im: 4.000_002 };
 let b = Complex32 { re: 2.000_000_5, im: 4.0 };
 
-assert_float_eq!(a, b, ulps <= Complex32Ulps { re: 2, im: 4 });
+assert_float_eq!(a, b, ulps <= Ulps::<Complex32> { re: 2, im: 4 });
 assert_float_eq!(a, b, ulps_all <= 4);
 ```
 
@@ -148,7 +148,7 @@ Panics with this error message:
 thread 'test' panicked at 'assertion failed: `float_eq!(left, right, rel <= ε)`
         left: `4.0`,
        right: `4.000008`,
-    abs_diff: `0.000008106232`,
+    abs_diff: `Some(0.000008106232)`,
    ulps_diff: `Some(17)`,
      [rel] ε: `0.000004000008`', assert_failure.rs:15:5
 ```

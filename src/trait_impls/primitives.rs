@@ -30,8 +30,8 @@ macro_rules! impl_traits {
             type Output = Self;
 
             #[inline]
-            fn abs_diff(&self, other: &Self) -> Self {
-                $float::abs(self - other)
+            fn abs_diff(&self, other: &Self) -> Option<Self> {
+                Some($float::abs(self - other))
             }
 
             #[inline]
@@ -67,7 +67,7 @@ macro_rules! impl_traits {
                 self == other || {
                     let largest = $float::abs(*self).max($float::abs(*other));
                     let epsilon = largest * max_diff;
-                    self.abs_diff(other) <= epsilon
+                    $float::abs(self - other) <= epsilon
                 }
             }
 

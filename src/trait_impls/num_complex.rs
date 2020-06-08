@@ -46,11 +46,11 @@ where
     type Output = Complex<<T as FloatDiff>::Output>;
 
     #[inline]
-    fn abs_diff(&self, other: &Self) -> Self::Output {
-        Self::Output {
-            re: self.re.abs_diff(&other.re),
-            im: self.im.abs_diff(&other.im),
-        }
+    fn abs_diff(&self, other: &Self) -> Option<Self::Output> {
+        Some(Self::Output {
+            re: self.re.abs_diff(&other.re)?,
+            im: self.im.abs_diff(&other.im)?,
+        })
     }
 
     #[inline]

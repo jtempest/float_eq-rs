@@ -143,7 +143,7 @@ Panics with this error message:
 thread 'test' panicked at 'assertion failed: `float_eq!(left, right, rel <= ε)`
         left: `4.0`,
        right: `4.000008`,
-    abs_diff: `0.000008106232`,
+    abs_diff: `Some(0.000008106232)`,
    ulps_diff: `Some(17)`,
      [rel] ε: `0.000004000008`', assert_failure.rs:15:5
 ```

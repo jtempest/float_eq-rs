@@ -4,16 +4,19 @@ use float_eq::{assert_float_eq, float_eq, float_ne, FloatDiff, FloatEqDebug};
 #[test]
 fn float_diff() {
     // ()
-    assert_eq!(().abs_diff(&()), ());
+    assert_eq!(().abs_diff(&()), Some(()));
     assert_eq!(().ulps_diff(&()), Some(()));
 
     // (A,)
-    assert_eq!((1.0f32,).abs_diff(&(2.0,)), (1.0,));
+    assert_eq!((1.0f32,).abs_diff(&(2.0,)), Some((1.0,)));
     assert_eq!((1.0f32,).ulps_diff(&(1.000_000_1,)), Some((1,)));
     assert_eq!((-1.0f32,).ulps_diff(&(1.000_000_1,)), None);
 
     // (A, B)
-    assert_eq!((1.0f32, -2.0f64).abs_diff(&(2.0, -4.0)), (1.0f32, 2.0f64));
+    assert_eq!(
+        (1.0f32, -2.0f64).abs_diff(&(2.0, -4.0)),
+        Some((1.0f32, 2.0f64))
+    );
     assert_eq!(
         (1.0f32, 2.0f64).ulps_diff(&(1.000_000_1, 2.000_000_000_000_000_8)),
         Some((1, 2,))
@@ -36,10 +39,10 @@ fn float_diff() {
     );
     assert_eq!(
         a.abs_diff(&b),
-        (
+        Some((
             1.0f32, 4.0f64, 6.0f32, 0.5f64, 0.125f32, 0.25f64, 0.375f32, 0.5f64, 0.625f32, 0.75f64,
             0.875f32, 1.0f64,
-        )
+        ))
     );
 
     let c = (
@@ -249,7 +252,7 @@ fn float_eq_debug() {
 #[should_panic(expected = r#"`float_eq!(left, right, abs <= ε)`
         left: `(1.0, 2.0)`,
        right: `(1.5, 2.5)`,
-    abs_diff: `(0.5, 0.5)`,
+    abs_diff: `Some((0.5, 0.5))`,
    ulps_diff: `Some((4194304, 1125899906842624))`,
      [abs] ε: `(0.1, 0.2)"#)]
 fn test_assert_fail_message() {

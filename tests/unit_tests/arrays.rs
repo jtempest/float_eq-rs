@@ -19,13 +19,12 @@ macro_rules! impl_tests {
                         b[i] = a[i] + 0.5;
                     }
 
-                    let abs_diff = a.abs_diff(&b);
-                    let ulps_diff = a.ulps_diff(&b).expect(
-                        "Finite numbers of the same sign should always have a valid ULPs diff",
-                    );
+                    let msg = "Finite numbers of the same sign should always have a valid diff";
+                    let abs_diff = a.abs_diff(&b).expect(msg);
+                    let ulps_diff = a.ulps_diff(&b).expect(msg);
                     for i in 0..$n {
-                        assert_eq!(abs_diff[i], a[i].abs_diff(&b[i]));
-                        assert_eq!(ulps_diff[i], a[i].ulps_diff(&b[i]).expect("Finite numbers of the same sign should always have a valid ULPs diff"));
+                        assert_eq!(abs_diff[i], a[i].abs_diff(&b[i]).expect(msg));
+                        assert_eq!(ulps_diff[i], a[i].ulps_diff(&b[i]).expect(msg));
                     }
 
                     for i in 0..$n {
@@ -33,7 +32,6 @@ macro_rules! impl_tests {
                         b[i] = -a[i];
                         assert!(a.ulps_diff(&b).is_none());
                     }
-
                 }};
             }
 
@@ -49,7 +47,7 @@ macro_rules! impl_tests {
                 // nested
                 let a = [[1_f32, 2.], [1., 2.]];
                 let b = [[1_f32, 2.], [-1., -2.]];
-                assert_eq!(a.abs_diff(&b), [[0., 0.], [2., 4.]]);
+                assert_eq!(a.abs_diff(&b), Some([[0., 0.], [2., 4.]]));
             }
 
             macro_rules! check_float_eq {
@@ -244,7 +242,7 @@ impl_tests!(f64);
 #[should_panic(expected = r#"`float_eq!(left, right, abs <= ε, rel <= ε, ulps <= ε)`
         left: `[1.0, 2.0]`,
        right: `[3.0, 5.0]`,
-    abs_diff: `[2.0, 3.0]`,
+    abs_diff: `Some([2.0, 3.0])`,
    ulps_diff: `Some([6755399441055744, 5629499534213120])`,
      [abs] ε: `[0.1, 0.25]`,
      [rel] ε: `[0.30000000000000004, 1.25]`,
@@ -264,7 +262,7 @@ fn assert_fail_message() {
     expected = r#"`float_eq!(left, right, abs_all <= ε, rel_all <= ε, ulps_all <= ε)`
         left: `[1.0, 2.0]`,
        right: `[3.0, 5.0]`,
-    abs_diff: `[2.0, 3.0]`,
+    abs_diff: `Some([2.0, 3.0])`,
    ulps_diff: `Some([6755399441055744, 5629499534213120])`,
  [abs_all] ε: `[0.25, 0.25]`,
  [rel_all] ε: `[0.75, 1.25]`,

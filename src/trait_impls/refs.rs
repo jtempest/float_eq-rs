@@ -10,7 +10,7 @@ where
     type Output = A::Output;
 
     #[inline]
-    fn abs_diff(&self, other: &&B) -> Self::Output {
+    fn abs_diff(&self, other: &&B) -> Option<Self::Output> {
         FloatDiff::abs_diff(*self, *other)
     }
 
@@ -27,7 +27,7 @@ where
     type Output = A::Output;
 
     #[inline]
-    fn abs_diff(&self, other: &&B) -> Self::Output {
+    fn abs_diff(&self, other: &&B) -> Option<Self::Output> {
         FloatDiff::abs_diff(*self, *other)
     }
 
@@ -44,7 +44,7 @@ where
     type Output = A::Output;
 
     #[inline]
-    fn abs_diff(&self, other: &&mut B) -> Self::Output {
+    fn abs_diff(&self, other: &&mut B) -> Option<Self::Output> {
         FloatDiff::abs_diff(*self, *other)
     }
 
@@ -61,7 +61,7 @@ where
     type Output = A::Output;
 
     #[inline]
-    fn abs_diff(&self, other: &&mut B) -> Self::Output {
+    fn abs_diff(&self, other: &&mut B) -> Option<Self::Output> {
         FloatDiff::abs_diff(*self, *other)
     }
 

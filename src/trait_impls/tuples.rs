@@ -9,7 +9,9 @@ impl FloatDiff for () {
     type Output = ();
 
     #[inline]
-    fn abs_diff(&self, _other: &()) -> Self::Output {}
+    fn abs_diff(&self, _other: &()) -> Option<Self::Output> {
+        Some(())
+    }
 
     #[inline]
     fn ulps_diff(&self, _other: &()) -> Option<Ulps<Self::Output>> {
@@ -70,8 +72,8 @@ macro_rules! tuple_impls {
                 type Output = ($($T::Output,)+);
 
                 #[inline]
-                fn abs_diff(&self, other: &Self) -> Self::Output {
-                    ($(self.$idx.abs_diff(&other.$idx),)+)
+                fn abs_diff(&self, other: &Self) -> Option<Self::Output> {
+                    Some(($(self.$idx.abs_diff(&other.$idx)?,)+))
                 }
 
                 #[inline]

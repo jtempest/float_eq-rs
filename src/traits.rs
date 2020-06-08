@@ -53,11 +53,11 @@ pub type Ulps<T> = <T as FloatUlps>::Ulps;
 /// impl FloatDiff for MyComplex32 {
 ///     type Output = Self;
 ///
-///     fn abs_diff(&self, other: &Self) -> Self::Output {
-///         MyComplex32 {
-///             re: self.re.abs_diff(&other.re),
-///             im: self.im.abs_diff(&other.im),
-///         }
+///     fn abs_diff(&self, other: &Self) -> Option<Self::Output> {
+///         Some(MyComplex32 {
+///             re: self.re.abs_diff(&other.re)?,
+///             im: self.im.abs_diff(&other.im)?,
+///         })
 ///     }
 ///
 ///     fn ulps_diff(&self, other: &Self) -> Option<Ulps<Self::Output>> {
@@ -73,10 +73,10 @@ pub type Ulps<T> = <T as FloatUlps>::Ulps;
 ///
 /// assert_eq!(
 ///     a.abs_diff(&b),
-///     MyComplex32 {
+///     Some(MyComplex32 {
 ///         re: 0.000_000_119_209_29,
 ///         im: 0.000_003_576_278_7,
-///     }
+///     })
 /// );
 ///
 /// assert_eq!(a.ulps_diff(&b), Some(Ulps::<MyComplex32> { re: 1, im: 15 }));
@@ -98,11 +98,11 @@ pub type Ulps<T> = <T as FloatUlps>::Ulps;
 /// impl FloatDiff<f32> for MyComplex32 {
 ///     type Output = MyComplex32;
 ///
-///     fn abs_diff(&self, other: &f32) -> Self::Output {
-///         MyComplex32 {
-///             re: self.re.abs_diff(other),
-///             im: self.im.abs_diff(&0.0),
-///         }
+///     fn abs_diff(&self, other: &f32) -> Option<Self::Output> {
+///         Some(MyComplex32 {
+///             re: self.re.abs_diff(other)?,
+///             im: self.im.abs_diff(&0.0)?,
+///         })
 ///     }
 ///
 ///     fn ulps_diff(&self, other: &f32) -> Option<Ulps<Self::Output>> {
@@ -116,7 +116,7 @@ pub type Ulps<T> = <T as FloatUlps>::Ulps;
 /// impl FloatDiff<MyComplex32> for f32 {
 ///     type Output = <MyComplex32 as FloatDiff<f32>>::Output;
 ///
-///     fn abs_diff(&self, other: &MyComplex32) -> Self::Output {
+///     fn abs_diff(&self, other: &MyComplex32) -> Option<Self::Output> {
 ///         other.abs_diff(self)
 ///     }
 ///
@@ -130,10 +130,10 @@ pub type Ulps<T> = <T as FloatUlps>::Ulps;
 ///
 /// assert_eq!(
 ///     a.abs_diff(&b),
-///     MyComplex32 {
+///     Some(MyComplex32 {
 ///         re: 0.000_000_119_209_29,
 ///         im: 2.000_003_6,
-///     }
+///     })
 /// );
 ///
 /// assert_eq!(a.ulps_diff(&b), Some(Ulps::<MyComplex32> { re: 1, im: 1_073_741_839 }));
@@ -143,8 +143,8 @@ pub type Ulps<T> = <T as FloatUlps>::Ulps;
 ///
 /// ```rust
 /// # use float_eq::FloatDiff;
-/// assert_eq!(1.0f32.abs_diff(&-1.0), 2.0);
-/// assert_eq!(1.0f64.abs_diff(&-1.0), 2.0);
+/// assert_eq!(1.0f32.abs_diff(&-1.0), Some(2.0));
+/// assert_eq!(1.0f64.abs_diff(&-1.0), Some(2.0));
 ///
 /// assert_eq!(1.0f32.ulps_diff(&1.000_000_1), Some(1));
 /// assert_eq!(1.0f64.ulps_diff(&1.000_000_000_000_000_2), Some(1));
@@ -154,7 +154,7 @@ pub type Ulps<T> = <T as FloatUlps>::Ulps;
 ///
 /// let a = [0.0_f32, 2.0, -2.0];
 /// let b = [0.0_f32, -1.0, 2.0];
-/// assert_eq!(a.abs_diff(&b), [0.0, 3.0, 4.0]);
+/// assert_eq!(a.abs_diff(&b), Some([0.0, 3.0, 4.0]));
 /// assert_eq!(a.ulps_diff(&b), None);
 ///
 /// let c = [1.000_000_1f32, -2.0];
@@ -171,6 +171,12 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
 
     /// Always positive absolute difference between two values.
     ///
+    /// Implementations may return None if the operation does not make sense,
+    /// for example if taking the diff of containers of different sizes.
+    ///
+    /// Implementations on composite types should return `None` if any of their
+    /// parts is an `ulps_diff` of `None`.
+    ///
     /// Implementations should be the equivalent of:
     ///
     /// ```
@@ -180,7 +186,7 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
     /// (self - other).abs()
     /// # }}
     /// ```
-    fn abs_diff(&self, other: &Rhs) -> Self::Output;
+    fn abs_diff(&self, other: &Rhs) -> Option<Self::Output>;
 
     /// Always positive absolute difference between two values in terms of [ULPs].
     ///
@@ -189,6 +195,9 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
     /// - `None` if either argument is `NaN`
     /// - `None` if the arguments have differing signs
     /// - `Some(bitwise-difference)` otherwise
+    ///
+    /// Implementations may return None if the operation does not make sense,
+    /// for example if taking the diff of containers of different sizes.
     ///
     /// Implementations on composite types should return `None` if any of their
     /// parts is an `ulps_diff` of `None`.

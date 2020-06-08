@@ -12,7 +12,7 @@ where
     type Output = A::Output;
 
     #[inline]
-    fn abs_diff(&self, other: &Cell<B>) -> Self::Output {
+    fn abs_diff(&self, other: &Cell<B>) -> Option<Self::Output> {
         FloatDiff::abs_diff(&self.get(), &other.get())
     }
 
@@ -29,7 +29,7 @@ where
     type Output = A::Output;
 
     #[inline]
-    fn abs_diff(&self, other: &RefCell<B>) -> Self::Output {
+    fn abs_diff(&self, other: &RefCell<B>) -> Option<Self::Output> {
         FloatDiff::abs_diff(&*self.borrow(), &*other.borrow())
     }
 

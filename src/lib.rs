@@ -326,11 +326,11 @@
 //! #
 //! # impl FloatDiff for Complex32 {
 //! #     type Output = Complex32;
-//! #     fn abs_diff(&self, other: &Self) -> Complex32 {
-//! #         Complex32 {
-//! #             re: self.re.abs_diff(&other.re),
-//! #             im: self.im.abs_diff(&other.im),
-//! #         }
+//! #     fn abs_diff(&self, other: &Self) -> Option<Complex32> {
+//! #         Some(Complex32 {
+//! #             re: self.re.abs_diff(&other.re)?,
+//! #             im: self.im.abs_diff(&other.im)?,
+//! #         })
 //! #     }
 //! #     fn ulps_diff(&self, other: &Self) -> Option<Complex32Ulps> {
 //! #         Some(Complex32Ulps {
@@ -439,7 +439,7 @@
 //! thread 'test' panicked at 'assertion failed: `float_eq!(left, right, rel <= ε)`
 //!        left: `4.0`,
 //!       right: `4.000008`,
-//!    abs_diff: `0.000008106232`,
+//!    abs_diff: `Some(0.000008106232)`,
 //!   ulps_diff: `Some(17)`,
 //!     [rel] ε: `0.000004000008`', assert_failure.rs:15:5
 //! ```

@@ -8,7 +8,7 @@ mod cell {
     fn float_diff() {
         let a = Cell::new([1.0f32, 2.0]);
         let b = Cell::new([1.5f32, 2.25]);
-        assert_eq!(a.abs_diff(&b), [0.5, 0.25]);
+        assert_eq!(a.abs_diff(&b), Some([0.5, 0.25]));
 
         let c = Cell::new([1.000_000_1f32, 2.000_000_5]);
         assert_eq!(a.ulps_diff(&c), Some([1, 2]));
@@ -52,7 +52,7 @@ mod ref_cell {
     fn float_diff() {
         let a = RefCell::new([1.0f32, 2.0]);
         let b = RefCell::new([1.5f32, 2.25]);
-        assert_eq!(a.abs_diff(&b), [0.5, 0.25]);
+        assert_eq!(a.abs_diff(&b), Some([0.5, 0.25]));
 
         let c = RefCell::new([1.000_000_1f32, 2.000_000_5]);
         assert_eq!(a.ulps_diff(&c), Some([1, 2]));

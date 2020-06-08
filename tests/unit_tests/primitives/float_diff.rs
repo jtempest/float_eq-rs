@@ -6,7 +6,11 @@ macro_rules! impl_tests {
 
             #[test]
             fn abs_diff() {
-                let check = |a: $float, b, expected| assert!(a.abs_diff(&b) - expected <= EPSILON);
+                let msg = "primitives should always have a valid abs_diff";
+
+                let check = |a: $float, b, expected| {
+                    assert!(a.abs_diff(&b).expect(msg) - expected <= EPSILON)
+                };
 
                 // zeroes
                 check(0.0, 0.0, 0.0);
@@ -25,18 +29,18 @@ macro_rules! impl_tests {
                 check(-1.0, -2.0, 1.0);
 
                 // infinities
-                assert!(INFINITY.abs_diff(&INFINITY).is_nan());
-                assert_eq!(INFINITY.abs_diff(&(-INFINITY)), INFINITY);
-                assert_eq!((-INFINITY).abs_diff(&(INFINITY)), INFINITY);
-                assert!((-INFINITY).abs_diff(&(-INFINITY)).is_nan());
+                assert!(INFINITY.abs_diff(&INFINITY).expect(msg).is_nan());
+                assert_eq!(INFINITY.abs_diff(&(-INFINITY)).expect(msg), INFINITY);
+                assert_eq!((-INFINITY).abs_diff(&(INFINITY)).expect(msg), INFINITY);
+                assert!((-INFINITY).abs_diff(&(-INFINITY)).expect(msg).is_nan());
 
                 // nans
                 let nans = nan_test_values();
                 for a in &nans {
-                    assert!(a.abs_diff(&1.0).is_nan());
-                    assert!(1.0.abs_diff(a).is_nan());
+                    assert!(a.abs_diff(&1.0).expect(msg).is_nan());
+                    assert!(1.0.abs_diff(a).expect(msg).is_nan());
                     for b in &nans {
-                        assert!(a.abs_diff(b).is_nan());
+                        assert!(a.abs_diff(b).expect(msg).is_nan());
                     }
                 }
             }
