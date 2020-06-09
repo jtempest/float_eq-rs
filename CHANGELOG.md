@@ -7,10 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 Bumped up the version number since this release includes breaking API changes.
 
+### Added
+- The `FloatUlps` trait, which is a way to syntactically tie a floating point
+  type to its ULPs representation. The prefered way to express this is now to
+  implement `FloatUlps for T` and then use `Ulps<T>` for the ULPs type. The
+  other traits have been reworked to reflect this. 
+
 ### Changed
 - `FloatDiff::abs_diff` now returns an `Option` to allow types for which it is a
   partial function to be implemented. For example, containers of differing 
   sizes.
+- Blanket array impls now allow for comparison of arrays of different types.
 
 ## [0.3.1] 2020-06-03
 
