@@ -10,11 +10,14 @@ macro_rules! impl_float_eq_traits_for_array {
             type Ulps = [Ulps<T>; $n];
         }
 
-        impl<T: FloatDiff> FloatDiff for [T; $n] {
-            type Output = [<T as $crate::FloatDiff>::Output; $n];
+        impl<A, B> FloatDiff<[B; $n]> for [A; $n]
+        where
+            A: FloatDiff<B>,
+        {
+            type Output = [A::Output; $n];
 
             #[inline]
-            fn abs_diff(&self, other: &Self) -> Option<Self::Output> {
+            fn abs_diff(&self, other: &[B; $n]) -> Option<Self::Output> {
                 let mut result: Self::Output = unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..$n {
                     result[i] = self[i].abs_diff(&other[i])?
@@ -23,7 +26,7 @@ macro_rules! impl_float_eq_traits_for_array {
             }
 
             #[inline]
-            fn ulps_diff(&self, other: &Self) -> Option<Ulps<Self::Output>> {
+            fn ulps_diff(&self, other: &[B; $n]) -> Option<Ulps<Self::Output>> {
                 let mut result: Ulps<Self::Output> = unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..$n {
                     result[i] = self[i].ulps_diff(&other[i])?
@@ -32,11 +35,14 @@ macro_rules! impl_float_eq_traits_for_array {
             }
         }
 
-        impl<T: FloatEq> FloatEq for [T; $n] {
-            type Epsilon = [T::Epsilon; $n];
+        impl<A, B> FloatEq<[B; $n]> for [A; $n]
+        where
+            A: FloatEq<B>,
+        {
+            type Epsilon = [A::Epsilon; $n];
 
             #[inline]
-            fn eq_abs(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+            fn eq_abs(&self, other: &[B; $n], max_diff: &Self::Epsilon) -> bool {
                 for i in 0..$n {
                     if !self[i].eq_abs(&other[i], &max_diff[i]) {
                         return false;
@@ -46,7 +52,7 @@ macro_rules! impl_float_eq_traits_for_array {
             }
 
             #[inline]
-            fn eq_rel(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+            fn eq_rel(&self, other: &[B; $n], max_diff: &Self::Epsilon) -> bool {
                 for i in 0..$n {
                     if !self[i].eq_rel(&other[i], &max_diff[i]) {
                         return false;
@@ -56,7 +62,7 @@ macro_rules! impl_float_eq_traits_for_array {
             }
 
             #[inline]
-            fn eq_ulps(&self, other: &Self, max_diff: &Ulps<Self::Epsilon>) -> bool {
+            fn eq_ulps(&self, other: &[B; $n], max_diff: &Ulps<Self::Epsilon>) -> bool {
                 for i in 0..$n {
                     if !self[i].eq_ulps(&other[i], &max_diff[i]) {
                         return false;
@@ -66,38 +72,44 @@ macro_rules! impl_float_eq_traits_for_array {
             }
         }
 
-        impl<T: FloatEqAll> FloatEqAll for [T; $n] {
-            type Epsilon = T::Epsilon;
+        impl<A, B> FloatEqAll<[B; $n]> for [A; $n]
+        where
+            A: FloatEqAll<B>,
+        {
+            type Epsilon = A::Epsilon;
 
             #[inline]
-            fn eq_abs_all(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+            fn eq_abs_all(&self, other: &[B; $n], max_diff: &Self::Epsilon) -> bool {
                 self.iter()
                     .zip(other.iter())
                     .all(|(a, b)| a.eq_abs_all(b, max_diff))
             }
 
             #[inline]
-            fn eq_rel_all(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+            fn eq_rel_all(&self, other: &[B; $n], max_diff: &Self::Epsilon) -> bool {
                 self.iter()
                     .zip(other.iter())
                     .all(|(a, b)| a.eq_rel_all(b, max_diff))
             }
 
             #[inline]
-            fn eq_ulps_all(&self, other: &Self, max_diff: &Ulps<Self::Epsilon>) -> bool {
+            fn eq_ulps_all(&self, other: &[B; $n], max_diff: &Ulps<Self::Epsilon>) -> bool {
                 self.iter()
                     .zip(other.iter())
                     .all(|(a, b)| a.eq_ulps_all(b, max_diff))
             }
         }
 
-        impl<T: FloatEqDebug> FloatEqDebug for [T; $n] {
-            type DebugEpsilon = [T::DebugEpsilon; $n];
+        impl<A, B> FloatEqDebug<[B; $n]> for [A; $n]
+        where
+            A: FloatEqDebug<B>,
+        {
+            type DebugEpsilon = [A::DebugEpsilon; $n];
 
             #[inline]
             fn debug_abs_epsilon(
                 &self,
-                other: &Self,
+                other: &[B; $n],
                 max_diff: &Self::Epsilon,
             ) -> Self::DebugEpsilon {
                 let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
@@ -110,7 +122,7 @@ macro_rules! impl_float_eq_traits_for_array {
             #[inline]
             fn debug_rel_epsilon(
                 &self,
-                other: &Self,
+                other: &[B; $n],
                 max_diff: &Self::Epsilon,
             ) -> Self::DebugEpsilon {
                 let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
@@ -123,7 +135,7 @@ macro_rules! impl_float_eq_traits_for_array {
             #[inline]
             fn debug_ulps_epsilon(
                 &self,
-                other: &Self,
+                other: &[B; $n],
                 max_diff: &Ulps<Self::Epsilon>,
             ) -> Ulps<Self::DebugEpsilon> {
                 let mut result: Ulps<Self::DebugEpsilon> =
@@ -135,13 +147,16 @@ macro_rules! impl_float_eq_traits_for_array {
             }
         }
 
-        impl<T: FloatEqAllDebug> FloatEqAllDebug for [T; $n] {
-            type DebugEpsilon = [T::DebugEpsilon; $n];
+        impl<A, B> FloatEqAllDebug<[B; $n]> for [A; $n]
+        where
+            A: FloatEqAllDebug<B>,
+        {
+            type DebugEpsilon = [A::DebugEpsilon; $n];
 
             #[inline]
             fn debug_abs_all_epsilon(
                 &self,
-                other: &Self,
+                other: &[B; $n],
                 max_diff: &Self::Epsilon,
             ) -> Self::DebugEpsilon {
                 let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
@@ -154,7 +169,7 @@ macro_rules! impl_float_eq_traits_for_array {
             #[inline]
             fn debug_rel_all_epsilon(
                 &self,
-                other: &Self,
+                other: &[B; $n],
                 max_diff: &Self::Epsilon,
             ) -> Self::DebugEpsilon {
                 let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
@@ -167,7 +182,7 @@ macro_rules! impl_float_eq_traits_for_array {
             #[inline]
             fn debug_ulps_all_epsilon(
                 &self,
-                other: &Self,
+                other: &[B; $n],
                 max_diff: &Ulps<Self::Epsilon>,
             ) -> Ulps<Self::DebugEpsilon> {
                 let mut result: Ulps<Self::DebugEpsilon> =
