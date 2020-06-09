@@ -72,7 +72,6 @@ mod unit_tests {
     mod core_types;
     mod macros;
     mod primitives;
-    mod refs;
     mod tuples;
 
     #[cfg(feature = "std")]

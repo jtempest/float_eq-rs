@@ -2,7 +2,6 @@ mod arrays;
 mod cells;
 mod core_types;
 mod primitives;
-mod refs;
 mod tuples;
 
 #[cfg(feature = "std")]
