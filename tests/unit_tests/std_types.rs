@@ -1,4 +1,4 @@
-use float_eq::{float_eq, FloatDiff, FloatEqAllDebug, FloatEqDebug};
+use float_eq::{float_eq, float_ne, FloatDiff, FloatEqAllDebug, FloatEqDebug};
 
 mod rc {
     use super::*;
@@ -132,5 +132,119 @@ mod r#box {
 
         assert_eq!(a.debug_ulps_epsilon(&b, &[1, 2]), [1, 2]);
         assert_eq!(a.debug_ulps_all_epsilon(&b, &2), [2, 2]);
+    }
+}
+
+mod vec {
+    use super::*;
+
+    #[test]
+    fn float_diff() {
+        let a = vec![1.0f32, 2.0];
+        let b = vec![1.5f32, 2.25];
+        assert_eq!(a.abs_diff(&b), Some(vec![0.5, 0.25]));
+
+        let c = vec![1.000_000_1f32, 2.000_000_5];
+        assert_eq!(a.ulps_diff(&c), Some(vec![1, 2]));
+
+        let d = Vec::new();
+        assert_eq!(a.abs_diff(&d), None);
+        assert_eq!(d.abs_diff(&a), None);
+        assert_eq!(a.ulps_diff(&d), None);
+        assert_eq!(d.ulps_diff(&a), None);
+
+        let e = vec![1.0; 3];
+        assert_eq!(a.abs_diff(&e), None);
+        assert_eq!(e.abs_diff(&a), None);
+        assert_eq!(a.ulps_diff(&e), None);
+        assert_eq!(e.ulps_diff(&a), None);
+    }
+
+    #[test]
+    fn float_eq() {
+        let a = vec![1.0f32, 2.0];
+        let b = vec![1.5f32, 2.25];
+        assert!(float_ne!(a, b, abs <= vec![0.4, 0.25]));
+        assert!(float_ne!(a, b, abs <= vec![0.5, 0.24]));
+        assert!(float_ne!(a, b, abs <= vec![f32::INFINITY]));
+        assert!(float_ne!(a, b, abs <= vec![f32::INFINITY; 3]));
+        assert!(float_eq!(a, b, abs <= vec![0.5, 0.25]));
+        assert!(float_ne!(a, b, abs_all <= 0.4));
+        assert!(float_eq!(a, b, abs_all <= 0.5));
+
+        let c = vec![1.000_000_1f32, 2.000_000_5];
+        let eps = f32::EPSILON;
+        assert!(float_ne!(a, c, rel <= vec![0.5 * eps, 2.0 * eps]));
+        assert!(float_ne!(a, c, rel <= vec![eps, 1.0 * eps]));
+        assert!(float_ne!(a, c, rel <= vec![f32::INFINITY]));
+        assert!(float_ne!(a, c, rel <= vec![f32::INFINITY; 3]));
+        assert!(float_eq!(a, c, rel <= vec![eps, 2.0 * eps]));
+        assert!(float_ne!(a, c, rel_all <= eps));
+        assert!(float_eq!(a, c, rel_all <= 2.0 * eps));
+
+        assert!(float_ne!(a, c, ulps <= vec![0, 2]));
+        assert!(float_ne!(a, c, ulps <= vec![1, 1]));
+        assert!(float_ne!(a, c, ulps <= vec![u32::MAX]));
+        assert!(float_ne!(a, c, ulps <= vec![u32::MAX; 3]));
+        assert!(float_eq!(a, c, ulps <= vec![1, 2]));
+        assert!(float_ne!(a, c, ulps_all <= 1));
+        assert!(float_eq!(a, c, ulps_all <= 2));
+
+        let d = Vec::new();
+        assert!(!float_eq!(a, d, abs <= vec![f32::INFINITY; 3]));
+        assert!(!float_eq!(d, a, abs_all <= f32::INFINITY));
+        assert!(!float_eq!(a, d, rel <= vec![f32::INFINITY; 3]));
+        assert!(!float_eq!(d, a, rel_all <= f32::INFINITY));
+        assert!(!float_eq!(a, d, ulps <= vec![u32::MAX; 3]));
+        assert!(!float_eq!(d, a, ulps_all <= u32::MAX));
+
+        let e = vec![1.0; 3];
+        assert!(!float_eq!(a, e, abs <= vec![f32::INFINITY; 3]));
+        assert!(!float_eq!(e, a, abs_all <= f32::INFINITY));
+        assert!(!float_eq!(a, e, rel <= vec![f32::INFINITY; 3]));
+        assert!(!float_eq!(e, a, rel_all <= f32::INFINITY));
+        assert!(!float_eq!(a, e, ulps <= vec![u32::MAX; 3]));
+        assert!(!float_eq!(e, a, ulps_all <= u32::MAX));
+    }
+
+    #[test]
+    fn float_eq_debug() {
+        let a = vec![1.0f32, 2.0];
+        let b = vec![1.5f32, 2.25];
+
+        assert_eq!(
+            a.debug_abs_epsilon(&b, &vec![0.1, 0.2]),
+            Some(vec![0.1, 0.2])
+        );
+        assert_eq!(a.debug_abs_epsilon(&b, &vec![0.1]), None);
+        assert_eq!(a.debug_abs_epsilon(&b, &vec![0.1; 3]), None);
+        assert_eq!(a.debug_abs_all_epsilon(&b, &0.2), Some(vec![0.2, 0.2]));
+
+        assert_eq!(
+            a.debug_rel_epsilon(&b, &vec![0.1, 0.5]),
+            Some(vec![0.15, 1.125])
+        );
+        assert_eq!(a.debug_rel_epsilon(&b, &vec![0.1]), None);
+        assert_eq!(a.debug_rel_epsilon(&b, &vec![0.1; 3]), None);
+        assert_eq!(a.debug_rel_all_epsilon(&b, &0.5), Some(vec![0.75, 1.125]));
+
+        assert_eq!(a.debug_ulps_epsilon(&b, &vec![1, 2]), Some(vec![1, 2]));
+        assert_eq!(a.debug_ulps_all_epsilon(&b, &2), Some(vec![2, 2]));
+
+        let d = Vec::new();
+        assert_eq!(a.debug_abs_epsilon(&d, &vec![0.1, 0.2]), None);
+        assert_eq!(a.debug_abs_all_epsilon(&d, &0.2), None);
+        assert_eq!(a.debug_rel_epsilon(&d, &vec![0.1, 0.5]), None);
+        assert_eq!(a.debug_rel_all_epsilon(&d, &0.5), None);
+        assert_eq!(a.debug_ulps_epsilon(&d, &vec![1, 2]), None);
+        assert_eq!(a.debug_ulps_all_epsilon(&d, &2), None);
+
+        // let e = vec![1.0; 3];
+        // assert!(!float_eq!(a, e, abs <= vec![f32::INFINITY; 3]));
+        // assert!(!float_eq!(e, a, abs_all <= f32::INFINITY));
+        // assert!(!float_eq!(a, e, rel <= vec![f32::INFINITY; 3]));
+        // assert!(!float_eq!(e, a, rel_all <= f32::INFINITY));
+        // assert!(!float_eq!(a, e, ulps <= vec![u32::MAX; 3]));
+        // assert!(!float_eq!(e, a, ulps_all <= u32::MAX));
     }
 }

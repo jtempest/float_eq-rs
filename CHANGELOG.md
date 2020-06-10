@@ -12,6 +12,7 @@ Bumped up the version number since this release includes breaking API changes.
   type to its ULPs representation. The prefered way to express this is now to
   implement `FloatUlps for T` and then use `Ulps<T>` for the ULPs type. The
   other traits have been reworked to reflect this. 
+- Blanket trait impls for Vec.
 
 ### Changed
 - `FloatDiff::abs_diff` now returns an `Option` to allow types for which it is a
