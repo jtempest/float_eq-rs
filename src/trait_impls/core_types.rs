@@ -152,52 +152,82 @@ impl<T: FloatDiff> FloatDiff for Option<T> {
 }
 
 impl<T: FloatEq> FloatEq for Option<T> {
-    type Epsilon = T::Epsilon;
+    type Epsilon = Option<T::Epsilon>;
 
     #[inline]
     fn eq_abs(&self, other: &Option<T>, max_diff: &Self::Epsilon) -> bool {
         self.is_some()
             && other.is_some()
-            && FloatEq::eq_abs(self.as_ref().unwrap(), other.as_ref().unwrap(), max_diff)
+            && max_diff.is_some()
+            && FloatEq::eq_abs(
+                self.as_ref().unwrap(),
+                other.as_ref().unwrap(),
+                max_diff.as_ref().unwrap(),
+            )
     }
 
     #[inline]
     fn eq_rel(&self, other: &Option<T>, max_diff: &Self::Epsilon) -> bool {
         self.is_some()
             && other.is_some()
-            && FloatEq::eq_rel(self.as_ref().unwrap(), other.as_ref().unwrap(), max_diff)
+            && max_diff.is_some()
+            && FloatEq::eq_rel(
+                self.as_ref().unwrap(),
+                other.as_ref().unwrap(),
+                max_diff.as_ref().unwrap(),
+            )
     }
 
     #[inline]
     fn eq_ulps(&self, other: &Option<T>, max_diff: &Ulps<Self::Epsilon>) -> bool {
         self.is_some()
             && other.is_some()
-            && FloatEq::eq_ulps(self.as_ref().unwrap(), other.as_ref().unwrap(), max_diff)
+            && max_diff.is_some()
+            && FloatEq::eq_ulps(
+                self.as_ref().unwrap(),
+                other.as_ref().unwrap(),
+                max_diff.as_ref().unwrap(),
+            )
     }
 }
 
 impl<T: FloatEqAll> FloatEqAll<Option<T>> for Option<T> {
-    type Epsilon = T::Epsilon;
+    type Epsilon = Option<T::Epsilon>;
 
     #[inline]
     fn eq_abs_all(&self, other: &Option<T>, max_diff: &Self::Epsilon) -> bool {
         self.is_some()
             && other.is_some()
-            && FloatEqAll::eq_abs_all(self.as_ref().unwrap(), other.as_ref().unwrap(), max_diff)
+            && max_diff.is_some()
+            && FloatEqAll::eq_abs_all(
+                self.as_ref().unwrap(),
+                other.as_ref().unwrap(),
+                max_diff.as_ref().unwrap(),
+            )
     }
 
     #[inline]
     fn eq_rel_all(&self, other: &Option<T>, max_diff: &Self::Epsilon) -> bool {
         self.is_some()
             && other.is_some()
-            && FloatEqAll::eq_rel_all(self.as_ref().unwrap(), other.as_ref().unwrap(), max_diff)
+            && max_diff.is_some()
+            && FloatEqAll::eq_rel_all(
+                self.as_ref().unwrap(),
+                other.as_ref().unwrap(),
+                max_diff.as_ref().unwrap(),
+            )
     }
 
     #[inline]
     fn eq_ulps_all(&self, other: &Option<T>, max_diff: &Ulps<Self::Epsilon>) -> bool {
         self.is_some()
             && other.is_some()
-            && FloatEqAll::eq_ulps_all(self.as_ref().unwrap(), other.as_ref().unwrap(), max_diff)
+            && max_diff.is_some()
+            && FloatEqAll::eq_ulps_all(
+                self.as_ref().unwrap(),
+                other.as_ref().unwrap(),
+                max_diff.as_ref().unwrap(),
+            )
     }
 }
 
@@ -209,7 +239,7 @@ impl<T: FloatEqDebug> FloatEqDebug for Option<T> {
         Some(FloatEqDebug::debug_abs_epsilon(
             &self.as_ref()?,
             &other.as_ref()?,
-            max_diff,
+            max_diff.as_ref()?,
         ))
     }
 
@@ -218,7 +248,7 @@ impl<T: FloatEqDebug> FloatEqDebug for Option<T> {
         Some(FloatEqDebug::debug_rel_epsilon(
             &self.as_ref()?,
             &other.as_ref()?,
-            max_diff,
+            max_diff.as_ref()?,
         ))
     }
 
@@ -231,7 +261,7 @@ impl<T: FloatEqDebug> FloatEqDebug for Option<T> {
         Some(FloatEqDebug::debug_ulps_epsilon(
             &self.as_ref()?,
             &other.as_ref()?,
-            max_diff,
+            max_diff.as_ref()?,
         ))
     }
 }
@@ -248,7 +278,7 @@ impl<T: FloatEqAllDebug> FloatEqAllDebug for Option<T> {
         Some(FloatEqAllDebug::debug_abs_all_epsilon(
             &self.as_ref()?,
             &other.as_ref()?,
-            max_diff,
+            max_diff.as_ref()?,
         ))
     }
 
@@ -261,7 +291,7 @@ impl<T: FloatEqAllDebug> FloatEqAllDebug for Option<T> {
         Some(FloatEqAllDebug::debug_rel_all_epsilon(
             &self.as_ref()?,
             &other.as_ref()?,
-            max_diff,
+            max_diff.as_ref()?,
         ))
     }
 
@@ -274,7 +304,7 @@ impl<T: FloatEqAllDebug> FloatEqAllDebug for Option<T> {
         Some(FloatEqAllDebug::debug_ulps_all_epsilon(
             &self.as_ref()?,
             &other.as_ref()?,
-            max_diff,
+            max_diff.as_ref()?,
         ))
     }
 }
