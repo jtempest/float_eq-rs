@@ -370,13 +370,5 @@ mod vec_deque {
         assert_eq!(a.debug_rel_all_epsilon(&e, &0.5), None);
         assert_eq!(a.debug_ulps_epsilon(&e, &vecd![1, 2]), None);
         assert_eq!(a.debug_ulps_all_epsilon(&e, &2), None);
-
-        let mut a = VecDeque::new();
-        a.push_back(0.1);
-        a.push_front(0.2);
-        let mut b = VecDeque::new();
-        b.push_front(0.1);
-        b.push_front(0.4);
-        float_eq::assert_float_eq!(a, b, abs_all <= 0.1);
     }
 }
