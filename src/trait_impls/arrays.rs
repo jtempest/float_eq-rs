@@ -17,12 +17,12 @@ macro_rules! impl_float_eq_traits_for_array {
             type Output = [A::Output; $n];
 
             #[inline]
-            fn abs_diff(&self, other: &[B; $n]) -> Option<Self::Output> {
+            fn abs_diff(&self, other: &[B; $n]) -> Self::Output {
                 let mut result: Self::Output = unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..$n {
-                    result[i] = self[i].abs_diff(&other[i])?
+                    result[i] = self[i].abs_diff(&other[i])
                 }
-                Some(result)
+                result
             }
 
             #[inline]

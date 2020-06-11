@@ -15,7 +15,7 @@ macro_rules! impl_traits_for_wrapper {
             type Output = A::Output;
 
             #[inline]
-            fn abs_diff(&self, other: &$t<B>) -> Option<Self::Output> {
+            fn abs_diff(&self, other: &$t<B>) -> Self::Output {
                 FloatDiff::abs_diff(&**self, &**other)
             }
 
@@ -156,15 +156,17 @@ impl<A, B> FloatDiff<Vec<B>> for Vec<A>
 where
     A: FloatDiff<B>,
 {
-    type Output = Vec<A::Output>;
+    type Output = Option<Vec<A::Output>>;
 
     #[inline]
-    fn abs_diff(&self, other: &Vec<B>) -> Option<Self::Output> {
+    fn abs_diff(&self, other: &Vec<B>) -> Self::Output {
         if self.len() == other.len() {
-            self.iter()
-                .zip(other.iter())
-                .map(|(a, b)| FloatDiff::abs_diff(a, b))
-                .collect()
+            Some(
+                self.iter()
+                    .zip(other.iter())
+                    .map(|(a, b)| FloatDiff::abs_diff(a, b))
+                    .collect(),
+            )
         } else {
             None
         }
@@ -173,10 +175,12 @@ where
     #[inline]
     fn ulps_diff(&self, other: &Vec<B>) -> Option<Ulps<Self::Output>> {
         if self.len() == other.len() {
-            self.iter()
-                .zip(other.iter())
-                .map(|(a, b)| FloatDiff::ulps_diff(a, b))
-                .collect()
+            Some(
+                self.iter()
+                    .zip(other.iter())
+                    .map(|(a, b)| FloatDiff::ulps_diff(a, b))
+                    .collect(),
+            )
         } else {
             None
         }

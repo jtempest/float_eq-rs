@@ -15,9 +15,6 @@ Bumped up the version number since this release includes breaking API changes.
 - Blanket trait impls for Vec.
 
 ### Changed
-- `FloatDiff::abs_diff` now returns an `Option` to allow types for which it is a
-  partial function to be implemented. For example, containers of differing 
-  sizes.
 - Blanket array impls now allow for comparison of arrays of different types.
 
 ## [0.3.1] 2020-06-03

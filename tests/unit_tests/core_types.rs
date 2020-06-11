@@ -10,10 +10,10 @@ mod refs {
         let b = &1.5f32;
         let mut ma = &mut 1.0f32;
         let mut mb = &mut 1.5f32;
-        assert_eq!(FloatDiff::abs_diff(&a, &b), Some(0.5));
-        assert_eq!(FloatDiff::abs_diff(&mut ma, &b), Some(0.5));
-        assert_eq!(FloatDiff::abs_diff(&a, &mut mb), Some(0.5));
-        assert_eq!(FloatDiff::abs_diff(&mut ma, &mut mb), Some(0.5));
+        assert_eq!(FloatDiff::abs_diff(&a, &b), 0.5);
+        assert_eq!(FloatDiff::abs_diff(&mut ma, &b), 0.5);
+        assert_eq!(FloatDiff::abs_diff(&a, &mut mb), 0.5);
+        assert_eq!(FloatDiff::abs_diff(&mut ma, &mut mb), 0.5);
 
         let c = &1.000_000_2f32;
         let mut mc = &mut 1.000_000_2f32;
@@ -134,7 +134,7 @@ mod option {
         let c = Some([1.000_000_1f32, 2.000_000_5]);
         assert_eq!(a.ulps_diff(&None), None);
         assert_eq!(None.ulps_diff(&c), None);
-        assert_eq!(a.ulps_diff(&c), Some([1, 2]));
+        assert_eq!(a.ulps_diff(&c), Some(Some([1, 2])));
     }
 
     #[test]
@@ -219,7 +219,7 @@ mod cell {
     fn float_diff() {
         let a = Cell::new([1.0f32, 2.0]);
         let b = Cell::new([1.5f32, 2.25]);
-        assert_eq!(a.abs_diff(&b), Some([0.5, 0.25]));
+        assert_eq!(a.abs_diff(&b), [0.5, 0.25]);
 
         let c = Cell::new([1.000_000_1f32, 2.000_000_5]);
         assert_eq!(a.ulps_diff(&c), Some([1, 2]));
@@ -263,7 +263,7 @@ mod ref_cell {
     fn float_diff() {
         let a = RefCell::new([1.0f32, 2.0]);
         let b = RefCell::new([1.5f32, 2.25]);
-        assert_eq!(a.abs_diff(&b), Some([0.5, 0.25]));
+        assert_eq!(a.abs_diff(&b), [0.5, 0.25]);
 
         let c = RefCell::new([1.000_000_1f32, 2.000_000_5]);
         assert_eq!(a.ulps_diff(&c), Some([1, 2]));

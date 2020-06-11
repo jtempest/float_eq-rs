@@ -30,8 +30,8 @@ macro_rules! impl_traits {
             type Output = Self;
 
             #[inline]
-            fn abs_diff(&self, other: &Self) -> Option<Self> {
-                Some($float::abs(self - other))
+            fn abs_diff(&self, other: &Self) -> Self {
+                $float::abs(self - other)
             }
 
             #[inline]

@@ -24,11 +24,11 @@ fn float_diff() {
 
     assert_eq!(
         a.abs_diff(&b),
-        Some(Complex32::new(0.000_000_119_209_29, 0.000_000_476_837_16))
+        Complex32::new(0.000_000_119_209_29, 0.000_000_476_837_16)
     );
     assert_eq!(
         a.abs_diff(&c),
-        Some(Complex32::new(0.000_000_119_209_29, 4.0000005))
+        Complex32::new(0.000_000_119_209_29, 4.0000005)
     );
 
     assert_eq!(a.ulps_diff(&b), Some(ComplexUlps32::new(1, 2)));
@@ -330,7 +330,7 @@ fn assert_float_eq_all() {
 #[should_panic(expected = r#"`float_eq!(left, right, abs <= ε, rel <= ε, ulps <= ε)`
         left: `Complex { re: 1.0, im: 2.0 }`,
        right: `Complex { re: 3.0, im: 5.0 }`,
-    abs_diff: `Some(Complex { re: 2.0, im: 3.0 })`,
+    abs_diff: `Complex { re: 2.0, im: 3.0 }`,
    ulps_diff: `Some(ComplexUlps { re: 12582912, im: 10485760 })`,
      [abs] ε: `Complex { re: 0.1, im: 0.25 }`,
      [rel] ε: `Complex { re: 0.3, im: 1.25 }`,
@@ -350,7 +350,7 @@ fn assert_fail_message() {
     expected = r#"`float_eq!(left, right, abs_all <= ε, rel_all <= ε, ulps_all <= ε)`
         left: `Complex { re: 1.0, im: 2.0 }`,
        right: `Complex { re: 3.0, im: 5.0 }`,
-    abs_diff: `Some(Complex { re: 2.0, im: 3.0 })`,
+    abs_diff: `Complex { re: 2.0, im: 3.0 }`,
    ulps_diff: `Some(ComplexUlps { re: 12582912, im: 10485760 })`,
  [abs_all] ε: `Complex { re: 0.25, im: 0.25 }`,
  [rel_all] ε: `Complex { re: 0.75, im: 1.25 }`,

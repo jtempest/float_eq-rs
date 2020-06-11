@@ -14,7 +14,7 @@ macro_rules! impl_for_refs {
             type Output = A::Output;
 
             #[inline]
-            fn abs_diff(&self, other: &&$($b)? B) -> Option<Self::Output> {
+            fn abs_diff(&self, other: &&$($b)? B) -> Self::Output {
                 FloatDiff::abs_diff(*self, *other)
             }
 
@@ -138,16 +138,16 @@ impl<T: FloatUlps> FloatUlps for Option<T> {
 }
 
 impl<T: FloatDiff> FloatDiff for Option<T> {
-    type Output = T::Output;
+    type Output = Option<T::Output>;
 
     #[inline]
-    fn abs_diff(&self, other: &Option<T>) -> Option<Self::Output> {
-        FloatDiff::abs_diff(self.as_ref()?, other.as_ref()?)
+    fn abs_diff(&self, other: &Option<T>) -> Self::Output {
+        Some(FloatDiff::abs_diff(self.as_ref()?, other.as_ref()?))
     }
 
     #[inline]
     fn ulps_diff(&self, other: &Option<T>) -> Option<Ulps<Self::Output>> {
-        FloatDiff::ulps_diff(self.as_ref()?, other.as_ref()?)
+        Some(FloatDiff::ulps_diff(self.as_ref()?, other.as_ref()?))
     }
 }
 
@@ -290,7 +290,7 @@ where
     type Output = A::Output;
 
     #[inline]
-    fn abs_diff(&self, other: &Cell<B>) -> Option<Self::Output> {
+    fn abs_diff(&self, other: &Cell<B>) -> Self::Output {
         FloatDiff::abs_diff(&self.get(), &other.get())
     }
 
@@ -418,7 +418,7 @@ where
     type Output = A::Output;
 
     #[inline]
-    fn abs_diff(&self, other: &RefCell<B>) -> Option<Self::Output> {
+    fn abs_diff(&self, other: &RefCell<B>) -> Self::Output {
         FloatDiff::abs_diff(&*self.borrow(), &*other.borrow())
     }
 
