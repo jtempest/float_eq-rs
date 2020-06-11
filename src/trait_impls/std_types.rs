@@ -1,6 +1,6 @@
 use crate::{FloatDiff, FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug, FloatUlps, Ulps};
 use std::boxed::Box;
-use std::collections::VecDeque;
+use std::collections::{VecDeque, LinkedList};
 use std::rc::Rc;
 use std::sync::Arc;
 
@@ -395,3 +395,4 @@ macro_rules! impl_traits_for_linear_collection {
 
 impl_traits_for_linear_collection!(Vec);
 impl_traits_for_linear_collection!(VecDeque);
+impl_traits_for_linear_collection!(LinkedList);

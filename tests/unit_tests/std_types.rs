@@ -372,3 +372,127 @@ mod vec_deque {
         assert_eq!(a.debug_ulps_all_epsilon(&e, &2), None);
     }
 }
+
+mod linked_list {
+    use super::*;
+    use std::collections::LinkedList;
+
+    macro_rules! list {
+        ($($x:expr),+) => {{
+            vec![$($x,)+].into_iter().collect::<LinkedList<_>>()
+        }};
+        ($x:expr; $n:literal) => {{
+            vec![$x; $n].into_iter().collect::<LinkedList<_>>()
+        }};
+    }
+
+    #[test]
+    fn float_diff() {
+        let a = list![1.0f32, 2.0];
+        let b = list![1.5f32, 2.25];
+        assert_eq!(a.abs_diff(&b), Some(list![0.5, 0.25]));
+
+        let c = list![1.000_000_1f32, 2.000_000_5];
+        assert_eq!(a.ulps_diff(&c), Some(Some(list![1, 2])));
+
+        let d = LinkedList::new();
+        assert_eq!(a.abs_diff(&d), None);
+        assert_eq!(d.abs_diff(&a), None);
+        assert_eq!(a.ulps_diff(&d), None);
+        assert_eq!(d.ulps_diff(&a), None);
+
+        let e = list![1.0; 3];
+        assert_eq!(a.abs_diff(&e), None);
+        assert_eq!(e.abs_diff(&a), None);
+        assert_eq!(a.ulps_diff(&e), None);
+        assert_eq!(e.ulps_diff(&a), None);
+    }
+
+    #[test]
+    fn float_eq() {
+        let a = list![1.0f32, 2.0];
+        let b = list![1.5f32, 2.25];
+        assert!(float_ne!(a, b, abs <= list![0.4, 0.25]));
+        assert!(float_ne!(a, b, abs <= list![0.5, 0.24]));
+        assert!(float_ne!(a, b, abs <= list![f32::INFINITY]));
+        assert!(float_ne!(a, b, abs <= list![f32::INFINITY; 3]));
+        assert!(float_eq!(a, b, abs <= list![0.5, 0.25]));
+        assert!(float_ne!(a, b, abs_all <= 0.4));
+        assert!(float_eq!(a, b, abs_all <= 0.5));
+
+        let c = list![1.000_000_1f32, 2.000_000_5];
+        let eps = f32::EPSILON;
+        assert!(float_ne!(a, c, rel <= list![0.5 * eps, 2.0 * eps]));
+        assert!(float_ne!(a, c, rel <= list![eps, 1.0 * eps]));
+        assert!(float_ne!(a, c, rel <= list![f32::INFINITY]));
+        assert!(float_ne!(a, c, rel <= list![f32::INFINITY; 3]));
+        assert!(float_eq!(a, c, rel <= list![eps, 2.0 * eps]));
+        assert!(float_ne!(a, c, rel_all <= eps));
+        assert!(float_eq!(a, c, rel_all <= 2.0 * eps));
+
+        assert!(float_ne!(a, c, ulps <= list![0, 2]));
+        assert!(float_ne!(a, c, ulps <= list![1, 1]));
+        assert!(float_ne!(a, c, ulps <= list![u32::MAX]));
+        assert!(float_ne!(a, c, ulps <= list![u32::MAX; 3]));
+        assert!(float_eq!(a, c, ulps <= list![1, 2]));
+        assert!(float_ne!(a, c, ulps_all <= 1));
+        assert!(float_eq!(a, c, ulps_all <= 2));
+
+        let d = LinkedList::new();
+        assert!(!float_eq!(a, d, abs <= list![f32::INFINITY; 3]));
+        assert!(!float_eq!(d, a, abs_all <= f32::INFINITY));
+        assert!(!float_eq!(a, d, rel <= list![f32::INFINITY; 3]));
+        assert!(!float_eq!(d, a, rel_all <= f32::INFINITY));
+        assert!(!float_eq!(a, d, ulps <= list![u32::MAX; 3]));
+        assert!(!float_eq!(d, a, ulps_all <= u32::MAX));
+
+        let e = list![1.0; 3];
+        assert!(!float_eq!(a, e, abs <= list![f32::INFINITY; 3]));
+        assert!(!float_eq!(e, a, abs_all <= f32::INFINITY));
+        assert!(!float_eq!(a, e, rel <= list![f32::INFINITY; 3]));
+        assert!(!float_eq!(e, a, rel_all <= f32::INFINITY));
+        assert!(!float_eq!(a, e, ulps <= list![u32::MAX; 3]));
+        assert!(!float_eq!(e, a, ulps_all <= u32::MAX));
+    }
+
+    #[test]
+    fn float_eq_debug() {
+        let a = list![1.0f32, 2.0];
+        let b = list![1.5f32, 2.25];
+
+        assert_eq!(
+            a.debug_abs_epsilon(&b, &list![0.1, 0.2]),
+            Some(list![0.1, 0.2])
+        );
+        assert_eq!(a.debug_abs_epsilon(&b, &list![0.1]), None);
+        assert_eq!(a.debug_abs_epsilon(&b, &list![0.1; 3]), None);
+        assert_eq!(a.debug_abs_all_epsilon(&b, &0.2), Some(list![0.2, 0.2]));
+
+        assert_eq!(
+            a.debug_rel_epsilon(&b, &list![0.1, 0.5]),
+            Some(list![0.15, 1.125])
+        );
+        assert_eq!(a.debug_rel_epsilon(&b, &list![0.1]), None);
+        assert_eq!(a.debug_rel_epsilon(&b, &list![0.1; 3]), None);
+        assert_eq!(a.debug_rel_all_epsilon(&b, &0.5), Some(list![0.75, 1.125]));
+
+        assert_eq!(a.debug_ulps_epsilon(&b, &list![1, 2]), Some(list![1, 2]));
+        assert_eq!(a.debug_ulps_all_epsilon(&b, &2), Some(list![2, 2]));
+
+        let d = LinkedList::new();
+        assert_eq!(a.debug_abs_epsilon(&d, &list![0.1, 0.2]), None);
+        assert_eq!(a.debug_abs_all_epsilon(&d, &0.2), None);
+        assert_eq!(a.debug_rel_epsilon(&d, &list![0.1, 0.5]), None);
+        assert_eq!(a.debug_rel_all_epsilon(&d, &0.5), None);
+        assert_eq!(a.debug_ulps_epsilon(&d, &list![1, 2]), None);
+        assert_eq!(a.debug_ulps_all_epsilon(&d, &2), None);
+
+        let e = list![1.0; 3];
+        assert_eq!(a.debug_abs_epsilon(&e, &list![0.1, 0.2]), None);
+        assert_eq!(a.debug_abs_all_epsilon(&e, &0.2), None);
+        assert_eq!(a.debug_rel_epsilon(&e, &list![0.1, 0.5]), None);
+        assert_eq!(a.debug_rel_all_epsilon(&e, &0.5), None);
+        assert_eq!(a.debug_ulps_epsilon(&e, &list![1, 2]), None);
+        assert_eq!(a.debug_ulps_all_epsilon(&e, &2), None);
+    }
+}
