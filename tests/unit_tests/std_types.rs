@@ -239,12 +239,12 @@ mod vec {
         assert_eq!(a.debug_ulps_epsilon(&d, &vec![1, 2]), None);
         assert_eq!(a.debug_ulps_all_epsilon(&d, &2), None);
 
-        // let e = vec![1.0; 3];
-        // assert!(!float_eq!(a, e, abs <= vec![f32::INFINITY; 3]));
-        // assert!(!float_eq!(e, a, abs_all <= f32::INFINITY));
-        // assert!(!float_eq!(a, e, rel <= vec![f32::INFINITY; 3]));
-        // assert!(!float_eq!(e, a, rel_all <= f32::INFINITY));
-        // assert!(!float_eq!(a, e, ulps <= vec![u32::MAX; 3]));
-        // assert!(!float_eq!(e, a, ulps_all <= u32::MAX));
+        let e = vec![1.0; 3];
+        assert_eq!(a.debug_abs_epsilon(&e, &vec![0.1, 0.2]), None);
+        assert_eq!(a.debug_abs_all_epsilon(&e, &0.2), None);
+        assert_eq!(a.debug_rel_epsilon(&e, &vec![0.1, 0.5]), None);
+        assert_eq!(a.debug_rel_all_epsilon(&e, &0.5), None);
+        assert_eq!(a.debug_ulps_epsilon(&e, &vec![1, 2]), None);
+        assert_eq!(a.debug_ulps_all_epsilon(&e, &2), None);
     }
 }
