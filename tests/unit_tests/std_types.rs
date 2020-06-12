@@ -1,8 +1,11 @@
 use float_eq::{float_eq, float_ne, FloatDiff, FloatEqAllDebug, FloatEqDebug};
+use std::boxed::Box;
+use std::collections::{BTreeMap, HashMap, VecDeque};
+use std::rc::Rc;
+use std::sync::Arc;
 
 mod rc {
     use super::*;
-    use std::rc::Rc;
 
     #[test]
     fn float_diff() {
@@ -47,7 +50,6 @@ mod rc {
 
 mod arc {
     use super::*;
-    use std::sync::Arc;
 
     #[test]
     fn float_diff() {
@@ -92,7 +94,6 @@ mod arc {
 
 mod r#box {
     use super::*;
-    use std::boxed::Box;
 
     #[test]
     fn float_diff() {
@@ -253,7 +254,6 @@ mod vec {
 
 mod vec_deque {
     use super::*;
-    use std::collections::VecDeque;
 
     macro_rules! vecd {
         ($($x:expr),+) => {{
@@ -503,199 +503,219 @@ mod linked_list {
     }
 }
 
-mod hash_map {
-    use super::*;
-    use std::collections::HashMap;
+macro_rules! impl_map_tests {
+    ($map:ident) => {
+        mod $map {
+            use super::*;
 
-    macro_rules! hmap {
-        ($($k:expr => $v:expr),+) => {{
-            let mut m = HashMap::new();
-            $(m.insert($k, $v);)+
-            m
-        }};
-    }
+            #[test]
+            fn float_diff() {
+                let a = $map! {"one" => 1.0f32, "two" => 2.0};
+                let b = $map! {"one" => 1.5f32, "two" => 2.25};
+                assert_eq!(a.abs_diff(&b), Some($map! {"one" => 0.5, "two" => 0.25}));
 
-    #[test]
-    fn float_diff() {
-        let a = hmap! {"one" => 1.0f32, "two" => 2.0};
-        let b = hmap! {"one" => 1.5f32, "two" => 2.25};
-        assert_eq!(a.abs_diff(&b), Some(hmap! {"one" => 0.5, "two" => 0.25}));
+                let c = $map! {"one" => 1.000_000_1f32, "two" => 2.000_000_5};
+                assert_eq!(a.ulps_diff(&c), Some(Some($map! {"one" => 1, "two" => 2})));
 
-        let c = hmap! {"one" => 1.000_000_1f32, "two" => 2.000_000_5};
-        assert_eq!(a.ulps_diff(&c), Some(Some(hmap! {"one" => 1, "two" => 2})));
+                let d = $map! {};
+                assert_eq!(a.abs_diff(&d), None);
+                assert_eq!(d.abs_diff(&a), None);
+                assert_eq!(a.ulps_diff(&d), None);
+                assert_eq!(d.ulps_diff(&a), None);
 
-        let d = HashMap::new();
-        assert_eq!(a.abs_diff(&d), None);
-        assert_eq!(d.abs_diff(&a), None);
-        assert_eq!(a.ulps_diff(&d), None);
-        assert_eq!(d.ulps_diff(&a), None);
+                let e = $map! {"one" => 1.000_000_1f32, "two" => 2.000_000_5, "three" => 3.0};
+                assert_eq!(a.abs_diff(&e), None);
+                assert_eq!(e.abs_diff(&a), None);
+                assert_eq!(a.ulps_diff(&e), None);
+                assert_eq!(e.ulps_diff(&a), None);
+            }
 
-        let e = hmap! {"one" => 1.000_000_1f32, "two" => 2.000_000_5, "three" => 3.0};
-        assert_eq!(a.abs_diff(&e), None);
-        assert_eq!(e.abs_diff(&a), None);
-        assert_eq!(a.ulps_diff(&e), None);
-        assert_eq!(e.ulps_diff(&a), None);
-    }
+            #[test]
+            fn float_eq() {
+                const INF: f32 = f32::INFINITY;
 
-    #[test]
-    fn float_eq() {
-        const INF: f32 = f32::INFINITY;
+                let a = $map! {"one" => 1.0f32, "two" => 2.0};
+                let b = $map! {"one" => 1.5f32, "two" => 2.25};
+                assert!(float_ne!(a, b, abs <= $map! { "one" => 0.4, "two" => 0.25}));
+                assert!(float_ne!(a, b, abs <= $map! { "one" => 0.5, "two" => 0.24}));
+                assert!(float_ne!(a, b, abs <= $map! { "one" => INF}));
+                assert!(float_ne!(
+                    a,
+                    b,
+                    abs <= $map! { "one" => INF, "two" => INF, "three" => INF}
+                ));
+                assert!(float_eq!(a, b, abs <= $map! { "one" => 0.5, "two" => 0.25}));
+                assert!(float_ne!(a, b, abs_all <= 0.4));
+                assert!(float_eq!(a, b, abs_all <= 0.5));
 
-        let a = hmap! {"one" => 1.0f32, "two" => 2.0};
-        let b = hmap! {"one" => 1.5f32, "two" => 2.25};
-        assert!(float_ne!(a, b, abs <= hmap! { "one" => 0.4, "two" => 0.25}));
-        assert!(float_ne!(a, b, abs <= hmap! { "one" => 0.5, "two" => 0.24}));
-        assert!(float_ne!(a, b, abs <= hmap! { "one" => INF}));
-        assert!(float_ne!(
-            a,
-            b,
-            abs <= hmap! { "one" => INF, "two" => INF, "three" => INF}
-        ));
-        assert!(float_eq!(a, b, abs <= hmap! { "one" => 0.5, "two" => 0.25}));
-        assert!(float_ne!(a, b, abs_all <= 0.4));
-        assert!(float_eq!(a, b, abs_all <= 0.5));
+                let c = $map! { "one" => 1.000_000_1f32, "two" => 2.000_000_5 };
+                let eps = f32::EPSILON;
+                assert!(float_ne!(
+                    a,
+                    c,
+                    rel <= $map! { "one" => 0.5 * eps, "two" => 2.0 * eps }
+                ));
+                assert!(float_ne!(a, c, rel <= $map! { "one" => eps, "two" => eps }));
+                assert!(float_ne!(a, c, rel <= $map! { "one" => INF }));
+                assert!(float_ne!(
+                    a,
+                    c,
+                    rel <= $map! { "one" => INF, "two" => INF, "three" => INF }
+                ));
+                assert!(float_eq!(
+                    a,
+                    c,
+                    rel <= $map! { "one" => eps, "two" => 2.0 * eps }
+                ));
+                assert!(float_ne!(a, c, rel_all <= eps));
+                assert!(float_eq!(a, c, rel_all <= 2.0 * eps));
 
-        let c = hmap! { "one" => 1.000_000_1f32, "two" => 2.000_000_5 };
-        let eps = f32::EPSILON;
-        assert!(float_ne!(
-            a,
-            c,
-            rel <= hmap! { "one" => 0.5 * eps, "two" => 2.0 * eps }
-        ));
-        assert!(float_ne!(a, c, rel <= hmap! { "one" => eps, "two" => eps }));
-        assert!(float_ne!(a, c, rel <= hmap! { "one" => INF }));
-        assert!(float_ne!(
-            a,
-            c,
-            rel <= hmap! { "one" => INF, "two" => INF, "three" => INF }
-        ));
-        assert!(float_eq!(
-            a,
-            c,
-            rel <= hmap! { "one" => eps, "two" => 2.0 * eps }
-        ));
-        assert!(float_ne!(a, c, rel_all <= eps));
-        assert!(float_eq!(a, c, rel_all <= 2.0 * eps));
+                assert!(float_ne!(a, c, ulps <= $map! { "one" => 0, "two" => 2 }));
+                assert!(float_ne!(a, c, ulps <= $map! { "one" => 1, "two" => 1 }));
+                assert!(float_ne!(a, c, ulps <= $map! { "two" => u32::MAX }));
+                assert!(float_ne!(
+                    a,
+                    c,
+                    ulps <= $map! { "one" => u32::MAX, "two" => u32::MAX, "three" => u32::MAX }
+                ));
+                assert!(float_eq!(a, c, ulps <= $map! { "one" => 1, "two" => 2 }));
+                assert!(float_ne!(a, c, ulps_all <= 1));
+                assert!(float_eq!(a, c, ulps_all <= 2));
 
-        assert!(float_ne!(a, c, ulps <= hmap! { "one" => 0, "two" => 2 }));
-        assert!(float_ne!(a, c, ulps <= hmap! { "one" => 1, "two" => 1 }));
-        assert!(float_ne!(a, c, ulps <= hmap! { "two" => u32::MAX }));
-        assert!(float_ne!(
-            a,
-            c,
-            ulps <= hmap! { "one" => u32::MAX, "two" => u32::MAX, "three" => u32::MAX }
-        ));
-        assert!(float_eq!(a, c, ulps <= hmap! { "one" => 1, "two" => 2 }));
-        assert!(float_ne!(a, c, ulps_all <= 1));
-        assert!(float_eq!(a, c, ulps_all <= 2));
+                let d = $map! {};
+                assert!(float_ne!(a, d, abs <= $map! { "one" => INF, "two" => INF}));
+                assert!(float_ne!(a, d, abs_all <= INF));
+                assert!(float_ne!(a, d, rel <= $map! { "one" => INF, "two" => INF}));
+                assert!(float_ne!(a, d, rel_all <= INF));
+                assert!(float_ne!(
+                    a,
+                    d,
+                    ulps <= $map! { "one" => u32::MAX, "two" => u32::MAX }
+                ));
+                assert!(float_ne!(a, d, ulps_all <= u32::MAX));
 
-        let d = HashMap::new();
-        assert!(float_ne!(a, d, abs <= hmap! { "one" => INF, "two" => INF}));
-        assert!(float_ne!(a, d, abs_all <= INF));
-        assert!(float_ne!(a, d, rel <= hmap! { "one" => INF, "two" => INF}));
-        assert!(float_ne!(a, d, rel_all <= INF));
-        assert!(float_ne!(
-            a,
-            d,
-            ulps <= hmap! { "one" => u32::MAX, "two" => u32::MAX }
-        ));
-        assert!(float_ne!(a, d, ulps_all <= u32::MAX));
+                let e = $map! {"one" => 1.0f32, "two" => 2.0, "three" => 3.0};
+                assert!(float_ne!(
+                    a,
+                    e,
+                    abs <= $map! {"one" => INF, "two" => INF, "three" => INF }
+                ));
+                assert!(float_ne!(e, a, abs_all <= INF));
+                assert!(float_ne!(
+                    a,
+                    e,
+                    rel <= $map! {"one" => INF, "two" => INF, "three" => INF }
+                ));
+                assert!(float_ne!(e, a, rel_all <= INF));
+                assert!(float_ne!(
+                    a,
+                    e,
+                    ulps <= $map! {"one" => u32::MAX, "two" => u32::MAX, "three" => u32::MAX }
+                ));
+                assert!(float_ne!(e, a, ulps_all <= u32::MAX));
+            }
 
-        let e = hmap! {"one" => 1.0f32, "two" => 2.0, "three" => 3.0};
-        assert!(float_ne!(
-            a,
-            e,
-            abs <= hmap! {"one" => INF, "two" => INF, "three" => INF }
-        ));
-        assert!(float_ne!(e, a, abs_all <= INF));
-        assert!(float_ne!(
-            a,
-            e,
-            rel <= hmap! {"one" => INF, "two" => INF, "three" => INF }
-        ));
-        assert!(float_ne!(e, a, rel_all <= INF));
-        assert!(float_ne!(
-            a,
-            e,
-            ulps <= hmap! {"one" => u32::MAX, "two" => u32::MAX, "three" => u32::MAX }
-        ));
-        assert!(float_ne!(e, a, ulps_all <= u32::MAX));
-    }
+            #[test]
+            fn float_eq_debug() {
+                let a = $map! {"one" => 1.0f32, "two" => 2.0};
+                let b = $map! {"one" => 1.5f32, "two" => 2.25};
 
-    #[test]
-    fn float_eq_debug() {
-        let a = hmap! {"one" => 1.0f32, "two" => 2.0};
-        let b = hmap! {"one" => 1.5f32, "two" => 2.25};
+                assert_eq!(
+                    a.debug_abs_epsilon(&b, &$map! { "one" => 0.1, "two" => 0.2 }),
+                    Some($map! { "one" => 0.1, "two" => 0.2 })
+                );
+                assert_eq!(a.debug_abs_epsilon(&b, &$map! { "one" => 0.1 }), None);
+                assert_eq!(
+                    a.debug_abs_epsilon(&b, &$map! { "one" => 0.1, "two" => 0.2, "three" => 0.3 }),
+                    None
+                );
+                assert_eq!(
+                    a.debug_abs_all_epsilon(&b, &0.2),
+                    Some($map! { "one" => 0.2, "two" => 0.2 })
+                );
 
-        assert_eq!(
-            a.debug_abs_epsilon(&b, &hmap! { "one" => 0.1, "two" => 0.2 }),
-            Some(hmap! { "one" => 0.1, "two" => 0.2 })
-        );
-        assert_eq!(a.debug_abs_epsilon(&b, &hmap! { "one" => 0.1 }), None);
-        assert_eq!(
-            a.debug_abs_epsilon(&b, &hmap! { "one" => 0.1, "two" => 0.2, "three" => 0.3 }),
-            None
-        );
-        assert_eq!(
-            a.debug_abs_all_epsilon(&b, &0.2),
-            Some(hmap! { "one" => 0.2, "two" => 0.2 })
-        );
+                assert_eq!(
+                    a.debug_rel_epsilon(&b, &$map! { "one" => 0.1, "two" => 0.5 }),
+                    Some($map! { "one" => 0.15, "two" => 1.125 })
+                );
+                assert_eq!(a.debug_rel_epsilon(&b, &$map! { "one" => 0.1 }), None);
+                assert_eq!(
+                    a.debug_rel_epsilon(&b, &$map! { "one" => 0.1, "two" => 0.2, "three" => 0.3 }),
+                    None
+                );
+                assert_eq!(
+                    a.debug_rel_all_epsilon(&b, &0.5),
+                    Some($map! { "one" => 0.75, "two" => 1.125 })
+                );
 
-        assert_eq!(
-            a.debug_rel_epsilon(&b, &hmap! { "one" => 0.1, "two" => 0.5 }),
-            Some(hmap! { "one" => 0.15, "two" => 1.125 })
-        );
-        assert_eq!(a.debug_rel_epsilon(&b, &hmap! { "one" => 0.1 }), None);
-        assert_eq!(
-            a.debug_rel_epsilon(&b, &hmap! { "one" => 0.1, "two" => 0.2, "three" => 0.3 }),
-            None
-        );
-        assert_eq!(
-            a.debug_rel_all_epsilon(&b, &0.5),
-            Some(hmap! { "one" => 0.75, "two" => 1.125 })
-        );
+                assert_eq!(
+                    a.debug_ulps_epsilon(&b, &$map! { "one" => 1, "two" => 2 }),
+                    Some($map! { "one" => 1, "two" => 2 })
+                );
+                assert_eq!(
+                    a.debug_ulps_all_epsilon(&b, &2),
+                    Some($map! { "one" => 2, "two" => 2 })
+                );
 
-        assert_eq!(
-            a.debug_ulps_epsilon(&b, &hmap! { "one" => 1, "two" => 2 }),
-            Some(hmap! { "one" => 1, "two" => 2 })
-        );
-        assert_eq!(
-            a.debug_ulps_all_epsilon(&b, &2),
-            Some(hmap! { "one" => 2, "two" => 2 })
-        );
+                let d = $map! {};
+                assert_eq!(
+                    a.debug_abs_epsilon(&d, &$map! { "one" => 0.1, "two" => 0.2 }),
+                    None
+                );
+                assert_eq!(a.debug_abs_all_epsilon(&d, &0.2), None);
+                assert_eq!(
+                    a.debug_rel_epsilon(&d, &$map! { "one" => 0.1, "two" => 0.5 }),
+                    None
+                );
+                assert_eq!(a.debug_rel_all_epsilon(&d, &0.5), None);
+                assert_eq!(
+                    a.debug_ulps_epsilon(&d, &$map! { "one" => 1, "two" => 2 }),
+                    None
+                );
+                assert_eq!(a.debug_ulps_all_epsilon(&d, &2), None);
 
-        let d = HashMap::new();
-        assert_eq!(
-            a.debug_abs_epsilon(&d, &hmap! { "one" => 0.1, "two" => 0.2 }),
-            None
-        );
-        assert_eq!(a.debug_abs_all_epsilon(&d, &0.2), None);
-        assert_eq!(
-            a.debug_rel_epsilon(&d, &hmap! { "one" => 0.1, "two" => 0.5 }),
-            None
-        );
-        assert_eq!(a.debug_rel_all_epsilon(&d, &0.5), None);
-        assert_eq!(
-            a.debug_ulps_epsilon(&d, &hmap! { "one" => 1, "two" => 2 }),
-            None
-        );
-        assert_eq!(a.debug_ulps_all_epsilon(&d, &2), None);
-
-        let e = hmap! { "one" => 1.0, "two" => 2.0, "three" => 3.0 };
-        assert_eq!(
-            a.debug_abs_epsilon(&e, &hmap! { "one" => 0.1, "two" => 0.2 }),
-            None
-        );
-        assert_eq!(a.debug_abs_all_epsilon(&e, &0.2), None);
-        assert_eq!(
-            a.debug_rel_epsilon(&e, &hmap! { "one" => 0.1, "two" => 0.2 }),
-            None
-        );
-        assert_eq!(a.debug_rel_all_epsilon(&e, &0.5), None);
-        assert_eq!(
-            a.debug_ulps_epsilon(&e, &hmap! { "one" => 1, "two" => 2 }),
-            None
-        );
-        assert_eq!(a.debug_ulps_all_epsilon(&e, &2), None);
-    }
+                let e = $map! { "one" => 1.0, "two" => 2.0, "three" => 3.0 };
+                assert_eq!(
+                    a.debug_abs_epsilon(&e, &$map! { "one" => 0.1, "two" => 0.2 }),
+                    None
+                );
+                assert_eq!(a.debug_abs_all_epsilon(&e, &0.2), None);
+                assert_eq!(
+                    a.debug_rel_epsilon(&e, &$map! { "one" => 0.1, "two" => 0.2 }),
+                    None
+                );
+                assert_eq!(a.debug_rel_all_epsilon(&e, &0.5), None);
+                assert_eq!(
+                    a.debug_ulps_epsilon(&e, &$map! { "one" => 1, "two" => 2 }),
+                    None
+                );
+                assert_eq!(a.debug_ulps_all_epsilon(&e, &2), None);
+            }
+        }
+    };
 }
+
+macro_rules! btree_map {
+    () => {{
+        BTreeMap::new()
+    }};
+    ($($k:expr => $v:expr),+) => {{
+        let mut m = BTreeMap::new();
+        $(m.insert($k, $v);)+
+        m
+    }};
+}
+
+macro_rules! hash_map {
+    () => {{
+        HashMap::new()
+    }};
+    ($($k:expr => $v:expr),+) => {{
+        let mut m = HashMap::new();
+        $(m.insert($k, $v);)+
+        m
+    }};
+}
+
+impl_map_tests!(btree_map);
+impl_map_tests!(hash_map);
