@@ -1,6 +1,7 @@
 use core::cell::{Cell, RefCell};
 use float_eq::{assert_float_eq, float_eq, float_ne, FloatDiff, FloatEqAllDebug, FloatEqDebug};
 
+#[allow(clippy::unnecessary_mut_passed)]
 mod refs {
     use super::*;
 

@@ -9,9 +9,7 @@ impl FloatDiff for () {
     type Output = ();
 
     #[inline]
-    fn abs_diff(&self, _other: &()) -> Self::Output {
-        ()
-    }
+    fn abs_diff(&self, _other: &()) -> Self::Output {}
 
     #[inline]
     fn ulps_diff(&self, _other: &()) -> Option<Ulps<Self::Output>> {

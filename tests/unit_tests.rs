@@ -1,3 +1,5 @@
+#![allow(clippy::float_cmp, clippy::unit_cmp)]
+
 // A selection of NaN values from the edges of the ranges of negative and
 // positive NaN values and their payloads. Testing every single NaN value
 // is viable in reasonable time for f32, but there are just too many f64
