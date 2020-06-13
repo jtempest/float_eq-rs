@@ -321,3 +321,33 @@ mod ref_cell {
         assert_eq!(a.debug_ulps_all_epsilon(&b, &2), [2, 2]);
     }
 }
+
+mod slice {
+    use super::*;
+
+    #[test]
+    fn float_eq() {
+        let a = [1.0f32, 2.0];
+        let b = vec![1.5f32, 2.25];
+        assert!(float_ne!(a[..], b[..], abs_all <= 0.4));
+        assert!(float_eq!(a[..], b[..], abs_all <= 0.5));
+
+        let c = &[1.000_000_1f32, 2.000_000_5][..];
+        let eps = f32::EPSILON;
+        assert!(float_ne!(&a[..], c, rel_all <= eps));
+        assert!(float_eq!(a[..], c, rel_all <= 2.0 * eps));
+
+        assert!(float_ne!(&a[..], c, ulps_all <= 1));
+        assert!(float_eq!(a[..], c, ulps_all <= 2));
+
+        let d: &[f32] = &[][..];
+        assert!(float_ne!(d, &a[..], abs_all <= f32::INFINITY));
+        assert!(float_ne!(d, &a[..], rel_all <= f32::INFINITY));
+        assert!(float_ne!(*d, a[..], ulps_all <= u32::MAX));
+
+        let e = vec![1.0; 3];
+        assert!(float_ne!(e[..], a[..], abs_all <= f32::INFINITY));
+        assert!(float_ne!(e[..], a[..], rel_all <= f32::INFINITY));
+        assert!(float_ne!(e[..], a[..], ulps_all <= u32::MAX));
+    }
+}

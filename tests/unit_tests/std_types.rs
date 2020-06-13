@@ -136,6 +136,58 @@ mod r#box {
     }
 }
 
+mod slice {
+    use super::*;
+
+    #[test]
+    fn float_diff() {
+        let a = [1.0f32, 2.0];
+        let b = vec![1.5f32, 2.25];
+        assert_eq!(a[..].abs_diff(&b[..]), Some(vec![0.5, 0.25]));
+
+        let c = &[1.000_000_1f32, 2.000_000_5];
+        assert_eq!(a[..].ulps_diff(&c[..]), Some(Some(vec![1, 2])));
+
+        let d = &[][..];
+        assert_eq!(a[..].abs_diff(&d), None);
+        assert_eq!(d.abs_diff(&a), None);
+        assert_eq!(a[..].ulps_diff(&d), None);
+        assert_eq!(d.ulps_diff(&a), None);
+
+        let e = [1.0; 3];
+        assert_eq!(a[..].abs_diff(&e[..]), None);
+        assert_eq!(e[..].abs_diff(&a[..]), None);
+        assert_eq!(a[..].ulps_diff(&e[..]), None);
+        assert_eq!(e[..].ulps_diff(&a[..]), None);
+    }
+
+    #[test]
+    fn float_eq_debug() {
+        let a = [1.0f32, 2.0];
+        let b = vec![1.5f32, 2.25];
+
+        assert_eq!(
+            a[..].debug_abs_all_epsilon(&b[..], &0.2),
+            Some(vec![0.2, 0.2])
+        );
+        assert_eq!(
+            a[..].debug_rel_all_epsilon(&b[..], &0.5),
+            Some(vec![0.75, 1.125])
+        );
+        assert_eq!(a[..].debug_ulps_all_epsilon(&b[..], &2), Some(vec![2, 2]));
+
+        let d = &[][..];
+        assert_eq!(a[..].debug_abs_all_epsilon(d, &0.2), None);
+        assert_eq!(a[..].debug_rel_all_epsilon(d, &0.5), None);
+        assert_eq!(a[..].debug_ulps_all_epsilon(d, &2), None);
+
+        let e = [1.0; 3];
+        assert_eq!(a[..].debug_abs_all_epsilon(&e[..], &0.2), None);
+        assert_eq!(a[..].debug_rel_all_epsilon(&e[..], &0.5), None);
+        assert_eq!(a[..].debug_ulps_all_epsilon(&e[..], &2), None);
+    }
+}
+
 mod vec {
     use super::*;
 

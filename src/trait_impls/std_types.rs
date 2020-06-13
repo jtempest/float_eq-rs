@@ -149,6 +149,94 @@ impl_traits_for_wrapper!(Box);
 impl_traits_for_wrapper!(Rc);
 
 //------------------------------------------------------------------------------
+// Slices
+//------------------------------------------------------------------------------
+impl<A, B> FloatDiff<[B]> for [A]
+where
+    A: FloatDiff<B>,
+{
+    type Output = Option<Vec<A::Output>>;
+
+    #[inline]
+    fn abs_diff(&self, other: &[B]) -> Self::Output {
+        if self.len() == other.len() {
+            Some(
+                self.iter()
+                    .zip(other.iter())
+                    .map(|(a, b)| a.abs_diff(b))
+                    .collect(),
+            )
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn ulps_diff(&self, other: &[B]) -> Option<Ulps<Self::Output>> {
+        if self.len() == other.len() {
+            Some(
+                self.iter()
+                    .zip(other.iter())
+                    .map(|(a, b)| a.ulps_diff(b))
+                    .collect(),
+            )
+        } else {
+            None
+        }
+    }
+}
+
+impl<A, B> FloatEqAllDebug<[B]> for [A]
+where
+    A: FloatEqAllDebug<B>,
+{
+    type DebugEpsilon = Option<Vec<A::DebugEpsilon>>;
+
+    fn debug_abs_all_epsilon(&self, other: &[B], max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+        if self.len() == other.len() {
+            Some(
+                self.iter()
+                    .zip(other.iter())
+                    .map(|(a, b)| a.debug_abs_all_epsilon(b, max_diff))
+                    .collect(),
+            )
+        } else {
+            None
+        }
+    }
+
+    fn debug_rel_all_epsilon(&self, other: &[B], max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+        if self.len() == other.len() {
+            Some(
+                self.iter()
+                    .zip(other.iter())
+                    .map(|(a, b)| a.debug_rel_all_epsilon(b, max_diff))
+                    .collect(),
+            )
+        } else {
+            None
+        }
+    }
+
+    fn debug_ulps_all_epsilon(
+        &self,
+        other: &[B],
+        max_diff: &Ulps<Self::Epsilon>,
+    ) -> Ulps<Self::DebugEpsilon> {
+        if self.len() == other.len() {
+            Some(
+                self.iter()
+                    .zip(other.iter())
+                    .map(|(a, b)| a.debug_ulps_all_epsilon(b, max_diff))
+                    .collect(),
+            )
+        } else {
+            None
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
 // Linear collections
 //------------------------------------------------------------------------------
 macro_rules! impl_traits_for_linear_collection {

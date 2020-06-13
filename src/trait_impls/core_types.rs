@@ -571,3 +571,40 @@ where
         FloatEqAllDebug::debug_ulps_all_epsilon(&*self.borrow(), &*other.borrow(), max_diff)
     }
 }
+
+//------------------------------------------------------------------------------
+// Slices
+//------------------------------------------------------------------------------
+impl<A, B> FloatEqAll<[B]> for [A]
+where
+    A: FloatEqAll<B>,
+{
+    type Epsilon = A::Epsilon;
+
+    #[inline]
+    fn eq_abs_all(&self, other: &[B], max_diff: &Self::Epsilon) -> bool {
+        self.len() == other.len()
+            && self
+                .iter()
+                .zip(other.iter())
+                .all(|(a, b)| a.eq_abs_all(b, max_diff))
+    }
+
+    #[inline]
+    fn eq_rel_all(&self, other: &[B], max_diff: &Self::Epsilon) -> bool {
+        self.len() == other.len()
+            && self
+                .iter()
+                .zip(other.iter())
+                .all(|(a, b)| a.eq_rel_all(b, max_diff))
+    }
+
+    #[inline]
+    fn eq_ulps_all(&self, other: &[B], max_diff: &Ulps<Self::Epsilon>) -> bool {
+        self.len() == other.len()
+            && self
+                .iter()
+                .zip(other.iter())
+                .all(|(a, b)| a.eq_ulps_all(b, max_diff))
+    }
+}
