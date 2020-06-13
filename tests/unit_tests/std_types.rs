@@ -594,6 +594,11 @@ macro_rules! impl_map_tests {
                 assert!(float_ne!(
                     a,
                     b,
+                    abs <= $map! { "one" => INF, "three" => INF}
+                ));
+                assert!(float_ne!(
+                    a,
+                    b,
                     abs <= $map! { "one" => INF, "two" => INF, "three" => INF}
                 ));
                 assert!(float_eq!(a, b, abs <= $map! { "one" => 0.5, "two" => 0.25}));
@@ -612,6 +617,11 @@ macro_rules! impl_map_tests {
                 assert!(float_ne!(
                     a,
                     c,
+                    rel <= $map! { "one" => INF, "three" => INF }
+                ));
+                assert!(float_ne!(
+                    a,
+                    c,
                     rel <= $map! { "one" => INF, "two" => INF, "three" => INF }
                 ));
                 assert!(float_eq!(
@@ -625,6 +635,11 @@ macro_rules! impl_map_tests {
                 assert!(float_ne!(a, c, ulps <= $map! { "one" => 0, "two" => 2 }));
                 assert!(float_ne!(a, c, ulps <= $map! { "one" => 1, "two" => 1 }));
                 assert!(float_ne!(a, c, ulps <= $map! { "two" => u32::MAX }));
+                assert!(float_ne!(
+                    a,
+                    c,
+                    ulps <= $map! { "two" => u32::MAX, "three" => u32::MAX }
+                ));
                 assert!(float_ne!(
                     a,
                     c,
@@ -665,6 +680,18 @@ macro_rules! impl_map_tests {
                     ulps <= $map! {"one" => u32::MAX, "two" => u32::MAX, "three" => u32::MAX }
                 ));
                 assert!(float_ne!(e, a, ulps_all <= u32::MAX));
+
+                let f = $map! { "one" => 1.0, "three" => 3.0 };
+                assert!(float_ne!(a, f, abs <= $map! {"one" => INF, "two" => INF }));
+                assert!(float_ne!(a, f, abs_all <= INF));
+                assert!(float_ne!(a, f, rel <= $map! {"one" => INF, "two" => INF }));
+                assert!(float_ne!(a, f, rel_all <= INF));
+                assert!(float_ne!(
+                    a,
+                    f,
+                    ulps <= $map! {"one" => u32::MAX, "two" => u32::MAX }
+                ));
+                assert!(float_ne!(a, f, ulps_all <= u32::MAX));
             }
 
             #[test]
