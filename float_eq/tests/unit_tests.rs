@@ -81,3 +81,12 @@ mod unit_tests {
     #[cfg(feature = "num")]
     mod num_complex;
 }
+
+struct Foo(f32, f64);
+
+#[test]
+fn check() {
+    let f = Foo { 0: 0.0, 1: 1.0 };
+    assert_eq!(f.0, 0.0);
+    assert_eq!(f.1, 1.0);
+}

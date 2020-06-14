@@ -20,9 +20,13 @@ rust:
 
 env:
   - CARGO_PARAMS=""
+  - CARGO_PARAMS="--features derive"
   - CARGO_PARAMS="--features num"
+  - CARGO_PARAMS="--all-features"
   - CARGO_PARAMS="--no-default-features"
-  - CARGO_PARAMS="--no-default-features --features num" 
+  - CARGO_PARAMS="--no-default-features --features derive" 
+  - CARGO_PARAMS="--no-default-features --features num"
+  - CARGO_PARAMS="--no-default-features --features derive,num"
 
 jobs:
   allow_failures:
@@ -35,6 +39,7 @@ before_script: |
   fi
 
 script:
+- cd float_eq
 - cargo clean
 - cargo build $CARGO_PARAMS
 - cargo test $CARGO_PARAMS

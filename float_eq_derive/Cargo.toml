@@ -1,0 +1,22 @@
+[package]
+name = "float_eq_derive"
+version = "0.4.0-pre"
+authors = ["jtempest"]
+license = "MIT OR Apache-2.0"
+description = "Derive macro support for float_eq."
+homepage = "https://github.com/jtempest/float_eq-rs"
+repository = "https://github.com/jtempest/float_eq-rs"
+documentation = "https://docs.rs/float_eq/"
+keywords = ["approximate", "assert", "comparison", "equality", "float"]
+categories = ["algorithms", "development-tools::debugging", "no-std"]
+readme = "crates-io.md"
+include = ["Cargo.toml", "src/**/*.rs", "crates-io.md", "LICENSE-APACHE", "LICENSE-MIT"]
+edition = "2018"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = "1"
+quote = "1"
+syn = "1"

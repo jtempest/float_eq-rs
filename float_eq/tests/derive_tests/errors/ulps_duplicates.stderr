@@ -1,0 +1,5 @@
+error: Expected only one ULPs type name, previously saw `ulps = "One"`.
+ --> $DIR/ulps_duplicates.rs:4:33
+  |
+4 | #[float_eq(ulps = "One", ulps = "Two")]
+  |                                 ^^^^^

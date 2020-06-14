@@ -1,0 +1,9 @@
+error: Missing Epsilon type name required to derive trait.
+
+help: try adding `#[float_eq(all_epsilon = "YourEpsilonType")]` to your type.
+ --> $DIR/float_eq_all_missing_abs_epsilon.rs:3:10
+  |
+3 | #[derive(FloatEqAll)]
+  |          ^^^^^^^^^^
+  |
+  = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)

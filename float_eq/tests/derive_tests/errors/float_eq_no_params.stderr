@@ -1,0 +1,9 @@
+error: Missing ULPs type name required to derive trait.
+
+help: try adding `#[float_eq(ulps = "MyComplex32Ulps")]` to your type.
+ --> $DIR/float_eq_no_params.rs:3:28
+  |
+3 | #[derive(Debug, PartialEq, FloatUlps)]
+  |                            ^^^^^^^^^
+  |
+  = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)

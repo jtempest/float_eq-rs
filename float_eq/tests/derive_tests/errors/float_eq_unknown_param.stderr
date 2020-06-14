@@ -1,0 +1,5 @@
+error: Not a valid float_eq derive option.
+ --> $DIR/float_eq_unknown_param.rs:4:38
+  |
+4 | #[float_eq(ulps = "MyComplex32Ulps", cheese = "Hello")]
+  |                                      ^^^^^^

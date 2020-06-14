@@ -1,0 +1,5 @@
+error: float_eq attribute must be a list of options, for example `#[float_eq(ulps = "MyComplex32Ulps")]`
+ --> $DIR/float_eq_no_params_list.rs:4:1
+  |
+4 | #[float_eq]
+  | ^^^^^^^^^^^

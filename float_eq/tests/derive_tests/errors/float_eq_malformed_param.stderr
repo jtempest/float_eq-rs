@@ -1,0 +1,5 @@
+error: Expected a `name = value` pair.
+ --> $DIR/float_eq_malformed_param.rs:4:38
+  |
+4 | #[float_eq(ulps = "MyComplex32Ulps", cheese)]
+  |                                      ^^^^^^

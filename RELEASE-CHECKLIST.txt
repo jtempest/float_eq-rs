@@ -1,0 +1,12 @@
+- cargo hack test --feature-powerset
+- Make sure documentation is up to date
+- Make sure CHANGELOG is up to date
+- Run generate-readme.bat
+- Update version numbers in float_eq/Cargo.toml and float_eq_derive/Cargo.toml
+- git tag -s x.y.z -m "x.y.z release"
+- git push origin --tags
+- Check CI is building
+- Check `cargo package` for float_eq_derive
+- `cargo publish` float_eq_derive
+- Check `cargo package` for float_eq
+- `cargo publish` for float_eq

@@ -1,34 +1,5 @@
-[package]
-name = "float_eq"
-version = "0.4.0-pre"
-authors = ["jtempest"]
-license = "MIT OR Apache-2.0"
-description = "Explicitly bounded comparison of floating point numbers."
-homepage = "https://github.com/jtempest/float_eq-rs"
-repository = "https://github.com/jtempest/float_eq-rs"
-documentation = "https://docs.rs/float_eq/"
-keywords = ["approximate", "assert", "comparison", "equality", "float"]
-categories = ["algorithms", "development-tools::debugging", "no-std"]
-readme = "crates-io.md"
-include = ["Cargo.toml", "src/**/*.rs", "crates-io.md", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
-edition = "2018"
-
-[package.metadata.docs.rs]
-all-features = true
-
-[badges]
-maintenance = { status = "experimental" }
-travis-ci = { repository = "jtempest/float_eq-rs" }
-# Turned off for now since coveralls has better support for testing multiple 
-# feature sets, and thus is more representative.
-# codecov = { repository = "jtempest/float_eq-rs" }
-coveralls = { repository = "jtempest/float_eq-rs" }
-
-[features]
-default = ["std"]
-std = []
-num = ["num-complex"]
-
-[dependencies.num-complex]
-version = "0.2"
-optional = true
+[workspace]
+members = [
+    "float_eq",
+    "float_eq_derive"
+]

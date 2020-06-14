@@ -482,3 +482,6 @@ pub use crate::traits::*;
 
 mod trait_impls;
 pub use crate::trait_impls::*;
+
+#[cfg(feature = "float_eq_derive")]
+pub use float_eq_derive::*;
