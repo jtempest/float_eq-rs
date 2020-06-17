@@ -46,6 +46,8 @@ script:
 
 after_success: |
   if [[ "$TRAVIS_RUST_VERSION" == stable ]]; then
+    cd float_eq
+    
     # Uncomment the following line for coveralls.io
     cargo tarpaulin $CARGO_PARAMS --ciserver travis-ci --coveralls $TRAVIS_JOB_ID
 
