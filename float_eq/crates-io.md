@@ -104,7 +104,7 @@ basis using the `abs`, `rel`, and `ulps` comparisons, and types that implement
 let a = Complex32 { re: 2.0, im: 4.000_002 };
 let b = Complex32 { re: 2.000_000_5, im: 4.0 };
 
-assert_float_eq!(a, b, ulps <= Ulps::<Complex32> { re: 2, im: 4 });
+assert_float_eq!(a, b, ulps <= Complex32Ulps { re: 2, im: 4 });
 assert_float_eq!(a, b, ulps_all <= 4);
 ```
 
