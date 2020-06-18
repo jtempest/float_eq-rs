@@ -329,26 +329,47 @@ mod slice {
     #[test]
     fn float_eq() {
         let a = [1.0f32, 2.0];
-        let b = vec![1.5f32, 2.25];
+        let b = [1.5f32, 2.25];
+        assert!(float_ne!(a[..], b[..], abs <= [0.4, 0.25]));
+        assert!(float_ne!(a[..], b[..], abs <= [0.5, 0.24]));
+        assert!(float_ne!(a[..], b[..], abs <= [f32::INFINITY]));
+        assert!(float_ne!(a[..], b[..], abs <= [f32::INFINITY; 3]));
+        assert!(float_eq!(a[..], b[..], abs <= [0.5, 0.25]));
         assert!(float_ne!(a[..], b[..], abs_all <= 0.4));
         assert!(float_eq!(a[..], b[..], abs_all <= 0.5));
 
-        let c = &[1.000_000_1f32, 2.000_000_5][..];
+        let c = vec![1.000_000_1f32, 2.000_000_5];
         let eps = f32::EPSILON;
-        assert!(float_ne!(&a[..], c, rel_all <= eps));
-        assert!(float_eq!(a[..], c, rel_all <= 2.0 * eps));
+        assert!(float_ne!(a[..], c[..], rel <= [0.5 * eps, 2.0 * eps]));
+        assert!(float_ne!(a[..], c[..], rel <= [eps, 1.0 * eps]));
+        assert!(float_ne!(a[..], c[..], rel <= [f32::INFINITY]));
+        assert!(float_ne!(a[..], c[..], rel <= [f32::INFINITY; 3]));
+        assert!(float_eq!(a[..], c[..], rel <= [eps, 2.0 * eps]));
+        assert!(float_ne!(a[..], c[..], rel_all <= eps));
+        assert!(float_eq!(a[..], c[..], rel_all <= 2.0 * eps));
 
-        assert!(float_ne!(&a[..], c, ulps_all <= 1));
-        assert!(float_eq!(a[..], c, ulps_all <= 2));
+        assert!(float_ne!(a[..], c[..], ulps <= [0, 2]));
+        assert!(float_ne!(a[..], c[..], ulps <= [1, 1]));
+        assert!(float_ne!(a[..], c[..], ulps <= [u32::MAX]));
+        assert!(float_ne!(a[..], c[..], ulps <= [u32::MAX; 3]));
+        assert!(float_eq!(a[..], c[..], ulps <= [1, 2]));
+        assert!(float_ne!(a[..], c[..], ulps_all <= 1));
+        assert!(float_eq!(a[..], c[..], ulps_all <= 2));
 
-        let d: &[f32] = &[][..];
+        let d = &a[..1];
+        assert!(float_ne!(a[..], d, abs <= [f32::INFINITY; 2]));
         assert!(float_ne!(d, &a[..], abs_all <= f32::INFINITY));
+        assert!(float_ne!(a[..], d, rel <= [f32::INFINITY; 2]));
         assert!(float_ne!(d, &a[..], rel_all <= f32::INFINITY));
-        assert!(float_ne!(*d, a[..], ulps_all <= u32::MAX));
+        assert!(float_ne!(a[..], d, ulps <= [u32::MAX; 2]));
+        assert!(float_ne!(d, &a[..], ulps_all <= u32::MAX));
 
-        let e = vec![1.0; 3];
-        assert!(float_ne!(e[..], a[..], abs_all <= f32::INFINITY));
-        assert!(float_ne!(e[..], a[..], rel_all <= f32::INFINITY));
-        assert!(float_ne!(e[..], a[..], ulps_all <= u32::MAX));
+        let e = &[1.0; 3][..];
+        assert!(float_ne!(a[..], e, abs <= [f32::INFINITY; 3]));
+        assert!(float_ne!(e, &a[..], abs_all <= f32::INFINITY));
+        assert!(float_ne!(a[..], e, rel <= [f32::INFINITY; 3]));
+        assert!(float_ne!(e, &a[..], rel_all <= f32::INFINITY));
+        assert!(float_ne!(a[..], e, ulps <= [u32::MAX; 3]));
+        assert!(float_ne!(e, &a[..], ulps_all <= u32::MAX));
     }
 }

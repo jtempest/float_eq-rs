@@ -164,27 +164,47 @@ mod slice {
     #[test]
     fn float_eq_debug() {
         let a = [1.0f32, 2.0];
-        let b = vec![1.5f32, 2.25];
+        let b = [1.5f32, 2.25];
 
         assert_eq!(
-            a[..].debug_abs_all_epsilon(&b[..], &0.2),
-            Some(vec![0.2, 0.2])
+            a[..].debug_abs_epsilon(&b, &[0.1, 0.2]),
+            Some(vec![0.1, 0.2])
         );
+        assert_eq!(a[..].debug_abs_epsilon(&b, &[0.1]), None);
+        assert_eq!(a[..].debug_abs_epsilon(&b, &[0.1; 3]), None);
+        assert_eq!(a[..].debug_abs_all_epsilon(&b, &0.2), Some(vec![0.2, 0.2]));
+
         assert_eq!(
-            a[..].debug_rel_all_epsilon(&b[..], &0.5),
+            a[..].debug_rel_epsilon(&b, &[0.1, 0.5]),
+            Some(vec![0.15, 1.125])
+        );
+        assert_eq!(a[..].debug_rel_epsilon(&b, &[0.1]), None);
+        assert_eq!(a[..].debug_rel_epsilon(&b, &[0.1; 3]), None);
+        assert_eq!(
+            a[..].debug_rel_all_epsilon(&b, &0.5),
             Some(vec![0.75, 1.125])
         );
-        assert_eq!(a[..].debug_ulps_all_epsilon(&b[..], &2), Some(vec![2, 2]));
 
-        let d = &[][..];
-        assert_eq!(a[..].debug_abs_all_epsilon(d, &0.2), None);
-        assert_eq!(a[..].debug_rel_all_epsilon(d, &0.5), None);
-        assert_eq!(a[..].debug_ulps_all_epsilon(d, &2), None);
+        assert_eq!(a[..].debug_ulps_epsilon(&b, &[1]), None);
+        assert_eq!(a[..].debug_ulps_epsilon(&b, &[1, 2]), Some(vec![1, 2]));
+        assert_eq!(a[..].debug_ulps_epsilon(&b, &[1, 2, 3]), None);
+        assert_eq!(a[..].debug_ulps_all_epsilon(&b, &2), Some(vec![2, 2]));
+
+        let d = Vec::new();
+        assert_eq!(a[..].debug_abs_epsilon(&d, &[0.1, 0.2]), None);
+        assert_eq!(a[..].debug_abs_all_epsilon(&d, &0.2), None);
+        assert_eq!(a[..].debug_rel_epsilon(&d, &[0.1, 0.5]), None);
+        assert_eq!(a[..].debug_rel_all_epsilon(&d, &0.5), None);
+        assert_eq!(a[..].debug_ulps_epsilon(&d, &[1, 2]), None);
+        assert_eq!(a[..].debug_ulps_all_epsilon(&d, &2), None);
 
         let e = [1.0; 3];
-        assert_eq!(a[..].debug_abs_all_epsilon(&e[..], &0.2), None);
-        assert_eq!(a[..].debug_rel_all_epsilon(&e[..], &0.5), None);
-        assert_eq!(a[..].debug_ulps_all_epsilon(&e[..], &2), None);
+        assert_eq!(a[..].debug_abs_epsilon(&e, &[0.1, 0.2]), None);
+        assert_eq!(a[..].debug_abs_all_epsilon(&e, &0.2), None);
+        assert_eq!(a[..].debug_rel_epsilon(&e, &[0.1, 0.5]), None);
+        assert_eq!(a[..].debug_rel_all_epsilon(&e, &0.5), None);
+        assert_eq!(a[..].debug_ulps_epsilon(&e, &[1, 2]), None);
+        assert_eq!(a[..].debug_ulps_all_epsilon(&e, &2), None);
     }
 }
 

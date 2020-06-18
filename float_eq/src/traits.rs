@@ -76,7 +76,7 @@ pub trait FloatUlps {
     /// A structurally identical type to `Self`, as [ULPs].
     ///
     /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
-    type Ulps;
+    type Ulps: ?Sized;
 }
 
 /// An alias to make it easier to access the [ULPs] representation of a type.
@@ -329,7 +329,9 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
     /// ```
     ///
     /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
-    fn ulps_diff(&self, other: &Rhs) -> Option<Ulps<Self::Output>>;
+    fn ulps_diff(&self, other: &Rhs) -> Option<Ulps<Self::Output>>
+    where
+        Ulps<Self::Output>: Sized;
 }
 
 /// Compare IEEE floating point values for equality using per-field thresholds.
@@ -506,7 +508,7 @@ assert!(a.ne_ulps(&c, &PointUlps { x: 1, y: 1 }));
 pub trait FloatEq<Rhs: ?Sized = Self> {
     /// Type of the maximum allowed difference between two values for them to be
     /// considered equal.
-    type Epsilon: FloatUlps;
+    type Epsilon: ?Sized + FloatUlps;
 
     /// Check whether `self` is equal to `other`, using an [absolute epsilon
     /// comparison].
@@ -775,7 +777,7 @@ assert!(a.ne_ulps_all(&c, &1));
 pub trait FloatEqAll<Rhs: ?Sized = Self> {
     /// Type of the maximum allowed difference between each of two values' fields
     /// for them to be considered equal.
-    type AllEpsilon: FloatUlps;
+    type AllEpsilon: ?Sized + FloatUlps;
 
     /// Check whether `self` is equal to `other`, using an [absolute epsilon
     /// comparison].
@@ -1101,7 +1103,9 @@ pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
         &self,
         other: &Rhs,
         max_diff: &Ulps<Self::Epsilon>,
-    ) -> Ulps<Self::DebugEpsilon>;
+    ) -> Ulps<Self::DebugEpsilon>
+    where
+        Ulps<Self::DebugEpsilon>: Sized;
 }
 
 /// Debug context for when an assert using [`FloatEqAll`](trait.FloatEqAll.html) fails.
@@ -1373,5 +1377,7 @@ pub trait FloatEqAllDebug<Rhs: ?Sized = Self>: FloatEqAll<Rhs> {
         &self,
         other: &Rhs,
         max_diff: &Ulps<Self::AllEpsilon>,
-    ) -> Ulps<Self::AllDebugEpsilon>;
+    ) -> Ulps<Self::AllDebugEpsilon>
+    where
+        Ulps<Self::AllDebugEpsilon>: Sized;
 }

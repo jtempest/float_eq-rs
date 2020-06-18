@@ -23,8 +23,11 @@ impl<T> ComplexUlps<T> {
     }
 }
 
-impl<T: FloatUlps> FloatUlps for Complex<T> {
-    type Ulps = ComplexUlps<T::Ulps>;
+impl<T: FloatUlps> FloatUlps for Complex<T>
+where
+    Ulps<T>: Sized,
+{
+    type Ulps = ComplexUlps<Ulps<T>>;
 }
 
 /// [`ComplexUlps<T>`] type matching [`Complex32`].
@@ -42,6 +45,8 @@ pub type ComplexUlps64 = Ulps<Complex<f64>>;
 impl<T> FloatDiff for Complex<T>
 where
     T: FloatDiff,
+    T::Output: Sized,
+    Ulps<T::Output>: Sized,
 {
     type Output = Complex<<T as FloatDiff>::Output>;
 
@@ -54,7 +59,10 @@ where
     }
 
     #[inline]
-    fn ulps_diff(&self, other: &Self) -> Option<Ulps<Self::Output>> {
+    fn ulps_diff(&self, other: &Self) -> Option<Ulps<Self::Output>>
+    where
+        Ulps<Self::Output>: Sized,
+    {
         Some(Ulps::<Self::Output> {
             re: self.re.ulps_diff(&other.re)?,
             im: self.im.ulps_diff(&other.im)?,
@@ -62,7 +70,11 @@ where
     }
 }
 
-impl<T: FloatEq> FloatEq for Complex<T> {
+impl<T: FloatEq> FloatEq for Complex<T>
+where
+    T::Epsilon: Sized,
+    Ulps<T::Epsilon>: Sized,
+{
     type Epsilon = Complex<T::Epsilon>;
 
     #[inline]
@@ -103,6 +115,10 @@ impl<T: FloatEqAll> FloatEqAll for Complex<T> {
 impl<T> FloatEqDebug for Complex<T>
 where
     T: FloatEqDebug,
+    T::Epsilon: Sized,
+    T::DebugEpsilon: Sized,
+    Ulps<T::Epsilon>: Sized,
+    Ulps<T::DebugEpsilon>: Sized,
 {
     type DebugEpsilon = Complex<T::DebugEpsilon>;
 
@@ -127,7 +143,10 @@ where
         &self,
         other: &Self,
         max_diff: &Ulps<Self::Epsilon>,
-    ) -> Ulps<Self::DebugEpsilon> {
+    ) -> Ulps<Self::DebugEpsilon>
+    where
+        Ulps<Self::DebugEpsilon>: Sized,
+    {
         Ulps::<Self::DebugEpsilon> {
             re: self.re.debug_ulps_epsilon(&other.re, &max_diff.re),
             im: self.im.debug_ulps_epsilon(&other.im, &max_diff.im),
@@ -138,6 +157,8 @@ where
 impl<T> FloatEqAllDebug for Complex<T>
 where
     T: FloatEqAllDebug,
+    T::AllDebugEpsilon: Sized,
+    Ulps<T::AllDebugEpsilon>: Sized,
 {
     type AllDebugEpsilon = Complex<T::AllDebugEpsilon>;
 
@@ -170,7 +191,10 @@ where
         &self,
         other: &Self,
         max_diff: &Ulps<Self::AllEpsilon>,
-    ) -> Ulps<Self::AllDebugEpsilon> {
+    ) -> Ulps<Self::AllDebugEpsilon>
+    where
+        Ulps<Self::AllDebugEpsilon>: Sized,
+    {
         Ulps::<Self::AllDebugEpsilon> {
             re: self.re.debug_ulps_all_epsilon(&other.re, max_diff),
             im: self.im.debug_ulps_all_epsilon(&other.im, max_diff),

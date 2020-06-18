@@ -6,13 +6,17 @@ use core::mem::MaybeUninit;
 // support if they need it?
 macro_rules! impl_float_eq_traits_for_array {
     ($n:literal) => {
-        impl<T: FloatUlps> FloatUlps for [T; $n] {
+        impl<T: FloatUlps> FloatUlps for [T; $n]
+        where
+            Ulps<T>: Sized,
+        {
             type Ulps = [Ulps<T>; $n];
         }
 
         impl<A, B> FloatDiff<[B; $n]> for [A; $n]
         where
             A: FloatDiff<B>,
+            Ulps<A::Output>: Sized,
         {
             type Output = [A::Output; $n];
 
@@ -38,6 +42,8 @@ macro_rules! impl_float_eq_traits_for_array {
         impl<A, B> FloatEq<[B; $n]> for [A; $n]
         where
             A: FloatEq<B>,
+            A::Epsilon: Sized,
+            Ulps<A::Epsilon>: Sized,
         {
             type Epsilon = [A::Epsilon; $n];
 
@@ -103,6 +109,10 @@ macro_rules! impl_float_eq_traits_for_array {
         impl<A, B> FloatEqDebug<[B; $n]> for [A; $n]
         where
             A: FloatEqDebug<B>,
+            A::Epsilon: Sized,
+            A::DebugEpsilon: Sized,
+            Ulps<A::Epsilon>: Sized,
+            Ulps<A::DebugEpsilon>: Sized,
         {
             type DebugEpsilon = [A::DebugEpsilon; $n];
 
@@ -150,6 +160,7 @@ macro_rules! impl_float_eq_traits_for_array {
         impl<A, B> FloatEqAllDebug<[B; $n]> for [A; $n]
         where
             A: FloatEqAllDebug<B>,
+            Ulps<A::AllDebugEpsilon>: Sized,
         {
             type AllDebugEpsilon = [A::AllDebugEpsilon; $n];
 

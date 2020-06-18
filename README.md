@@ -132,8 +132,8 @@ assert_float_eq!(a, b, abs <= (0.5, 4.0));
 
 There are also blanket trait impls for comparing mutable and immutable reference
 types, the contents of `Cell`, `RefCell`, `Rc`, `Arc` and `Box` instances, as
-well as for `Option`, `Vec`, `VecDeque`, `LinkedList`, `BTreeMap` and `HashMap`.
-The contents of slices may be compared using the `*_all` variants.
+well as for slices, `Option`, `Vec`, `VecDeque`, `LinkedList`, `BTreeMap` and
+`HashMap`.
 
 Types that also implement `FloatDiff` and `FloatEqDebug`/`FloatEqAllDebug` may
 be used in the assert forms.

@@ -793,6 +793,7 @@ impl FloatCmpOpEpsilon {
     ) -> Ulps<A::DebugEpsilon>
     where
         A: FloatEq<B> + FloatEqDebug<B>,
+        Ulps<A::DebugEpsilon>: Sized,
     {
         a.debug_ulps_epsilon(b, max_diff)
     }
@@ -805,6 +806,7 @@ impl FloatCmpOpEpsilon {
     ) -> Ulps<A::AllDebugEpsilon>
     where
         A: FloatEqAll<B> + FloatEqAllDebug<B>,
+        Ulps<A::AllDebugEpsilon>: Sized,
     {
         a.debug_ulps_all_epsilon(b, max_diff)
     }

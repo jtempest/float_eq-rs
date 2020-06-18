@@ -28,7 +28,7 @@ impl<T> MyComplex<T> {
 struct MyComplexUlps<T>
 where
     T: FloatUlps + PartialEq + fmt::Debug,
-    Ulps<T>: PartialEq + fmt::Debug,
+    Ulps<T>: PartialEq + fmt::Debug + Sized,
 {
     re: Ulps<T>,
     im: Ulps<T>,
@@ -37,7 +37,7 @@ where
 impl<T> MyComplexUlps<T>
 where
     T: FloatUlps + PartialEq + fmt::Debug,
-    Ulps<T>: PartialEq + fmt::Debug,
+    Ulps<T>: PartialEq + fmt::Debug + Sized,
 {
     fn new(re: Ulps<T>, im: Ulps<T>) -> Self {
         Self { re, im }
@@ -47,7 +47,7 @@ where
 impl<T> FloatUlps for MyComplex<T>
 where
     T: FloatUlps + PartialEq + fmt::Debug,
-    Ulps<T>: PartialEq + fmt::Debug,
+    Ulps<T>: PartialEq + fmt::Debug + Sized,
 {
     type Ulps = MyComplexUlps<T>;
 }
@@ -58,9 +58,9 @@ where
 impl<T> FloatDiff for MyComplex<T>
 where
     T: PartialEq + fmt::Debug + FloatUlps + FloatDiff,
-    T::Output: PartialEq + fmt::Debug,
+    T::Output: PartialEq + fmt::Debug + Sized,
     Ulps<T>: PartialEq + fmt::Debug,
-    Ulps<T::Output>: PartialEq + fmt::Debug,
+    Ulps<T::Output>: PartialEq + fmt::Debug + Sized,
 {
     type Output = MyComplex<T::Output>;
 
@@ -99,9 +99,9 @@ fn float_diff() {
 impl<T> FloatEq for MyComplex<T>
 where
     T: PartialEq + fmt::Debug + FloatUlps + FloatEq,
-    T::Epsilon: PartialEq + fmt::Debug,
+    T::Epsilon: PartialEq + fmt::Debug + Sized,
     Ulps<T>: PartialEq + fmt::Debug,
-    Ulps<T::Epsilon>: PartialEq + fmt::Debug,
+    Ulps<T::Epsilon>: PartialEq + fmt::Debug + Sized,
 {
     type Epsilon = MyComplex<T::Epsilon>;
 
@@ -218,11 +218,11 @@ fn float_eq_macro() {
 impl<T> FloatEqDebug for MyComplex<T>
 where
     T: PartialEq + fmt::Debug + FloatUlps + FloatEqDebug,
-    T::Epsilon: PartialEq + fmt::Debug,
-    T::DebugEpsilon: PartialEq + fmt::Debug,
+    T::Epsilon: PartialEq + fmt::Debug + Sized,
+    T::DebugEpsilon: PartialEq + fmt::Debug + Sized,
     Ulps<T>: PartialEq + fmt::Debug,
-    Ulps<T::Epsilon>: PartialEq + fmt::Debug,
-    Ulps<T::DebugEpsilon>: PartialEq + fmt::Debug,
+    Ulps<T::Epsilon>: PartialEq + fmt::Debug + Sized,
+    Ulps<T::DebugEpsilon>: PartialEq + fmt::Debug + Sized,
 {
     type DebugEpsilon = MyComplex<T::DebugEpsilon>;
 
@@ -278,10 +278,10 @@ impl<T> FloatEqAllDebug for MyComplex<T>
 where
     T: PartialEq + fmt::Debug + FloatUlps + FloatEqAllDebug,
     T::AllEpsilon: PartialEq + fmt::Debug,
-    T::AllDebugEpsilon: PartialEq + fmt::Debug,
+    T::AllDebugEpsilon: PartialEq + fmt::Debug + Sized,
     Ulps<T>: PartialEq + fmt::Debug,
     Ulps<T::AllEpsilon>: PartialEq + fmt::Debug,
-    Ulps<T::AllDebugEpsilon>: PartialEq + fmt::Debug,
+    Ulps<T::AllDebugEpsilon>: PartialEq + fmt::Debug + Sized,
 {
     type AllDebugEpsilon = MyComplex<T::AllDebugEpsilon>;
 

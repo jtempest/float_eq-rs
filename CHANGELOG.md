@@ -14,9 +14,8 @@ Bumped up the version number since this release includes breaking API changes.
   type to its ULPs representation. The prefered way to express this is now to
   implement `FloatUlps for T` and then use `Ulps<T>` for the ULPs type. The
   other traits have been reworked to reflect this.
-- Blanket trait impls for Option, Vec, VecDeque, LinkedList, BTreeMap and
-  HashMap.
-- Blanket trait impls for `*_all` checks only on slices.
+- Blanket trait impls for comparing slices, Option, Vec, VecDeque, LinkedList,
+  BTreeMap and HashMap.
 
 ### Changed
 - Blanket array impls now allow for comparison of arrays of different types.

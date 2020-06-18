@@ -62,11 +62,20 @@ macro_rules! tuple_impls {
         }
     )+) => {
         $(
-            impl<$($T:FloatUlps),+> FloatUlps for ($($T,)+) where last_type!($($T,)+): ?Sized {
+            impl<$($T:FloatUlps),+> FloatUlps for ($($T,)+)
+            where
+                last_type!($($T,)+): ?Sized,
+                $(Ulps<$T>: Sized,)+
+            {
                 type Ulps = ($(Ulps<$T>,)+);
             }
 
-            impl<$($T:FloatDiff),+> FloatDiff for ($($T,)+) where last_type!($($T,)+): ?Sized {
+            impl<$($T:FloatDiff),+> FloatDiff for ($($T,)+)
+            where
+                last_type!($($T,)+): ?Sized,
+                $($T::Output: Sized,)+
+                $(Ulps<$T::Output>: Sized,)+
+            {
                 type Output = ($($T::Output,)+);
 
                 #[inline]
@@ -75,12 +84,20 @@ macro_rules! tuple_impls {
                 }
 
                 #[inline]
-                fn ulps_diff(&self, other: &Self) -> Option<Ulps<Self::Output>> {
+                fn ulps_diff(&self, other: &Self) -> Option<Ulps<Self::Output>>
+                where
+                    Ulps<Self::Output>: Sized
+                {
                     Some(($(self.$idx.ulps_diff(&other.$idx)?,)+))
                 }
             }
 
-            impl<$($T:FloatEq),+> FloatEq for ($($T,)+) where last_type!($($T,)+): ?Sized {
+            impl<$($T:FloatEq),+> FloatEq for ($($T,)+)
+            where
+                last_type!($($T,)+): ?Sized,
+                $($T::Epsilon: Sized,)+
+                $(Ulps<$T::Epsilon>: Sized,)+
+            {
                 type Epsilon = ($($T::Epsilon,)+);
 
                 #[inline]
@@ -99,7 +116,14 @@ macro_rules! tuple_impls {
                 }
             }
 
-            impl<$($T:FloatEqDebug + fmt::Debug),+> FloatEqDebug for ($($T,)+) where last_type!($($T,)+): ?Sized {
+            impl<$($T:FloatEqDebug + fmt::Debug),+> FloatEqDebug for ($($T,)+)
+            where
+                last_type!($($T,)+): ?Sized,
+                $($T::Epsilon: Sized,)+
+                $($T::DebugEpsilon: Sized,)+
+                $(Ulps<$T::Epsilon>: Sized,)+
+                $(Ulps<$T::DebugEpsilon>: Sized,)+
+            {
                 type DebugEpsilon = ($($T::DebugEpsilon,)+);
 
                 #[inline]

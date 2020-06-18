@@ -19,7 +19,10 @@ macro_rules! impl_for_refs {
             }
 
             #[inline]
-            fn ulps_diff(&self, other: &&$($b)? B) -> Option<Ulps<Self::Output>> {
+            fn ulps_diff(&self, other: &&$($b)? B) -> Option<Ulps<Self::Output>>
+            where
+                Ulps<Self::Output>: Sized
+            {
                 FloatDiff::ulps_diff(*self, *other)
             }
         }
@@ -97,7 +100,10 @@ macro_rules! impl_for_refs {
                 &self,
                 other: &&$($b)? B,
                 max_diff: &Ulps<Self::Epsilon>,
-            ) -> Ulps<Self::DebugEpsilon> {
+            ) -> Ulps<Self::DebugEpsilon>
+            where
+                Ulps<Self::DebugEpsilon>: Sized
+            {
                 FloatEqDebug::debug_ulps_epsilon(*self, *other, max_diff)
             }
         }
@@ -131,7 +137,10 @@ macro_rules! impl_for_refs {
                 &self,
                 other: &&$($b)? B,
                 max_diff: &Ulps<Self::AllEpsilon>,
-            ) -> Ulps<Self::AllDebugEpsilon> {
+            ) -> Ulps<Self::AllDebugEpsilon>
+            where
+                Ulps<Self::AllDebugEpsilon>: Sized
+            {
                 FloatEqAllDebug::debug_ulps_all_epsilon(*self, *other, max_diff)
             }
         }
@@ -149,11 +158,17 @@ impl_for_refs!(&mut, &mut);
 // Note: The Option impls are over `impl<T>` and not `impl<A, B>` since that breaks
 // type inference and makes it harder to use `None`.
 //------------------------------------------------------------------------------
-impl<T: FloatUlps> FloatUlps for Option<T> {
+impl<T: FloatUlps> FloatUlps for Option<T>
+where
+    Ulps<T>: Sized,
+{
     type Ulps = Option<Ulps<T>>;
 }
 
-impl<T: FloatDiff> FloatDiff for Option<T> {
+impl<T: FloatDiff> FloatDiff for Option<T>
+where
+    Ulps<T::Output>: Sized,
+{
     type Output = Option<T::Output>;
 
     #[inline]
@@ -167,7 +182,11 @@ impl<T: FloatDiff> FloatDiff for Option<T> {
     }
 }
 
-impl<T: FloatEq> FloatEq for Option<T> {
+impl<T: FloatEq> FloatEq for Option<T>
+where
+    T::Epsilon: Sized,
+    Ulps<T::Epsilon>: Sized,
+{
     type Epsilon = Option<T::Epsilon>;
 
     #[inline]
@@ -207,7 +226,11 @@ impl<T: FloatEq> FloatEq for Option<T> {
     }
 }
 
-impl<T: FloatEqAll> FloatEqAll<Option<T>> for Option<T> {
+impl<T: FloatEqAll> FloatEqAll<Option<T>> for Option<T>
+where
+    T::AllEpsilon: Sized,
+    Ulps<T::AllEpsilon>: Sized,
+{
     type AllEpsilon = Option<T::AllEpsilon>;
 
     #[inline]
@@ -247,7 +270,12 @@ impl<T: FloatEqAll> FloatEqAll<Option<T>> for Option<T> {
     }
 }
 
-impl<T: FloatEqDebug> FloatEqDebug for Option<T> {
+impl<T: FloatEqDebug> FloatEqDebug for Option<T>
+where
+    T::Epsilon: Sized,
+    Ulps<T::Epsilon>: Sized,
+    Ulps<T::DebugEpsilon>: Sized,
+{
     type DebugEpsilon = Option<T::DebugEpsilon>;
 
     #[inline]
@@ -282,7 +310,12 @@ impl<T: FloatEqDebug> FloatEqDebug for Option<T> {
     }
 }
 
-impl<T: FloatEqAllDebug> FloatEqAllDebug for Option<T> {
+impl<T: FloatEqAllDebug> FloatEqAllDebug for Option<T>
+where
+    T::AllEpsilon: Sized,
+    Ulps<T::AllEpsilon>: Sized,
+    Ulps<T::AllDebugEpsilon>: Sized,
+{
     type AllDebugEpsilon = Option<T::AllDebugEpsilon>;
 
     #[inline]
@@ -316,7 +349,10 @@ impl<T: FloatEqAllDebug> FloatEqAllDebug for Option<T> {
         &self,
         other: &Option<T>,
         max_diff: &Ulps<Self::AllEpsilon>,
-    ) -> Ulps<Self::AllDebugEpsilon> {
+    ) -> Ulps<Self::AllDebugEpsilon>
+    where
+        Ulps<Self::AllDebugEpsilon>: Sized,
+    {
         Some(FloatEqAllDebug::debug_ulps_all_epsilon(
             &self.as_ref()?,
             &other.as_ref()?,
@@ -341,7 +377,10 @@ where
     }
 
     #[inline]
-    fn ulps_diff(&self, other: &Cell<B>) -> Option<Ulps<Self::Output>> {
+    fn ulps_diff(&self, other: &Cell<B>) -> Option<Ulps<Self::Output>>
+    where
+        Ulps<Self::Output>: Sized,
+    {
         FloatDiff::ulps_diff(&self.get(), &other.get())
     }
 }
@@ -414,7 +453,10 @@ where
         &self,
         other: &Cell<B>,
         max_diff: &Ulps<Self::Epsilon>,
-    ) -> Ulps<Self::DebugEpsilon> {
+    ) -> Ulps<Self::DebugEpsilon>
+    where
+        Ulps<Self::DebugEpsilon>: Sized,
+    {
         FloatEqDebug::debug_ulps_epsilon(&self.get(), &other.get(), max_diff)
     }
 }
@@ -449,7 +491,10 @@ where
         &self,
         other: &Cell<B>,
         max_diff: &Ulps<Self::AllEpsilon>,
-    ) -> Ulps<Self::AllDebugEpsilon> {
+    ) -> Ulps<Self::AllDebugEpsilon>
+    where
+        Ulps<Self::AllDebugEpsilon>: Sized,
+    {
         FloatEqAllDebug::debug_ulps_all_epsilon(&self.get(), &other.get(), max_diff)
     }
 }
@@ -469,7 +514,10 @@ where
     }
 
     #[inline]
-    fn ulps_diff(&self, other: &RefCell<B>) -> Option<Ulps<Self::Output>> {
+    fn ulps_diff(&self, other: &RefCell<B>) -> Option<Ulps<Self::Output>>
+    where
+        Ulps<Self::Output>: Sized,
+    {
         FloatDiff::ulps_diff(&*self.borrow(), &*other.borrow())
     }
 }
@@ -548,7 +596,10 @@ where
         &self,
         other: &RefCell<B>,
         max_diff: &Ulps<Self::Epsilon>,
-    ) -> Ulps<Self::DebugEpsilon> {
+    ) -> Ulps<Self::DebugEpsilon>
+    where
+        Ulps<Self::DebugEpsilon>: Sized,
+    {
         FloatEqDebug::debug_ulps_epsilon(&*self.borrow(), &*other.borrow(), max_diff)
     }
 }
@@ -583,7 +634,10 @@ where
         &self,
         other: &RefCell<B>,
         max_diff: &Ulps<Self::AllEpsilon>,
-    ) -> Ulps<Self::AllDebugEpsilon> {
+    ) -> Ulps<Self::AllDebugEpsilon>
+    where
+        Ulps<Self::AllDebugEpsilon>: Sized,
+    {
         FloatEqAllDebug::debug_ulps_all_epsilon(&*self.borrow(), &*other.borrow(), max_diff)
     }
 }
@@ -591,6 +645,55 @@ where
 //------------------------------------------------------------------------------
 // Slices
 //------------------------------------------------------------------------------
+impl<T: FloatUlps> FloatUlps for [T]
+where
+    Ulps<T>: Sized,
+{
+    type Ulps = [Ulps<T>];
+}
+
+impl<A, B> FloatEq<[B]> for [A]
+where
+    A: FloatEq<B>,
+    A::Epsilon: Sized,
+    Ulps<A::Epsilon>: Sized,
+{
+    type Epsilon = [A::Epsilon];
+
+    #[inline]
+    fn eq_abs(&self, other: &[B], max_diff: &Self::Epsilon) -> bool {
+        self.len() == other.len()
+            && self.len() == max_diff.len()
+            && self
+                .iter()
+                .zip(other.iter())
+                .zip(max_diff.iter())
+                .all(|((a, b), eps)| a.eq_abs(b, eps))
+    }
+
+    #[inline]
+    fn eq_rel(&self, other: &[B], max_diff: &Self::Epsilon) -> bool {
+        self.len() == other.len()
+            && self.len() == max_diff.len()
+            && self
+                .iter()
+                .zip(other.iter())
+                .zip(max_diff.iter())
+                .all(|((a, b), eps)| a.eq_rel(b, eps))
+    }
+
+    #[inline]
+    fn eq_ulps(&self, other: &[B], max_diff: &Ulps<Self::Epsilon>) -> bool {
+        self.len() == other.len()
+            && self.len() == max_diff.len()
+            && self
+                .iter()
+                .zip(other.iter())
+                .zip(max_diff.iter())
+                .all(|((a, b), eps)| a.eq_ulps(b, eps))
+    }
+}
+
 impl<A, B> FloatEqAll<[B]> for [A]
 where
     A: FloatEqAll<B>,
