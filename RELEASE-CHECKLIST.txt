@@ -1,8 +1,14 @@
 - cargo hack test --feature-powerset
 - Make sure documentation is up to date
+  - `cargo doc` (derive help)
+  - `cargo doc --all-features`
 - Make sure CHANGELOG is up to date
 - Run generate-readme.bat
-- Update version numbers in float_eq/Cargo.toml and float_eq_derive/Cargo.toml
+- Update version numbers in:
+  - float_eq/Cargo.toml
+  - float_eq_derive/Cargo.toml
+  - float_eq/crates-io.md
+  - float_eq/traits.rs
 - git tag -s x.y.z -m "x.y.z release"
 - git push origin --tags
 - Check CI is building

@@ -125,8 +125,38 @@ let b = (1.5f32, -2.0f64);
 assert_float_eq!(a, b, abs <= (0.5, 4.0));
 ```
 
+There are also blanket trait impls for comparing mutable and immutable reference
+types, the contents of `Cell`, `RefCell`, `Rc`, `Arc` and `Box` instances, as
+well as for `Option`, `Vec`, `VecDeque`, `LinkedList`, `BTreeMap` and `HashMap`.
+The contents of slices may be compared using the `*_all` variants.
+
 Types that also implement `FloatDiff` and `FloatEqDebug`/`FloatEqAllDebug` may
 be used in the assert forms.
+
+## Derivable
+
+If the `"derive"` feature is enabled, all of the traits may be implemented using
+`#[derive]`:
+
+```rust
+#[derive(
+    Debug, PartialEq, FloatUlps, FloatDiff, FloatEq,
+    FloatEqDebug, FloatEqAll, FloatEqAllDebug,
+)]
+#[float_eq(ulps = "PointUlps", all_epsilon = "f64")]
+struct Point {
+    x: f64,
+    y: f64,
+}
+
+let a = Point { x: 1.0, y: -2.0 };
+let c = Point { 
+    x: 1.000_000_000_000_000_9, 
+    y: -2.000_000_000_000_001_3
+};
+assert_float_eq!(a, c, ulps <= PointUlps { x: 4, y: 3 });
+assert_float_eq!(a, c, ulps_all <= 4);
+```
 
 ## Error messages
 
@@ -140,10 +170,10 @@ assert_float_eq!(4.0f32, 4.000_008, rel <= 0.000_001);
 Panics with this error message:
 
 ```
-thread 'test' panicked at 'assertion failed: `float_eq!(left, right, rel <= ε)`
+thread 'check' panicked at 'assertion failed: `float_eq!(left, right, rel <= ε)`
         left: `4.0`,
        right: `4.000008`,
-    abs_diff: `Some(0.000008106232)`,
+    abs_diff: `0.000008106232`,
    ulps_diff: `Some(17)`,
      [rel] ε: `0.000004000008`', assert_failure.rs:15:5
 ```
@@ -166,6 +196,7 @@ default-features = false
 ```
 
 Other optional features:
+- **derive** — provides custom derive macros for all traits.
 - **num** — implements `FloatEq`, `FloatEqDebug` and `FloatDiff` for 
   `num::Complex` where it is instanced with a compatible type.
 
@@ -188,13 +219,10 @@ Release information is available in [CHANGELOG.md](CHANGELOG.md).
 
 ## Future plans
 
-- Further support for basic Rust container and wrapper types.
-
 - Checks that use a precision relative to the minimum of the two input values,
   or to the first or second operand.
 
-- `#[derive]` support for comparison of custom types that are composed of 
-  already comparable floating point values.
+- Investigate supporting `#[derive]` for enums and generic struct types.
 
 [API documentation]: https://docs.rs/float_eq
 [floating point comparison]: https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/

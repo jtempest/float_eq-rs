@@ -113,7 +113,7 @@ help: try adding `#[float_eq(ulps = "{}Ulps")]` to your type."#,
             let msg = format!(
                 r#"Missing Epsilon type name required to derive trait.
 
-help: try adding `#[float_eq(all_epsilon = "YourEpsilonType")]` to your type."#
+help: try adding `#[float_eq(all_epsilon = "T")]` to your type, where T is commonly `f32` or `f64`."#
             );
             syn::Error::new(Span::call_site(), msg)
         })

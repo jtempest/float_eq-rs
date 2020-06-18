@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Bumped up the version number since this release includes breaking API changes.
 
 ### Added
+- `#[derive]` support for all traits on tuple structs and structs with named
+  fields.
 - The `FloatUlps` trait, which is a way to syntactically tie a floating point
   type to its ULPs representation. The prefered way to express this is now to
   implement `FloatUlps for T` and then use `Ulps<T>` for the ULPs type. The

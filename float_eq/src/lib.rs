@@ -17,6 +17,7 @@
 //! - [Comparing composite types](#comparing-composite-types)
 //! - [Error messages](#error-messages)
 //! - [Comparing custom types](#comparing-custom-types)
+//!     - [Derivable](#derivable)
 //!
 //! # Background
 //!
@@ -436,25 +437,76 @@
 //! been scaled based on the size of the inputs (ε is the greek letter epsilon):
 //!
 //! ```text
-//! thread 'test' panicked at 'assertion failed: `float_eq!(left, right, rel <= ε)`
-//!        left: `4.0`,
-//!       right: `4.000008`,
-//!    abs_diff: `Some(0.000008106232)`,
-//!   ulps_diff: `Some(17)`,
-//!     [rel] ε: `0.000004000008`', assert_failure.rs:15:5
+//! thread 'check' panicked at 'assertion failed: `float_eq!(left, right, rel <= ε)`
+//!         left: `4.0`,
+//!        right: `4.000008`,
+//!     abs_diff: `0.000008106232`,
+//!    ulps_diff: `Some(17)`,
+//!      [rel] ε: `0.000004000008`', assert_failure.rs:15:5
 //! ```
 //!
 //! # Comparing custom types
 //!
-//! Comparison of new types is supported by implementing [`FloatEq`] and [`FloatEqAll`].
-//! If assert support is required, then [`FloatDiff`] and [`FloatEqDebug`]/[`FloatEqAllDebug`]
-//! should also be implemented, as they provide important context information on
-//! failure.
+//! Comparison of new types is supported by implementing [`FloatUlps`], [`FloatEq`]
+//! and [`FloatEqAll`]. If assert support is required, then [`FloatDiff`] and
+//! [`FloatEqDebug`]/[`FloatEqAllDebug`] should also be implemented, as they
+//! provide important context information on failure.
+//!
+//! ## Derivable
+#![cfg_attr(
+    not(feature = "derive"),
+    doc = r##"
+These traits are all derivable if the `"derive"` feature is enabled.
+
+For example, add this to your Cargo.toml:
+
+```text
+[dependencies.float_eq]
+version = "0.4"
+features = ["derive"]
+```
+"##
+)]
+#![cfg_attr(
+    feature = "derive",
+    doc = r##"
+These traits can be used with `#[derive]`:
+
+```
+# use float_eq::{
+#    assert_float_eq, FloatUlps, FloatDiff, FloatEq, FloatEqAll, FloatEqDebug,
+#    FloatEqAllDebug, Ulps,
+# };
+#[derive(
+    Debug, PartialEq, FloatUlps, FloatDiff, FloatEq, FloatEqDebug,
+    FloatEqAll, FloatEqAllDebug,
+)]
+#[float_eq(ulps = "PointUlps", all_epsilon = "f64")]
+struct Point {
+    x: f64,
+    y: f64,
+}
+
+let a = Point { x: 1.0, y: -2.0 };
+let b = Point { x: 1.1, y: -2.2 };
+assert_float_eq!(a, b, abs <= Point { x: 0.15, y: 0.25 });
+assert_float_eq!(a, b, abs_all <= 0.25);
+
+let c = Point { x: 1.000_000_000_000_000_9, y: -2.000_000_000_000_001_3 };
+let eps = f64::EPSILON;
+assert_float_eq!(a, c, rel <= Point { x: 4.0 * eps, y: 5.0 * eps });
+assert_float_eq!(a, c, rel_all <= 5.0 * eps);
+assert_float_eq!(a, c, ulps <= PointUlps { x: 4, y: 3 });
+assert_float_eq!(a, c, ulps_all <= 4);
+```
+"##
+)]
 //!
 //! [`assert_float_eq!`]: macro.assert_float_eq.html
 //! [`assert_float_ne!`]: macro.assert_float_ne.html
 //! [`float_eq!`]: macro.float_eq.html
 //! [`float_ne!`]: macro.float_ne.html
+//! [`FloatUlps`]: trait.FloatUlps.html
 //! [`FloatEq`]: trait.FloatEq.html
 //! [`FloatEqAll`]: trait.FloatEqAll.html
 //! [`FloatDiff`]: trait.FloatDiff.html

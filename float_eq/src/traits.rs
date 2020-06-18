@@ -1,8 +1,77 @@
 use core::fmt;
 
-/// Representation of an IEEE floating point value in [ULPs].
+/// Representation of an IEEE floating point value in [ULPs](index.html#units-in-the-last-place-ulps-comparison).
+///
+/// This trait exists to provide a one-to-one relation between a type expressed
+/// as IEEE floating point values and its [ULPs] representation. The [`Ulps`]
+/// type alias exists to simplify usage. For example, `Ulps<f32>` is `u32`.
+///
+/// ## Derivable
+#[cfg_attr(
+    not(feature = "derive"),
+    doc = r##"
+This trait is derivable if the `"derive"` feature is enabled.
+
+For example, add this to your Cargo.toml:
+
+```text
+[dependencies.float_eq]
+version = "0.4"
+features = ["derive"]
+```
+"##
+)]
+#[cfg_attr(
+    feature = "derive",
+    doc = r##"
+This trait can be used with `#[derive]`. The name of the new type is set by the
+`float_eq` attribute's `ulps` option and it shares the visibility of the type
+being derived from. The new type additionally derives `Debug` and `PartialEq`.
+When derived for structs, each field is copied with the same name and its
+`FieldType` is set to `Ulps<FieldType>`. This trait may not be derived for enums
+or generic structs at present.
+
+```
+# use float_eq::{FloatUlps, Ulps};
+#[derive(Debug, PartialEq, FloatUlps)]
+#[float_eq(ulps = "PointUlps")]
+struct Point {
+    x: f64,
+    y: f64,
+}
+
+assert_eq!(PointUlps { x: 1, y: 2 }, Ulps::<Point> { x: 1, y: 2 });
+```
+"##
+)]
+///
+/// ## How can I implement `FloatUlps`?
+///
+/// Types should provide an [ULPs] representation for each of their fields:
+///
+/// ```
+/// # use float_eq::{FloatUlps, Ulps};
+/// #[derive(Debug, PartialEq)]
+/// struct Point {
+///     x: f64,
+///     y: f64,
+/// }
+///
+/// #[derive(Debug, PartialEq)]
+/// struct PointUlps {
+///     x: Ulps<f64>,
+///     y: Ulps<f64>,
+/// }
+///
+/// impl FloatUlps for Point {
+///     type Ulps = PointUlps;
+/// }
+///
+/// assert_eq!(PointUlps { x: 1, y: 2 }, Ulps::<Point> { x: 1, y: 2 });
+/// ```
 ///
 /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
+/// [`Ulps`]: type.Ulps.html
 pub trait FloatUlps {
     /// A structurally identical type to `Self`, as [ULPs].
     ///
@@ -24,13 +93,55 @@ pub type Ulps<T> = <T as FloatUlps>::Ulps;
 /// *Note: the definition of this trait is very much tailored to `float_eq`'s
 /// debug context requirements, and may not be ideal for general use.*
 ///
+/// ## Derivable
+#[cfg_attr(
+    not(feature = "derive"),
+    doc = r##"
+This trait is derivable if the `"derive"` feature is enabled.
+
+For example, add this to your Cargo.toml:
+
+```text
+[dependencies.float_eq]
+version = "0.4"
+features = ["derive"]
+```
+"##
+)]
+#[cfg_attr(
+    feature = "derive",
+    doc = r##"
+This trait can be used with `#[derive]`, assuming that your type has a [`FloatUlps`]
+implementation, which may also be derived. The `float_eq` attribute's `ulps`
+option is required to be the name of the type's [`Ulps`] representation. Each
+field's diff is calculated via a recursive call to the algorithm being used.
+This trait may not be derived for enums or generic structs at present.
+
+```
+# use float_eq::{FloatDiff, FloatUlps, Ulps};
+#[derive(Debug, PartialEq, FloatUlps, FloatDiff)]
+#[float_eq(ulps = "PointUlps")]
+struct Point {
+    x: f32,
+    y: f32,
+}
+
+let a = Point { x: 1.0, y: -2.0 };
+let b = Point { x: 1.5, y: -3.0 };
+assert_eq!(a.abs_diff(&b), Point { x: 0.5, y: 1.0 });
+
+let c = Point { x: 1.000_000_1, y: -2.000_000_5 };
+assert_eq!(a.ulps_diff(&c), Some(PointUlps { x: 1, y: 2 }));
+```
+"##
+)]
+///
 /// ## How can I implement `FloatDiff`?
 ///
-/// You will need some way to represent difference in [ULPs] for your type, following
-/// the same structure as the type itself. Implementation is then usually a matter
-/// of calling through to an underlying `FloatDiff` method for each field in turn.
-/// If not, you will need to take a close look at the descriptions of the algorithms
-/// on a method by method basis:
+/// You will need to implement [`FloatUlps`] for your type. Implementation is then
+/// usually a matter of calling through to an underlying `FloatDiff` method for
+/// each field in turn. If not, you will need to take a close look at the descriptions
+/// of the algorithms on a method by method basis:
 ///
 /// ```rust
 /// # use float_eq::{FloatDiff, FloatUlps, Ulps};
@@ -163,6 +274,8 @@ pub type Ulps<T> = <T as FloatUlps>::Ulps;
 /// ```
 ///
 /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
+/// [`FloatUlps`]: trait.FloatUlps.html
+/// [`Ulps`]: type.Ulps.html
 /// [`assert_float_eq!`]: macro.assert_float_eq.html
 /// [`fmt::Debug`]: https://doc.rust-lang.org/std/fmt/trait.Debug.html
 pub trait FloatDiff<Rhs: ?Sized = Self> {
@@ -225,13 +338,59 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
 /// families of macros to provide `abs`, `rel` and `ulps` checks. It may be called
 /// directly, but the macros usually provide a friendlier interface.
 ///
+/// ## Derivable
+#[cfg_attr(
+    not(feature = "derive"),
+    doc = r##"
+This trait is derivable if the `"derive"` feature is enabled.
+
+For example, add this to your Cargo.toml:
+
+```text
+[dependencies.float_eq]
+version = "0.4"
+features = ["derive"]
+```
+"##
+)]
+#[cfg_attr(
+    feature = "derive",
+    doc = r##"
+This trait can be used with `#[derive]`, assuming that your type has a [`FloatUlps`]
+implementation, which may also be derived. The `float_eq` attribute's `ulps`
+option is required to be the name of the type's [`Ulps`] representation. Two
+instances are equal if all fields are equal, and not equal if any are not. This
+trait may not be derived for enums or generic structs at present.
+
+```
+# use float_eq::{FloatEq, FloatUlps, Ulps};
+#[derive(Debug, PartialEq, FloatUlps, FloatEq)]
+#[float_eq(ulps = "PointUlps")]
+struct Point {
+    x: f32,
+    y: f32,
+}
+
+let a = Point { x: 1.0, y: -2.0 };
+let b = Point { x: 1.5, y: -3.0 };
+assert!(a.eq_abs(&b, &Point { x: 0.5, y: 1.0 }));
+assert!(a.ne_abs(&b, &Point { x: 0.4, y: 1.0 }));
+assert!(a.ne_abs(&b, &Point { x: 0.5, y: 0.9 }));
+
+let c = Point { x: 1.000_000_1, y: -2.000_000_5 };
+assert!(a.eq_ulps(&c, &PointUlps { x: 1, y: 2 }));
+assert!(a.ne_ulps(&c, &PointUlps { x: 0, y: 2 }));
+assert!(a.ne_ulps(&c, &PointUlps { x: 1, y: 1 }));
+```
+"##
+)]
+///
 /// ## How can I implement `FloatEq`?
 ///
-/// You will need some way to represent difference in [ULPs] for your type, following
-/// the same structure as the type itself. Implementation is then usually a matter
-/// of calling through to an underlying `FloatEq` method for each field in turn.
-/// If not, you will need to take a close look at the descriptions of the algorithms
-/// on a method by method basis:
+/// You will need to implement [`FloatUlps`] for your type. Implementation is then
+/// usually a matter of calling through to an underlying `FloatEq` method for each
+/// field in turn. If not, you will need to take a close look at the descriptions
+/// of the algorithms on a method by method basis:
 ///
 /// ```
 /// # use float_eq::{FloatEq, FloatDiff, FloatUlps, Ulps};
@@ -340,6 +499,8 @@ pub trait FloatDiff<Rhs: ?Sized = Self> {
 /// ```
 ///
 /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
+/// [`FloatUlps`]: trait.FloatUlps.html
+/// [`Ulps`]: type.Ulps.html
 /// [`assert_float_eq!`]: macro.assert_float_eq.html
 /// [`float_eq!`]: macro.float_eq.html
 pub trait FloatEq<Rhs: ?Sized = Self> {
@@ -456,6 +617,52 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
 /// likely ought not to be implemented for `(f32, f64)`, which has a big difference
 /// in precision between its fields.
 ///
+/// ## Derivable
+#[cfg_attr(
+    not(feature = "derive"),
+    doc = r##"
+This trait is derivable if the `"derive"` feature is enabled.
+
+For example, add this to your Cargo.toml:
+
+```text
+[dependencies.float_eq]
+version = "0.4"
+features = ["derive"]
+```
+"##
+)]
+#[cfg_attr(
+    feature = "derive",
+    doc = r##"
+This trait can be used with `#[derive]`, assuming that your type has a [`FloatUlps`]
+implementation, which may also be derived. The `float_eq` attribute option
+`all_epsilon` is required and used for [`FloatEq::Epsilon`]. It is usually `f32`
+or `f64`. Two instances are equal if all fields are equal, and not equal if any
+are not. This trait may not be derived for enums or generic structs
+at present.
+
+```
+# use float_eq::{FloatEqAll, FloatUlps, Ulps};
+#[derive(Debug, PartialEq, FloatUlps, FloatEqAll)]
+#[float_eq(ulps = "PointUlps", all_epsilon = "f32")]
+struct Point {
+    x: f32,
+    y: f32,
+}
+
+let a = Point { x: 1.0, y: -2.0 };
+let b = Point { x: 1.5, y: -3.0 };
+assert!(a.eq_abs_all(&b, &1.0));
+assert!(a.ne_abs_all(&b, &0.9));
+
+let c = Point { x: 1.000_000_1, y: -2.000_000_5 };
+assert!(a.eq_ulps_all(&c, &2));
+assert!(a.ne_ulps_all(&c, &1));
+```
+"##
+)]
+///
 /// ## How can I implement `FloatEqAll`?
 ///
 /// You will need some way to represent difference in [ULPs] for your type, which
@@ -561,6 +768,8 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
 /// ```
 ///
 /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
+/// [`FloatUlps`]: trait.FloatUlps.html
+/// [`FloatEq::Epsilon`]: trait.FloatEq.html#associatedtype.Epsilon
 /// [`assert_float_eq!`]: macro.assert_float_eq.html
 /// [`float_eq!`]: macro.float_eq.html
 pub trait FloatEqAll<Rhs: ?Sized = Self> {
@@ -630,19 +839,59 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     }
 }
 
-/// Debug context for when an assert using [`FloatEq`] fails.
+/// Debug context for when an assert using [`FloatEq`](trait.FloatEq.html) fails.
 ///
 /// This is used internally by the [`assert_float_eq!`] family of macros to provide
 /// debug context information to the user when `abs`, `rel` or `ulps` checks fail.
 ///
+/// ## Derivable
+#[cfg_attr(
+    not(feature = "derive"),
+    doc = r##"
+This trait is derivable if the `"derive"` feature is enabled.
+
+For example, add this to your Cargo.toml:
+
+```text
+[dependencies.float_eq]
+version = "0.4"
+features = ["derive"]
+```
+"##
+)]
+#[cfg_attr(
+    feature = "derive",
+    doc = r##"
+This trait can be used with `#[derive]`, assuming that your type has both a
+[`FloatUlps`] and a [`FloatEq`] implementation, which may also be derived. The
+`float_eq` attribute's `ulps` option is required to be the name of the type's
+[`Ulps`] representation. Each field's epsilon is calculated via a recursive
+call to the algorithm being used. This trait may not be derived for enums or
+generic structs at present.
+
+```
+# use float_eq::{FloatEq, FloatUlps, Ulps, FloatEqDebug};
+#[derive(Debug, PartialEq, FloatUlps, FloatEq, FloatEqDebug)]
+#[float_eq(ulps = "PointUlps")]
+struct Point {
+    x: f32,
+    y: f32,
+}
+
+let a = Point { x: 1.0, y: 200.0 };
+let b = Point { x: 50.0, y: 1.0 };
+let eps = Point { x: 0.1, y: 0.2 };
+assert_eq!(a.debug_rel_epsilon(&b, &eps), Point { x: 5.0, y: 40.0 });
+```
+"##
+)]
+///
 /// ## How can I implement `FloatEqDebug`?
 ///
-/// You should first implement [`FloatEq`] and [`FloatDiff`]. Most types will have
-/// implemented a custom [ULPs] type that mirrors their field structure, which can
-/// then be used for `FloatEqDebug`. Implementation is then usually a matter of
-/// simply calling through to an underlying `FloatEqDebug`method for each field
-/// in turn. If not, you will need to take a close look at the descriptions of the
-/// algorithms on a method by method basis:
+/// You should first implement [`FloatUlps`], [`FloatEq`] and [`FloatDiff`].
+/// Implementation is then usually a matter of simply calling through to an underlying
+/// `FloatEqDebug`method for each field in turn. If not, you will need to take a
+/// close look at the descriptions of the algorithms on a method by method basis:
 ///
 /// ```
 /// # use float_eq::{FloatDiff, FloatEq, FloatEqDebug, FloatUlps, Ulps};
@@ -817,8 +1066,10 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
 ///
 /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
 /// [`assert_float_eq!`]: macro.assert_float_eq.html
+/// [`FloatUlps`]: trait.FloatUlps.html
 /// [`FloatDiff`]: trait.FloatDiff.html
 /// [`FloatEq`]: trait.FloatEq.html
+/// [`Ulps`]: type.Ulps.html
 pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
     /// Displayed to the user when an assert fails, using `fmt::Debug`.
     ///
@@ -853,21 +1104,61 @@ pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
     ) -> Ulps<Self::DebugEpsilon>;
 }
 
-/// Debug context for when an assert using [`FloatEqAll`] fails.
+/// Debug context for when an assert using [`FloatEqAll`](trait.FloatEqAll.html) fails.
 ///
 /// This is used internally by the [`assert_float_eq!`] family of macros to provide
 /// debug context information to the user when `abs_all`, `rel_all` or `ulps_all`
 /// checks fail.
 ///
+/// ## Derivable
+#[cfg_attr(
+    not(feature = "derive"),
+    doc = r##"
+This trait is derivable if the `"derive"` feature is enabled.
+
+For example, add this to your Cargo.toml:
+
+```text
+[dependencies.float_eq]
+version = "0.4"
+features = ["derive"]
+```
+"##
+)]
+#[cfg_attr(
+    feature = "derive",
+    doc = r##"
+This trait can be used with `#[derive]`, assuming that your type has both a
+[`FloatUlps`] and a [`FloatEqAll`] implementation, which may also be derived.
+Each field's epsilon is calculated via a recursive call to the algorithm being
+used. This trait may not be derived for enums or generic structs at present.
+
+```
+# use float_eq::{FloatEqAll, FloatUlps, Ulps, FloatEqAllDebug};
+#[derive(Debug, PartialEq, FloatUlps, FloatEqAll, FloatEqAllDebug)]
+#[float_eq(ulps = "PointUlps", all_epsilon = "f32")]
+struct Point {
+    x: f32,
+    y: f32,
+}
+
+let a = Point { x: 1.0, y: 200.0 };
+let b = Point { x: 50.0, y: 1.0 };
+assert_eq!(
+    a.debug_rel_all_epsilon(&b, &0.2),
+    Point { x: 10.0, y: 40.0 }
+);
+```
+"##
+)]
+///
 /// ## How can I implement `FloatEqAllDebug`?
 ///
-/// You should first implement [`FloatEqAll`] and [`FloatDiff`]. The outputs from
-/// `FloatEqAllDebug` will be the epsilon values used by the comparison widened to
-/// the structural shape of the most complex type. Most types will have implemented
-/// a custom [ULPs] type that mirrors their field structure. Implementation is then
-/// usually a matter of simply calling through to an underlying `FloatEqDebug`method
-/// for each field in turn. If not, you will need to take a close look at the
-/// descriptions of the algorithms on a method by method basis:
+/// You should first implement [`FloatUlps`], [`FloatEqAll`] and [`FloatDiff`].
+/// Implementation is then usually a matter of simply calling through to an
+/// underlying `FloatEqAllDebug`method for each field in turn. If not, you will
+/// need to take a close look at the descriptions of the algorithms on a method
+/// by method basis:
 ///
 /// ```
 /// # use float_eq::{FloatDiff, FloatEqAll, FloatEqAllDebug, FloatUlps, Ulps};
@@ -959,7 +1250,7 @@ pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
 ///
 /// ## How can I compare two different types?
 ///
-/// The type to be compared with is controlled by `FloatEqDebug`'s parameter.
+/// The type to be compared with is controlled by `FloatEqAllDebug`'s parameter.
 /// Following on from our previous example, if we wanted to treat `f32` as a
 /// complex number with an imaginary component of `0.0`:
 ///
@@ -1042,6 +1333,7 @@ pub trait FloatEqDebug<Rhs: ?Sized = Self>: FloatEq<Rhs> {
 ///
 /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
 /// [`assert_float_eq!`]: macro.assert_float_eq.html
+/// [`FloatUlps`]: trait.FloatUlps.html
 /// [`FloatDiff`]: trait.FloatDiff.html
 /// [`FloatEqAll`]: trait.FloatEqAll.html
 pub trait FloatEqAllDebug<Rhs: ?Sized = Self>: FloatEqAll<Rhs> {

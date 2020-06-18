@@ -7,7 +7,7 @@ use num_complex::Complex;
 /// The `T` in [`Complex<T>`] is constrained by `Clone` and `PartialEq`, so this
 /// implements those too.
 ///
-/// [`Complex<T>`]: https://rust-num.github.io/num/num/struct.Complex.html
+/// [`Complex<T>`]: https://docs.rs/num/0.3.0/num/struct.Complex.html
 #[derive(Clone, Debug, PartialEq)]
 pub struct ComplexUlps<T> {
     /// Real portion of the complex number in ULPs.
