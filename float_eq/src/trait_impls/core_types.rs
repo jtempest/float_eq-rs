@@ -50,20 +50,20 @@ macro_rules! impl_for_refs {
         where
             A: FloatEqAll<B>,
         {
-            type Epsilon = A::Epsilon;
+            type AllEpsilon = A::AllEpsilon;
 
             #[inline]
-            fn eq_abs_all(&self, other: &&$($b)? B, max_diff: &Self::Epsilon) -> bool {
+            fn eq_abs_all(&self, other: &&$($b)? B, max_diff: &Self::AllEpsilon) -> bool {
                 FloatEqAll::eq_abs_all(*self, *other, max_diff)
             }
 
             #[inline]
-            fn eq_rel_all(&self, other: &&$($b)? B, max_diff: &Self::Epsilon) -> bool {
+            fn eq_rel_all(&self, other: &&$($b)? B, max_diff: &Self::AllEpsilon) -> bool {
                 FloatEqAll::eq_rel_all(*self, *other, max_diff)
             }
 
             #[inline]
-            fn eq_ulps_all(&self, other: &&$($b)? B, max_diff: &Ulps<Self::Epsilon>) -> bool {
+            fn eq_ulps_all(&self, other: &&$($b)? B, max_diff: &Ulps<Self::AllEpsilon>) -> bool {
                 FloatEqAll::eq_ulps_all(*self, *other, max_diff)
             }
         }
@@ -75,12 +75,20 @@ macro_rules! impl_for_refs {
             type DebugEpsilon = A::DebugEpsilon;
 
             #[inline]
-            fn debug_abs_epsilon(&self, other: &&$($b)? B, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+            fn debug_abs_epsilon(
+                &self,
+                other: &&$($b)? B,
+                max_diff: &Self::Epsilon
+            ) -> Self::DebugEpsilon {
                 FloatEqDebug::debug_abs_epsilon(*self, *other, max_diff)
             }
 
             #[inline]
-            fn debug_rel_epsilon(&self, other: &&$($b)? B, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+            fn debug_rel_epsilon(
+                &self,
+                other: &&$($b)? B,
+                max_diff: &Self::Epsilon
+            ) -> Self::DebugEpsilon {
                 FloatEqDebug::debug_rel_epsilon(*self, *other, max_diff)
             }
 
@@ -98,15 +106,23 @@ macro_rules! impl_for_refs {
         where
             A: FloatEqAllDebug<B>,
         {
-            type DebugEpsilon = A::DebugEpsilon;
+            type AllDebugEpsilon = A::AllDebugEpsilon;
 
             #[inline]
-            fn debug_abs_all_epsilon(&self, other: &&$($b)? B, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+            fn debug_abs_all_epsilon(
+                &self,
+                other: &&$($b)? B,
+                max_diff: &Self::AllEpsilon
+            ) -> Self::AllDebugEpsilon {
                 FloatEqAllDebug::debug_abs_all_epsilon(*self, *other, max_diff)
             }
 
             #[inline]
-            fn debug_rel_all_epsilon(&self, other: &&$($b)? B, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+            fn debug_rel_all_epsilon(
+                &self,
+                other: &&$($b)? B,
+                max_diff: &Self::AllEpsilon
+            ) -> Self::AllDebugEpsilon {
                 FloatEqAllDebug::debug_rel_all_epsilon(*self, *other, max_diff)
             }
 
@@ -114,8 +130,8 @@ macro_rules! impl_for_refs {
             fn debug_ulps_all_epsilon(
                 &self,
                 other: &&$($b)? B,
-                max_diff: &Ulps<Self::Epsilon>,
-            ) -> Ulps<Self::DebugEpsilon> {
+                max_diff: &Ulps<Self::AllEpsilon>,
+            ) -> Ulps<Self::AllDebugEpsilon> {
                 FloatEqAllDebug::debug_ulps_all_epsilon(*self, *other, max_diff)
             }
         }
@@ -192,10 +208,10 @@ impl<T: FloatEq> FloatEq for Option<T> {
 }
 
 impl<T: FloatEqAll> FloatEqAll<Option<T>> for Option<T> {
-    type Epsilon = Option<T::Epsilon>;
+    type AllEpsilon = Option<T::AllEpsilon>;
 
     #[inline]
-    fn eq_abs_all(&self, other: &Option<T>, max_diff: &Self::Epsilon) -> bool {
+    fn eq_abs_all(&self, other: &Option<T>, max_diff: &Self::AllEpsilon) -> bool {
         self.is_some()
             && other.is_some()
             && max_diff.is_some()
@@ -207,7 +223,7 @@ impl<T: FloatEqAll> FloatEqAll<Option<T>> for Option<T> {
     }
 
     #[inline]
-    fn eq_rel_all(&self, other: &Option<T>, max_diff: &Self::Epsilon) -> bool {
+    fn eq_rel_all(&self, other: &Option<T>, max_diff: &Self::AllEpsilon) -> bool {
         self.is_some()
             && other.is_some()
             && max_diff.is_some()
@@ -219,7 +235,7 @@ impl<T: FloatEqAll> FloatEqAll<Option<T>> for Option<T> {
     }
 
     #[inline]
-    fn eq_ulps_all(&self, other: &Option<T>, max_diff: &Ulps<Self::Epsilon>) -> bool {
+    fn eq_ulps_all(&self, other: &Option<T>, max_diff: &Ulps<Self::AllEpsilon>) -> bool {
         self.is_some()
             && other.is_some()
             && max_diff.is_some()
@@ -267,14 +283,14 @@ impl<T: FloatEqDebug> FloatEqDebug for Option<T> {
 }
 
 impl<T: FloatEqAllDebug> FloatEqAllDebug for Option<T> {
-    type DebugEpsilon = Option<T::DebugEpsilon>;
+    type AllDebugEpsilon = Option<T::AllDebugEpsilon>;
 
     #[inline]
     fn debug_abs_all_epsilon(
         &self,
         other: &Option<T>,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
         Some(FloatEqAllDebug::debug_abs_all_epsilon(
             &self.as_ref()?,
             &other.as_ref()?,
@@ -286,8 +302,8 @@ impl<T: FloatEqAllDebug> FloatEqAllDebug for Option<T> {
     fn debug_rel_all_epsilon(
         &self,
         other: &Option<T>,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
         Some(FloatEqAllDebug::debug_rel_all_epsilon(
             &self.as_ref()?,
             &other.as_ref()?,
@@ -299,8 +315,8 @@ impl<T: FloatEqAllDebug> FloatEqAllDebug for Option<T> {
     fn debug_ulps_all_epsilon(
         &self,
         other: &Option<T>,
-        max_diff: &Ulps<Self::Epsilon>,
-    ) -> Ulps<Self::DebugEpsilon> {
+        max_diff: &Ulps<Self::AllEpsilon>,
+    ) -> Ulps<Self::AllDebugEpsilon> {
         Some(FloatEqAllDebug::debug_ulps_all_epsilon(
             &self.as_ref()?,
             &other.as_ref()?,
@@ -358,20 +374,20 @@ where
     A: FloatEqAll<B> + Copy,
     B: Copy,
 {
-    type Epsilon = A::Epsilon;
+    type AllEpsilon = A::AllEpsilon;
 
     #[inline]
-    fn eq_abs_all(&self, other: &Cell<B>, max_diff: &Self::Epsilon) -> bool {
+    fn eq_abs_all(&self, other: &Cell<B>, max_diff: &Self::AllEpsilon) -> bool {
         FloatEqAll::eq_abs_all(&self.get(), &other.get(), max_diff)
     }
 
     #[inline]
-    fn eq_rel_all(&self, other: &Cell<B>, max_diff: &Self::Epsilon) -> bool {
+    fn eq_rel_all(&self, other: &Cell<B>, max_diff: &Self::AllEpsilon) -> bool {
         FloatEqAll::eq_rel_all(&self.get(), &other.get(), max_diff)
     }
 
     #[inline]
-    fn eq_ulps_all(&self, other: &Cell<B>, max_diff: &Ulps<Self::Epsilon>) -> bool {
+    fn eq_ulps_all(&self, other: &Cell<B>, max_diff: &Ulps<Self::AllEpsilon>) -> bool {
         FloatEqAll::eq_ulps_all(&self.get(), &other.get(), max_diff)
     }
 }
@@ -408,14 +424,14 @@ where
     A: FloatEqAllDebug<B> + Copy,
     B: Copy,
 {
-    type DebugEpsilon = A::DebugEpsilon;
+    type AllDebugEpsilon = A::AllDebugEpsilon;
 
     #[inline]
     fn debug_abs_all_epsilon(
         &self,
         other: &Cell<B>,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
         FloatEqAllDebug::debug_abs_all_epsilon(&self.get(), &other.get(), max_diff)
     }
 
@@ -423,8 +439,8 @@ where
     fn debug_rel_all_epsilon(
         &self,
         other: &Cell<B>,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
         FloatEqAllDebug::debug_rel_all_epsilon(&self.get(), &other.get(), max_diff)
     }
 
@@ -432,8 +448,8 @@ where
     fn debug_ulps_all_epsilon(
         &self,
         other: &Cell<B>,
-        max_diff: &Ulps<Self::Epsilon>,
-    ) -> Ulps<Self::DebugEpsilon> {
+        max_diff: &Ulps<Self::AllEpsilon>,
+    ) -> Ulps<Self::AllDebugEpsilon> {
         FloatEqAllDebug::debug_ulps_all_epsilon(&self.get(), &other.get(), max_diff)
     }
 }
@@ -484,20 +500,20 @@ impl<A: ?Sized, B: ?Sized> FloatEqAll<RefCell<B>> for RefCell<A>
 where
     A: FloatEqAll<B>,
 {
-    type Epsilon = A::Epsilon;
+    type AllEpsilon = A::AllEpsilon;
 
     #[inline]
-    fn eq_abs_all(&self, other: &RefCell<B>, max_diff: &Self::Epsilon) -> bool {
+    fn eq_abs_all(&self, other: &RefCell<B>, max_diff: &Self::AllEpsilon) -> bool {
         FloatEqAll::eq_abs_all(&*self.borrow(), &*other.borrow(), max_diff)
     }
 
     #[inline]
-    fn eq_rel_all(&self, other: &RefCell<B>, max_diff: &Self::Epsilon) -> bool {
+    fn eq_rel_all(&self, other: &RefCell<B>, max_diff: &Self::AllEpsilon) -> bool {
         FloatEqAll::eq_rel_all(&*self.borrow(), &*other.borrow(), max_diff)
     }
 
     #[inline]
-    fn eq_ulps_all(&self, other: &RefCell<B>, max_diff: &Ulps<Self::Epsilon>) -> bool {
+    fn eq_ulps_all(&self, other: &RefCell<B>, max_diff: &Ulps<Self::AllEpsilon>) -> bool {
         FloatEqAll::eq_ulps_all(&*self.borrow(), &*other.borrow(), max_diff)
     }
 }
@@ -542,14 +558,14 @@ where
     A: FloatEqAllDebug<B> + Copy,
     B: Copy,
 {
-    type DebugEpsilon = A::DebugEpsilon;
+    type AllDebugEpsilon = A::AllDebugEpsilon;
 
     #[inline]
     fn debug_abs_all_epsilon(
         &self,
         other: &RefCell<B>,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
         FloatEqAllDebug::debug_abs_all_epsilon(&*self.borrow(), &*other.borrow(), max_diff)
     }
 
@@ -557,8 +573,8 @@ where
     fn debug_rel_all_epsilon(
         &self,
         other: &RefCell<B>,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
         FloatEqAllDebug::debug_rel_all_epsilon(&*self.borrow(), &*other.borrow(), max_diff)
     }
 
@@ -566,8 +582,8 @@ where
     fn debug_ulps_all_epsilon(
         &self,
         other: &RefCell<B>,
-        max_diff: &Ulps<Self::Epsilon>,
-    ) -> Ulps<Self::DebugEpsilon> {
+        max_diff: &Ulps<Self::AllEpsilon>,
+    ) -> Ulps<Self::AllDebugEpsilon> {
         FloatEqAllDebug::debug_ulps_all_epsilon(&*self.borrow(), &*other.borrow(), max_diff)
     }
 }
@@ -579,10 +595,10 @@ impl<A, B> FloatEqAll<[B]> for [A]
 where
     A: FloatEqAll<B>,
 {
-    type Epsilon = A::Epsilon;
+    type AllEpsilon = A::AllEpsilon;
 
     #[inline]
-    fn eq_abs_all(&self, other: &[B], max_diff: &Self::Epsilon) -> bool {
+    fn eq_abs_all(&self, other: &[B], max_diff: &Self::AllEpsilon) -> bool {
         self.len() == other.len()
             && self
                 .iter()
@@ -591,7 +607,7 @@ where
     }
 
     #[inline]
-    fn eq_rel_all(&self, other: &[B], max_diff: &Self::Epsilon) -> bool {
+    fn eq_rel_all(&self, other: &[B], max_diff: &Self::AllEpsilon) -> bool {
         self.len() == other.len()
             && self
                 .iter()
@@ -600,7 +616,7 @@ where
     }
 
     #[inline]
-    fn eq_ulps_all(&self, other: &[B], max_diff: &Ulps<Self::Epsilon>) -> bool {
+    fn eq_ulps_all(&self, other: &[B], max_diff: &Ulps<Self::AllEpsilon>) -> bool {
         self.len() == other.len()
             && self
                 .iter()

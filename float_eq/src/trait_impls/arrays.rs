@@ -76,24 +76,24 @@ macro_rules! impl_float_eq_traits_for_array {
         where
             A: FloatEqAll<B>,
         {
-            type Epsilon = A::Epsilon;
+            type AllEpsilon = A::AllEpsilon;
 
             #[inline]
-            fn eq_abs_all(&self, other: &[B; $n], max_diff: &Self::Epsilon) -> bool {
+            fn eq_abs_all(&self, other: &[B; $n], max_diff: &Self::AllEpsilon) -> bool {
                 self.iter()
                     .zip(other.iter())
                     .all(|(a, b)| a.eq_abs_all(b, max_diff))
             }
 
             #[inline]
-            fn eq_rel_all(&self, other: &[B; $n], max_diff: &Self::Epsilon) -> bool {
+            fn eq_rel_all(&self, other: &[B; $n], max_diff: &Self::AllEpsilon) -> bool {
                 self.iter()
                     .zip(other.iter())
                     .all(|(a, b)| a.eq_rel_all(b, max_diff))
             }
 
             #[inline]
-            fn eq_ulps_all(&self, other: &[B; $n], max_diff: &Ulps<Self::Epsilon>) -> bool {
+            fn eq_ulps_all(&self, other: &[B; $n], max_diff: &Ulps<Self::AllEpsilon>) -> bool {
                 self.iter()
                     .zip(other.iter())
                     .all(|(a, b)| a.eq_ulps_all(b, max_diff))
@@ -151,15 +151,16 @@ macro_rules! impl_float_eq_traits_for_array {
         where
             A: FloatEqAllDebug<B>,
         {
-            type DebugEpsilon = [A::DebugEpsilon; $n];
+            type AllDebugEpsilon = [A::AllDebugEpsilon; $n];
 
             #[inline]
             fn debug_abs_all_epsilon(
                 &self,
                 other: &[B; $n],
-                max_diff: &Self::Epsilon,
-            ) -> Self::DebugEpsilon {
-                let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+                max_diff: &Self::AllEpsilon,
+            ) -> Self::AllDebugEpsilon {
+                let mut result: Self::AllDebugEpsilon =
+                    unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..$n {
                     result[i] = self[i].debug_abs_all_epsilon(&other[i], max_diff)
                 }
@@ -170,9 +171,10 @@ macro_rules! impl_float_eq_traits_for_array {
             fn debug_rel_all_epsilon(
                 &self,
                 other: &[B; $n],
-                max_diff: &Self::Epsilon,
-            ) -> Self::DebugEpsilon {
-                let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+                max_diff: &Self::AllEpsilon,
+            ) -> Self::AllDebugEpsilon {
+                let mut result: Self::AllDebugEpsilon =
+                    unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..$n {
                     result[i] = self[i].debug_rel_all_epsilon(&other[i], max_diff)
                 }
@@ -183,9 +185,9 @@ macro_rules! impl_float_eq_traits_for_array {
             fn debug_ulps_all_epsilon(
                 &self,
                 other: &[B; $n],
-                max_diff: &Ulps<Self::Epsilon>,
-            ) -> Ulps<Self::DebugEpsilon> {
-                let mut result: Ulps<Self::DebugEpsilon> =
+                max_diff: &Ulps<Self::AllEpsilon>,
+            ) -> Ulps<Self::AllDebugEpsilon> {
+                let mut result: Ulps<Self::AllDebugEpsilon> =
                     unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..$n {
                     result[i] = self[i].debug_ulps_all_epsilon(&other[i], max_diff)

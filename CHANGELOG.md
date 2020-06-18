@@ -20,6 +20,8 @@ Bumped up the version number since this release includes breaking API changes.
 
 ### Changed
 - Blanket array impls now allow for comparison of arrays of different types.
+- `FloatEqAll::Epsilon` is now `AllEpsilon` and `FloatEqAllDebug::DebugEpsilon`
+  is now `AllDebugEpsilon` to help avoid ambiguity.
 
 ## [0.3.1] 2020-06-03
 

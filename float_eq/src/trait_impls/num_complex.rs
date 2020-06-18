@@ -82,20 +82,20 @@ impl<T: FloatEq> FloatEq for Complex<T> {
 }
 
 impl<T: FloatEqAll> FloatEqAll for Complex<T> {
-    type Epsilon = T::Epsilon;
+    type AllEpsilon = T::AllEpsilon;
 
     #[inline]
-    fn eq_abs_all(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+    fn eq_abs_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
         self.re.eq_abs_all(&other.re, max_diff) && self.im.eq_abs_all(&other.im, max_diff)
     }
 
     #[inline]
-    fn eq_rel_all(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+    fn eq_rel_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
         self.re.eq_rel_all(&other.re, max_diff) && self.im.eq_rel_all(&other.im, max_diff)
     }
 
     #[inline]
-    fn eq_ulps_all(&self, other: &Self, max_diff: &Ulps<Self::Epsilon>) -> bool {
+    fn eq_ulps_all(&self, other: &Self, max_diff: &Ulps<Self::AllEpsilon>) -> bool {
         self.re.eq_ulps_all(&other.re, max_diff) && self.im.eq_ulps_all(&other.im, max_diff)
     }
 }
@@ -139,19 +139,27 @@ impl<T> FloatEqAllDebug for Complex<T>
 where
     T: FloatEqAllDebug,
 {
-    type DebugEpsilon = Complex<T::DebugEpsilon>;
+    type AllDebugEpsilon = Complex<T::AllDebugEpsilon>;
 
     #[inline]
-    fn debug_abs_all_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        Self::DebugEpsilon {
+    fn debug_abs_all_epsilon(
+        &self,
+        other: &Self,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
+        Self::AllDebugEpsilon {
             re: self.re.debug_abs_all_epsilon(&other.re, max_diff),
             im: self.im.debug_abs_all_epsilon(&other.im, max_diff),
         }
     }
 
     #[inline]
-    fn debug_rel_all_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        Self::DebugEpsilon {
+    fn debug_rel_all_epsilon(
+        &self,
+        other: &Self,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
+        Self::AllDebugEpsilon {
             re: self.re.debug_rel_all_epsilon(&other.re, max_diff),
             im: self.im.debug_rel_all_epsilon(&other.im, max_diff),
         }
@@ -161,9 +169,9 @@ where
     fn debug_ulps_all_epsilon(
         &self,
         other: &Self,
-        max_diff: &Ulps<Self::Epsilon>,
-    ) -> Ulps<Self::DebugEpsilon> {
-        Ulps::<Self::DebugEpsilon> {
+        max_diff: &Ulps<Self::AllEpsilon>,
+    ) -> Ulps<Self::AllDebugEpsilon> {
+        Ulps::<Self::AllDebugEpsilon> {
             re: self.re.debug_ulps_all_epsilon(&other.re, max_diff),
             im: self.im.debug_ulps_all_epsilon(&other.im, max_diff),
         }

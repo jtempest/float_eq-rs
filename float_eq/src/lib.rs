@@ -355,7 +355,7 @@
 //! # }
 //! #
 //! # impl FloatEqAll for Complex32 {
-//! #     type Epsilon = f32;
+//! #     type AllEpsilon = f32;
 //! #     fn eq_abs_all(&self, other: &Self, max_diff: &f32) -> bool {
 //! #         self.re.eq_abs_all(&other.re, &max_diff) && self.im.eq_abs_all(&other.im, &max_diff)
 //! #     }
@@ -390,7 +390,7 @@
 //! # }
 //! #
 //! # impl FloatEqAllDebug for Complex32 {
-//! #     type DebugEpsilon = Complex32;
+//! #     type AllDebugEpsilon = Complex32;
 //! #     fn debug_abs_all_epsilon(&self, other: &Self, max_diff: &f32) -> Complex32 {
 //! #         Complex32 {
 //! #             re: self.re.debug_abs_all_epsilon(&other.re, &max_diff),

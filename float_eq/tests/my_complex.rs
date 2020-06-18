@@ -115,17 +115,17 @@ fn float_eq() {
 // FloatEqAll
 //------------------------------------------------------------------------------
 impl FloatEqAll for MyComplex32 {
-    type Epsilon = f32;
+    type AllEpsilon = f32;
 
-    fn eq_abs_all(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+    fn eq_abs_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
         self.re.eq_abs_all(&other.re, &max_diff) && self.im.eq_abs_all(&other.im, &max_diff)
     }
 
-    fn eq_rel_all(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+    fn eq_rel_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
         self.re.eq_rel_all(&other.re, &max_diff) && self.im.eq_rel_all(&other.im, &max_diff)
     }
 
-    fn eq_ulps_all(&self, other: &Self, max_diff: &Ulps<Self::Epsilon>) -> bool {
+    fn eq_ulps_all(&self, other: &Self, max_diff: &Ulps<Self::AllEpsilon>) -> bool {
         self.re.eq_ulps_all(&other.re, &max_diff) && self.im.eq_ulps_all(&other.im, &max_diff)
     }
 }
@@ -239,16 +239,24 @@ fn float_eq_debug() {
 // FloatEqDebug
 //------------------------------------------------------------------------------
 impl FloatEqAllDebug for MyComplex32 {
-    type DebugEpsilon = MyComplex32;
+    type AllDebugEpsilon = MyComplex32;
 
-    fn debug_abs_all_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+    fn debug_abs_all_epsilon(
+        &self,
+        other: &Self,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
         MyComplex32 {
             re: self.re.debug_abs_all_epsilon(&other.re, max_diff),
             im: self.im.debug_abs_all_epsilon(&other.im, max_diff),
         }
     }
 
-    fn debug_rel_all_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+    fn debug_rel_all_epsilon(
+        &self,
+        other: &Self,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
         MyComplex32 {
             re: self.re.debug_rel_all_epsilon(&other.re, max_diff),
             im: self.im.debug_rel_all_epsilon(&other.im, max_diff),
@@ -258,8 +266,8 @@ impl FloatEqAllDebug for MyComplex32 {
     fn debug_ulps_all_epsilon(
         &self,
         other: &Self,
-        max_diff: &Ulps<Self::Epsilon>,
-    ) -> Ulps<Self::DebugEpsilon> {
+        max_diff: &Ulps<Self::AllEpsilon>,
+    ) -> Ulps<Self::AllDebugEpsilon> {
         MyComplex32Ulps {
             re: self.re.debug_ulps_all_epsilon(&other.re, max_diff),
             im: self.im.debug_ulps_all_epsilon(&other.im, max_diff),

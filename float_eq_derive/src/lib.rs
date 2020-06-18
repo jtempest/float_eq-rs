@@ -254,7 +254,7 @@ fn expand_float_eq_all(input: DeriveInput) -> Result<TokenStream, syn::Error> {
 
     Ok(quote! {
         impl FloatEqAll for #struct_name {
-            type Epsilon = #all_epsilon;
+            type AllEpsilon = #all_epsilon;
 
             #[inline]
             fn eq_abs_all(&self, other: &Self, max_diff: &#all_epsilon) -> bool {
@@ -267,7 +267,7 @@ fn expand_float_eq_all(input: DeriveInput) -> Result<TokenStream, syn::Error> {
             }
 
             #[inline]
-            fn eq_ulps_all(&self, other: &Self, max_diff: &::float_eq::Ulps<Self::Epsilon>) -> bool {
+            fn eq_ulps_all(&self, other: &Self, max_diff: &::float_eq::Ulps<Self::AllEpsilon>) -> bool {
                 #(#eq_ulps)&&*
             }
         }
@@ -303,7 +303,7 @@ fn expand_float_eq_all_debug(input: DeriveInput) -> Result<TokenStream, syn::Err
 
     Ok(quote! {
         impl FloatEqAllDebug for #struct_name {
-            type DebugEpsilon = Self;
+            type AllDebugEpsilon = Self;
 
             #[inline]
             fn debug_abs_all_epsilon(&self, other: &Self, max_diff: &#all_epsilon) -> Self {
@@ -323,9 +323,9 @@ fn expand_float_eq_all_debug(input: DeriveInput) -> Result<TokenStream, syn::Err
             fn debug_ulps_all_epsilon(
                 &self,
                 other: &Self,
-                max_diff: &::float_eq::Ulps<Self::Epsilon>
-            ) -> ::float_eq::Ulps<Self::DebugEpsilon> {
-                ::float_eq::Ulps::<Self::DebugEpsilon> {
+                max_diff: &::float_eq::Ulps<Self::AllEpsilon>
+            ) -> ::float_eq::Ulps<Self::AllDebugEpsilon> {
+                ::float_eq::Ulps::<Self::AllDebugEpsilon> {
                     #(#ulps_eps_fields,)*
                 }
             }
