@@ -25,11 +25,11 @@ features = ["derive"]
     feature = "derive",
     doc = r##"
 This trait can be used with `#[derive]`. The name of the new type is set by the
-`float_eq` attribute's `ulps` option and it shares the visibility of the type
-being derived from. The new type additionally derives `Debug` and `PartialEq`.
-When derived for structs, each field is copied with the same name and its
-`FieldType` is set to `Ulps<FieldType>`. This trait may not be derived for enums
-or generic structs at present.
+`#[float_eq]` attribute's `ulps` option. When derived for structs this will generate
+a structurally identical type with the same visiblity as the parent type, using
+the same field names and types wrapped in [`Ulps`]. The new struct derives
+`PartialEq` and `fmt::Debug`. This trait may not be derived for enums or generic
+structs at present.
 
 ```
 # use float_eq::{FloatUlps, Ulps};
@@ -112,7 +112,7 @@ features = ["derive"]
     feature = "derive",
     doc = r##"
 This trait can be used with `#[derive]`, assuming that your type has a [`FloatUlps`]
-implementation, which may also be derived. The `float_eq` attribute's `ulps`
+implementation, which may also be derived. The `#[float_eq]` attribute's `ulps`
 option is required to be the name of the type's [`Ulps`] representation. Each
 field's diff is calculated via a recursive call to the algorithm being used.
 This trait may not be derived for enums or generic structs at present.
@@ -359,7 +359,7 @@ features = ["derive"]
     feature = "derive",
     doc = r##"
 This trait can be used with `#[derive]`, assuming that your type has a [`FloatUlps`]
-implementation, which may also be derived. The `float_eq` attribute's `ulps`
+implementation, which may also be derived. The `#[float_eq]` attribute's `ulps`
 option is required to be the name of the type's [`Ulps`] representation. Two
 instances are equal if all fields are equal, and not equal if any are not. This
 trait may not be derived for enums or generic structs at present.
@@ -638,11 +638,10 @@ features = ["derive"]
     feature = "derive",
     doc = r##"
 This trait can be used with `#[derive]`, assuming that your type has a [`FloatUlps`]
-implementation, which may also be derived. The `float_eq` attribute option
-`all_epsilon` is required and used for [`FloatEq::Epsilon`]. It is usually `f32`
-or `f64`. Two instances are equal if all fields are equal, and not equal if any
-are not. This trait may not be derived for enums or generic structs
-at present.
+implementation, which may also be derived. The `#[float_eq]` attribute option
+`all_epsilon` is required and used for [`AllEpsilon`]. It is usually `f32` or
+`f64`. Two instances are equal if all fields are equal, and not equal if any are
+not. This trait may not be derived for enums or generic structs at present.
 
 ```
 # use float_eq::{FloatEqAll, FloatUlps, Ulps};
@@ -667,8 +666,8 @@ assert!(a.ne_ulps_all(&c, &1));
 ///
 /// ## How can I implement `FloatEqAll`?
 ///
-/// You will need some way to represent difference in [ULPs] for your type, which
-/// is likely to be either `u32` or `u64`. Implementation is then usually a matter
+/// You will need to select an epsilon type to compare recursively with each field
+/// in your type, usually `f32` or `f64`. Implementation is then usually a matter
 /// of calling through to an underlying `FloatEqAll` method for each field in turn.
 /// If not, you will need to take a close look at the descriptions of the algorithms
 /// on a method by method basis:
@@ -771,7 +770,7 @@ assert!(a.ne_ulps_all(&c, &1));
 ///
 /// [ULPs]: index.html#units-in-the-last-place-ulps-comparison
 /// [`FloatUlps`]: trait.FloatUlps.html
-/// [`FloatEq::Epsilon`]: trait.FloatEq.html#associatedtype.Epsilon
+/// [`AllEpsilon`]: trait.FloatEqAll.html#associatedtype.AllEpsilon
 /// [`assert_float_eq!`]: macro.assert_float_eq.html
 /// [`float_eq!`]: macro.float_eq.html
 pub trait FloatEqAll<Rhs: ?Sized = Self> {
@@ -866,7 +865,7 @@ features = ["derive"]
     doc = r##"
 This trait can be used with `#[derive]`, assuming that your type has both a
 [`FloatUlps`] and a [`FloatEq`] implementation, which may also be derived. The
-`float_eq` attribute's `ulps` option is required to be the name of the type's
+`#[float_eq]` attribute's `ulps` option is required to be the name of the type's
 [`Ulps`] representation. Each field's epsilon is calculated via a recursive
 call to the algorithm being used. This trait may not be derived for enums or
 generic structs at present.
@@ -1133,9 +1132,11 @@ features = ["derive"]
     feature = "derive",
     doc = r##"
 This trait can be used with `#[derive]`, assuming that your type has both a
-[`FloatUlps`] and a [`FloatEqAll`] implementation, which may also be derived.
-Each field's epsilon is calculated via a recursive call to the algorithm being
-used. This trait may not be derived for enums or generic structs at present.
+[`FloatUlps`] and a [`FloatEqAll`] implementation, which may also be derived. 
+The `#[float_eq]` attribute option `all_epsilon` is required and must match
+[`FloatEqAll::AllEpsilon`]. Each field's epsilon is calculated via a recursive
+call to the algorithm being used. This trait may not be derived for enums or
+generic structs at present.
 
 ```
 # use float_eq::{FloatEqAll, FloatUlps, Ulps, FloatEqAllDebug};
@@ -1340,6 +1341,7 @@ assert_eq!(
 /// [`FloatUlps`]: trait.FloatUlps.html
 /// [`FloatDiff`]: trait.FloatDiff.html
 /// [`FloatEqAll`]: trait.FloatEqAll.html
+/// [`FloatEqAll::AllEpsilon`]: trait.FloatEqAll.html#associatedtype.AllEpsilon
 pub trait FloatEqAllDebug<Rhs: ?Sized = Self>: FloatEqAll<Rhs> {
     /// Displayed to the user when an assert fails, using `fmt::Debug`.
     ///

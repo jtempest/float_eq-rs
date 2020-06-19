@@ -20,16 +20,12 @@ use crate::{FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug, Ulps};
 /// ```
 /// # use float_eq::float_eq;
 /// # use std::f32;
-/// let a: f32 = 4.;
+/// let a: f32 = 4.0;
 /// let b: f32 = 4.000_002_5;
 ///
 /// assert!( float_eq!(a, 3.999_999_8, rel <= f32::EPSILON) );
 /// assert!( float_eq!(a - b, 0., abs <= 0.000_01, rel <= f32::EPSILON) );
 /// assert!( float_eq!(a - b, 0., abs <= 0.000_01, ulps <= 10) );
-///
-/// let c = [1.000_000_2f32, -2.0];
-/// let d = [1.0f32, -2.000_002];
-/// assert!( float_eq!(c, d, abs_all <= 0.000_000_1, ulps <= [2, 8]) );
 /// ```
 ///
 /// [`FloatEq`]: trait.FloatEq.html
@@ -71,16 +67,12 @@ macro_rules! float_eq {
 /// ```
 /// # use float_eq::float_ne;
 /// # use std::f32;
-/// let a: f32 = 4.;
+/// let a: f32 = 4.0;
 /// let b: f32 = 4.1;
 ///
 /// assert!( float_ne!(a, 3.999_999, rel <= f32::EPSILON) );
 /// assert!( float_ne!(a - b, 0., abs <= 0.000_01, rel <= f32::EPSILON) );
 /// assert!( float_ne!(a - b, 0., abs <= 0.000_01, ulps <= 10) );
-///
-/// let c = [1.000_000_2f32, -2.0];
-/// let d = [1.0f32, -2.000_002];
-/// assert!( float_ne!(c, d, abs_all <= 0.000_000_1, ulps <= [2, 7]) );
 /// ```
 ///
 /// [`FloatEq`]: trait.FloatEq.html
@@ -122,7 +114,7 @@ macro_rules! float_ne {
 /// ```
 /// # use float_eq::assert_float_eq;
 /// # use std::f32;
-/// let a: f32 = 4.;
+/// let a: f32 = 4.0;
 /// let b: f32 = 4.000_002_5;
 ///
 /// assert_float_eq!(a, 3.999_999_8, rel <= f32::EPSILON);
@@ -130,10 +122,6 @@ macro_rules! float_ne {
 /// assert_float_eq!(a - b, 0., abs <= 0.000_01, ulps <= 10);
 ///
 /// assert_float_eq!(a - b, 0., abs <= 0.000_01, ulps <= 10, "Checking that {} == {}", a, b);
-///
-/// let c = [1.000_000_2f32, -2.0];
-/// let d = [1.0f32, -2.000_002];
-/// assert_float_eq!(c, d, abs_all <= 0.000_000_1, ulps <= [2, 8]);
 /// ```
 ///
 /// [`assert!`]: https://doc.rust-lang.org/std/macro.assert.html
@@ -362,7 +350,7 @@ macro_rules! assert_float_eq {
 /// ```
 /// # use float_eq::assert_float_ne;
 /// # use std::f32;
-/// let a: f32 = 4.;
+/// let a: f32 = 4.0;
 /// let b: f32 = 4.1;
 ///
 /// assert_float_ne!(a, 3.9999990, rel <= f32::EPSILON);
@@ -370,10 +358,6 @@ macro_rules! assert_float_eq {
 /// assert_float_ne!(a - b, 0., abs <= 0.00001, ulps <= 10);
 ///
 /// assert_float_ne!(a - b, 0., abs <= 0.00001, ulps <= 10, "Checking that {} != {}", a, b);
-///
-/// let c = [1.000_000_2f32, -2.0];
-/// let d = [1.0f32, -2.000_002];
-/// assert_float_ne!(c, d, abs_all <= 0.000_000_1, ulps <= [2, 7]);
 /// ```
 ///
 /// [`assert!`]: https://doc.rust-lang.org/std/macro.assert.html
@@ -605,7 +589,7 @@ macro_rules! assert_float_ne {
 /// ```
 /// # use float_eq::debug_assert_float_eq;
 /// # use std::f32;
-/// let a: f32 = 4.;
+/// let a: f32 = 4.0;
 /// let b: f32 = 4.0000025;
 ///
 /// debug_assert_float_eq!(a, 3.9999998, rel <= f32::EPSILON);
@@ -659,7 +643,7 @@ macro_rules! debug_assert_float_eq {
 /// ```
 /// # use float_eq::debug_assert_float_ne;
 /// # use std::f32;
-/// let a: f32 = 4.;
+/// let a: f32 = 4.0;
 /// let b: f32 = 4.1;
 ///
 /// debug_assert_float_ne!(a, 3.9999990, rel <= f32::EPSILON);

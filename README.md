@@ -231,7 +231,7 @@ Release information is available in [CHANGELOG.md](CHANGELOG.md).
 
 [API documentation]: https://docs.rs/float_eq
 [floating point comparison]: https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
-[open an issue]: https://github.com/jtempest/float_eq-rs/issues/new
+[open an issue]: https://github.com/jtempest/float_eq-rs/issues/
 [`almost`]: https://crates.io/crates/almost
 [`approx`]: https://crates.io/crates/approx
 [`assert_float_eq`]: https://crates.io/crates/assert_float_eq

@@ -416,7 +416,7 @@
 //! assert_float_eq!(a, b, rel <= Complex32 { re: 0.000_000_25, im: 0.000_000_5 });
 //! assert_float_eq!(a, b, rel_all <= 0.000_000_5);
 //!
-//! assert_float_eq!(a, b, ulps <= Ulps::<Complex32> { re: 2, im: 4 });
+//! assert_float_eq!(a, b, ulps <= Complex32Ulps { re: 2, im: 4 });
 //! assert_float_eq!(a, b, ulps_all <= 4);
 //! ```
 //!
