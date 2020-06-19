@@ -1,6 +1,6 @@
 [package]
 name = "float_eq"
-version = "0.4.0"
+version = "0.4.1-pre"
 authors = ["jtempest"]
 license = "MIT OR Apache-2.0"
 description = "Explicitly bounded comparison of floating point numbers."
@@ -32,7 +32,7 @@ version = "0.2"
 optional = true
 
 [dependencies.float_eq_derive]
-version = "=0.4.0"
+version = "=0.4.1-pre"
 optional = true
 path = "../float_eq_derive"
 
