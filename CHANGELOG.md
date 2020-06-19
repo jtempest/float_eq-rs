@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Update README usage documentation to the correct version, correctly documented
+  the "num" feature.
+
 ## [0.4.0] - 2020-06-19
 Bumped up the version number since this release includes breaking API changes.
 

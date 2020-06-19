@@ -197,8 +197,8 @@ default-features = false
 
 Other optional features:
 - **derive** — provides custom derive macros for all traits.
-- **num** — implements `FloatEq`, `FloatEqDebug` and `FloatDiff` for 
-  `num::Complex` where it is instanced with a compatible type.
+- **num** — blanket trait impls for `num::Complex` where it is instanced with a
+  compatible type.
 
 ## Related efforts
 

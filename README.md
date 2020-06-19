@@ -39,7 +39,7 @@ Add this to your cargo.toml:
 
 ```
 [dependencies]
-float_eq = "0.3"
+float_eq = "0.4"
 ```
 
 and, if you're using the 2015 edition, this to your crate root:
@@ -196,14 +196,14 @@ the default `std` feature. Use this in `Cargo.toml`:
 
 ```
 [dependencies.float_eq]
-version = "0.3"
+version = "0.4"
 default-features = false
 ```
 
 Other optional features:
 - **derive** — provides custom derive macros for all traits.
-- **num** — implements `FloatEq`, `FloatEqDebug` and `FloatDiff` for 
-  `num::Complex` where it is instanced with a compatible type.
+- **num** — blanket trait impls for `num::Complex` where it is instanced with a
+  compatible type.
 
 ## Related efforts
 
