@@ -9,18 +9,19 @@
   - add link to tag
   - add release date
 - Update version numbers in:
-  - float_eq/Cargo.toml (inc badge tags)
-  - float_eq_derive/Cargo.toml (inc badge tags)
+  - float_eq/Cargo.toml (remove path to derive crate)
+  - float_eq_derive/Cargo.toml
   - float_eq/crates-io.md
   - float_eq/traits.rs
 - Make release tag in git
   - git tag -s x.y.z -m "x.y.z release"
   - git push origin --tags
 - Check CI is building
+- Check links in CHANGELOG and badges work to new release tag
 - Check `cargo package` for float_eq_derive
 - `cargo publish` float_eq_derive
 - Check `cargo package` for float_eq
 - `cargo publish` for float_eq
 - Update CHANGELOG.md to Reinstate Unreleased section
 - Update version numbers to x.y.z-pre with an incremented z in Cargo.tomls
-- Update badge branch to master in Cargo.tomls
+- Restor path to derive crate dependency in float_eq Cargo.toml
