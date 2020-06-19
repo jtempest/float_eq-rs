@@ -34,6 +34,7 @@ optional = true
 [dependencies.float_eq_derive]
 version = "=0.4.0"
 optional = true
+path = "../float_eq_derive"
 
 [features]
 default = ["std"]

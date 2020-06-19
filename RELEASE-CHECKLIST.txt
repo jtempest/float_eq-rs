@@ -9,7 +9,7 @@
   - add link to tag
   - add release date
 - Update version numbers in:
-  - float_eq/Cargo.toml (remove path to derive crate)
+  - float_eq/Cargo.toml
   - float_eq_derive/Cargo.toml
   - float_eq/crates-io.md
   - float_eq/traits.rs
@@ -24,4 +24,3 @@
 - `cargo publish` for float_eq
 - Update CHANGELOG.md to Reinstate Unreleased section
 - Update version numbers to x.y.z-pre with an incremented z in Cargo.tomls
-- Restor path to derive crate dependency in float_eq Cargo.toml
