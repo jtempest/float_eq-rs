@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- The `derive_float_eq` helper macro to simplify deriving traits.
+
 ### Fixed
 - Update README usage documentation to the correct version, correctly documented
   the "num" feature.

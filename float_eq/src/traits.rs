@@ -24,12 +24,14 @@ features = ["derive"]
 #[cfg_attr(
     feature = "derive",
     doc = r##"
-This trait can be used with `#[derive]`. The name of the new type is set by the
-`#[float_eq]` attribute's `ulps` option. When derived for structs this will generate
-a structurally identical type with the same visiblity as the parent type, using
-the same field names and types wrapped in [`Ulps`]. The new struct derives
-`PartialEq` and `fmt::Debug`. This trait may not be derived for enums or generic
-structs at present.
+This trait can be used with `#[derive]`. The easiest way to do so is to use the
+[derive_float_eq](index.html#derivable) helper macro.
+
+The name of the new type is set by the `#[float_eq]` attribute's `ulps` option.
+When derived for structs this will generate a structurally identical type with
+the same visiblity as the parent type, using the same field names and types wrapped
+in [`Ulps`]. The new struct derives `PartialEq` and `fmt::Debug`. This trait may
+not be derived for enums or generic structs at present.
 
 ```
 # use float_eq::{FloatUlps, Ulps};
@@ -111,11 +113,14 @@ features = ["derive"]
 #[cfg_attr(
     feature = "derive",
     doc = r##"
-This trait can be used with `#[derive]`, assuming that your type has a [`FloatUlps`]
-implementation, which may also be derived. The `#[float_eq]` attribute's `ulps`
-option is required to be the name of the type's [`Ulps`] representation. Each
-field's diff is calculated via a recursive call to the algorithm being used.
-This trait may not be derived for enums or generic structs at present.
+This trait can be used with `#[derive]`. The easiest way to do so is to use the
+[derive_float_eq](index.html#derivable) helper macro.
+
+You will need to implement [`FloatUlps`], which may also be derived. The `#[float_eq]`
+attribute's `ulps` option is required to be the name of the type's [`Ulps`]
+representation. Each field's diff is calculated via a recursive call to the
+algorithm being used. This trait may not be derived for enums or generic structs
+at present.
 
 ```
 # use float_eq::{FloatDiff, FloatUlps, Ulps};
@@ -358,11 +363,14 @@ features = ["derive"]
 #[cfg_attr(
     feature = "derive",
     doc = r##"
-This trait can be used with `#[derive]`, assuming that your type has a [`FloatUlps`]
-implementation, which may also be derived. The `#[float_eq]` attribute's `ulps`
-option is required to be the name of the type's [`Ulps`] representation. Two
-instances are equal if all fields are equal, and not equal if any are not. This
-trait may not be derived for enums or generic structs at present.
+This trait can be used with `#[derive]`. The easiest way to do so is to use the
+[derive_float_eq](index.html#derivable) helper macro.
+
+You will need to implement [`FloatUlps`], which may also be derived. The `#[float_eq]`
+attribute's `ulps` option is required to be the name of the type's [`Ulps`]
+representation. Two instances are equal if all fields are equal, and not equal
+if any are not. This trait may not be derived for enums or generic structs at
+present.
 
 ```
 # use float_eq::{FloatEq, FloatUlps, Ulps};
@@ -637,11 +645,14 @@ features = ["derive"]
 #[cfg_attr(
     feature = "derive",
     doc = r##"
-This trait can be used with `#[derive]`, assuming that your type has a [`FloatUlps`]
-implementation, which may also be derived. The `#[float_eq]` attribute option
-`all_epsilon` is required and used for [`AllEpsilon`]. It is usually `f32` or
-`f64`. Two instances are equal if all fields are equal, and not equal if any are
-not. This trait may not be derived for enums or generic structs at present.
+This trait can be used with `#[derive]`. The easiest way to do so is to use the
+[derive_float_eq](index.html#derivable) helper macro.
+
+You will need to implement [`FloatUlps`], which may also be derived. The `#[float_eq]`
+attribute option `all_epsilon` is required and used for [`AllEpsilon`]. It is
+usually `f32` or `f64`. Two instances are equal if all fields are equal, and not
+equal if any are not. This trait may not be derived for enums or generic structs
+at present.
 
 ```
 # use float_eq::{FloatEqAll, FloatUlps, Ulps};
@@ -863,12 +874,14 @@ features = ["derive"]
 #[cfg_attr(
     feature = "derive",
     doc = r##"
-This trait can be used with `#[derive]`, assuming that your type has both a
-[`FloatUlps`] and a [`FloatEq`] implementation, which may also be derived. The
-`#[float_eq]` attribute's `ulps` option is required to be the name of the type's
-[`Ulps`] representation. Each field's epsilon is calculated via a recursive
-call to the algorithm being used. This trait may not be derived for enums or
-generic structs at present.
+This trait can be used with `#[derive]`. The easiest way to do so is to use the
+[derive_float_eq](index.html#derivable) helper macro.
+
+You will need to implement [`FloatUlps`] and [`FloatEq`], which may also be
+derived. The `#[float_eq]` attribute's `ulps` option is required to be the name
+of the type's [`Ulps`] representation. Each field's epsilon is calculated via a
+recursive call to the algorithm being used. This trait may not be derived for
+enums or generic structs at present.
 
 ```
 # use float_eq::{FloatEq, FloatUlps, Ulps, FloatEqDebug};
@@ -1131,10 +1144,12 @@ features = ["derive"]
 #[cfg_attr(
     feature = "derive",
     doc = r##"
-This trait can be used with `#[derive]`, assuming that your type has both a
-[`FloatUlps`] and a [`FloatEqAll`] implementation, which may also be derived. 
-The `#[float_eq]` attribute option `all_epsilon` is required and must match
-[`FloatEqAll::AllEpsilon`]. Each field's epsilon is calculated via a recursive
+This trait can be used with `#[derive]`. The easiest way to do so is to use the
+[derive_float_eq](index.html#derivable) helper macro.
+
+You will need to implement [`FloatUlps`] and [`FloatEqAll`], which may also be
+derived. The `#[float_eq]` attribute option `all_epsilon` is required and must
+match [`FloatEqAll::AllEpsilon`]. Each field's epsilon is calculated via a recursive
 call to the algorithm being used. This trait may not be derived for enums or
 generic structs at present.
 

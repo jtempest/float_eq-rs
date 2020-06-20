@@ -470,18 +470,16 @@ features = ["derive"]
 #![cfg_attr(
     feature = "derive",
     doc = r##"
-These traits can be used with `#[derive]`:
-
+These traits can be used with `#[derive]`. They may be derived directly, but the
+easiest way to do so is the [derive_float_eq](attr.derive_float_eq.html) helper
+macro. The `ulps` parameter is required and will be used to name a new type with
+the same fields represented in ULPs, and `all_epsilon` is optional, but required
+for using `*_all` checks. At present, only non-generic structs and tuple structs
+may be derived:
 ```
-# use float_eq::{
-#    assert_float_eq, FloatUlps, FloatDiff, FloatEq, FloatEqAll, FloatEqDebug,
-#    FloatEqAllDebug, Ulps,
-# };
-#[derive(
-    Debug, PartialEq, FloatUlps, FloatDiff, FloatEq, FloatEqDebug,
-    FloatEqAll, FloatEqAllDebug,
-)]
-#[float_eq(ulps = "PointUlps", all_epsilon = "f64")]
+# use float_eq::{assert_float_eq, derive_float_eq};
+#[derive_float_eq(ulps = "PointUlps", all_epsilon = "f64")]
+#[derive(Debug, PartialEq, Clone, Copy)]
 struct Point {
     x: f64,
     y: f64,

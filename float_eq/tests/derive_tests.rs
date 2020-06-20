@@ -5,7 +5,8 @@ fn tests() {
     let t = trybuild::TestCases::new();
 
     t.pass("tests/derive_tests/derive_all/derive_all.rs");
-    t.pass("tests/derive_tests/derive_all/derive_all_custom_ulps.rs");
+    t.pass("tests/derive_tests/derive_all/derive_float_eq.rs");
+    t.pass("tests/derive_tests/derive_all/derive_float_eq_all.rs");
     t.pass("tests/derive_tests/derive_all/tuple_derive_all.rs");
     t.pass("tests/derive_tests/derive_all/no_fields_derive_all.rs");
     t.pass("tests/derive_tests/derive_all/tuple_no_fields_derive_all.rs");

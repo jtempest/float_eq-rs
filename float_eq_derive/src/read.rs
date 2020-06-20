@@ -178,12 +178,12 @@ fn name_type_pair_list(
     }
 }
 
-struct NameTypePair {
-    name: Ident,
-    value: Ident,
+pub struct NameTypePair {
+    pub name: Ident,
+    pub value: Ident,
 }
 
-fn name_type_pair(meta: &NestedMeta) -> Result<NameTypePair, syn::Error> {
+pub fn name_type_pair(meta: &NestedMeta) -> Result<NameTypePair, syn::Error> {
     if let NestedMeta::Meta(Meta::NameValue(nv)) = meta {
         if let Some(name) = nv.path.get_ident() {
             if let Lit::Str(value) = &nv.lit {

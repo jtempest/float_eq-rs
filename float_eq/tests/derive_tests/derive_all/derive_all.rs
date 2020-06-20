@@ -3,10 +3,9 @@ use float_eq::{
     FloatEqDebug, FloatUlps, Ulps,
 };
 
-#[derive(
-    Debug, PartialEq, FloatUlps, FloatDiff, FloatEq, FloatEqDebug, FloatEqAll, FloatEqAllDebug,
-)]
+#[derive(Debug, PartialEq, FloatUlps, FloatDiff, FloatEq, FloatEqDebug)]
 #[float_eq(ulps = "MyComplex32Ulps", all_epsilon = "f32")]
+#[derive(FloatEqAll, FloatEqAllDebug)]
 struct MyComplex32 {
     re: f32,
     im: f32,

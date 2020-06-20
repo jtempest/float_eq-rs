@@ -5,10 +5,66 @@
 extern crate proc_macro;
 
 use proc_macro2::{Ident, Span, TokenStream};
-use quote::quote;
+use quote::{quote, TokenStreamExt};
 use syn::{parse_macro_input, DeriveInput};
 
 mod read;
+
+/// Helper for deriving the various float_eq traits.
+///
+/// By default, this will derive [`FloatUlps`], [`FloatEq`], [`FloatDiff`] and
+/// [`FloatEqDebug`] for a struct type. Attribute parameters are passed through
+/// to the `#[float_eq(...)]` attribute, see the docs for each trait for more
+/// details. You will need to provide an `ulps` parameter with a type name for
+/// the derived `Ulps` type.
+///
+/// If the optional `all_epsilon` parameter is provided then [`FloatEqAll`] and
+/// [`FloatEqAllDebug`] are also derived.
+///
+/// [Example usage] is available in the top level `float_eq` documentation.
+///
+/// [`FloatUlps`]: trait.FloatUlps.html
+/// [`FloatEq`]: trait.FloatEq.html
+/// [`FloatEqAll`]: trait.FloatEqAll.html
+/// [`FloatDiff`]: trait.FloatDiff.html
+/// [`FloatEqDebug`]: trait.FloatEqDebug.html
+/// [`FloatEqAllDebug`]: trait.FloatEqAllDebug.html
+/// [Example usage]: index.html#derivable
+#[proc_macro_attribute]
+pub fn derive_float_eq(
+    args: proc_macro::TokenStream,
+    item: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+    let args = parse_macro_input!(args as syn::AttributeArgs);
+    let item = parse_macro_input!(item as syn::ItemStruct);
+
+    let derive_all = args.iter().map(read::name_type_pair).any(|nv| {
+        if let Ok(nv) = nv {
+            nv.name == "all_epsilon"
+        } else {
+            false
+        }
+    });
+
+    let mut trait_names = vec!["FloatUlps", "FloatEq", "FloatDiff", "FloatEqDebug"];
+    if derive_all {
+        trait_names.push("FloatEqAll");
+        trait_names.push("FloatEqAllDebug");
+    }
+
+    let mut traits = TokenStream::new();
+    trait_names.into_iter().for_each(|ty| {
+        let ident = Ident::new(ty, Span::call_site());
+        traits.append_all(quote! { float_eq::#ident, });
+    });
+
+    let tokens = quote! {
+        #[derive(#traits)]
+        #[float_eq(#(#args,)*)]
+        #item
+    };
+    tokens.into()
+}
 
 #[doc(hidden)]
 #[proc_macro_derive(FloatUlps, attributes(float_eq))]
@@ -62,7 +118,7 @@ fn expand_float_ulps(input: DeriveInput) -> Result<TokenStream, syn::Error> {
         #[derive(Debug, PartialEq)]
         #ulps_type
 
-        impl FloatUlps for #struct_name {
+        impl float_eq::FloatUlps for #struct_name {
             type Ulps = #ulps_name;
         }
     })
@@ -95,7 +151,7 @@ fn expand_float_diff(input: DeriveInput) -> Result<TokenStream, syn::Error> {
     let ulps_diff_fields = expand_fields("ulps_diff");
 
     Ok(quote! {
-        impl FloatDiff for #struct_name {
+        impl float_eq::FloatDiff for #struct_name {
             type Output = Self;
 
             #[inline]
@@ -119,7 +175,7 @@ fn expand_float_diff(input: DeriveInput) -> Result<TokenStream, syn::Error> {
 
 #[doc(hidden)]
 #[proc_macro_derive(FloatEq, attributes(float_eq))]
-pub fn derive_float_eq(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+pub fn derive_float_eq_attribute(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     expand_float_eq(input)
         .unwrap_or_else(|e| e.to_compile_error())
@@ -149,7 +205,7 @@ fn expand_float_eq(input: DeriveInput) -> Result<TokenStream, syn::Error> {
     let eq_ulps = expand_exprs("eq_ulps");
 
     Ok(quote! {
-        impl FloatEq for #struct_name {
+        impl float_eq::FloatEq for #struct_name {
             type Epsilon = Self;
 
             #[inline]
@@ -198,7 +254,7 @@ fn expand_float_eq_debug(input: DeriveInput) -> Result<TokenStream, syn::Error> 
     let ulps_eps_fields = expand_fields("debug_ulps_epsilon");
 
     Ok(quote! {
-        impl FloatEqDebug for #struct_name {
+        impl float_eq::FloatEqDebug for #struct_name {
             type DebugEpsilon = Self;
 
             #[inline]
@@ -257,7 +313,7 @@ fn expand_float_eq_all(input: DeriveInput) -> Result<TokenStream, syn::Error> {
     let eq_ulps = expand_exprs("eq_ulps_all");
 
     Ok(quote! {
-        impl FloatEqAll for #struct_name {
+        impl float_eq::FloatEqAll for #struct_name {
             type AllEpsilon = #all_epsilon;
 
             #[inline]
@@ -306,7 +362,7 @@ fn expand_float_eq_all_debug(input: DeriveInput) -> Result<TokenStream, syn::Err
     let ulps_eps_fields = expand_fields("debug_ulps_all_epsilon");
 
     Ok(quote! {
-        impl FloatEqAllDebug for #struct_name {
+        impl float_eq::FloatEqAllDebug for #struct_name {
             type AllDebugEpsilon = Self;
 
             #[inline]
@@ -328,8 +384,8 @@ fn expand_float_eq_all_debug(input: DeriveInput) -> Result<TokenStream, syn::Err
                 &self,
                 other: &Self,
                 max_diff: &::float_eq::Ulps<Self::AllEpsilon>
-            ) -> ::float_eq::Ulps<Self::AllDebugEpsilon> {
-                ::float_eq::Ulps::<Self::AllDebugEpsilon> {
+            ) -> float_eq::Ulps<Self::AllDebugEpsilon> {
+                float_eq::Ulps::<Self::AllDebugEpsilon> {
                     #(#ulps_eps_fields,)*
                 }
             }
