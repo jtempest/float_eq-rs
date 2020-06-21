@@ -140,15 +140,13 @@ be used in the assert forms.
 
 ## Derivable
 
-If the `"derive"` feature is enabled, all of the traits may be implemented using
-`#[derive]`:
+If the optional `"derive"` feature is enabled, all of the traits may be 
+implemented using `#[derive]`. Since there are up to six traits per type, the
+`derive_float_eq` helper macro is provided to make things even easier:
 
 ```rust
-#[derive(
-    Debug, PartialEq, FloatUlps, FloatDiff, FloatEq,
-    FloatEqDebug, FloatEqAll, FloatEqAllDebug,
-)]
-#[float_eq(ulps = "PointUlps", all_epsilon = "f64")]
+#[derive_float_eq(ulps = "PointUlps", all_epsilon = "f64")]
+#[derive(Debug, PartialEq, Clone, Copy)]
 struct Point {
     x: f64,
     y: f64,
