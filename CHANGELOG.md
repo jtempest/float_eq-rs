@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.4.1] - 2020-06-22
 
 ### Added
 - The `derive_float_eq` helper macro to simplify deriving traits.
@@ -124,7 +124,8 @@ Bumped up the version number since this release includes breaking API changes.
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/jtempest/float_eq-rs/compare/0.4.0...HEAD
+[Unreleased]: https://github.com/jtempest/float_eq-rs/compare/0.4.1...HEAD
+[0.4.1]: https://github.com/jtempest/float_eq-rs/releases/tag/0.4.0
 [0.4.0]: https://github.com/jtempest/float_eq-rs/releases/tag/0.4.0
 [0.3.1]: https://github.com/jtempest/float_eq-rs/releases/tag/0.3.1
 [0.3.0]: https://github.com/jtempest/float_eq-rs/releases/tag/0.3.0
