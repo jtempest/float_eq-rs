@@ -1,4 +1,4 @@
-use crate::{FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug, Ulps};
+use crate::{AssertFloatEq, AssertFloatEqAll, FloatEq, FloatEqAll, UlpsEpsilon};
 
 /// Checks if two floating point expressions are equal to each other.
 ///
@@ -24,8 +24,8 @@ use crate::{FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug, Ulps};
 /// let b: f32 = 4.000_002_5;
 ///
 /// assert!( float_eq!(a, 3.999_999_8, rel <= f32::EPSILON) );
-/// assert!( float_eq!(a - b, 0., abs <= 0.000_01, rel <= f32::EPSILON) );
-/// assert!( float_eq!(a - b, 0., abs <= 0.000_01, ulps <= 10) );
+/// assert!( float_eq!(a - b, 0.0, abs <= 0.000_01, rel <= f32::EPSILON) );
+/// assert!( float_eq!(a - b, 0.0, abs <= 0.000_01, ulps <= 10) );
 /// ```
 ///
 /// [`FloatEq`]: trait.FloatEq.html
@@ -71,8 +71,8 @@ macro_rules! float_eq {
 /// let b: f32 = 4.1;
 ///
 /// assert!( float_ne!(a, 3.999_999, rel <= f32::EPSILON) );
-/// assert!( float_ne!(a - b, 0., abs <= 0.000_01, rel <= f32::EPSILON) );
-/// assert!( float_ne!(a - b, 0., abs <= 0.000_01, ulps <= 10) );
+/// assert!( float_ne!(a - b, 0.0, abs <= 0.000_01, rel <= f32::EPSILON) );
+/// assert!( float_ne!(a - b, 0.0, abs <= 0.000_01, ulps <= 10) );
 /// ```
 ///
 /// [`FloatEq`]: trait.FloatEq.html
@@ -105,7 +105,7 @@ macro_rules! float_ne {
 ///
 /// On panic, this macro will print the values of the expressions with their debug
 /// representations, with additional information from the comparison operations
-/// (using [`FloatEqDebug`], [`FloatEqAllDebug`] and [`FloatDiff`]).
+/// (using [`AssertFloatEq`], [`AssertFloatEqAll`] and [`FloatDiff`]).
 ///
 /// Like [`assert!`], this macro has a second form, where a custom panic message can
 /// be provided.
@@ -118,17 +118,17 @@ macro_rules! float_ne {
 /// let b: f32 = 4.000_002_5;
 ///
 /// assert_float_eq!(a, 3.999_999_8, rel <= f32::EPSILON);
-/// assert_float_eq!(a - b, 0., abs <= 0.000_01, rel <= f32::EPSILON);
-/// assert_float_eq!(a - b, 0., abs <= 0.000_01, ulps <= 10);
+/// assert_float_eq!(a - b, 0.0, abs <= 0.000_01, rel <= f32::EPSILON);
+/// assert_float_eq!(a - b, 0.0, abs <= 0.000_01, ulps <= 10);
 ///
-/// assert_float_eq!(a - b, 0., abs <= 0.000_01, ulps <= 10, "Checking that {} == {}", a, b);
+/// assert_float_eq!(a - b, 0.0, abs <= 0.000_01, ulps <= 10, "Checking that {} == {}", a, b);
 /// ```
 ///
 /// [`assert!`]: https://doc.rust-lang.org/std/macro.assert.html
 /// [`float_eq!`]: macro.float_eq.html
 /// [`FloatEq`]: trait.FloatEq.html
-/// [`FloatEqDebug`]: trait.FloatEqDebug.html
-/// [`FloatEqAllDebug`]: trait.FloatEqAllDebug.html
+/// [`AssertFloatEq`]: trait.AssertFloatEq.html
+/// [`AssertFloatEqAll`]: trait.AssertFloatEqAll.html
 /// [`FloatDiff`]: trait.FloatDiff.html
 /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
 /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
@@ -159,8 +159,8 @@ macro_rules! assert_float_eq {
 {:>10} ε: `{:?}`"#),
                         &*left_val,
                         &*right_val,
-                        $crate::FloatDiff::abs_diff(&*left_val, &*right_val),
-                        $crate::FloatDiff::ulps_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         concat!("[", stringify!($eq2), "]"),
@@ -191,8 +191,8 @@ macro_rules! assert_float_eq {
 {:>10} ε: `{:?}`"#),
                         &*left_val,
                         &*right_val,
-                        $crate::FloatDiff::abs_diff(&*left_val, &*right_val),
-                        $crate::FloatDiff::ulps_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         concat!("[", stringify!($eq2), "]"),
@@ -219,8 +219,8 @@ macro_rules! assert_float_eq {
 {:>10} ε: `{:?}`"#),
                         &*left_val,
                         &*right_val,
-                        $crate::FloatDiff::abs_diff(&*left_val, &*right_val),
-                        $crate::FloatDiff::ulps_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                     )
@@ -252,8 +252,8 @@ macro_rules! assert_float_eq {
 {:>10} ε: `{:?}`: {}"#),
                         &*left_val,
                         &*right_val,
-                        $crate::FloatDiff::abs_diff(&*left_val, &*right_val),
-                        $crate::FloatDiff::ulps_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         concat!("[", stringify!($eq2), "]"),
@@ -285,8 +285,8 @@ macro_rules! assert_float_eq {
 {:>10} ε: `{:?}`: {}"#),
                         &*left_val,
                         &*right_val,
-                        $crate::FloatDiff::abs_diff(&*left_val, &*right_val),
-                        $crate::FloatDiff::ulps_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         concat!("[", stringify!($eq2), "]"),
@@ -314,8 +314,8 @@ macro_rules! assert_float_eq {
 {:>10} ε: `{:?}`: {}"#),
                         &*left_val,
                         &*right_val,
-                        $crate::FloatDiff::abs_diff(&*left_val, &*right_val),
-                        $crate::FloatDiff::ulps_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         format_args!($($arg)+)
@@ -341,7 +341,7 @@ macro_rules! assert_float_eq {
 ///
 /// On panic, this macro will print the values of the expressions with their debug
 /// representations, with additional information from the comparison operations
-/// (using [`FloatEqDebug`], [`FloatEqAllDebug`] and [`FloatDiff`]).
+/// (using [`AssertFloatEq`], [`AssertFloatEqAll`] and [`FloatDiff`]).
 ///
 /// Like [`assert!`], this macro has a second form, where a custom panic message can
 /// be provided.
@@ -354,17 +354,17 @@ macro_rules! assert_float_eq {
 /// let b: f32 = 4.1;
 ///
 /// assert_float_ne!(a, 3.9999990, rel <= f32::EPSILON);
-/// assert_float_ne!(a - b, 0., abs <= 0.00001, rel <= f32::EPSILON);
-/// assert_float_ne!(a - b, 0., abs <= 0.00001, ulps <= 10);
+/// assert_float_ne!(a - b, 0.0, abs <= 0.00001, rel <= f32::EPSILON);
+/// assert_float_ne!(a - b, 0.0, abs <= 0.00001, ulps <= 10);
 ///
-/// assert_float_ne!(a - b, 0., abs <= 0.00001, ulps <= 10, "Checking that {} != {}", a, b);
+/// assert_float_ne!(a - b, 0.0, abs <= 0.00001, ulps <= 10, "Checking that {} != {}", a, b);
 /// ```
 ///
 /// [`assert!`]: https://doc.rust-lang.org/std/macro.assert.html
 /// [`float_ne!`]: macro.float_ne.html
 /// [`FloatEq`]: trait.FloatEq.html
-/// [`FloatEqDebug`]: trait.FloatEqDebug.html
-/// [`FloatEqAllDebug`]: trait.FloatEqAllDebug.html
+/// [`AssertFloatEq`]: trait.AssertFloatEq.html
+/// [`AssertFloatEqAll`]: trait.AssertFloatEqAll.html
 /// [`FloatDiff`]: trait.FloatDiff.html
 /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
 /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
@@ -395,8 +395,8 @@ macro_rules! assert_float_ne {
 {:>10} ε: `{:?}`"#),
                         &*left_val,
                         &*right_val,
-                        $crate::FloatDiff::abs_diff(&*left_val, &*right_val),
-                        $crate::FloatDiff::ulps_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         concat!("[", stringify!($eq2), "]"),
@@ -427,8 +427,8 @@ macro_rules! assert_float_ne {
 {:>10} ε: `{:?}`"#),
                         &*left_val,
                         &*right_val,
-                        $crate::FloatDiff::abs_diff(&*left_val, &*right_val),
-                        $crate::FloatDiff::ulps_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         concat!("[", stringify!($eq2), "]"),
@@ -455,8 +455,8 @@ macro_rules! assert_float_ne {
 {:>10} ε: `{:?}`"#),
                         &*left_val,
                         &*right_val,
-                        $crate::FloatDiff::abs_diff(&*left_val, &*right_val),
-                        $crate::FloatDiff::ulps_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                     )
@@ -488,8 +488,8 @@ macro_rules! assert_float_ne {
 {:>10} ε: `{:?}`: {}"#),
                         &*left_val,
                         &*right_val,
-                        $crate::FloatDiff::abs_diff(&*left_val, &*right_val),
-                        $crate::FloatDiff::ulps_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         concat!("[", stringify!($eq2), "]"),
@@ -521,8 +521,8 @@ macro_rules! assert_float_ne {
 {:>10} ε: `{:?}`: {}"#),
                         &*left_val,
                         &*right_val,
-                        $crate::FloatDiff::abs_diff(&*left_val, &*right_val),
-                        $crate::FloatDiff::ulps_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         concat!("[", stringify!($eq2), "]"),
@@ -550,8 +550,8 @@ macro_rules! assert_float_ne {
 {:>10} ε: `{:?}`: {}"#),
                         &*left_val,
                         &*right_val,
-                        $crate::FloatDiff::abs_diff(&*left_val, &*right_val),
-                        $crate::FloatDiff::ulps_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
+                        $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
                         $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
                         format_args!($($arg)+)
@@ -577,7 +577,7 @@ macro_rules! assert_float_ne {
 ///
 /// On panic, this macro will print the values of the expressions with their debug
 /// representations, with additional information from the comparison operations
-/// (using [`FloatEqDebug`], [`FloatEqAllDebug`] and [`FloatDiff`]).
+/// (using [`AssertFloatEq`], [`AssertFloatEqAll`] and [`FloatDiff`]).
 ///
 /// Like [`assert!`], this macro has a second form, where a custom panic message can
 /// be provided.
@@ -593,10 +593,10 @@ macro_rules! assert_float_ne {
 /// let b: f32 = 4.0000025;
 ///
 /// debug_assert_float_eq!(a, 3.9999998, rel <= f32::EPSILON);
-/// debug_assert_float_eq!(a - b, 0., abs <= 0.00001, rel <= f32::EPSILON);
-/// debug_assert_float_eq!(a - b, 0., abs <= 0.00001, ulps <= 10);
+/// debug_assert_float_eq!(a - b, 0.0, abs <= 0.00001, rel <= f32::EPSILON);
+/// debug_assert_float_eq!(a - b, 0.0, abs <= 0.00001, ulps <= 10);
 ///
-/// debug_assert_float_eq!(a - b, 0., abs <= 0.00001, ulps <= 10, "Checking that {} == {}", a, b);
+/// debug_assert_float_eq!(a - b, 0.0, abs <= 0.00001, ulps <= 10, "Checking that {} == {}", a, b);
 /// ```
 ///
 /// [`assert_float_eq!`]: macro.assert_float_eq.html
@@ -604,8 +604,8 @@ macro_rules! assert_float_ne {
 /// [`debug_assert_eq!`]: https://doc.rust-lang.org/std/macro.debug_assert_eq.html
 /// [`float_eq!`]: macro.float_eq.html
 /// [`FloatEq`]: trait.FloatEq.html
-/// [`FloatEqDebug`]: trait.FloatEqDebug.html
-/// [`FloatEqAllDebug`]: trait.FloatEqAllDebug.html
+/// [`AssertFloatEq`]: trait.AssertFloatEq.html
+/// [`AssertFloatEqAll`]: trait.AssertFloatEqAll.html
 /// [`FloatDiff`]: trait.FloatDiff.html
 /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
 /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
@@ -631,7 +631,7 @@ macro_rules! debug_assert_float_eq {
 ///
 /// On panic, this macro will print the values of the expressions with their debug
 /// representations, with additional information from the comparison operations
-/// (using [`FloatEqDebug`], [`FloatEqAllDebug`] and [`FloatDiff`]).
+/// (using [`AssertFloatEq`], [`AssertFloatEqAll`] and [`FloatDiff`]).
 ///
 /// Like [`assert!`], this macro has a second form, where a custom panic message can
 /// be provided.
@@ -647,10 +647,10 @@ macro_rules! debug_assert_float_eq {
 /// let b: f32 = 4.1;
 ///
 /// debug_assert_float_ne!(a, 3.9999990, rel <= f32::EPSILON);
-/// debug_assert_float_ne!(a - b, 0., abs <= 0.00001, rel <= f32::EPSILON);
-/// debug_assert_float_ne!(a - b, 0., abs <= 0.00001, ulps <= 10);
+/// debug_assert_float_ne!(a - b, 0.0, abs <= 0.00001, rel <= f32::EPSILON);
+/// debug_assert_float_ne!(a - b, 0.0, abs <= 0.00001, ulps <= 10);
 ///
-/// debug_assert_float_ne!(a - b, 0., abs <= 0.00001, ulps <= 10, "Checking that {} == {}", a, b);
+/// debug_assert_float_ne!(a - b, 0.0, abs <= 0.00001, ulps <= 10, "Checking that {} == {}", a, b);
 /// ```
 ///
 /// [`assert_float_ne!`]: macro.assert_float_ne.html
@@ -658,8 +658,8 @@ macro_rules! debug_assert_float_eq {
 /// [`debug_assert_ne!`]: https://doc.rust-lang.org/std/macro.debug_assert_ne.html
 /// [`float_ne!`]: macro.float_ne.html
 /// [`FloatEq`]: trait.FloatEq.html
-/// [`FloatEqDebug`]: trait.FloatEqDebug.html
-/// [`FloatEqAllDebug`]: trait.FloatEqAllDebug.html
+/// [`AssertFloatEq`]: trait.AssertFloatEq.html
+/// [`AssertFloatEqAll`]: trait.AssertFloatEqAll.html
 /// [`FloatDiff`]: trait.FloatDiff.html
 /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
 /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
@@ -708,7 +708,7 @@ impl FloatEqCmp {
     }
 
     #[inline]
-    pub fn ulps<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &Ulps<A::Epsilon>) -> bool
+    pub fn ulps<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &UlpsEpsilon<A::Epsilon>) -> bool
     where
         A: FloatEq<B>,
     {
@@ -716,7 +716,11 @@ impl FloatEqCmp {
     }
 
     #[inline]
-    pub fn ulps_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &Ulps<A::AllEpsilon>) -> bool
+    pub fn ulps_all<A: ?Sized, B: ?Sized>(
+        a: &A,
+        b: &B,
+        max_diff: &UlpsEpsilon<A::AllEpsilon>,
+    ) -> bool
     where
         A: FloatEqAll<B>,
     {
@@ -732,7 +736,7 @@ impl FloatCmpOpEpsilon {
     #[inline]
     pub fn abs<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> A::DebugEpsilon
     where
-        A: FloatEq<B> + FloatEqDebug<B>,
+        A: FloatEq<B> + AssertFloatEq<B>,
     {
         a.debug_abs_epsilon(b, max_diff)
     }
@@ -744,7 +748,7 @@ impl FloatCmpOpEpsilon {
         max_diff: &A::AllEpsilon,
     ) -> A::AllDebugEpsilon
     where
-        A: FloatEqAll<B> + FloatEqAllDebug<B>,
+        A: FloatEqAll<B> + AssertFloatEqAll<B>,
     {
         a.debug_abs_all_epsilon(b, max_diff)
     }
@@ -752,7 +756,7 @@ impl FloatCmpOpEpsilon {
     #[inline]
     pub fn rel<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> A::DebugEpsilon
     where
-        A: FloatEq<B> + FloatEqDebug<B>,
+        A: FloatEq<B> + AssertFloatEq<B>,
     {
         a.debug_rel_epsilon(b, max_diff)
     }
@@ -764,7 +768,7 @@ impl FloatCmpOpEpsilon {
         max_diff: &A::AllEpsilon,
     ) -> A::AllDebugEpsilon
     where
-        A: FloatEqAll<B> + FloatEqAllDebug<B>,
+        A: FloatEqAll<B> + AssertFloatEqAll<B>,
     {
         a.debug_rel_all_epsilon(b, max_diff)
     }
@@ -773,11 +777,11 @@ impl FloatCmpOpEpsilon {
     pub fn ulps<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &Ulps<A::Epsilon>,
-    ) -> Ulps<A::DebugEpsilon>
+        max_diff: &UlpsEpsilon<A::Epsilon>,
+    ) -> UlpsEpsilon<A::DebugEpsilon>
     where
-        A: FloatEq<B> + FloatEqDebug<B>,
-        Ulps<A::DebugEpsilon>: Sized,
+        A: FloatEq<B> + AssertFloatEq<B>,
+        UlpsEpsilon<A::DebugEpsilon>: Sized,
     {
         a.debug_ulps_epsilon(b, max_diff)
     }
@@ -786,11 +790,11 @@ impl FloatCmpOpEpsilon {
     pub fn ulps_all<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &Ulps<A::AllEpsilon>,
-    ) -> Ulps<A::AllDebugEpsilon>
+        max_diff: &UlpsEpsilon<A::AllEpsilon>,
+    ) -> UlpsEpsilon<A::AllDebugEpsilon>
     where
-        A: FloatEqAll<B> + FloatEqAllDebug<B>,
-        Ulps<A::AllDebugEpsilon>: Sized,
+        A: FloatEqAll<B> + AssertFloatEqAll<B>,
+        UlpsEpsilon<A::AllDebugEpsilon>: Sized,
     {
         a.debug_ulps_all_epsilon(b, max_diff)
     }

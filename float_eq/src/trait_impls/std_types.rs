@@ -1,4 +1,7 @@
-use crate::{FloatDiff, FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug, FloatUlps, Ulps};
+use crate::{
+    AssertFloatEq, AssertFloatEqAll, DebugUlpsDiff, FloatEq, FloatEqAll, FloatEqDebugUlpsDiff,
+    FloatEqUlpsEpsilon, UlpsEpsilon,
+};
 use std::boxed::Box;
 use std::collections::{BTreeMap, HashMap, LinkedList, VecDeque};
 use std::fmt;
@@ -11,28 +14,8 @@ use std::sync::Arc;
 //------------------------------------------------------------------------------
 macro_rules! impl_traits_for_wrapper {
     ($t:ident) => {
-        impl<T: ?Sized + FloatUlps> FloatUlps for $t<T> {
-            type Ulps = $t<Ulps<T>>;
-        }
-
-        impl<A: ?Sized, B: ?Sized> FloatDiff<$t<B>> for $t<A>
-        where
-            A: FloatDiff<B>,
-        {
-            type Output = A::Output;
-
-            #[inline]
-            fn abs_diff(&self, other: &$t<B>) -> Self::Output {
-                FloatDiff::abs_diff(&**self, &**other)
-            }
-
-            #[inline]
-            fn ulps_diff(&self, other: &$t<B>) -> Option<Ulps<Self::Output>>
-            where
-                Ulps<Self::Output>: Sized,
-            {
-                FloatDiff::ulps_diff(&**self, &**other)
-            }
+        impl<T: ?Sized + FloatEqUlpsEpsilon> FloatEqUlpsEpsilon for $t<T> {
+            type UlpsEpsilon = $t<UlpsEpsilon<T>>;
         }
 
         impl<A: ?Sized, B: ?Sized> FloatEq<$t<B>> for $t<A>
@@ -52,7 +35,7 @@ macro_rules! impl_traits_for_wrapper {
             }
 
             #[inline]
-            fn eq_ulps(&self, other: &$t<B>, max_diff: &Ulps<Self::Epsilon>) -> bool {
+            fn eq_ulps(&self, other: &$t<B>, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
                 FloatEq::eq_ulps(&**self, &**other, max_diff)
             }
         }
@@ -74,17 +57,28 @@ macro_rules! impl_traits_for_wrapper {
             }
 
             #[inline]
-            fn eq_ulps_all(&self, other: &$t<B>, max_diff: &Ulps<Self::AllEpsilon>) -> bool {
+            fn eq_ulps_all(&self, other: &$t<B>, max_diff: &UlpsEpsilon<Self::AllEpsilon>) -> bool {
                 FloatEqAll::eq_ulps_all(&**self, &**other, max_diff)
             }
         }
 
-        impl<A: ?Sized, B: ?Sized> FloatEqDebug<$t<B>> for $t<A>
+        impl<A: ?Sized, B: ?Sized> AssertFloatEq<$t<B>> for $t<A>
         where
-            A: FloatEqDebug<B> + Copy,
+            A: AssertFloatEq<B> + Copy,
             B: Copy,
         {
+            type DebugAbsDiff = A::DebugAbsDiff;
             type DebugEpsilon = A::DebugEpsilon;
+
+            #[inline]
+            fn debug_abs_diff(&self, other: &$t<B>) -> Self::DebugAbsDiff {
+                AssertFloatEq::debug_abs_diff(&**self, &**other)
+            }
+
+            #[inline]
+            fn debug_ulps_diff(&self, other: &$t<B>) -> DebugUlpsDiff<Self::DebugAbsDiff> {
+                AssertFloatEq::debug_ulps_diff(&**self, &**other)
+            }
 
             #[inline]
             fn debug_abs_epsilon(
@@ -92,7 +86,7 @@ macro_rules! impl_traits_for_wrapper {
                 other: &$t<B>,
                 max_diff: &Self::Epsilon,
             ) -> Self::DebugEpsilon {
-                FloatEqDebug::debug_abs_epsilon(&**self, &**other, max_diff)
+                AssertFloatEq::debug_abs_epsilon(&**self, &**other, max_diff)
             }
 
             #[inline]
@@ -101,25 +95,25 @@ macro_rules! impl_traits_for_wrapper {
                 other: &$t<B>,
                 max_diff: &Self::Epsilon,
             ) -> Self::DebugEpsilon {
-                FloatEqDebug::debug_rel_epsilon(&**self, &**other, max_diff)
+                AssertFloatEq::debug_rel_epsilon(&**self, &**other, max_diff)
             }
 
             #[inline]
             fn debug_ulps_epsilon(
                 &self,
                 other: &$t<B>,
-                max_diff: &Ulps<Self::Epsilon>,
-            ) -> Ulps<Self::DebugEpsilon>
+                max_diff: &UlpsEpsilon<Self::Epsilon>,
+            ) -> UlpsEpsilon<Self::DebugEpsilon>
             where
-                Ulps<Self::DebugEpsilon>: Sized,
+                UlpsEpsilon<Self::DebugEpsilon>: Sized,
             {
-                FloatEqDebug::debug_ulps_epsilon(&**self, &**other, max_diff)
+                AssertFloatEq::debug_ulps_epsilon(&**self, &**other, max_diff)
             }
         }
 
-        impl<A: ?Sized, B: ?Sized> FloatEqAllDebug<$t<B>> for $t<A>
+        impl<A: ?Sized, B: ?Sized> AssertFloatEqAll<$t<B>> for $t<A>
         where
-            A: FloatEqAllDebug<B> + Copy,
+            A: AssertFloatEqAll<B> + Copy,
             B: Copy,
         {
             type AllDebugEpsilon = A::AllDebugEpsilon;
@@ -130,7 +124,7 @@ macro_rules! impl_traits_for_wrapper {
                 other: &$t<B>,
                 max_diff: &Self::AllEpsilon,
             ) -> Self::AllDebugEpsilon {
-                FloatEqAllDebug::debug_abs_all_epsilon(&**self, &**other, max_diff)
+                AssertFloatEqAll::debug_abs_all_epsilon(&**self, &**other, max_diff)
             }
 
             #[inline]
@@ -139,19 +133,19 @@ macro_rules! impl_traits_for_wrapper {
                 other: &$t<B>,
                 max_diff: &Self::AllEpsilon,
             ) -> Self::AllDebugEpsilon {
-                FloatEqAllDebug::debug_rel_all_epsilon(&**self, &**other, max_diff)
+                AssertFloatEqAll::debug_rel_all_epsilon(&**self, &**other, max_diff)
             }
 
             #[inline]
             fn debug_ulps_all_epsilon(
                 &self,
                 other: &$t<B>,
-                max_diff: &Ulps<Self::AllEpsilon>,
-            ) -> Ulps<Self::AllDebugEpsilon>
+                max_diff: &UlpsEpsilon<Self::AllEpsilon>,
+            ) -> UlpsEpsilon<Self::AllDebugEpsilon>
             where
-                Ulps<Self::AllDebugEpsilon>: Sized,
+                UlpsEpsilon<Self::AllDebugEpsilon>: Sized,
             {
-                FloatEqAllDebug::debug_ulps_all_epsilon(&**self, &**other, max_diff)
+                AssertFloatEqAll::debug_ulps_all_epsilon(&**self, &**other, max_diff)
             }
         }
     };
@@ -164,55 +158,44 @@ impl_traits_for_wrapper!(Rc);
 //------------------------------------------------------------------------------
 // Slices
 //------------------------------------------------------------------------------
-impl<A, B> FloatDiff<[B]> for [A]
+impl<A, B> AssertFloatEq<[B]> for [A]
 where
-    A: FloatDiff<B>,
-    A::Output: Sized,
-    Ulps<A::Output>: Sized,
-{
-    type Output = Option<Vec<A::Output>>;
-
-    #[inline]
-    fn abs_diff(&self, other: &[B]) -> Self::Output {
-        if self.len() == other.len() {
-            Some(
-                self.iter()
-                    .zip(other.iter())
-                    .map(|(a, b)| a.abs_diff(b))
-                    .collect(),
-            )
-        } else {
-            None
-        }
-    }
-
-    #[inline]
-    fn ulps_diff(&self, other: &[B]) -> Option<Ulps<Self::Output>>
-    where
-        Ulps<Self::Output>: Sized,
-    {
-        if self.len() == other.len() {
-            Some(
-                self.iter()
-                    .zip(other.iter())
-                    .map(|(a, b)| a.ulps_diff(b))
-                    .collect(),
-            )
-        } else {
-            None
-        }
-    }
-}
-
-impl<A, B> FloatEqDebug<[B]> for [A]
-where
-    A: FloatEqDebug<B>,
+    A: AssertFloatEq<B>,
     A::Epsilon: Sized,
     A::DebugEpsilon: Sized,
-    Ulps<A::Epsilon>: Sized,
-    Ulps<A::DebugEpsilon>: Sized,
+    UlpsEpsilon<A::Epsilon>: Sized,
+    UlpsEpsilon<A::DebugEpsilon>: Sized,
 {
+    type DebugAbsDiff = Option<Vec<A::DebugAbsDiff>>;
     type DebugEpsilon = Option<Vec<A::DebugEpsilon>>;
+
+    #[inline]
+    fn debug_abs_diff(&self, other: &[B]) -> Self::DebugAbsDiff {
+        if self.len() == other.len() {
+            Some(
+                self.iter()
+                    .zip(other.iter())
+                    .map(|(a, b)| a.debug_abs_diff(b))
+                    .collect(),
+            )
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn debug_ulps_diff(&self, other: &[B]) -> DebugUlpsDiff<Self::DebugAbsDiff> {
+        if self.len() == other.len() {
+            Some(
+                self.iter()
+                    .zip(other.iter())
+                    .map(|(a, b)| a.debug_ulps_diff(b))
+                    .collect(),
+            )
+        } else {
+            None
+        }
+    }
 
     #[inline]
     fn debug_abs_epsilon(&self, other: &[B], max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
@@ -221,7 +204,7 @@ where
                 self.iter()
                     .zip(other.iter())
                     .zip(max_diff)
-                    .map(|((a, b), eps)| FloatEqDebug::debug_abs_epsilon(a, b, eps))
+                    .map(|((a, b), eps)| AssertFloatEq::debug_abs_epsilon(a, b, eps))
                     .collect(),
             )
         } else {
@@ -236,7 +219,7 @@ where
                 self.iter()
                     .zip(other.iter())
                     .zip(max_diff)
-                    .map(|((a, b), eps)| FloatEqDebug::debug_rel_epsilon(a, b, eps))
+                    .map(|((a, b), eps)| AssertFloatEq::debug_rel_epsilon(a, b, eps))
                     .collect(),
             )
         } else {
@@ -248,14 +231,14 @@ where
     fn debug_ulps_epsilon(
         &self,
         other: &[B],
-        max_diff: &Ulps<Self::Epsilon>,
-    ) -> Ulps<Self::DebugEpsilon> {
+        max_diff: &UlpsEpsilon<Self::Epsilon>,
+    ) -> UlpsEpsilon<Self::DebugEpsilon> {
         if self.len() == other.len() && self.len() == max_diff.len() {
             Some(
                 self.iter()
                     .zip(other.iter())
                     .zip(max_diff)
-                    .map(|((a, b), eps)| FloatEqDebug::debug_ulps_epsilon(a, b, eps))
+                    .map(|((a, b), eps)| AssertFloatEq::debug_ulps_epsilon(a, b, eps))
                     .collect(),
             )
         } else {
@@ -264,11 +247,11 @@ where
     }
 }
 
-impl<A, B> FloatEqAllDebug<[B]> for [A]
+impl<A, B> AssertFloatEqAll<[B]> for [A]
 where
-    A: FloatEqAllDebug<B>,
+    A: AssertFloatEqAll<B>,
     A::AllDebugEpsilon: Sized,
-    Ulps<A::AllDebugEpsilon>: Sized,
+    UlpsEpsilon<A::AllDebugEpsilon>: Sized,
 {
     type AllDebugEpsilon = Option<Vec<A::AllDebugEpsilon>>;
 
@@ -312,10 +295,10 @@ where
     fn debug_ulps_all_epsilon(
         &self,
         other: &[B],
-        max_diff: &Ulps<Self::AllEpsilon>,
-    ) -> Ulps<Self::AllDebugEpsilon>
+        max_diff: &UlpsEpsilon<Self::AllEpsilon>,
+    ) -> UlpsEpsilon<Self::AllDebugEpsilon>
     where
-        Ulps<Self::AllDebugEpsilon>: Sized,
+        UlpsEpsilon<Self::AllDebugEpsilon>: Sized,
     {
         if self.len() == other.len() {
             Some(
@@ -335,58 +318,22 @@ where
 //------------------------------------------------------------------------------
 macro_rules! impl_traits_for_linear_collection {
     ($t:ident) => {
-        impl<T: FloatUlps> FloatUlps for $t<T>
+        impl<T: FloatEqUlpsEpsilon> FloatEqUlpsEpsilon for $t<T>
         where
-            Ulps<T>: Sized,
+            UlpsEpsilon<T>: Sized,
         {
-            type Ulps = $t<Ulps<T>>;
+            type UlpsEpsilon = $t<UlpsEpsilon<T>>;
         }
 
-        impl<A, B> FloatDiff<$t<B>> for $t<A>
-        where
-            A: FloatDiff<B>,
-            A::Output: Sized,
-            Ulps<A::Output>: Sized,
-        {
-            type Output = Option<$t<A::Output>>;
-
-            #[inline]
-            fn abs_diff(&self, other: &$t<B>) -> Self::Output {
-                if self.len() == other.len() {
-                    Some(
-                        self.iter()
-                            .zip(other.iter())
-                            .map(|(a, b)| FloatDiff::abs_diff(a, b))
-                            .collect(),
-                    )
-                } else {
-                    None
-                }
-            }
-
-            #[inline]
-            fn ulps_diff(&self, other: &$t<B>) -> Option<Ulps<Self::Output>>
-            where
-                Ulps<Self::Output>: Sized,
-            {
-                if self.len() == other.len() {
-                    Some(
-                        self.iter()
-                            .zip(other.iter())
-                            .map(|(a, b)| FloatDiff::ulps_diff(a, b))
-                            .collect(),
-                    )
-                } else {
-                    None
-                }
-            }
+        impl<T: FloatEqDebugUlpsDiff> FloatEqDebugUlpsDiff for $t<T> {
+            type DebugUlpsDiff = $t<DebugUlpsDiff<T>>;
         }
 
         impl<A, B> FloatEq<$t<B>> for $t<A>
         where
             A: FloatEq<B>,
             A::Epsilon: Sized,
-            Ulps<A::Epsilon>: Sized,
+            UlpsEpsilon<A::Epsilon>: Sized,
         {
             type Epsilon = $t<A::Epsilon>;
 
@@ -413,7 +360,7 @@ macro_rules! impl_traits_for_linear_collection {
             }
 
             #[inline]
-            fn eq_ulps(&self, other: &$t<B>, max_diff: &Ulps<Self::Epsilon>) -> bool {
+            fn eq_ulps(&self, other: &$t<B>, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
                 self.len() == other.len()
                     && self.len() == max_diff.len()
                     && self
@@ -449,7 +396,7 @@ macro_rules! impl_traits_for_linear_collection {
             }
 
             #[inline]
-            fn eq_ulps_all(&self, other: &$t<B>, max_diff: &Ulps<Self::AllEpsilon>) -> bool {
+            fn eq_ulps_all(&self, other: &$t<B>, max_diff: &UlpsEpsilon<Self::AllEpsilon>) -> bool {
                 self.len() == other.len()
                     && self
                         .iter()
@@ -458,16 +405,45 @@ macro_rules! impl_traits_for_linear_collection {
             }
         }
 
-        impl<A: ?Sized, B: ?Sized> FloatEqDebug<$t<B>> for $t<A>
+        impl<A: ?Sized, B: ?Sized> AssertFloatEq<$t<B>> for $t<A>
         where
-            A: FloatEqDebug<B> + Copy,
+            A: AssertFloatEq<B> + Copy,
             B: Copy,
             A::Epsilon: Sized,
             A::DebugEpsilon: Sized,
-            Ulps<A::Epsilon>: Sized,
-            Ulps<A::DebugEpsilon>: Sized,
+            UlpsEpsilon<A::Epsilon>: Sized,
+            UlpsEpsilon<A::DebugEpsilon>: Sized,
         {
+            type DebugAbsDiff = Option<$t<A::DebugAbsDiff>>;
             type DebugEpsilon = Option<$t<A::DebugEpsilon>>;
+
+            #[inline]
+            fn debug_abs_diff(&self, other: &$t<B>) -> Self::DebugAbsDiff {
+                if self.len() == other.len() {
+                    Some(
+                        self.iter()
+                            .zip(other.iter())
+                            .map(|(a, b)| AssertFloatEq::debug_abs_diff(a, b))
+                            .collect(),
+                    )
+                } else {
+                    None
+                }
+            }
+
+            #[inline]
+            fn debug_ulps_diff(&self, other: &$t<B>) -> DebugUlpsDiff<Self::DebugAbsDiff> {
+                if self.len() == other.len() {
+                    Some(
+                        self.iter()
+                            .zip(other.iter())
+                            .map(|(a, b)| AssertFloatEq::debug_ulps_diff(a, b))
+                            .collect(),
+                    )
+                } else {
+                    None
+                }
+            }
 
             #[inline]
             fn debug_abs_epsilon(
@@ -480,7 +456,7 @@ macro_rules! impl_traits_for_linear_collection {
                         self.iter()
                             .zip(other.iter())
                             .zip(max_diff)
-                            .map(|((a, b), eps)| FloatEqDebug::debug_abs_epsilon(a, b, eps))
+                            .map(|((a, b), eps)| AssertFloatEq::debug_abs_epsilon(a, b, eps))
                             .collect(),
                     )
                 } else {
@@ -499,7 +475,7 @@ macro_rules! impl_traits_for_linear_collection {
                         self.iter()
                             .zip(other.iter())
                             .zip(max_diff)
-                            .map(|((a, b), eps)| FloatEqDebug::debug_rel_epsilon(a, b, eps))
+                            .map(|((a, b), eps)| AssertFloatEq::debug_rel_epsilon(a, b, eps))
                             .collect(),
                     )
                 } else {
@@ -511,14 +487,14 @@ macro_rules! impl_traits_for_linear_collection {
             fn debug_ulps_epsilon(
                 &self,
                 other: &$t<B>,
-                max_diff: &Ulps<Self::Epsilon>,
-            ) -> Ulps<Self::DebugEpsilon> {
+                max_diff: &UlpsEpsilon<Self::Epsilon>,
+            ) -> UlpsEpsilon<Self::DebugEpsilon> {
                 if self.len() == other.len() && self.len() == max_diff.len() {
                     Some(
                         self.iter()
                             .zip(other.iter())
                             .zip(max_diff)
-                            .map(|((a, b), eps)| FloatEqDebug::debug_ulps_epsilon(a, b, eps))
+                            .map(|((a, b), eps)| AssertFloatEq::debug_ulps_epsilon(a, b, eps))
                             .collect(),
                     )
                 } else {
@@ -527,12 +503,12 @@ macro_rules! impl_traits_for_linear_collection {
             }
         }
 
-        impl<A: ?Sized, B: ?Sized> FloatEqAllDebug<$t<B>> for $t<A>
+        impl<A: ?Sized, B: ?Sized> AssertFloatEqAll<$t<B>> for $t<A>
         where
-            A: FloatEqAllDebug<B> + Copy,
+            A: AssertFloatEqAll<B> + Copy,
             B: Copy,
             A::AllDebugEpsilon: Sized,
-            Ulps<A::AllDebugEpsilon>: Sized,
+            UlpsEpsilon<A::AllDebugEpsilon>: Sized,
         {
             type AllDebugEpsilon = Option<$t<A::AllDebugEpsilon>>;
 
@@ -546,7 +522,7 @@ macro_rules! impl_traits_for_linear_collection {
                     Some(
                         self.iter()
                             .zip(other.iter())
-                            .map(|(a, b)| FloatEqAllDebug::debug_abs_all_epsilon(a, b, max_diff))
+                            .map(|(a, b)| AssertFloatEqAll::debug_abs_all_epsilon(a, b, max_diff))
                             .collect(),
                     )
                 } else {
@@ -564,7 +540,7 @@ macro_rules! impl_traits_for_linear_collection {
                     Some(
                         self.iter()
                             .zip(other.iter())
-                            .map(|(a, b)| FloatEqAllDebug::debug_rel_all_epsilon(a, b, max_diff))
+                            .map(|(a, b)| AssertFloatEqAll::debug_rel_all_epsilon(a, b, max_diff))
                             .collect(),
                     )
                 } else {
@@ -576,16 +552,16 @@ macro_rules! impl_traits_for_linear_collection {
             fn debug_ulps_all_epsilon(
                 &self,
                 other: &$t<B>,
-                max_diff: &Ulps<Self::AllEpsilon>,
-            ) -> Ulps<Self::AllDebugEpsilon>
+                max_diff: &UlpsEpsilon<Self::AllEpsilon>,
+            ) -> UlpsEpsilon<Self::AllDebugEpsilon>
             where
-                Ulps<Self::AllDebugEpsilon>: Sized,
+                UlpsEpsilon<Self::AllDebugEpsilon>: Sized,
             {
                 if self.len() == other.len() {
                     Some(
                         self.iter()
                             .zip(other.iter())
-                            .map(|(a, b)| FloatEqAllDebug::debug_ulps_all_epsilon(a, b, max_diff))
+                            .map(|(a, b)| AssertFloatEqAll::debug_ulps_all_epsilon(a, b, max_diff))
                             .collect(),
                     )
                 } else {
@@ -603,52 +579,19 @@ impl_traits_for_linear_collection!(LinkedList);
 //------------------------------------------------------------------------------
 // HashMap
 //------------------------------------------------------------------------------
-impl<K, V, S> FloatUlps for HashMap<K, V, S>
+impl<K, V, S> FloatEqUlpsEpsilon for HashMap<K, V, S>
 where
-    V: FloatUlps,
-    Ulps<V>: Sized,
+    V: FloatEqUlpsEpsilon,
+    UlpsEpsilon<V>: Sized,
 {
-    type Ulps = HashMap<K, Ulps<V>, S>;
+    type UlpsEpsilon = HashMap<K, UlpsEpsilon<V>, S>;
 }
 
-impl<K, VA, VB, S> FloatDiff<HashMap<K, VB, S>> for HashMap<K, VA, S>
+impl<K, V, S> FloatEqDebugUlpsDiff for HashMap<K, V, S>
 where
-    K: Eq + Hash + Clone,
-    S: BuildHasher + Clone,
-    VA: FloatDiff<VB>,
-    VA::Output: Sized,
-    Ulps<VA::Output>: Sized,
+    V: FloatEqDebugUlpsDiff,
 {
-    type Output = Option<HashMap<K, VA::Output, S>>;
-
-    #[inline]
-    fn abs_diff(&self, other: &HashMap<K, VB, S>) -> Self::Output {
-        if self.len() == other.len() {
-            let mut result = HashMap::with_hasher(self.hasher().clone());
-            for (k, v) in self {
-                result.insert(k.clone(), v.abs_diff(other.get(k)?));
-            }
-            Some(result)
-        } else {
-            None
-        }
-    }
-
-    #[inline]
-    fn ulps_diff(&self, other: &HashMap<K, VB, S>) -> Option<Ulps<Self::Output>>
-    where
-        Ulps<Self::Output>: Sized,
-    {
-        if self.len() == other.len() {
-            let mut result = HashMap::with_hasher(self.hasher().clone());
-            for (k, v) in self {
-                result.insert(k.clone(), v.ulps_diff(other.get(k)?)?);
-            }
-            Some(Some(result))
-        } else {
-            None
-        }
-    }
+    type DebugUlpsDiff = HashMap<K, DebugUlpsDiff<V>, S>;
 }
 
 impl<K, VA, VB, S> FloatEq<HashMap<K, VB, S>> for HashMap<K, VA, S>
@@ -657,7 +600,7 @@ where
     S: BuildHasher,
     VA: FloatEq<VB>,
     VA::Epsilon: Sized,
-    Ulps<VA::Epsilon>: Sized,
+    UlpsEpsilon<VA::Epsilon>: Sized,
 {
     type Epsilon = HashMap<K, VA::Epsilon, S>;
 
@@ -696,7 +639,7 @@ where
     }
 
     #[inline]
-    fn eq_ulps(&self, other: &HashMap<K, VB, S>, max_diff: &Ulps<Self::Epsilon>) -> bool {
+    fn eq_ulps(&self, other: &HashMap<K, VB, S>, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
         self.len() == other.len()
             && self.len() == max_diff.len()
             && self.iter().all(|(k, a)| {
@@ -746,7 +689,11 @@ where
     }
 
     #[inline]
-    fn eq_ulps_all(&self, other: &HashMap<K, VB, S>, max_diff: &Ulps<Self::AllEpsilon>) -> bool {
+    fn eq_ulps_all(
+        &self,
+        other: &HashMap<K, VB, S>,
+        max_diff: &UlpsEpsilon<Self::AllEpsilon>,
+    ) -> bool {
         self.len() == other.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
@@ -758,17 +705,44 @@ where
     }
 }
 
-impl<K, VA, VB, S> FloatEqDebug<HashMap<K, VB, S>> for HashMap<K, VA, S>
+impl<K, VA, VB, S> AssertFloatEq<HashMap<K, VB, S>> for HashMap<K, VA, S>
 where
     K: Eq + Hash + Clone + fmt::Debug,
     S: BuildHasher + Clone,
-    VA: FloatEqDebug<VB>,
+    VA: AssertFloatEq<VB>,
     VA::Epsilon: Sized,
-    Ulps<VA::Epsilon>: Sized,
+    UlpsEpsilon<VA::Epsilon>: Sized,
     VA::DebugEpsilon: Sized,
-    Ulps<VA::DebugEpsilon>: Sized,
+    UlpsEpsilon<VA::DebugEpsilon>: Sized,
 {
+    type DebugAbsDiff = Option<HashMap<K, VA::DebugAbsDiff, S>>;
     type DebugEpsilon = Option<HashMap<K, VA::DebugEpsilon, S>>;
+
+    #[inline]
+    fn debug_abs_diff(&self, other: &HashMap<K, VB, S>) -> Self::DebugAbsDiff {
+        if self.len() == other.len() {
+            let mut result = HashMap::with_hasher(self.hasher().clone());
+            for (k, v) in self {
+                result.insert(k.clone(), v.debug_abs_diff(other.get(k)?));
+            }
+            Some(result)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn debug_ulps_diff(&self, other: &HashMap<K, VB, S>) -> DebugUlpsDiff<Self::DebugAbsDiff> {
+        if self.len() == other.len() {
+            let mut result = HashMap::with_hasher(self.hasher().clone());
+            for (k, v) in self {
+                result.insert(k.clone(), v.debug_ulps_diff(other.get(k)?));
+            }
+            Some(result)
+        } else {
+            None
+        }
+    }
 
     #[inline]
     fn debug_abs_epsilon(
@@ -814,8 +788,8 @@ where
     fn debug_ulps_epsilon(
         &self,
         other: &HashMap<K, VB, S>,
-        max_diff: &Ulps<Self::Epsilon>,
-    ) -> Ulps<Self::DebugEpsilon> {
+        max_diff: &UlpsEpsilon<Self::Epsilon>,
+    ) -> UlpsEpsilon<Self::DebugEpsilon> {
         if self.len() == other.len() && self.len() == max_diff.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
@@ -831,13 +805,13 @@ where
     }
 }
 
-impl<K, VA, VB, S> FloatEqAllDebug<HashMap<K, VB, S>> for HashMap<K, VA, S>
+impl<K, VA, VB, S> AssertFloatEqAll<HashMap<K, VB, S>> for HashMap<K, VA, S>
 where
     K: Eq + Hash + Clone + fmt::Debug,
     S: BuildHasher + Clone,
-    VA: FloatEqAllDebug<VB>,
+    VA: AssertFloatEqAll<VB>,
     VA::AllDebugEpsilon: Sized,
-    Ulps<VA::AllDebugEpsilon>: Sized,
+    UlpsEpsilon<VA::AllDebugEpsilon>: Sized,
 {
     type AllDebugEpsilon = Option<HashMap<K, VA::AllDebugEpsilon, S>>;
 
@@ -879,10 +853,10 @@ where
     fn debug_ulps_all_epsilon(
         &self,
         other: &HashMap<K, VB, S>,
-        max_diff: &Ulps<Self::AllEpsilon>,
-    ) -> Ulps<Self::AllDebugEpsilon>
+        max_diff: &UlpsEpsilon<Self::AllEpsilon>,
+    ) -> UlpsEpsilon<Self::AllDebugEpsilon>
     where
-        Ulps<Self::AllDebugEpsilon>: Sized,
+        UlpsEpsilon<Self::AllDebugEpsilon>: Sized,
     {
         if self.len() == other.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
@@ -899,51 +873,19 @@ where
 //------------------------------------------------------------------------------
 // BTreeMap
 //------------------------------------------------------------------------------
-impl<K, V> FloatUlps for BTreeMap<K, V>
+impl<K, V> FloatEqUlpsEpsilon for BTreeMap<K, V>
 where
-    V: FloatUlps,
-    Ulps<V>: Sized,
+    V: FloatEqUlpsEpsilon,
+    UlpsEpsilon<V>: Sized,
 {
-    type Ulps = BTreeMap<K, Ulps<V>>;
+    type UlpsEpsilon = BTreeMap<K, UlpsEpsilon<V>>;
 }
 
-impl<K, VA, VB> FloatDiff<BTreeMap<K, VB>> for BTreeMap<K, VA>
+impl<K, V> FloatEqDebugUlpsDiff for BTreeMap<K, V>
 where
-    K: Eq + Ord + Clone,
-    VA: FloatDiff<VB>,
-    VA::Output: Sized,
-    Ulps<VA::Output>: Sized,
+    V: FloatEqDebugUlpsDiff,
 {
-    type Output = Option<BTreeMap<K, VA::Output>>;
-
-    #[inline]
-    fn abs_diff(&self, other: &BTreeMap<K, VB>) -> Self::Output {
-        if self.len() == other.len() {
-            let mut result = BTreeMap::new();
-            for (k, v) in self {
-                result.insert(k.clone(), v.abs_diff(other.get(k)?));
-            }
-            Some(result)
-        } else {
-            None
-        }
-    }
-
-    #[inline]
-    fn ulps_diff(&self, other: &BTreeMap<K, VB>) -> Option<Ulps<Self::Output>>
-    where
-        Ulps<Self::Output>: Sized,
-    {
-        if self.len() == other.len() {
-            let mut result = BTreeMap::new();
-            for (k, v) in self {
-                result.insert(k.clone(), v.ulps_diff(other.get(k)?)?);
-            }
-            Some(Some(result))
-        } else {
-            None
-        }
-    }
+    type DebugUlpsDiff = BTreeMap<K, DebugUlpsDiff<V>>;
 }
 
 impl<K, VA, VB> FloatEq<BTreeMap<K, VB>> for BTreeMap<K, VA>
@@ -951,7 +893,7 @@ where
     K: Eq + Ord,
     VA: FloatEq<VB>,
     VA::Epsilon: Sized,
-    Ulps<VA::Epsilon>: Sized,
+    UlpsEpsilon<VA::Epsilon>: Sized,
 {
     type Epsilon = BTreeMap<K, VA::Epsilon>;
 
@@ -990,7 +932,7 @@ where
     }
 
     #[inline]
-    fn eq_ulps(&self, other: &BTreeMap<K, VB>, max_diff: &Ulps<Self::Epsilon>) -> bool {
+    fn eq_ulps(&self, other: &BTreeMap<K, VB>, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
         self.len() == other.len()
             && self.len() == max_diff.len()
             && self.iter().all(|(k, a)| {
@@ -1039,7 +981,11 @@ where
     }
 
     #[inline]
-    fn eq_ulps_all(&self, other: &BTreeMap<K, VB>, max_diff: &Ulps<Self::AllEpsilon>) -> bool {
+    fn eq_ulps_all(
+        &self,
+        other: &BTreeMap<K, VB>,
+        max_diff: &UlpsEpsilon<Self::AllEpsilon>,
+    ) -> bool {
         self.len() == other.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
@@ -1051,16 +997,43 @@ where
     }
 }
 
-impl<K, VA, VB> FloatEqDebug<BTreeMap<K, VB>> for BTreeMap<K, VA>
+impl<K, VA, VB> AssertFloatEq<BTreeMap<K, VB>> for BTreeMap<K, VA>
 where
     K: Eq + Ord + Clone + fmt::Debug,
-    VA: FloatEqDebug<VB>,
+    VA: AssertFloatEq<VB>,
     VA::Epsilon: Sized,
     VA::DebugEpsilon: Sized,
-    Ulps<VA::Epsilon>: Sized,
-    Ulps<VA::DebugEpsilon>: Sized,
+    UlpsEpsilon<VA::Epsilon>: Sized,
+    UlpsEpsilon<VA::DebugEpsilon>: Sized,
 {
+    type DebugAbsDiff = Option<BTreeMap<K, VA::DebugAbsDiff>>;
     type DebugEpsilon = Option<BTreeMap<K, VA::DebugEpsilon>>;
+
+    #[inline]
+    fn debug_abs_diff(&self, other: &BTreeMap<K, VB>) -> Self::DebugAbsDiff {
+        if self.len() == other.len() {
+            let mut result = BTreeMap::new();
+            for (k, v) in self {
+                result.insert(k.clone(), v.debug_abs_diff(other.get(k)?));
+            }
+            Some(result)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
+    fn debug_ulps_diff(&self, other: &BTreeMap<K, VB>) -> DebugUlpsDiff<Self::DebugAbsDiff> {
+        if self.len() == other.len() {
+            let mut result = BTreeMap::new();
+            for (k, v) in self {
+                result.insert(k.clone(), v.debug_ulps_diff(other.get(k)?));
+            }
+            Some(result)
+        } else {
+            None
+        }
+    }
 
     #[inline]
     fn debug_abs_epsilon(
@@ -1106,10 +1079,10 @@ where
     fn debug_ulps_epsilon(
         &self,
         other: &BTreeMap<K, VB>,
-        max_diff: &Ulps<Self::Epsilon>,
-    ) -> Ulps<Self::DebugEpsilon>
+        max_diff: &UlpsEpsilon<Self::Epsilon>,
+    ) -> UlpsEpsilon<Self::DebugEpsilon>
     where
-        Ulps<Self::DebugEpsilon>: Sized,
+        UlpsEpsilon<Self::DebugEpsilon>: Sized,
     {
         if self.len() == other.len() && self.len() == max_diff.len() {
             let mut result = BTreeMap::new();
@@ -1126,12 +1099,12 @@ where
     }
 }
 
-impl<K, VA, VB> FloatEqAllDebug<BTreeMap<K, VB>> for BTreeMap<K, VA>
+impl<K, VA, VB> AssertFloatEqAll<BTreeMap<K, VB>> for BTreeMap<K, VA>
 where
     K: Eq + Ord + Clone + fmt::Debug,
-    VA: FloatEqAllDebug<VB>,
+    VA: AssertFloatEqAll<VB>,
     VA::AllDebugEpsilon: Sized,
-    Ulps<VA::AllDebugEpsilon>: Sized,
+    UlpsEpsilon<VA::AllDebugEpsilon>: Sized,
 {
     type AllDebugEpsilon = Option<BTreeMap<K, VA::AllDebugEpsilon>>;
 
@@ -1173,10 +1146,10 @@ where
     fn debug_ulps_all_epsilon(
         &self,
         other: &BTreeMap<K, VB>,
-        max_diff: &Ulps<Self::AllEpsilon>,
-    ) -> Ulps<Self::AllDebugEpsilon>
+        max_diff: &UlpsEpsilon<Self::AllEpsilon>,
+    ) -> UlpsEpsilon<Self::AllDebugEpsilon>
     where
-        Ulps<Self::AllDebugEpsilon>: Sized,
+        UlpsEpsilon<Self::AllDebugEpsilon>: Sized,
     {
         if self.len() == other.len() {
             let mut result = BTreeMap::new();

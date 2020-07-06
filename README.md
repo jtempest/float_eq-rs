@@ -135,7 +135,7 @@ types, the contents of `Cell`, `RefCell`, `Rc`, `Arc` and `Box` instances, as
 well as for slices, `Option`, `Vec`, `VecDeque`, `LinkedList`, `BTreeMap` and
 `HashMap`.
 
-Types that also implement `FloatDiff` and `FloatEqDebug`/`FloatEqAllDebug` may
+Types that also implement `FloatDiff` and `AssertFloatEq`/`AssertFloatEqAll` may
 be used in the assert forms.
 
 ## Derivable

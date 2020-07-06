@@ -1,4 +1,4 @@
-use float_eq::{float_eq, float_ne, FloatDiff, FloatEqAllDebug, FloatEqDebug};
+use float_eq::{float_eq, float_ne, AssertFloatEq, AssertFloatEqAll};
 use std::boxed::Box;
 use std::collections::{BTreeMap, HashMap, VecDeque};
 use std::rc::Rc;
@@ -11,10 +11,10 @@ mod rc {
     fn float_diff() {
         let a = Rc::new([1.0f32, 2.0]);
         let b = Rc::new([1.5f32, 2.25]);
-        assert_eq!(a.abs_diff(&b), [0.5, 0.25]);
+        assert_eq!(a.debug_abs_diff(&b), [0.5, 0.25]);
 
-        let c = Rc::new([1.000_000_1f32, 2.000_000_5]);
-        assert_eq!(a.ulps_diff(&c), Some([1, 2]));
+        let c = Rc::new([1.000_000_1f32, -2.000_000_5]);
+        assert_eq!(a.debug_ulps_diff(&c), [Some(1), None]);
     }
 
     #[test]
@@ -55,10 +55,10 @@ mod arc {
     fn float_diff() {
         let a = Arc::new([1.0f32, 2.0]);
         let b = Arc::new([1.5f32, 2.25]);
-        assert_eq!(a.abs_diff(&b), [0.5, 0.25]);
+        assert_eq!(a.debug_abs_diff(&b), [0.5, 0.25]);
 
-        let c = Arc::new([1.000_000_1f32, 2.000_000_5]);
-        assert_eq!(a.ulps_diff(&c), Some([1, 2]));
+        let c = Arc::new([1.000_000_1f32, -2.000_000_5]);
+        assert_eq!(a.debug_ulps_diff(&c), [Some(1), None]);
     }
 
     #[test]
@@ -99,10 +99,10 @@ mod r#box {
     fn float_diff() {
         let a = Box::new([1.0f32, 2.0]);
         let b = Box::new([1.5f32, 2.25]);
-        assert_eq!(a.abs_diff(&b), [0.5, 0.25]);
+        assert_eq!(a.debug_abs_diff(&b), [0.5, 0.25]);
 
-        let c = Box::new([1.000_000_1f32, 2.000_000_5]);
-        assert_eq!(a.ulps_diff(&c), Some([1, 2]));
+        let c = Box::new([1.000_000_1f32, -2.000_000_5]);
+        assert_eq!(a.debug_ulps_diff(&c), [Some(1), None]);
     }
 
     #[test]
@@ -143,22 +143,22 @@ mod slice {
     fn float_diff() {
         let a = [1.0f32, 2.0];
         let b = vec![1.5f32, 2.25];
-        assert_eq!(a[..].abs_diff(&b[..]), Some(vec![0.5, 0.25]));
+        assert_eq!(a[..].debug_abs_diff(&b[..]), Some(vec![0.5, 0.25]));
 
-        let c = &[1.000_000_1f32, 2.000_000_5];
-        assert_eq!(a[..].ulps_diff(&c[..]), Some(Some(vec![1, 2])));
+        let c = &[1.000_000_1f32, -2.000_000_5];
+        assert_eq!(a[..].debug_ulps_diff(&c[..]), Some(vec![Some(1), None]));
 
         let d = &[][..];
-        assert_eq!(a[..].abs_diff(&d), None);
-        assert_eq!(d.abs_diff(&a), None);
-        assert_eq!(a[..].ulps_diff(&d), None);
-        assert_eq!(d.ulps_diff(&a), None);
+        assert_eq!(a[..].debug_abs_diff(&d), None);
+        assert_eq!(d.debug_abs_diff(&a), None);
+        assert_eq!(a[..].debug_ulps_diff(&d), None);
+        assert_eq!(d.debug_ulps_diff(&a), None);
 
         let e = [1.0; 3];
-        assert_eq!(a[..].abs_diff(&e[..]), None);
-        assert_eq!(e[..].abs_diff(&a[..]), None);
-        assert_eq!(a[..].ulps_diff(&e[..]), None);
-        assert_eq!(e[..].ulps_diff(&a[..]), None);
+        assert_eq!(a[..].debug_abs_diff(&e[..]), None);
+        assert_eq!(e[..].debug_abs_diff(&a[..]), None);
+        assert_eq!(a[..].debug_ulps_diff(&e[..]), None);
+        assert_eq!(e[..].debug_ulps_diff(&a[..]), None);
     }
 
     #[test]
@@ -215,22 +215,22 @@ mod vec {
     fn float_diff() {
         let a = vec![1.0f32, 2.0];
         let b = vec![1.5f32, 2.25];
-        assert_eq!(a.abs_diff(&b), Some(vec![0.5, 0.25]));
+        assert_eq!(a.debug_abs_diff(&b), Some(vec![0.5, 0.25]));
 
-        let c = vec![1.000_000_1f32, 2.000_000_5];
-        assert_eq!(a.ulps_diff(&c), Some(Some(vec![1, 2])));
+        let c = vec![1.000_000_1f32, -2.000_000_5];
+        assert_eq!(a.debug_ulps_diff(&c), Some(vec![Some(1), None]));
 
         let d = Vec::new();
-        assert_eq!(a.abs_diff(&d), None);
-        assert_eq!(d.abs_diff(&a), None);
-        assert_eq!(a.ulps_diff(&d), None);
-        assert_eq!(d.ulps_diff(&a), None);
+        assert_eq!(a.debug_abs_diff(&d), None);
+        assert_eq!(d.debug_abs_diff(&a), None);
+        assert_eq!(a.debug_ulps_diff(&d), None);
+        assert_eq!(d.debug_ulps_diff(&a), None);
 
         let e = vec![1.0; 3];
-        assert_eq!(a.abs_diff(&e), None);
-        assert_eq!(e.abs_diff(&a), None);
-        assert_eq!(a.ulps_diff(&e), None);
-        assert_eq!(e.ulps_diff(&a), None);
+        assert_eq!(a.debug_abs_diff(&e), None);
+        assert_eq!(e.debug_abs_diff(&a), None);
+        assert_eq!(a.debug_ulps_diff(&e), None);
+        assert_eq!(e.debug_ulps_diff(&a), None);
     }
 
     #[test]
@@ -340,22 +340,22 @@ mod vec_deque {
     fn float_diff() {
         let a = vecd![1.0f32, 2.0];
         let b = vecd![1.5f32, 2.25];
-        assert_eq!(a.abs_diff(&b), Some(vecd![0.5, 0.25]));
+        assert_eq!(a.debug_abs_diff(&b), Some(vecd![0.5, 0.25]));
 
-        let c = vecd![1.000_000_1f32, 2.000_000_5];
-        assert_eq!(a.ulps_diff(&c), Some(Some(vecd![1, 2])));
+        let c = vecd![1.000_000_1f32, -2.000_000_5];
+        assert_eq!(a.debug_ulps_diff(&c), Some(vecd![Some(1), None]));
 
         let d = VecDeque::new();
-        assert_eq!(a.abs_diff(&d), None);
-        assert_eq!(d.abs_diff(&a), None);
-        assert_eq!(a.ulps_diff(&d), None);
-        assert_eq!(d.ulps_diff(&a), None);
+        assert_eq!(a.debug_abs_diff(&d), None);
+        assert_eq!(d.debug_abs_diff(&a), None);
+        assert_eq!(a.debug_ulps_diff(&d), None);
+        assert_eq!(d.debug_ulps_diff(&a), None);
 
         let e = vecd![1.0; 3];
-        assert_eq!(a.abs_diff(&e), None);
-        assert_eq!(e.abs_diff(&a), None);
-        assert_eq!(a.ulps_diff(&e), None);
-        assert_eq!(e.ulps_diff(&a), None);
+        assert_eq!(a.debug_abs_diff(&e), None);
+        assert_eq!(e.debug_abs_diff(&a), None);
+        assert_eq!(a.debug_ulps_diff(&e), None);
+        assert_eq!(e.debug_ulps_diff(&a), None);
     }
 
     #[test]
@@ -466,22 +466,22 @@ mod linked_list {
     fn float_diff() {
         let a = list![1.0f32, 2.0];
         let b = list![1.5f32, 2.25];
-        assert_eq!(a.abs_diff(&b), Some(list![0.5, 0.25]));
+        assert_eq!(a.debug_abs_diff(&b), Some(list![0.5, 0.25]));
 
-        let c = list![1.000_000_1f32, 2.000_000_5];
-        assert_eq!(a.ulps_diff(&c), Some(Some(list![1, 2])));
+        let c = list![1.000_000_1f32, -2.000_000_5];
+        assert_eq!(a.debug_ulps_diff(&c), Some(list![Some(1), None]));
 
         let d = LinkedList::new();
-        assert_eq!(a.abs_diff(&d), None);
-        assert_eq!(d.abs_diff(&a), None);
-        assert_eq!(a.ulps_diff(&d), None);
-        assert_eq!(d.ulps_diff(&a), None);
+        assert_eq!(a.debug_abs_diff(&d), None);
+        assert_eq!(d.debug_abs_diff(&a), None);
+        assert_eq!(a.debug_ulps_diff(&d), None);
+        assert_eq!(d.debug_ulps_diff(&a), None);
 
         let e = list![1.0; 3];
-        assert_eq!(a.abs_diff(&e), None);
-        assert_eq!(e.abs_diff(&a), None);
-        assert_eq!(a.ulps_diff(&e), None);
-        assert_eq!(e.ulps_diff(&a), None);
+        assert_eq!(a.debug_abs_diff(&e), None);
+        assert_eq!(e.debug_abs_diff(&a), None);
+        assert_eq!(a.debug_ulps_diff(&e), None);
+        assert_eq!(e.debug_ulps_diff(&a), None);
     }
 
     #[test]
@@ -584,22 +584,28 @@ macro_rules! impl_map_tests {
             fn float_diff() {
                 let a = $map! {"one" => 1.0f32, "two" => 2.0};
                 let b = $map! {"one" => 1.5f32, "two" => 2.25};
-                assert_eq!(a.abs_diff(&b), Some($map! {"one" => 0.5, "two" => 0.25}));
+                assert_eq!(
+                    a.debug_abs_diff(&b),
+                    Some($map! {"one" => 0.5, "two" => 0.25})
+                );
 
-                let c = $map! {"one" => 1.000_000_1f32, "two" => 2.000_000_5};
-                assert_eq!(a.ulps_diff(&c), Some(Some($map! {"one" => 1, "two" => 2})));
+                let c = $map! {"one" => 1.000_000_1f32, "two" => -2.000_000_5};
+                assert_eq!(
+                    a.debug_ulps_diff(&c),
+                    Some($map! {"one" => Some(1), "two" => None})
+                );
 
                 let d = $map! {};
-                assert_eq!(a.abs_diff(&d), None);
-                assert_eq!(d.abs_diff(&a), None);
-                assert_eq!(a.ulps_diff(&d), None);
-                assert_eq!(d.ulps_diff(&a), None);
+                assert_eq!(a.debug_abs_diff(&d), None);
+                assert_eq!(d.debug_abs_diff(&a), None);
+                assert_eq!(a.debug_ulps_diff(&d), None);
+                assert_eq!(d.debug_ulps_diff(&a), None);
 
                 let e = $map! {"one" => 1.000_000_1f32, "two" => 2.000_000_5, "three" => 3.0};
-                assert_eq!(a.abs_diff(&e), None);
-                assert_eq!(e.abs_diff(&a), None);
-                assert_eq!(a.ulps_diff(&e), None);
-                assert_eq!(e.ulps_diff(&a), None);
+                assert_eq!(a.debug_abs_diff(&e), None);
+                assert_eq!(e.debug_abs_diff(&a), None);
+                assert_eq!(a.debug_ulps_diff(&e), None);
+                assert_eq!(e.debug_ulps_diff(&a), None);
             }
 
             #[test]

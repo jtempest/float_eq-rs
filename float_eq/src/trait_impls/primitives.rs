@@ -1,6 +1,9 @@
 #![allow(clippy::float_cmp)]
 
-use crate::{FloatDiff, FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug, FloatUlps, Ulps};
+use crate::{
+    AssertFloatEq, AssertFloatEqAll, DebugUlpsDiff, FloatEq, FloatEqAll, FloatEqDebugUlpsDiff,
+    FloatEqUlpsEpsilon, UlpsEpsilon,
+};
 
 macro_rules! impl_traits {
     ($float:ident, $uint:ident) => {
@@ -22,34 +25,12 @@ macro_rules! impl_traits {
             }
         }
 
-        impl FloatUlps for $float {
-            type Ulps = $uint;
+        impl FloatEqUlpsEpsilon for $float {
+            type UlpsEpsilon = $uint;
         }
 
-        impl FloatDiff for $float {
-            type Output = Self;
-
-            #[inline]
-            fn abs_diff(&self, other: &Self) -> Self {
-                $float::abs(self - other)
-            }
-
-            #[inline]
-            fn ulps_diff(&self, other: &Self) -> Option<Ulps<Self::Output>> {
-                if self == other {
-                    Some(0)
-                } else if self.is_nan() || other.is_nan() {
-                    None
-                } else if self.is_sign_positive() != other.is_sign_positive() {
-                    None
-                } else {
-                    let a = self.to_bits();
-                    let b = other.to_bits();
-                    let max = a.max(b);
-                    let min = a.min(b);
-                    Some(max - min)
-                }
-            }
+        impl FloatEqDebugUlpsDiff for $float {
+            type DebugUlpsDiff = Option<$uint>;
         }
 
         impl FloatEq for $float {
@@ -72,7 +53,7 @@ macro_rules! impl_traits {
             }
 
             #[inline]
-            fn eq_ulps(&self, other: &Self, max_diff: &Ulps<Self::Epsilon>) -> bool {
+            fn eq_ulps(&self, other: &Self, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
                 if self.is_nan() || other.is_nan() {
                     false // NaNs are never equal
                 } else if self.is_sign_positive() != other.is_sign_positive() {
@@ -101,13 +82,36 @@ macro_rules! impl_traits {
             }
 
             #[inline]
-            fn eq_ulps_all(&self, other: &Self, max_diff: &Ulps<Self::AllEpsilon>) -> bool {
+            fn eq_ulps_all(&self, other: &Self, max_diff: &UlpsEpsilon<Self::AllEpsilon>) -> bool {
                 self.eq_ulps(other, max_diff)
             }
         }
 
-        impl FloatEqDebug for $float {
+        impl AssertFloatEq for $float {
+            type DebugAbsDiff = Self;
             type DebugEpsilon = Self::Epsilon;
+
+            #[inline]
+            fn debug_abs_diff(&self, other: &Self) -> Self::DebugAbsDiff {
+                $float::abs(self - other)
+            }
+
+            #[inline]
+            fn debug_ulps_diff(&self, other: &Self) -> DebugUlpsDiff<Self::DebugAbsDiff> {
+                if self == other {
+                    Some(0)
+                } else if self.is_nan() || other.is_nan() {
+                    None
+                } else if self.is_sign_positive() != other.is_sign_positive() {
+                    None
+                } else {
+                    let a = self.to_bits();
+                    let b = other.to_bits();
+                    let max = a.max(b);
+                    let min = a.min(b);
+                    Some(max - min)
+                }
+            }
 
             #[inline]
             fn debug_abs_epsilon(
@@ -131,13 +135,13 @@ macro_rules! impl_traits {
             fn debug_ulps_epsilon(
                 &self,
                 _other: &Self,
-                max_diff: &Ulps<Self::Epsilon>,
-            ) -> Ulps<Self::DebugEpsilon> {
+                max_diff: &UlpsEpsilon<Self::Epsilon>,
+            ) -> UlpsEpsilon<Self::DebugEpsilon> {
                 *max_diff
             }
         }
 
-        impl FloatEqAllDebug for $float {
+        impl AssertFloatEqAll for $float {
             type AllDebugEpsilon = Self::AllEpsilon;
 
             #[inline]
@@ -162,8 +166,8 @@ macro_rules! impl_traits {
             fn debug_ulps_all_epsilon(
                 &self,
                 other: &Self,
-                max_diff: &Ulps<Self::AllEpsilon>,
-            ) -> Ulps<Self::AllDebugEpsilon> {
+                max_diff: &UlpsEpsilon<Self::AllEpsilon>,
+            ) -> UlpsEpsilon<Self::AllDebugEpsilon> {
                 self.debug_ulps_epsilon(other, max_diff)
             }
         }

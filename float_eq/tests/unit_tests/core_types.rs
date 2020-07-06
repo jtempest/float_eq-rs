@@ -1,5 +1,5 @@
 use core::cell::{Cell, RefCell};
-use float_eq::{assert_float_eq, float_eq, float_ne, FloatDiff, FloatEqAllDebug, FloatEqDebug};
+use float_eq::{assert_float_eq, float_eq, float_ne, AssertFloatEq, AssertFloatEqAll};
 
 #[allow(clippy::unnecessary_mut_passed)]
 mod refs {
@@ -11,17 +11,17 @@ mod refs {
         let b = &1.5f32;
         let mut ma = &mut 1.0f32;
         let mut mb = &mut 1.5f32;
-        assert_eq!(FloatDiff::abs_diff(&a, &b), 0.5);
-        assert_eq!(FloatDiff::abs_diff(&mut ma, &b), 0.5);
-        assert_eq!(FloatDiff::abs_diff(&a, &mut mb), 0.5);
-        assert_eq!(FloatDiff::abs_diff(&mut ma, &mut mb), 0.5);
+        assert_eq!(AssertFloatEq::debug_abs_diff(&a, &b), 0.5);
+        assert_eq!(AssertFloatEq::debug_abs_diff(&mut ma, &b), 0.5);
+        assert_eq!(AssertFloatEq::debug_abs_diff(&a, &mut mb), 0.5);
+        assert_eq!(AssertFloatEq::debug_abs_diff(&mut ma, &mut mb), 0.5);
 
         let c = &1.000_000_2f32;
         let mut mc = &mut 1.000_000_2f32;
-        assert_eq!(FloatDiff::ulps_diff(&a, &c), Some(2));
-        assert_eq!(FloatDiff::ulps_diff(&mut ma, &c), Some(2));
-        assert_eq!(FloatDiff::ulps_diff(&a, &mut mc), Some(2));
-        assert_eq!(FloatDiff::ulps_diff(&mut ma, &mut mc), Some(2));
+        assert_eq!(AssertFloatEq::debug_ulps_diff(&a, &c), Some(2));
+        assert_eq!(AssertFloatEq::debug_ulps_diff(&mut ma, &c), Some(2));
+        assert_eq!(AssertFloatEq::debug_ulps_diff(&a, &mut mc), Some(2));
+        assert_eq!(AssertFloatEq::debug_ulps_diff(&mut ma, &mut mc), Some(2));
     }
 
     #[test]
@@ -68,54 +68,60 @@ mod refs {
         let mut ma = &mut 1.0f32;
         let mut mb = &mut 2.0f32;
 
-        assert_eq!(FloatEqDebug::debug_abs_epsilon(&a, &b, &0.5), 0.5);
-        assert_eq!(FloatEqDebug::debug_abs_epsilon(&mut ma, &b, &0.5), 0.5);
-        assert_eq!(FloatEqDebug::debug_abs_epsilon(&a, &mut mb, &0.5), 0.5);
-        assert_eq!(FloatEqDebug::debug_abs_epsilon(&mut ma, &mut mb, &0.5), 0.5);
-
-        assert_eq!(FloatEqAllDebug::debug_abs_all_epsilon(&a, &b, &0.5), 0.5);
+        assert_eq!(AssertFloatEq::debug_abs_epsilon(&a, &b, &0.5), 0.5);
+        assert_eq!(AssertFloatEq::debug_abs_epsilon(&mut ma, &b, &0.5), 0.5);
+        assert_eq!(AssertFloatEq::debug_abs_epsilon(&a, &mut mb, &0.5), 0.5);
         assert_eq!(
-            FloatEqAllDebug::debug_abs_all_epsilon(&mut ma, &b, &0.5),
-            0.5
-        );
-        assert_eq!(
-            FloatEqAllDebug::debug_abs_all_epsilon(&a, &mut mb, &0.5),
-            0.5
-        );
-        assert_eq!(
-            FloatEqAllDebug::debug_abs_all_epsilon(&mut ma, &mut mb, &0.5),
+            AssertFloatEq::debug_abs_epsilon(&mut ma, &mut mb, &0.5),
             0.5
         );
 
-        assert_eq!(FloatEqDebug::debug_rel_epsilon(&a, &b, &0.1), 0.2);
-        assert_eq!(FloatEqDebug::debug_rel_epsilon(&mut ma, &b, &0.1), 0.2);
-        assert_eq!(FloatEqDebug::debug_rel_epsilon(&a, &mut mb, &0.1), 0.2);
-        assert_eq!(FloatEqDebug::debug_rel_epsilon(&mut ma, &mut mb, &0.1), 0.2);
-
-        assert_eq!(FloatEqAllDebug::debug_rel_all_epsilon(&a, &b, &0.1), 0.2);
+        assert_eq!(AssertFloatEqAll::debug_abs_all_epsilon(&a, &b, &0.5), 0.5);
         assert_eq!(
-            FloatEqAllDebug::debug_rel_all_epsilon(&mut ma, &b, &0.1),
+            AssertFloatEqAll::debug_abs_all_epsilon(&mut ma, &b, &0.5),
+            0.5
+        );
+        assert_eq!(
+            AssertFloatEqAll::debug_abs_all_epsilon(&a, &mut mb, &0.5),
+            0.5
+        );
+        assert_eq!(
+            AssertFloatEqAll::debug_abs_all_epsilon(&mut ma, &mut mb, &0.5),
+            0.5
+        );
+
+        assert_eq!(AssertFloatEq::debug_rel_epsilon(&a, &b, &0.1), 0.2);
+        assert_eq!(AssertFloatEq::debug_rel_epsilon(&mut ma, &b, &0.1), 0.2);
+        assert_eq!(AssertFloatEq::debug_rel_epsilon(&a, &mut mb, &0.1), 0.2);
+        assert_eq!(
+            AssertFloatEq::debug_rel_epsilon(&mut ma, &mut mb, &0.1),
+            0.2
+        );
+
+        assert_eq!(AssertFloatEqAll::debug_rel_all_epsilon(&a, &b, &0.1), 0.2);
+        assert_eq!(
+            AssertFloatEqAll::debug_rel_all_epsilon(&mut ma, &b, &0.1),
             0.2
         );
         assert_eq!(
-            FloatEqAllDebug::debug_rel_all_epsilon(&a, &mut mb, &0.1),
+            AssertFloatEqAll::debug_rel_all_epsilon(&a, &mut mb, &0.1),
             0.2
         );
         assert_eq!(
-            FloatEqAllDebug::debug_rel_all_epsilon(&mut ma, &mut mb, &0.1),
+            AssertFloatEqAll::debug_rel_all_epsilon(&mut ma, &mut mb, &0.1),
             0.2
         );
 
-        assert_eq!(FloatEqDebug::debug_ulps_epsilon(&a, &b, &1), 1);
-        assert_eq!(FloatEqDebug::debug_ulps_epsilon(&mut ma, &b, &1), 1);
-        assert_eq!(FloatEqDebug::debug_ulps_epsilon(&a, &mut mb, &1), 1);
-        assert_eq!(FloatEqDebug::debug_ulps_epsilon(&mut ma, &mut mb, &1), 1);
+        assert_eq!(AssertFloatEq::debug_ulps_epsilon(&a, &b, &1), 1);
+        assert_eq!(AssertFloatEq::debug_ulps_epsilon(&mut ma, &b, &1), 1);
+        assert_eq!(AssertFloatEq::debug_ulps_epsilon(&a, &mut mb, &1), 1);
+        assert_eq!(AssertFloatEq::debug_ulps_epsilon(&mut ma, &mut mb, &1), 1);
 
-        assert_eq!(FloatEqAllDebug::debug_ulps_all_epsilon(&a, &b, &1), 1);
-        assert_eq!(FloatEqAllDebug::debug_ulps_all_epsilon(&mut ma, &b, &1), 1);
-        assert_eq!(FloatEqAllDebug::debug_ulps_all_epsilon(&a, &mut mb, &1), 1);
+        assert_eq!(AssertFloatEqAll::debug_ulps_all_epsilon(&a, &b, &1), 1);
+        assert_eq!(AssertFloatEqAll::debug_ulps_all_epsilon(&mut ma, &b, &1), 1);
+        assert_eq!(AssertFloatEqAll::debug_ulps_all_epsilon(&a, &mut mb, &1), 1);
         assert_eq!(
-            FloatEqAllDebug::debug_ulps_all_epsilon(&mut ma, &mut mb, &1),
+            AssertFloatEqAll::debug_ulps_all_epsilon(&mut ma, &mut mb, &1),
             1
         );
     }
@@ -128,14 +134,14 @@ mod option {
     fn float_diff() {
         let a = Some([1.0f32, 2.0]);
         let b = Some([1.5f32, 2.25]);
-        assert_eq!(a.abs_diff(&None), None);
-        assert_eq!(None.abs_diff(&a), None);
-        assert_eq!(a.abs_diff(&b), Some([0.5, 0.25]));
+        assert_eq!(a.debug_abs_diff(&None), None);
+        assert_eq!(None.debug_abs_diff(&a), None);
+        assert_eq!(a.debug_abs_diff(&b), Some([0.5, 0.25]));
 
-        let c = Some([1.000_000_1f32, 2.000_000_5]);
-        assert_eq!(a.ulps_diff(&None), None);
-        assert_eq!(None.ulps_diff(&c), None);
-        assert_eq!(a.ulps_diff(&c), Some(Some([1, 2])));
+        let c = Some([1.000_000_1f32, -2.000_000_5]);
+        assert_eq!(a.debug_ulps_diff(&None), None);
+        assert_eq!(None.debug_ulps_diff(&c), None);
+        assert_eq!(a.debug_ulps_diff(&c), Some([Some(1), None]));
     }
 
     #[test]
@@ -242,10 +248,10 @@ mod cell {
     fn float_diff() {
         let a = Cell::new([1.0f32, 2.0]);
         let b = Cell::new([1.5f32, 2.25]);
-        assert_eq!(a.abs_diff(&b), [0.5, 0.25]);
+        assert_eq!(a.debug_abs_diff(&b), [0.5, 0.25]);
 
-        let c = Cell::new([1.000_000_1f32, 2.000_000_5]);
-        assert_eq!(a.ulps_diff(&c), Some([1, 2]));
+        let c = Cell::new([1.000_000_1f32, -2.000_000_5]);
+        assert_eq!(a.debug_ulps_diff(&c), [Some(1), None]);
     }
 
     #[test]
@@ -286,10 +292,10 @@ mod ref_cell {
     fn float_diff() {
         let a = RefCell::new([1.0f32, 2.0]);
         let b = RefCell::new([1.5f32, 2.25]);
-        assert_eq!(a.abs_diff(&b), [0.5, 0.25]);
+        assert_eq!(a.debug_abs_diff(&b), [0.5, 0.25]);
 
-        let c = RefCell::new([1.000_000_1f32, 2.000_000_5]);
-        assert_eq!(a.ulps_diff(&c), Some([1, 2]));
+        let c = RefCell::new([1.000_000_1f32, -2.000_000_5]);
+        assert_eq!(a.debug_ulps_diff(&c), [Some(1), None]);
     }
 
     #[test]

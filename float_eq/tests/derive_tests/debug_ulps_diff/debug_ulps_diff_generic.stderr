@@ -1,0 +1,7 @@
+error: This trait does not yet support derive for generic types.
+ --> $DIR/debug_ulps_diff_generic.rs:3:41
+  |
+3 | #[derive(Debug, Clone, Copy, PartialEq, FloatEqDebugUlpsDiff)]
+  |                                         ^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)

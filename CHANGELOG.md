@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- Renamed `FloatEqDebug` to `AssertFloatEq`, and similarly `FloatEqAllDebug` to 
+  `AssertFloatEqAll`. This is to provide a more obvious link between these
+  traits and the assert capability. The `FloatDiff` trait has been folded into
+  `AssertFloatEq` both for clarity and because it is geared towards debug
+  context and was not as general as the name implied.
 - Updated `num-complex` dependency to 0.3.
 
 ## [0.4.1] - 2020-06-22

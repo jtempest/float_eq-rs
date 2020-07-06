@@ -1,4 +1,7 @@
-use crate::{FloatDiff, FloatEq, FloatEqAll, FloatEqAllDebug, FloatEqDebug, FloatUlps, Ulps};
+use crate::{
+    AssertFloatEq, AssertFloatEqAll, DebugUlpsDiff, FloatEq, FloatEqAll, FloatEqDebugUlpsDiff,
+    FloatEqUlpsEpsilon, UlpsEpsilon,
+};
 use num_complex::Complex;
 
 /// The absolute difference between two floating point [`Complex<T>`] instances
@@ -23,57 +26,33 @@ impl<T> ComplexUlps<T> {
     }
 }
 
-impl<T: FloatUlps> FloatUlps for Complex<T>
+impl<T: FloatEqUlpsEpsilon> FloatEqUlpsEpsilon for Complex<T>
 where
-    Ulps<T>: Sized,
+    UlpsEpsilon<T>: Sized,
 {
-    type Ulps = ComplexUlps<Ulps<T>>;
+    type UlpsEpsilon = ComplexUlps<UlpsEpsilon<T>>;
+}
+
+impl<T: FloatEqDebugUlpsDiff> FloatEqDebugUlpsDiff for Complex<T> {
+    type DebugUlpsDiff = ComplexUlps<DebugUlpsDiff<T>>;
 }
 
 /// [`ComplexUlps<T>`] type matching [`Complex32`].
 ///
 /// [`ComplexUlps<T>`]: struct.ComplexUlps.html
 /// [`Complex32`]: https://docs.rs/num-complex/0.2.4/num_complex/type.Complex32.html
-pub type ComplexUlps32 = Ulps<Complex<f32>>;
+pub type ComplexUlps32 = UlpsEpsilon<Complex<f32>>;
 
 /// [`ComplexUlps<T>`] type matching [`Complex64`].
 ///
 /// [`ComplexUlps<T>`]: struct.ComplexUlps.html
 /// [`Complex64`]: https://docs.rs/num-complex/0.2.4/num_complex/type.Complex64.html
-pub type ComplexUlps64 = Ulps<Complex<f64>>;
-
-impl<T> FloatDiff for Complex<T>
-where
-    T: FloatDiff,
-    T::Output: Sized,
-    Ulps<T::Output>: Sized,
-{
-    type Output = Complex<<T as FloatDiff>::Output>;
-
-    #[inline]
-    fn abs_diff(&self, other: &Self) -> Self::Output {
-        Self::Output {
-            re: self.re.abs_diff(&other.re),
-            im: self.im.abs_diff(&other.im),
-        }
-    }
-
-    #[inline]
-    fn ulps_diff(&self, other: &Self) -> Option<Ulps<Self::Output>>
-    where
-        Ulps<Self::Output>: Sized,
-    {
-        Some(Ulps::<Self::Output> {
-            re: self.re.ulps_diff(&other.re)?,
-            im: self.im.ulps_diff(&other.im)?,
-        })
-    }
-}
+pub type ComplexUlps64 = UlpsEpsilon<Complex<f64>>;
 
 impl<T: FloatEq> FloatEq for Complex<T>
 where
     T::Epsilon: Sized,
-    Ulps<T::Epsilon>: Sized,
+    UlpsEpsilon<T::Epsilon>: Sized,
 {
     type Epsilon = Complex<T::Epsilon>;
 
@@ -88,7 +67,7 @@ where
     }
 
     #[inline]
-    fn eq_ulps(&self, other: &Self, max_diff: &Ulps<Self::Epsilon>) -> bool {
+    fn eq_ulps(&self, other: &Self, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
         self.re.eq_ulps(&other.re, &max_diff.re) && self.im.eq_ulps(&other.im, &max_diff.im)
     }
 }
@@ -107,20 +86,37 @@ impl<T: FloatEqAll> FloatEqAll for Complex<T> {
     }
 
     #[inline]
-    fn eq_ulps_all(&self, other: &Self, max_diff: &Ulps<Self::AllEpsilon>) -> bool {
+    fn eq_ulps_all(&self, other: &Self, max_diff: &UlpsEpsilon<Self::AllEpsilon>) -> bool {
         self.re.eq_ulps_all(&other.re, max_diff) && self.im.eq_ulps_all(&other.im, max_diff)
     }
 }
 
-impl<T> FloatEqDebug for Complex<T>
+impl<T> AssertFloatEq for Complex<T>
 where
-    T: FloatEqDebug,
+    T: AssertFloatEq,
     T::Epsilon: Sized,
     T::DebugEpsilon: Sized,
-    Ulps<T::Epsilon>: Sized,
-    Ulps<T::DebugEpsilon>: Sized,
+    UlpsEpsilon<T::Epsilon>: Sized,
+    UlpsEpsilon<T::DebugEpsilon>: Sized,
 {
+    type DebugAbsDiff = Complex<T::DebugAbsDiff>;
     type DebugEpsilon = Complex<T::DebugEpsilon>;
+
+    #[inline]
+    fn debug_abs_diff(&self, other: &Self) -> Self::DebugAbsDiff {
+        Self::DebugAbsDiff {
+            re: self.re.debug_abs_diff(&other.re),
+            im: self.im.debug_abs_diff(&other.im),
+        }
+    }
+
+    #[inline]
+    fn debug_ulps_diff(&self, other: &Self) -> DebugUlpsDiff<Self::DebugAbsDiff> {
+        DebugUlpsDiff::<Self::DebugAbsDiff> {
+            re: self.re.debug_ulps_diff(&other.re),
+            im: self.im.debug_ulps_diff(&other.im),
+        }
+    }
 
     #[inline]
     fn debug_abs_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
@@ -142,23 +138,23 @@ where
     fn debug_ulps_epsilon(
         &self,
         other: &Self,
-        max_diff: &Ulps<Self::Epsilon>,
-    ) -> Ulps<Self::DebugEpsilon>
+        max_diff: &UlpsEpsilon<Self::Epsilon>,
+    ) -> UlpsEpsilon<Self::DebugEpsilon>
     where
-        Ulps<Self::DebugEpsilon>: Sized,
+        UlpsEpsilon<Self::DebugEpsilon>: Sized,
     {
-        Ulps::<Self::DebugEpsilon> {
+        UlpsEpsilon::<Self::DebugEpsilon> {
             re: self.re.debug_ulps_epsilon(&other.re, &max_diff.re),
             im: self.im.debug_ulps_epsilon(&other.im, &max_diff.im),
         }
     }
 }
 
-impl<T> FloatEqAllDebug for Complex<T>
+impl<T> AssertFloatEqAll for Complex<T>
 where
-    T: FloatEqAllDebug,
+    T: AssertFloatEqAll,
     T::AllDebugEpsilon: Sized,
-    Ulps<T::AllDebugEpsilon>: Sized,
+    UlpsEpsilon<T::AllDebugEpsilon>: Sized,
 {
     type AllDebugEpsilon = Complex<T::AllDebugEpsilon>;
 
@@ -190,12 +186,12 @@ where
     fn debug_ulps_all_epsilon(
         &self,
         other: &Self,
-        max_diff: &Ulps<Self::AllEpsilon>,
-    ) -> Ulps<Self::AllDebugEpsilon>
+        max_diff: &UlpsEpsilon<Self::AllEpsilon>,
+    ) -> UlpsEpsilon<Self::AllDebugEpsilon>
     where
-        Ulps<Self::AllDebugEpsilon>: Sized,
+        UlpsEpsilon<Self::AllDebugEpsilon>: Sized,
     {
-        Ulps::<Self::AllDebugEpsilon> {
+        UlpsEpsilon::<Self::AllDebugEpsilon> {
             re: self.re.debug_ulps_all_epsilon(&other.re, max_diff),
             im: self.im.debug_ulps_all_epsilon(&other.im, max_diff),
         }

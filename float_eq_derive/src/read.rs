@@ -91,17 +91,30 @@ fn unnamed_field_info((n, field): (usize, &syn::Field)) -> FieldInfo {
 #[derive(Default)]
 pub struct FloatEqAttr {
     struct_name: String,
-    ulps_type_name: Option<Ident>,
+    ulps_epsilon_type_name: Option<Ident>,
+    debug_ulps_diff_type_name: Option<Ident>,
     all_epsilon_type_name: Option<Ident>,
 }
 
 impl FloatEqAttr {
-    pub fn ulps_type(&self) -> Result<&Ident, syn::Error> {
-        self.ulps_type_name.as_ref().ok_or({
+    pub fn ulps_epsilon_type(&self) -> Result<&Ident, syn::Error> {
+        self.ulps_epsilon_type_name.as_ref().ok_or({
             let msg = format!(
-                r#"Missing ULPs type name required to derive trait.
+                r#"Missing epsilon ULPs type name required to derive trait.
 
-help: try adding `#[float_eq(ulps = "{}Ulps")]` to your type."#,
+help: try adding `#[float_eq(ulps_epsilon = "{}Ulps")]` to your type."#,
+                self.struct_name
+            );
+            syn::Error::new(Span::call_site(), msg)
+        })
+    }
+
+    pub fn debug_ulps_diff(&self) -> Result<&Ident, syn::Error> {
+        self.debug_ulps_diff_type_name.as_ref().ok_or({
+            let msg = format!(
+                r#"Missing debug ULPs diff type name required to derive trait.
+
+help: try adding `#[float_eq(debug_ulps_diff = "{}DebugUlpsDiff")]` to your type."#,
                 self.struct_name
             );
             syn::Error::new(Span::call_site(), msg)
@@ -134,13 +147,23 @@ pub fn float_eq_attr(input: &DeriveInput) -> Result<FloatEqAttr, syn::Error> {
     };
     for nv in nv_pair_lists.into_iter().flatten() {
         let name = nv.name.to_string();
-        if name == "ulps" {
-            if attr_values.ulps_type_name.is_none() {
-                attr_values.ulps_type_name = Some(nv.value);
+        if name == "ulps_epsilon" {
+            if attr_values.ulps_epsilon_type_name.is_none() {
+                attr_values.ulps_epsilon_type_name = Some(nv.value);
             } else {
                 let msg = format!(
-                    r#"Expected only one ULPs type name, previously saw `ulps = "{}"`."#,
-                    attr_values.ulps_type_name.unwrap().to_string()
+                    r#"Expected only one epsilon ULPs type name, previously saw `ulps_epsilon = "{}"`."#,
+                    attr_values.ulps_epsilon_type_name.unwrap().to_string()
+                );
+                return Err(syn::Error::new(nv.value.span(), msg));
+            }
+        } else if name == "debug_ulps_diff" {
+            if attr_values.debug_ulps_diff_type_name.is_none() {
+                attr_values.debug_ulps_diff_type_name = Some(nv.value);
+            } else {
+                let msg = format!(
+                    r#"Expected only one debug ULPs diff type name, previously saw `debug_ulps_diff = "{}"`."#,
+                    attr_values.debug_ulps_diff_type_name.unwrap().to_string()
                 );
                 return Err(syn::Error::new(nv.value.span(), msg));
             }
@@ -171,7 +194,7 @@ fn name_type_pair_list(
         list.nested.iter().map(name_type_pair).collect()
     } else {
         let msg = format!(
-            r#"float_eq attribute must be a list of options, for example `#[float_eq(ulps = "{}Ulps")]`"#,
+            r#"float_eq attribute must be a list of options, for example `#[float_eq(ulps_epsilon = "{}Ulps")]`"#,
             struct_name.to_string()
         );
         Err(syn::Error::new(attr.span(), msg))

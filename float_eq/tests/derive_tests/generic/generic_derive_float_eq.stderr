@@ -1,7 +1,0 @@
-error: This trait does not yet support derive for generic types.
- --> $DIR/generic_derive_float_eq.rs:3:28
-  |
-3 | #[derive(Debug, PartialEq, FloatEq)]
-  |                            ^^^^^^^
-  |
-  = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)

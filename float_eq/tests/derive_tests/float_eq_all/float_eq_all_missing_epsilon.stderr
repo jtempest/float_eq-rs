@@ -1,0 +1,9 @@
+error: Missing Epsilon type name required to derive trait.
+
+help: try adding `#[float_eq(all_epsilon = "T")]` to your type, where T is commonly `f32` or `f64`.
+ --> $DIR/float_eq_all_missing_epsilon.rs:3:70
+  |
+3 | #[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsEpsilon, FloatEq, FloatEqAll)]
+  |                                                                      ^^^^^^^^^^
+  |
+  = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)

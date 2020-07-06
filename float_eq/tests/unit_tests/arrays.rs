@@ -1,13 +1,13 @@
 #![allow(clippy::float_cmp)]
 
-use float_eq::{assert_float_eq, assert_float_ne, FloatDiff, FloatEqAllDebug, FloatEqDebug};
+use float_eq::{assert_float_eq, assert_float_ne, AssertFloatEq, AssertFloatEqAll};
 
 macro_rules! impl_tests {
     ($float:ident) => {
         mod $float {
             use super::*;
 
-            macro_rules! check_float_diff {
+            macro_rules! check_debug_float_diff {
                 ($n:literal) => {{
                     let mut a: [$float; $n] = [0.; $n];
                     for i in 0..$n {
@@ -19,35 +19,43 @@ macro_rules! impl_tests {
                         b[i] = a[i] + 0.5;
                     }
 
-                    let msg = "Finite numbers of the same sign should always have a valid diff";
-                    let abs_diff = a.abs_diff(&b);
-                    let ulps_diff = a.ulps_diff(&b).expect(msg);
+                    // test diffs calculated correctly
+                    let abs_diff = a.debug_abs_diff(&b);
+                    let ulps_diff = a.debug_ulps_diff(&b);
                     for i in 0..$n {
-                        assert_eq!(abs_diff[i], a[i].abs_diff(&b[i]));
-                        assert_eq!(ulps_diff[i], a[i].ulps_diff(&b[i]).expect(msg));
+                        assert_eq!(abs_diff[i], a[i].debug_abs_diff(&b[i]));
+                        assert_eq!(ulps_diff[i], a[i].debug_ulps_diff(&b[i]));
                     }
 
+                    // test None is used judiciously
                     for i in 0..$n {
                         let mut b = [0.; $n];
                         b[i] = -a[i];
-                        assert!(a.ulps_diff(&b).is_none());
+                        let diff = a.debug_ulps_diff(&b);
+                        for j in 0..$n {
+                            if i == j {
+                                assert!(diff[j].is_none());
+                            } else {
+                                assert!(diff[j].is_some());
+                            }
+                        }
                     }
                 }};
             }
 
             #[test]
-            fn float_diff() {
+            fn debug_float_diff() {
                 //TODO: Use const generics once they're stable
-                check_float_diff!(0);
-                check_float_diff!(1);
-                check_float_diff!(2);
+                check_debug_float_diff!(0);
+                check_debug_float_diff!(1);
+                check_debug_float_diff!(2);
                 //we can infer the checks in between work
-                check_float_diff!(32);
+                check_debug_float_diff!(32);
 
                 // nested
                 let a = [[1_f32, 2.], [1., 2.]];
                 let b = [[1_f32, 2.], [-1., -2.]];
-                assert_eq!(a.abs_diff(&b), [[0., 0.], [2., 4.]]);
+                assert_eq!(a.debug_abs_diff(&b), [[0.0, 0.0], [2., 4.]]);
             }
 
             macro_rules! check_float_eq {
@@ -98,7 +106,7 @@ macro_rules! impl_tests {
                 // nested
                 let a = [[1_f32, 2.], [1., -2.]];
                 let b = [[1_f32, 3.], [-1., 2.]];
-                assert_float_eq!(a, b, abs <= [[0., 1.], [2., 4.]]);
+                assert_float_eq!(a, b, abs <= [[0.0, 1.], [2., 4.]]);
             }
 
             macro_rules! check_float_eq_all {
@@ -241,16 +249,16 @@ impl_tests!(f64);
 #[test]
 #[should_panic(expected = r#"`float_eq!(left, right, abs <= ε, rel <= ε, ulps <= ε)`
         left: `[1.0, 2.0]`,
-       right: `[3.0, 5.0]`,
-    abs_diff: `[2.0, 3.0]`,
-   ulps_diff: `Some([6755399441055744, 5629499534213120])`,
+       right: `[3.0, -5.0]`,
+    abs_diff: `[2.0, 7.0]`,
+   ulps_diff: `[Some(6755399441055744), None]`,
      [abs] ε: `[0.1, 0.25]`,
      [rel] ε: `[0.30000000000000004, 1.25]`,
     [ulps] ε: `[1, 2]`"#)]
 fn assert_fail_message() {
     assert_float_eq!(
         [1., 2.],
-        [3., 5.],
+        [3., -5.],
         abs <= [0.1, 0.25],
         rel <= [0.1, 0.25],
         ulps <= [1u64, 2]
@@ -261,9 +269,9 @@ fn assert_fail_message() {
 #[should_panic(
     expected = r#"`float_eq!(left, right, abs_all <= ε, rel_all <= ε, ulps_all <= ε)`
         left: `[1.0, 2.0]`,
-       right: `[3.0, 5.0]`,
-    abs_diff: `[2.0, 3.0]`,
-   ulps_diff: `Some([6755399441055744, 5629499534213120])`,
+       right: `[3.0, -5.0]`,
+    abs_diff: `[2.0, 7.0]`,
+   ulps_diff: `[Some(6755399441055744), None]`,
  [abs_all] ε: `[0.25, 0.25]`,
  [rel_all] ε: `[0.75, 1.25]`,
 [ulps_all] ε: `[3, 3]"#
@@ -271,7 +279,7 @@ fn assert_fail_message() {
 fn assert_fail_all_message() {
     assert_float_eq!(
         [1., 2.],
-        [3., 5.],
+        [3., -5.],
         abs_all <= 0.25,
         rel_all <= 0.25,
         ulps_all <= 3u64

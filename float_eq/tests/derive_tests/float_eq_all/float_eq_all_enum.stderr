@@ -1,0 +1,17 @@
+error: FloatEqAll may only be derived for structs.
+ --> $DIR/float_eq_all_enum.rs:4:6
+  |
+4 | enum SomeEnum {
+  |      ^^^^^^^^
+
+error: FloatEq may only be derived for structs.
+ --> $DIR/float_eq_all_enum.rs:4:6
+  |
+4 | enum SomeEnum {
+  |      ^^^^^^^^
+
+error: FloatEqUlpsEpsilon may only be derived for structs.
+ --> $DIR/float_eq_all_enum.rs:4:6
+  |
+4 | enum SomeEnum {
+  |      ^^^^^^^^

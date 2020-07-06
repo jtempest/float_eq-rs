@@ -1,0 +1,35 @@
+error: AssertFloatEqAll may only be derived for structs.
+  --> $DIR/assert_float_eq_all_enum.rs:18:6
+   |
+18 | enum SomeEnum {
+   |      ^^^^^^^^
+
+error: FloatEqAll may only be derived for structs.
+  --> $DIR/assert_float_eq_all_enum.rs:18:6
+   |
+18 | enum SomeEnum {
+   |      ^^^^^^^^
+
+error: AssertFloatEq may only be derived for structs.
+  --> $DIR/assert_float_eq_all_enum.rs:18:6
+   |
+18 | enum SomeEnum {
+   |      ^^^^^^^^
+
+error: FloatEqDebugUlpsDiff may only be derived for structs.
+  --> $DIR/assert_float_eq_all_enum.rs:18:6
+   |
+18 | enum SomeEnum {
+   |      ^^^^^^^^
+
+error: FloatEq may only be derived for structs.
+  --> $DIR/assert_float_eq_all_enum.rs:18:6
+   |
+18 | enum SomeEnum {
+   |      ^^^^^^^^
+
+error: FloatEqUlpsEpsilon may only be derived for structs.
+  --> $DIR/assert_float_eq_all_enum.rs:18:6
+   |
+18 | enum SomeEnum {
+   |      ^^^^^^^^

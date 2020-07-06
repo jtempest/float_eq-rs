@@ -1,0 +1,23 @@
+error: This trait does not yet support derive for generic types.
+ --> $DIR/float_eq_all_generic.rs:3:70
+  |
+3 | #[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsEpsilon, FloatEq, FloatEqAll)]
+  |                                                                      ^^^^^^^^^^
+  |
+  = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: This trait does not yet support derive for generic types.
+ --> $DIR/float_eq_all_generic.rs:3:61
+  |
+3 | #[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsEpsilon, FloatEq, FloatEqAll)]
+  |                                                             ^^^^^^^
+  |
+  = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: This trait does not yet support derive for generic types.
+ --> $DIR/float_eq_all_generic.rs:3:41
+  |
+3 | #[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsEpsilon, FloatEq, FloatEqAll)]
+  |                                         ^^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)

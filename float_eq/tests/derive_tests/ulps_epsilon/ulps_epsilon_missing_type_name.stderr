@@ -1,0 +1,9 @@
+error: Missing epsilon ULPs type name required to derive trait.
+
+help: try adding `#[float_eq(ulps_epsilon = "MyComplex32Ulps")]` to your type.
+ --> $DIR/ulps_epsilon_missing_type_name.rs:3:41
+  |
+3 | #[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsEpsilon)]
+  |                                         ^^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)

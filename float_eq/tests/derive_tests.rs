@@ -4,27 +4,68 @@
 fn tests() {
     let t = trybuild::TestCases::new();
 
-    t.pass("tests/derive_tests/derive_all/derive_all.rs");
-    t.pass("tests/derive_tests/derive_all/derive_float_eq.rs");
-    t.pass("tests/derive_tests/derive_all/derive_float_eq_all.rs");
-    t.pass("tests/derive_tests/derive_all/tuple_derive_all.rs");
-    t.pass("tests/derive_tests/derive_all/no_fields_derive_all.rs");
-    t.pass("tests/derive_tests/derive_all/tuple_no_fields_derive_all.rs");
-    t.pass("tests/derive_tests/derive_all/unit_derive_all.rs");
+    // FloatEqUlpsEpsilon
+    t.pass("tests/derive_tests/ulps_epsilon/ulps_epsilon_struct.rs");
+    t.pass("tests/derive_tests/ulps_epsilon/ulps_epsilon_struct_no_fields.rs");
+    t.pass("tests/derive_tests/ulps_epsilon/ulps_epsilon_tuple_struct.rs");
+    t.pass("tests/derive_tests/ulps_epsilon/ulps_epsilon_unit.rs");
+    t.compile_fail("tests/derive_tests/ulps_epsilon/ulps_epsilon_enum.rs");
+    t.compile_fail("tests/derive_tests/ulps_epsilon/ulps_epsilon_generic.rs");
+    t.compile_fail("tests/derive_tests/ulps_epsilon/ulps_epsilon_missing_type_name.rs");
+    t.compile_fail("tests/derive_tests/ulps_epsilon/ulps_epsilon_duplicate_type_name.rs");
 
-    t.compile_fail("tests/derive_tests/errors/float_eq_no_params_list.rs");
-    t.compile_fail("tests/derive_tests/errors/float_eq_no_params.rs");
-    t.compile_fail("tests/derive_tests/errors/float_eq_malformed_param.rs");
-    t.compile_fail("tests/derive_tests/errors/float_eq_unknown_param.rs");
-    t.compile_fail("tests/derive_tests/errors/ulps_missing.rs");
-    t.compile_fail("tests/derive_tests/errors/ulps_duplicates.rs");
-    t.compile_fail("tests/derive_tests/errors/ulps_duplicates_many_attrs.rs");
-    t.compile_fail("tests/derive_tests/errors/float_ulps_enum.rs");
-    t.compile_fail("tests/derive_tests/errors/float_eq_all_missing_abs_epsilon.rs");
+    // FloatEqDebugUlpsDiff
+    t.pass("tests/derive_tests/debug_ulps_diff/debug_ulps_diff_struct.rs");
+    t.pass("tests/derive_tests/debug_ulps_diff/debug_ulps_diff_struct_no_fields.rs");
+    t.pass("tests/derive_tests/debug_ulps_diff/debug_ulps_diff_tuple_struct.rs");
+    t.pass("tests/derive_tests/debug_ulps_diff/debug_ulps_diff_unit.rs");
+    t.compile_fail("tests/derive_tests/debug_ulps_diff/debug_ulps_diff_enum.rs");
+    t.compile_fail("tests/derive_tests/debug_ulps_diff/debug_ulps_diff_generic.rs");
+    t.compile_fail("tests/derive_tests/debug_ulps_diff/debug_ulps_diff_missing_type_name.rs");
+    t.compile_fail("tests/derive_tests/debug_ulps_diff/debug_ulps_diff_duplicate_type_name.rs");
 
-    t.compile_fail("tests/derive_tests/generic/generic_derive_float_ulps.rs");
-    t.compile_fail("tests/derive_tests/generic/generic_derive_float_diff.rs");
-    t.compile_fail("tests/derive_tests/generic/generic_derive_float_eq.rs");
-    t.compile_fail("tests/derive_tests/generic/generic_derive_float_eq_debug.rs");
-    t.compile_fail("tests/derive_tests/generic/tuple_generic_derive_float_ulps.rs");
+    // FloatEq
+    t.pass("tests/derive_tests/float_eq/float_eq_struct.rs");
+    t.pass("tests/derive_tests/float_eq/float_eq_struct_no_fields.rs");
+    t.pass("tests/derive_tests/float_eq/float_eq_tuple_struct.rs");
+    t.pass("tests/derive_tests/float_eq/float_eq_unit.rs");
+    t.compile_fail("tests/derive_tests/float_eq/float_eq_enum.rs");
+    t.compile_fail("tests/derive_tests/float_eq/float_eq_generic.rs");
+
+    // FloatEqAll
+    t.pass("tests/derive_tests/float_eq_all/float_eq_all_struct.rs");
+    t.pass("tests/derive_tests/float_eq_all/float_eq_all_struct_no_fields.rs");
+    t.pass("tests/derive_tests/float_eq_all/float_eq_all_tuple_struct.rs");
+    t.pass("tests/derive_tests/float_eq_all/float_eq_all_unit.rs");
+    t.compile_fail("tests/derive_tests/float_eq_all/float_eq_all_enum.rs");
+    t.compile_fail("tests/derive_tests/float_eq_all/float_eq_all_generic.rs");
+    t.compile_fail("tests/derive_tests/float_eq_all/float_eq_all_missing_epsilon.rs");
+    t.compile_fail("tests/derive_tests/float_eq_all/float_eq_all_duplicate_epsilon.rs");
+
+    // AssertFloatEq
+    t.pass("tests/derive_tests/assert_float_eq/assert_float_eq_struct.rs");
+    t.pass("tests/derive_tests/assert_float_eq/assert_float_eq_struct_no_fields.rs");
+    t.pass("tests/derive_tests/assert_float_eq/assert_float_eq_tuple_struct.rs");
+    t.pass("tests/derive_tests/assert_float_eq/assert_float_eq_unit.rs");
+    t.compile_fail("tests/derive_tests/assert_float_eq/assert_float_eq_enum.rs");
+    t.compile_fail("tests/derive_tests/assert_float_eq/assert_float_eq_generic.rs");
+
+    // AssertFloatEqAll
+    t.pass("tests/derive_tests/assert_float_eq_all/assert_float_eq_all_struct.rs");
+    t.pass("tests/derive_tests/assert_float_eq_all/assert_float_eq_all_struct_no_fields.rs");
+    t.pass("tests/derive_tests/assert_float_eq_all/assert_float_eq_all_tuple_struct.rs");
+    t.pass("tests/derive_tests/assert_float_eq_all/assert_float_eq_all_unit.rs");
+    t.compile_fail("tests/derive_tests/assert_float_eq_all/assert_float_eq_all_enum.rs");
+    t.compile_fail("tests/derive_tests/assert_float_eq_all/assert_float_eq_all_generic.rs");
+
+    // #[float_eq(...)]
+    t.compile_fail("tests/derive_tests/float_eq_attribute/float_eq_no_params_list.rs");
+    t.compile_fail("tests/derive_tests/float_eq_attribute/float_eq_malformed_param.rs");
+    t.compile_fail("tests/derive_tests/float_eq_attribute/float_eq_unknown_param.rs");
+
+    // #[derive_float_eq(...)]
+    t.pass("tests/derive_tests/derive_float_eq/derive_float_eq.rs");
+    t.pass("tests/derive_tests/derive_float_eq/derive_float_eq_all.rs");
+    t.compile_fail("tests/derive_tests/derive_float_eq/derive_float_eq_missing_ulps_epsilon.rs");
+    t.compile_fail("tests/derive_tests/derive_float_eq/derive_float_eq_missing_debug_ulps_diff.rs");
 }

@@ -313,8 +313,8 @@
 //!
 //! ```
 //! # use float_eq::{
-//! #     assert_float_eq, FloatDiff, FloatEq, FloatEqAll, FloatEqDebug, FloatEqAllDebug,
-//! #     FloatUlps, Ulps
+//! #     assert_float_eq, FloatEqUlpsEpsilon, FloatEq, FloatEqAll, FloatEqDebugUlpsDiff,
+//! #     AssertFloatEq, AssertFloatEqAll, UlpsEpsilon, DebugUlpsDiff
 //! # };
 //! #
 //! # #[derive(Debug, Clone, Copy, PartialEq)]
@@ -323,23 +323,11 @@
 //! # #[derive(Debug, Clone, Copy, PartialEq)]
 //! # struct Complex32Ulps { re: u32, im: u32 }
 //! #
-//! # impl FloatUlps for Complex32 { type Ulps = Complex32Ulps; }
+//! # #[derive(Debug, Clone, Copy, PartialEq)]
+//! # struct Complex32DebugUlpsDiff { re: DebugUlpsDiff<f32>, im: DebugUlpsDiff<f32> }
 //! #
-//! # impl FloatDiff for Complex32 {
-//! #     type Output = Complex32;
-//! #     fn abs_diff(&self, other: &Self) -> Complex32 {
-//! #         Complex32 {
-//! #             re: self.re.abs_diff(&other.re),
-//! #             im: self.im.abs_diff(&other.im),
-//! #         }
-//! #     }
-//! #     fn ulps_diff(&self, other: &Self) -> Option<Complex32Ulps> {
-//! #         Some(Complex32Ulps {
-//! #             re: self.re.ulps_diff(&other.re)?,
-//! #             im: self.im.ulps_diff(&other.im)?,
-//! #         })
-//! #     }
-//! # }
+//! # impl FloatEqUlpsEpsilon for Complex32 { type UlpsEpsilon = Complex32Ulps; }
+//! # impl FloatEqDebugUlpsDiff for Complex32 { type DebugUlpsDiff = Complex32DebugUlpsDiff; }
 //! #
 //! # impl FloatEq for Complex32 {
 //! #     type Epsilon = Complex32;
@@ -367,8 +355,21 @@
 //! #     }
 //! # }
 //! #
-//! # impl FloatEqDebug for Complex32 {
+//! # impl AssertFloatEq for Complex32 {
+//! #     type DebugAbsDiff = Complex32;
 //! #     type DebugEpsilon = Complex32;
+//! #     fn debug_abs_diff(&self, other: &Complex32) -> Complex32 {
+//! #         Complex32 {
+//! #             re: self.re.debug_abs_diff(&other.re),
+//! #             im: self.im.debug_abs_diff(&other.im),
+//! #         }
+//! #     }
+//! #     fn debug_ulps_diff(&self, other: &Complex32) -> Complex32DebugUlpsDiff {
+//! #         Complex32DebugUlpsDiff {
+//! #             re: self.re.debug_ulps_diff(&other.re),
+//! #             im: self.im.debug_ulps_diff(&other.im),
+//! #         }
+//! #     }
 //! #     fn debug_abs_epsilon(&self, other: &Self, max_diff: &Complex32) -> Complex32 {
 //! #         Complex32 {
 //! #             re: self.re.debug_abs_epsilon(&other.re, &max_diff.re),
@@ -389,7 +390,7 @@
 //! #     }
 //! # }
 //! #
-//! # impl FloatEqAllDebug for Complex32 {
+//! # impl AssertFloatEqAll for Complex32 {
 //! #     type AllDebugEpsilon = Complex32;
 //! #     fn debug_abs_all_epsilon(&self, other: &Self, max_diff: &f32) -> Complex32 {
 //! #         Complex32 {
@@ -447,10 +448,9 @@
 //!
 //! # Comparing custom types
 //!
-//! Comparison of new types is supported by implementing [`FloatUlps`], [`FloatEq`]
-//! and [`FloatEqAll`]. If assert support is required, then [`FloatDiff`] and
-//! [`FloatEqDebug`]/[`FloatEqAllDebug`] should also be implemented, as they
-//! provide important context information on failure.
+//! Comparison of new types using `float_eq!` is supported by implementing [`FloatEq`]
+//! and optionally [`FloatEqAll`]. Support for `assert_float_eq!` may be enabled
+//! by also implementing [`AssertFloatEq`]/[`AssertFloatEqAll`].
 //!
 //! ## Derivable
 #![cfg_attr(
@@ -470,15 +470,25 @@ features = ["derive"]
 #![cfg_attr(
     feature = "derive",
     doc = r##"
-These traits can be used with `#[derive]`. They may be derived directly, but the
-easiest way to do so is the [derive_float_eq](attr.derive_float_eq.html) helper
-macro. The `ulps` parameter is required and will be used to name a new type with
-the same fields represented in ULPs, and `all_epsilon` is optional, but required
-for using `*_all` checks. At present, only non-generic structs and tuple structs
-may be derived:
+The easiest way to implement these traits is with the [`#[derive_float_eq]`](attr.derive_float_eq.html)
+helper macro. The `ulps_epsilon` and `debug_ulps_diff` parameters are required.
+They are used to name two new types that match the structure of the type being
+derived from. The first is used to provide ULPs epsilon values per field, and
+the second is used to provide debug information for the differerence between
+values in ULPs.
+
+The `all_epsilon` parameter is optional. If provided, it will additionally
+implement the traits required to use the `_all` variants of checks, using the
+given epsilon type (usually `f32` or `f64`). 
+
+At present, only non-generic structs and tuple structs may be derived:
 ```
 # use float_eq::{assert_float_eq, derive_float_eq};
-#[derive_float_eq(ulps = "PointUlps", all_epsilon = "f64")]
+#[derive_float_eq(
+    ulps_epsilon = "PointUlps", 
+    debug_ulps_diff = "PointDebugUlpsDiff",
+    all_epsilon = "f64"
+)]
 #[derive(Debug, PartialEq, Clone, Copy)]
 struct Point {
     x: f64,
@@ -504,12 +514,10 @@ assert_float_eq!(a, c, ulps_all <= 4);
 //! [`assert_float_ne!`]: macro.assert_float_ne.html
 //! [`float_eq!`]: macro.float_eq.html
 //! [`float_ne!`]: macro.float_ne.html
-//! [`FloatUlps`]: trait.FloatUlps.html
 //! [`FloatEq`]: trait.FloatEq.html
 //! [`FloatEqAll`]: trait.FloatEqAll.html
-//! [`FloatDiff`]: trait.FloatDiff.html
-//! [`FloatEqDebug`]: trait.FloatEqDebug.html
-//! [`FloatEqAllDebug`]: trait.FloatEqAllDebug.html
+//! [`AssertFloatEq`]: trait.AssertFloatEq.html
+//! [`AssertFloatEqAll`]: trait.AssertFloatEqAll.html
 //!
 //! [catastrophic cancellation]: https://en.wikipedia.org/wiki/Loss_of_significance
 //! [subnormal value]: https://en.wikipedia.org/wiki/Denormal_number
