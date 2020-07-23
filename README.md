@@ -135,17 +135,21 @@ types, the contents of `Cell`, `RefCell`, `Rc`, `Arc` and `Box` instances, as
 well as for slices, `Option`, `Vec`, `VecDeque`, `LinkedList`, `BTreeMap` and
 `HashMap`.
 
-Types that also implement `FloatDiff` and `AssertFloatEq`/`AssertFloatEqAll` may
-be used in the assert forms.
+Types that also implement `AssertFloatEq`/`AssertFloatEqAll` may be used in the
+assert forms.
 
 ## Derivable
 
 If the optional `"derive"` feature is enabled, all of the traits may be 
-implemented using `#[derive]`. Since there are up to six traits per type, the
-`derive_float_eq` helper macro is provided to make things even easier:
+implemented using `#[derive]`. The easiest way to do so is to make use of the 
+`#[derive_float_eq]` helper macro:
 
 ```rust
-#[derive_float_eq(ulps = "PointUlps", all_epsilon = "f64")]
+#[derive_float_eq(
+    ulps_epsilon = "PointUlps",
+    debug_ulps_diff = "PointUlpsDebugUlpsDiff",
+    all_epsilon = "f64"
+)]
 #[derive(Debug, PartialEq, Clone, Copy)]
 struct Point {
     x: f64,
