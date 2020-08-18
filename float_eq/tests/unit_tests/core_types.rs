@@ -1,7 +1,9 @@
 #![allow(clippy::many_single_char_names)]
 
 use core::cell::{Cell, RefCell};
-use float_eq::{assert_float_eq, assert_float_ne, AssertFloatEq, AssertFloatEqAll};
+use float_eq::{
+    assert_float_eq, assert_float_ne, float_eq, float_ne, AssertFloatEq, AssertFloatEqAll,
+};
 
 #[allow(clippy::unnecessary_mut_passed)]
 mod refs {
@@ -510,67 +512,67 @@ mod slice {
         let eps = f32::EPSILON;
 
         // Same shape a/b/epsilon
-        assert_float_eq!(a[..], b[..], abs <= [1.0 * eps, 4.0 * eps]);
-        assert_float_ne!(a[..], b[..], abs <= [0.5 * eps, 4.0 * eps]);
-        assert_float_ne!(a[..], b[..], abs <= [1.0 * eps, 2.0 * eps]);
+        assert!(float_eq!(a[..], b[..], abs <= [1.0 * eps, 4.0 * eps]));
+        assert!(float_ne!(a[..], b[..], abs <= [0.5 * eps, 4.0 * eps]));
+        assert!(float_ne!(a[..], b[..], abs <= [1.0 * eps, 2.0 * eps]));
 
-        assert_float_eq!(a[..], b[..], rel <= [1.0 * eps, 1.0 * eps]);
-        assert_float_ne!(a[..], b[..], rel <= [0.5 * eps, 1.0 * eps]);
-        assert_float_ne!(a[..], b[..], rel <= [1.0 * eps, 0.5 * eps]);
+        assert!(float_eq!(a[..], b[..], rel <= [1.0 * eps, 1.0 * eps]));
+        assert!(float_ne!(a[..], b[..], rel <= [0.5 * eps, 1.0 * eps]));
+        assert!(float_ne!(a[..], b[..], rel <= [1.0 * eps, 0.5 * eps]));
 
-        assert_float_eq!(a[..], b[..], rmax <= [1.0 * eps, 1.0 * eps]);
-        assert_float_ne!(a[..], b[..], rmax <= [0.5 * eps, 1.0 * eps]);
-        assert_float_ne!(a[..], b[..], rmax <= [1.0 * eps, 0.5 * eps]);
+        assert!(float_eq!(a[..], b[..], rmax <= [1.0 * eps, 1.0 * eps]));
+        assert!(float_ne!(a[..], b[..], rmax <= [0.5 * eps, 1.0 * eps]));
+        assert!(float_ne!(a[..], b[..], rmax <= [1.0 * eps, 0.5 * eps]));
 
-        assert_float_eq!(a[..], b[..], rmin <= [2.0 * eps, 2.0 * eps]);
-        assert_float_ne!(a[..], b[..], rmin <= [1.0 * eps, 2.0 * eps]);
-        assert_float_ne!(a[..], b[..], rmin <= [2.0 * eps, 1.0 * eps]);
+        assert!(float_eq!(a[..], b[..], rmin <= [2.0 * eps, 2.0 * eps]));
+        assert!(float_ne!(a[..], b[..], rmin <= [1.0 * eps, 2.0 * eps]));
+        assert!(float_ne!(a[..], b[..], rmin <= [2.0 * eps, 1.0 * eps]));
 
-        assert_float_eq!(a[..], b[..], r1st <= [2.0 * eps, 1.0 * eps]);
-        assert_float_ne!(a[..], b[..], r1st <= [1.0 * eps, 1.0 * eps]);
-        assert_float_ne!(a[..], b[..], r1st <= [2.0 * eps, 0.5 * eps]);
+        assert!(float_eq!(a[..], b[..], r1st <= [2.0 * eps, 1.0 * eps]));
+        assert!(float_ne!(a[..], b[..], r1st <= [1.0 * eps, 1.0 * eps]));
+        assert!(float_ne!(a[..], b[..], r1st <= [2.0 * eps, 0.5 * eps]));
 
-        assert_float_eq!(a[..], b[..], r2nd <= [1.0 * eps, 2.0 * eps]);
-        assert_float_ne!(a[..], b[..], r2nd <= [0.5 * eps, 2.0 * eps]);
-        assert_float_ne!(a[..], b[..], r2nd <= [1.0 * eps, 1.0 * eps]);
+        assert!(float_eq!(a[..], b[..], r2nd <= [1.0 * eps, 2.0 * eps]));
+        assert!(float_ne!(a[..], b[..], r2nd <= [0.5 * eps, 2.0 * eps]));
+        assert!(float_ne!(a[..], b[..], r2nd <= [1.0 * eps, 1.0 * eps]));
 
-        assert_float_eq!(a[..], b[..], ulps <= [2, 2]);
-        assert_float_ne!(a[..], b[..], ulps <= [1, 2]);
-        assert_float_ne!(a[..], b[..], ulps <= [2, 1]);
+        assert!(float_eq!(a[..], b[..], ulps <= [2, 2]));
+        assert!(float_ne!(a[..], b[..], ulps <= [1, 2]));
+        assert!(float_ne!(a[..], b[..], ulps <= [2, 1]));
 
         // Different shape a/b
-        assert_float_ne!(a[1..], b[..], abs <= [f32::INFINITY; 2]);
-        assert_float_ne!(a[1..], b[..], rel <= [f32::INFINITY; 2]);
-        assert_float_ne!(a[1..], b[..], rmax <= [f32::INFINITY; 2]);
-        assert_float_ne!(a[1..], b[..], rmin <= [f32::INFINITY; 2]);
-        assert_float_ne!(a[1..], b[..], r1st <= [f32::INFINITY; 2]);
-        assert_float_ne!(a[1..], b[..], r2nd <= [f32::INFINITY; 2]);
-        assert_float_ne!(a[1..], b[..], ulps <= [u32::MAX; 2]);
+        assert!(float_ne!(a[1..], b[..], abs <= [f32::INFINITY; 2]));
+        assert!(float_ne!(a[1..], b[..], rel <= [f32::INFINITY; 2]));
+        assert!(float_ne!(a[1..], b[..], rmax <= [f32::INFINITY; 2]));
+        assert!(float_ne!(a[1..], b[..], rmin <= [f32::INFINITY; 2]));
+        assert!(float_ne!(a[1..], b[..], r1st <= [f32::INFINITY; 2]));
+        assert!(float_ne!(a[1..], b[..], r2nd <= [f32::INFINITY; 2]));
+        assert!(float_ne!(a[1..], b[..], ulps <= [u32::MAX; 2]));
 
-        assert_float_ne!(a[..], b[..1], abs <= [f32::INFINITY; 2]);
-        assert_float_ne!(a[..], b[..1], rel <= [f32::INFINITY; 2]);
-        assert_float_ne!(a[..], b[..1], rmax <= [f32::INFINITY; 2]);
-        assert_float_ne!(a[..], b[..1], rmin <= [f32::INFINITY; 2]);
-        assert_float_ne!(a[..], b[..1], r1st <= [f32::INFINITY; 2]);
-        assert_float_ne!(a[..], b[..1], r2nd <= [f32::INFINITY; 2]);
-        assert_float_ne!(a[..], b[..1], ulps <= [u32::MAX; 2]);
+        assert!(float_ne!(a[..], b[..1], abs <= [f32::INFINITY; 2]));
+        assert!(float_ne!(a[..], b[..1], rel <= [f32::INFINITY; 2]));
+        assert!(float_ne!(a[..], b[..1], rmax <= [f32::INFINITY; 2]));
+        assert!(float_ne!(a[..], b[..1], rmin <= [f32::INFINITY; 2]));
+        assert!(float_ne!(a[..], b[..1], r1st <= [f32::INFINITY; 2]));
+        assert!(float_ne!(a[..], b[..1], r2nd <= [f32::INFINITY; 2]));
+        assert!(float_ne!(a[..], b[..1], ulps <= [u32::MAX; 2]));
 
         // Different shape epsilon
-        assert_float_ne!(a[..], b[..], abs <= [f32::INFINITY]);
-        assert_float_ne!(a[..], b[..], rel <= [f32::INFINITY]);
-        assert_float_ne!(a[..], b[..], rmax <= [f32::INFINITY]);
-        assert_float_ne!(a[..], b[..], rmin <= [f32::INFINITY]);
-        assert_float_ne!(a[..], b[..], r1st <= [f32::INFINITY]);
-        assert_float_ne!(a[..], b[..], r2nd <= [f32::INFINITY]);
-        assert_float_ne!(a[..], b[..], ulps <= [u32::MAX]);
+        assert!(float_ne!(a[..], b[..], abs <= [f32::INFINITY]));
+        assert!(float_ne!(a[..], b[..], rel <= [f32::INFINITY]));
+        assert!(float_ne!(a[..], b[..], rmax <= [f32::INFINITY]));
+        assert!(float_ne!(a[..], b[..], rmin <= [f32::INFINITY]));
+        assert!(float_ne!(a[..], b[..], r1st <= [f32::INFINITY]));
+        assert!(float_ne!(a[..], b[..], r2nd <= [f32::INFINITY]));
+        assert!(float_ne!(a[..], b[..], ulps <= [u32::MAX]));
 
-        assert_float_ne!(a[..], b[..], abs <= [f32::INFINITY; 3]);
-        assert_float_ne!(a[..], b[..], rel <= [f32::INFINITY; 3]);
-        assert_float_ne!(a[..], b[..], rmax <= [f32::INFINITY; 3]);
-        assert_float_ne!(a[..], b[..], rmin <= [f32::INFINITY; 3]);
-        assert_float_ne!(a[..], b[..], r1st <= [f32::INFINITY; 3]);
-        assert_float_ne!(a[..], b[..], r2nd <= [f32::INFINITY; 3]);
-        assert_float_ne!(a[..], b[..], ulps <= [u32::MAX; 3]);
+        assert!(float_ne!(a[..], b[..], abs <= [f32::INFINITY; 3]));
+        assert!(float_ne!(a[..], b[..], rel <= [f32::INFINITY; 3]));
+        assert!(float_ne!(a[..], b[..], rmax <= [f32::INFINITY; 3]));
+        assert!(float_ne!(a[..], b[..], rmin <= [f32::INFINITY; 3]));
+        assert!(float_ne!(a[..], b[..], r1st <= [f32::INFINITY; 3]));
+        assert!(float_ne!(a[..], b[..], r2nd <= [f32::INFINITY; 3]));
+        assert!(float_ne!(a[..], b[..], ulps <= [u32::MAX; 3]));
     }
 
     #[test]
@@ -580,42 +582,42 @@ mod slice {
         let eps = f32::EPSILON;
 
         // Same shape a/b/epsilon
-        assert_float_eq!(a[..], b[..], abs_all <= 4.0 * eps);
-        assert_float_ne!(a[..], b[..], abs_all <= 2.0 * eps);
+        assert!(float_eq!(a[..], b[..], abs_all <= 4.0 * eps));
+        assert!(float_ne!(a[..], b[..], abs_all <= 2.0 * eps));
 
-        assert_float_eq!(a[..], b[..], rel_all <= 1.0 * eps);
-        assert_float_ne!(a[..], b[..], rel_all <= 0.5 * eps);
+        assert!(float_eq!(a[..], b[..], rel_all <= 1.0 * eps));
+        assert!(float_ne!(a[..], b[..], rel_all <= 0.5 * eps));
 
-        assert_float_eq!(a[..], b[..], rmax_all <= 1.0 * eps);
-        assert_float_ne!(a[..], b[..], rmax_all <= 0.5 * eps);
+        assert!(float_eq!(a[..], b[..], rmax_all <= 1.0 * eps));
+        assert!(float_ne!(a[..], b[..], rmax_all <= 0.5 * eps));
 
-        assert_float_eq!(a[..], b[..], rmin_all <= 2.0 * eps);
-        assert_float_ne!(a[..], b[..], rmin_all <= 1.0 * eps);
+        assert!(float_eq!(a[..], b[..], rmin_all <= 2.0 * eps));
+        assert!(float_ne!(a[..], b[..], rmin_all <= 1.0 * eps));
 
-        assert_float_eq!(a[..], b[..], r1st_all <= 2.0 * eps);
-        assert_float_ne!(a[..], b[..], r1st_all <= 1.0 * eps);
+        assert!(float_eq!(a[..], b[..], r1st_all <= 2.0 * eps));
+        assert!(float_ne!(a[..], b[..], r1st_all <= 1.0 * eps));
 
-        assert_float_eq!(a[..], b[..], r2nd_all <= 2.0 * eps);
-        assert_float_ne!(a[..], b[..], r2nd_all <= 1.0 * eps);
+        assert!(float_eq!(a[..], b[..], r2nd_all <= 2.0 * eps));
+        assert!(float_ne!(a[..], b[..], r2nd_all <= 1.0 * eps));
 
-        assert_float_eq!(a[..], b[..], ulps_all <= 2);
-        assert_float_ne!(a[..], b[..], ulps_all <= 1);
+        assert!(float_eq!(a[..], b[..], ulps_all <= 2));
+        assert!(float_ne!(a[..], b[..], ulps_all <= 1));
 
         // Different shape a/b
-        assert_float_ne!(a[1..], b[..], abs_all <= f32::INFINITY);
-        assert_float_ne!(a[1..], b[..], rel_all <= f32::INFINITY);
-        assert_float_ne!(a[1..], b[..], rmax_all <= f32::INFINITY);
-        assert_float_ne!(a[1..], b[..], rmin_all <= f32::INFINITY);
-        assert_float_ne!(a[1..], b[..], r1st_all <= f32::INFINITY);
-        assert_float_ne!(a[1..], b[..], r2nd_all <= f32::INFINITY);
-        assert_float_ne!(a[1..], b[..], ulps_all <= u32::MAX);
+        assert!(float_ne!(a[1..], b[..], abs_all <= f32::INFINITY));
+        assert!(float_ne!(a[1..], b[..], rel_all <= f32::INFINITY));
+        assert!(float_ne!(a[1..], b[..], rmax_all <= f32::INFINITY));
+        assert!(float_ne!(a[1..], b[..], rmin_all <= f32::INFINITY));
+        assert!(float_ne!(a[1..], b[..], r1st_all <= f32::INFINITY));
+        assert!(float_ne!(a[1..], b[..], r2nd_all <= f32::INFINITY));
+        assert!(float_ne!(a[1..], b[..], ulps_all <= u32::MAX));
 
-        assert_float_ne!(a[..], b[..1], abs_all <= f32::INFINITY);
-        assert_float_ne!(a[..], b[..1], rel_all <= f32::INFINITY);
-        assert_float_ne!(a[..], b[..1], rmax_all <= f32::INFINITY);
-        assert_float_ne!(a[..], b[..1], rmin_all <= f32::INFINITY);
-        assert_float_ne!(a[..], b[..1], r1st_all <= f32::INFINITY);
-        assert_float_ne!(a[..], b[..1], r2nd_all <= f32::INFINITY);
-        assert_float_ne!(a[..], b[..1], ulps_all <= u32::MAX);
+        assert!(float_ne!(a[..], b[..1], abs_all <= f32::INFINITY));
+        assert!(float_ne!(a[..], b[..1], rel_all <= f32::INFINITY));
+        assert!(float_ne!(a[..], b[..1], rmax_all <= f32::INFINITY));
+        assert!(float_ne!(a[..], b[..1], rmin_all <= f32::INFINITY));
+        assert!(float_ne!(a[..], b[..1], r1st_all <= f32::INFINITY));
+        assert!(float_ne!(a[..], b[..1], r2nd_all <= f32::INFINITY));
+        assert!(float_ne!(a[..], b[..1], ulps_all <= u32::MAX));
     }
 }
