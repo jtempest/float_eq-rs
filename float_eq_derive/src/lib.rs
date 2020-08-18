@@ -241,7 +241,10 @@ fn expand_float_eq(input: DeriveInput) -> Result<TokenStream, syn::Error> {
     };
 
     let eq_abs = expand_exprs("eq_abs");
-    let eq_rel = expand_exprs("eq_rel");
+    let eq_rmax = expand_exprs("eq_rmax");
+    let eq_rmin = expand_exprs("eq_rmin");
+    let eq_r1st = expand_exprs("eq_r1st");
+    let eq_r2nd = expand_exprs("eq_r2nd");
     let eq_ulps = expand_exprs("eq_ulps");
 
     Ok(quote! {
@@ -254,8 +257,23 @@ fn expand_float_eq(input: DeriveInput) -> Result<TokenStream, syn::Error> {
             }
 
             #[inline]
-            fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool {
-                #(#eq_rel)&&*
+            fn eq_rmax(&self, other: &Self, max_diff: &Self) -> bool {
+                #(#eq_rmax)&&*
+            }
+
+            #[inline]
+            fn eq_rmin(&self, other: &Self, max_diff: &Self) -> bool {
+                #(#eq_rmin)&&*
+            }
+
+            #[inline]
+            fn eq_r1st(&self, other: &Self, max_diff: &Self) -> bool {
+                #(#eq_r1st)&&*
+            }
+
+            #[inline]
+            fn eq_r2nd(&self, other: &Self, max_diff: &Self) -> bool {
+                #(#eq_r2nd)&&*
             }
 
             #[inline]
@@ -302,7 +320,10 @@ fn expand_assert_float_eq(input: DeriveInput) -> Result<TokenStream, syn::Error>
     };
 
     let abs_eps_fields = expand_eps_fields("debug_abs_epsilon");
-    let rel_eps_fields = expand_eps_fields("debug_rel_epsilon");
+    let rmax_eps_fields = expand_eps_fields("debug_rmax_epsilon");
+    let rmin_eps_fields = expand_eps_fields("debug_rmin_epsilon");
+    let r1st_eps_fields = expand_eps_fields("debug_r1st_epsilon");
+    let r2nd_eps_fields = expand_eps_fields("debug_r2nd_epsilon");
     let ulps_eps_fields = expand_eps_fields("debug_ulps_epsilon");
 
     Ok(quote! {
@@ -332,9 +353,30 @@ fn expand_assert_float_eq(input: DeriveInput) -> Result<TokenStream, syn::Error>
             }
 
             #[inline]
-            fn debug_rel_epsilon(&self, other: &Self, max_diff: &Self) -> Self {
+            fn debug_rmax_epsilon(&self, other: &Self, max_diff: &Self) -> Self {
                 Self {
-                    #(#rel_eps_fields,)*
+                    #(#rmax_eps_fields,)*
+                }
+            }
+
+            #[inline]
+            fn debug_rmin_epsilon(&self, other: &Self, max_diff: &Self) -> Self {
+                Self {
+                    #(#rmin_eps_fields,)*
+                }
+            }
+
+            #[inline]
+            fn debug_r1st_epsilon(&self, other: &Self, max_diff: &Self) -> Self {
+                Self {
+                    #(#r1st_eps_fields,)*
+                }
+            }
+
+            #[inline]
+            fn debug_r2nd_epsilon(&self, other: &Self, max_diff: &Self) -> Self {
+                Self {
+                    #(#r2nd_eps_fields,)*
                 }
             }
 
@@ -376,7 +418,10 @@ fn expand_float_eq_all(input: DeriveInput) -> Result<TokenStream, syn::Error> {
     };
 
     let eq_abs = expand_exprs("eq_abs_all");
-    let eq_rel = expand_exprs("eq_rel_all");
+    let eq_rmax = expand_exprs("eq_rmax_all");
+    let eq_rmin = expand_exprs("eq_rmin_all");
+    let eq_r1st = expand_exprs("eq_r1st_all");
+    let eq_r2nd = expand_exprs("eq_r2nd_all");
     let eq_ulps = expand_exprs("eq_ulps_all");
 
     Ok(quote! {
@@ -389,8 +434,23 @@ fn expand_float_eq_all(input: DeriveInput) -> Result<TokenStream, syn::Error> {
             }
 
             #[inline]
-            fn eq_rel_all(&self, other: &Self, max_diff: &#all_epsilon) -> bool {
-                #(#eq_rel)&&*
+            fn eq_rmax_all(&self, other: &Self, max_diff: &#all_epsilon) -> bool {
+                #(#eq_rmax)&&*
+            }
+
+            #[inline]
+            fn eq_rmin_all(&self, other: &Self, max_diff: &#all_epsilon) -> bool {
+                #(#eq_rmin)&&*
+            }
+
+            #[inline]
+            fn eq_r1st_all(&self, other: &Self, max_diff: &#all_epsilon) -> bool {
+                #(#eq_r1st)&&*
+            }
+
+            #[inline]
+            fn eq_r2nd_all(&self, other: &Self, max_diff: &#all_epsilon) -> bool {
+                #(#eq_r2nd)&&*
             }
 
             #[inline]
@@ -425,7 +485,10 @@ fn expand_assert_float_eq_all(input: DeriveInput) -> Result<TokenStream, syn::Er
     };
 
     let abs_eps_fields = expand_fields("debug_abs_all_epsilon");
-    let rel_eps_fields = expand_fields("debug_rel_all_epsilon");
+    let rmax_eps_fields = expand_fields("debug_rmax_all_epsilon");
+    let rmin_eps_fields = expand_fields("debug_rmin_all_epsilon");
+    let r1st_eps_fields = expand_fields("debug_r1st_all_epsilon");
+    let r2nd_eps_fields = expand_fields("debug_r2nd_all_epsilon");
     let ulps_eps_fields = expand_fields("debug_ulps_all_epsilon");
 
     Ok(quote! {
@@ -440,9 +503,30 @@ fn expand_assert_float_eq_all(input: DeriveInput) -> Result<TokenStream, syn::Er
             }
 
             #[inline]
-            fn debug_rel_all_epsilon(&self, other: &Self, max_diff: &#all_epsilon) -> Self {
+            fn debug_rmax_all_epsilon(&self, other: &Self, max_diff: &#all_epsilon) -> Self {
                 Self {
-                    #(#rel_eps_fields,)*
+                    #(#rmax_eps_fields,)*
+                }
+            }
+
+            #[inline]
+            fn debug_rmin_all_epsilon(&self, other: &Self, max_diff: &#all_epsilon) -> Self {
+                Self {
+                    #(#rmin_eps_fields,)*
+                }
+            }
+
+            #[inline]
+            fn debug_r1st_all_epsilon(&self, other: &Self, max_diff: &#all_epsilon) -> Self {
+                Self {
+                    #(#r1st_eps_fields,)*
+                }
+            }
+
+            #[inline]
+            fn debug_r2nd_all_epsilon(&self, other: &Self, max_diff: &#all_epsilon) -> Self {
+                Self {
+                    #(#r2nd_eps_fields,)*
                 }
             }
 

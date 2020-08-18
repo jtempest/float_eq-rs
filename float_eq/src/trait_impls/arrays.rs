@@ -1,3 +1,5 @@
+#![allow(clippy::reversed_empty_ranges)]
+
 use crate::{
     AssertFloatEq, AssertFloatEqAll, DebugUlpsDiff, FloatEq, FloatEqAll, FloatEqDebugUlpsDiff,
     FloatEqUlpsEpsilon, UlpsEpsilon,
@@ -39,9 +41,39 @@ macro_rules! impl_float_eq_traits_for_array {
             }
 
             #[inline]
-            fn eq_rel(&self, other: &[B; $n], max_diff: &Self::Epsilon) -> bool {
+            fn eq_rmax(&self, other: &[B; $n], max_diff: &Self::Epsilon) -> bool {
                 for i in 0..$n {
-                    if !self[i].eq_rel(&other[i], &max_diff[i]) {
+                    if !self[i].eq_rmax(&other[i], &max_diff[i]) {
+                        return false;
+                    }
+                }
+                true
+            }
+
+            #[inline]
+            fn eq_rmin(&self, other: &[B; $n], max_diff: &Self::Epsilon) -> bool {
+                for i in 0..$n {
+                    if !self[i].eq_rmin(&other[i], &max_diff[i]) {
+                        return false;
+                    }
+                }
+                true
+            }
+
+            #[inline]
+            fn eq_r1st(&self, other: &[B; $n], max_diff: &Self::Epsilon) -> bool {
+                for i in 0..$n {
+                    if !self[i].eq_r1st(&other[i], &max_diff[i]) {
+                        return false;
+                    }
+                }
+                true
+            }
+
+            #[inline]
+            fn eq_r2nd(&self, other: &[B; $n], max_diff: &Self::Epsilon) -> bool {
+                for i in 0..$n {
+                    if !self[i].eq_r2nd(&other[i], &max_diff[i]) {
                         return false;
                     }
                 }
@@ -73,10 +105,31 @@ macro_rules! impl_float_eq_traits_for_array {
             }
 
             #[inline]
-            fn eq_rel_all(&self, other: &[B; $n], max_diff: &Self::AllEpsilon) -> bool {
+            fn eq_rmax_all(&self, other: &[B; $n], max_diff: &Self::AllEpsilon) -> bool {
                 self.iter()
                     .zip(other.iter())
-                    .all(|(a, b)| a.eq_rel_all(b, max_diff))
+                    .all(|(a, b)| a.eq_rmax_all(b, max_diff))
+            }
+
+            #[inline]
+            fn eq_rmin_all(&self, other: &[B; $n], max_diff: &Self::AllEpsilon) -> bool {
+                self.iter()
+                    .zip(other.iter())
+                    .all(|(a, b)| a.eq_rmin_all(b, max_diff))
+            }
+
+            #[inline]
+            fn eq_r1st_all(&self, other: &[B; $n], max_diff: &Self::AllEpsilon) -> bool {
+                self.iter()
+                    .zip(other.iter())
+                    .all(|(a, b)| a.eq_r1st_all(b, max_diff))
+            }
+
+            #[inline]
+            fn eq_r2nd_all(&self, other: &[B; $n], max_diff: &Self::AllEpsilon) -> bool {
+                self.iter()
+                    .zip(other.iter())
+                    .all(|(a, b)| a.eq_r2nd_all(b, max_diff))
             }
 
             #[inline]
@@ -135,14 +188,53 @@ macro_rules! impl_float_eq_traits_for_array {
             }
 
             #[inline]
-            fn debug_rel_epsilon(
+            fn debug_rmax_epsilon(
                 &self,
                 other: &[B; $n],
                 max_diff: &Self::Epsilon,
             ) -> Self::DebugEpsilon {
                 let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..$n {
-                    result[i] = self[i].debug_rel_epsilon(&other[i], &max_diff[i])
+                    result[i] = self[i].debug_rmax_epsilon(&other[i], &max_diff[i])
+                }
+                result
+            }
+
+            #[inline]
+            fn debug_rmin_epsilon(
+                &self,
+                other: &[B; $n],
+                max_diff: &Self::Epsilon,
+            ) -> Self::DebugEpsilon {
+                let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+                for i in 0..$n {
+                    result[i] = self[i].debug_rmin_epsilon(&other[i], &max_diff[i])
+                }
+                result
+            }
+
+            #[inline]
+            fn debug_r1st_epsilon(
+                &self,
+                other: &[B; $n],
+                max_diff: &Self::Epsilon,
+            ) -> Self::DebugEpsilon {
+                let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+                for i in 0..$n {
+                    result[i] = self[i].debug_r1st_epsilon(&other[i], &max_diff[i])
+                }
+                result
+            }
+
+            #[inline]
+            fn debug_r2nd_epsilon(
+                &self,
+                other: &[B; $n],
+                max_diff: &Self::Epsilon,
+            ) -> Self::DebugEpsilon {
+                let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+                for i in 0..$n {
+                    result[i] = self[i].debug_r2nd_epsilon(&other[i], &max_diff[i])
                 }
                 result
             }
@@ -184,7 +276,7 @@ macro_rules! impl_float_eq_traits_for_array {
             }
 
             #[inline]
-            fn debug_rel_all_epsilon(
+            fn debug_rmax_all_epsilon(
                 &self,
                 other: &[B; $n],
                 max_diff: &Self::AllEpsilon,
@@ -192,7 +284,49 @@ macro_rules! impl_float_eq_traits_for_array {
                 let mut result: Self::AllDebugEpsilon =
                     unsafe { MaybeUninit::uninit().assume_init() };
                 for i in 0..$n {
-                    result[i] = self[i].debug_rel_all_epsilon(&other[i], max_diff)
+                    result[i] = self[i].debug_rmax_all_epsilon(&other[i], max_diff)
+                }
+                result
+            }
+
+            #[inline]
+            fn debug_rmin_all_epsilon(
+                &self,
+                other: &[B; $n],
+                max_diff: &Self::AllEpsilon,
+            ) -> Self::AllDebugEpsilon {
+                let mut result: Self::AllDebugEpsilon =
+                    unsafe { MaybeUninit::uninit().assume_init() };
+                for i in 0..$n {
+                    result[i] = self[i].debug_rmin_all_epsilon(&other[i], max_diff)
+                }
+                result
+            }
+
+            #[inline]
+            fn debug_r1st_all_epsilon(
+                &self,
+                other: &[B; $n],
+                max_diff: &Self::AllEpsilon,
+            ) -> Self::AllDebugEpsilon {
+                let mut result: Self::AllDebugEpsilon =
+                    unsafe { MaybeUninit::uninit().assume_init() };
+                for i in 0..$n {
+                    result[i] = self[i].debug_r1st_all_epsilon(&other[i], max_diff)
+                }
+                result
+            }
+
+            #[inline]
+            fn debug_r2nd_all_epsilon(
+                &self,
+                other: &[B; $n],
+                max_diff: &Self::AllEpsilon,
+            ) -> Self::AllDebugEpsilon {
+                let mut result: Self::AllDebugEpsilon =
+                    unsafe { MaybeUninit::uninit().assume_init() };
+                for i in 0..$n {
+                    result[i] = self[i].debug_r2nd_all_epsilon(&other[i], max_diff)
                 }
                 result
             }

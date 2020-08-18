@@ -68,6 +68,118 @@ macro_rules! impl_test_helpers {
 impl_test_helpers!(f32, u32, crate::F32_NAN_BITS);
 impl_test_helpers!(f64, u64, crate::F64_NAN_BITS);
 
+macro_rules! wrapper_tests {
+    ($t:ident) => {
+        #[test]
+        fn float_eq() {
+            let a = $t::new([0.999_999_9f32, 4.0]);
+            let b = $t::new([1.0f32, 3.999_999_5]);
+            let eps = f32::EPSILON;
+
+            assert_float_eq!(a, b, abs <= [1.0 * eps, 4.0 * eps]);
+            assert_float_ne!(a, b, abs <= [0.5 * eps, 4.0 * eps]);
+            assert_float_ne!(a, b, abs <= [1.0 * eps, 2.0 * eps]);
+
+            assert_float_eq!(a, b, rel <= [1.0 * eps, 1.0 * eps]);
+            assert_float_ne!(a, b, rel <= [0.5 * eps, 1.0 * eps]);
+            assert_float_ne!(a, b, rel <= [1.0 * eps, 0.5 * eps]);
+
+            assert_float_eq!(a, b, rmax <= [1.0 * eps, 1.0 * eps]);
+            assert_float_ne!(a, b, rmax <= [0.5 * eps, 1.0 * eps]);
+            assert_float_ne!(a, b, rmax <= [1.0 * eps, 0.5 * eps]);
+
+            assert_float_eq!(a, b, rmin <= [2.0 * eps, 2.0 * eps]);
+            assert_float_ne!(a, b, rmin <= [1.0 * eps, 2.0 * eps]);
+            assert_float_ne!(a, b, rmin <= [2.0 * eps, 1.0 * eps]);
+
+            assert_float_eq!(a, b, r1st <= [2.0 * eps, 1.0 * eps]);
+            assert_float_ne!(a, b, r1st <= [1.0 * eps, 1.0 * eps]);
+            assert_float_ne!(a, b, r1st <= [2.0 * eps, 0.5 * eps]);
+
+            assert_float_eq!(a, b, r2nd <= [1.0 * eps, 2.0 * eps]);
+            assert_float_ne!(a, b, r2nd <= [0.5 * eps, 2.0 * eps]);
+            assert_float_ne!(a, b, r2nd <= [1.0 * eps, 1.0 * eps]);
+
+            assert_float_eq!(a, b, ulps <= [2, 2]);
+            assert_float_ne!(a, b, ulps <= [1, 2]);
+            assert_float_ne!(a, b, ulps <= [2, 1]);
+        }
+
+        #[test]
+        fn float_eq_all() {
+            let a = $t::new([0.999_999_9f32, 4.0]);
+            let b = $t::new([1.0f32, 3.999_999_5]);
+            let eps = f32::EPSILON;
+
+            assert_float_eq!(a, b, abs_all <= 4.0 * eps);
+            assert_float_ne!(a, b, abs_all <= 2.0 * eps);
+
+            assert_float_eq!(a, b, rel_all <= 1.0 * eps);
+            assert_float_ne!(a, b, rel_all <= 0.5 * eps);
+
+            assert_float_eq!(a, b, rmax_all <= 1.0 * eps);
+            assert_float_ne!(a, b, rmax_all <= 0.5 * eps);
+
+            assert_float_eq!(a, b, rmin_all <= 2.0 * eps);
+            assert_float_ne!(a, b, rmin_all <= 1.0 * eps);
+
+            assert_float_eq!(a, b, r1st_all <= 2.0 * eps);
+            assert_float_ne!(a, b, r1st_all <= 1.0 * eps);
+
+            assert_float_eq!(a, b, r2nd_all <= 2.0 * eps);
+            assert_float_ne!(a, b, r2nd_all <= 1.0 * eps);
+
+            assert_float_eq!(a, b, ulps_all <= 2);
+            assert_float_ne!(a, b, ulps_all <= 1);
+        }
+
+        #[test]
+        fn debug_diff() {
+            let a = $t::new([1.0f32, 2.0]);
+            let b = $t::new([1.5f32, 2.25]);
+            let ulps = [Some(4_194_304), Some(1_048_576)];
+
+            assert_eq!(a.debug_abs_diff(&a), [0.0; 2]);
+            assert_eq!(a.debug_ulps_diff(&a), [Some(0); 2]);
+
+            assert_eq!(a.debug_abs_diff(&b), [0.5, 0.25]);
+            assert_eq!(b.debug_abs_diff(&a), [0.5, 0.25]);
+
+            assert_eq!(a.debug_ulps_diff(&b), ulps);
+            assert_eq!(b.debug_ulps_diff(&a), ulps);
+        }
+
+        #[test]
+        fn debug_epsilon() {
+            let a = $t::new([2.0f32, 4.25]);
+            let b = $t::new([2.5f32, 4.0]);
+            let eps = [0.1, 0.2];
+
+            assert_eq!(a.debug_abs_epsilon(&b, &eps), [0.1, 0.2]);
+            assert_eq!(a.debug_rel_epsilon(&b, &eps), [0.25, 0.85]);
+            assert_eq!(a.debug_rmax_epsilon(&b, &eps), [0.25, 0.85]);
+            assert_eq!(a.debug_rmin_epsilon(&b, &eps), [0.2, 0.8]);
+            assert_eq!(a.debug_r1st_epsilon(&b, &eps), [0.2, 0.85]);
+            assert_eq!(a.debug_r2nd_epsilon(&b, &eps), [0.25, 0.8]);
+            assert_eq!(a.debug_ulps_epsilon(&b, &[1, 2]), [1, 2]);
+        }
+
+        #[test]
+        fn debug_all_epsilon() {
+            let a = $t::new([2.0f32, 4.25]);
+            let b = $t::new([2.5f32, 4.0]);
+
+            assert_eq!(a.debug_abs_all_epsilon(&b, &0.2), [0.2, 0.2]);
+            assert_eq!(a.debug_rel_all_epsilon(&b, &0.2), [0.5, 0.85]);
+            assert_eq!(a.debug_rmax_all_epsilon(&b, &0.2), [0.5, 0.85]);
+            assert_eq!(a.debug_rmin_all_epsilon(&b, &0.2), [0.4, 0.8]);
+            assert_eq!(a.debug_r1st_all_epsilon(&b, &0.2), [0.4, 0.85]);
+            assert_eq!(a.debug_r2nd_all_epsilon(&b, &0.2), [0.5, 0.8]);
+            assert_eq!(a.debug_ulps_all_epsilon(&b, &2), [2, 2]);
+        }
+    };
+}
+
 mod unit_tests {
     mod arrays;
     mod core_types;

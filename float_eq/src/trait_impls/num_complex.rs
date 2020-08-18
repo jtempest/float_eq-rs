@@ -62,8 +62,23 @@ where
     }
 
     #[inline]
-    fn eq_rel(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
-        self.re.eq_rel(&other.re, &max_diff.re) && self.im.eq_rel(&other.im, &max_diff.im)
+    fn eq_rmax(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+        self.re.eq_rmax(&other.re, &max_diff.re) && self.im.eq_rmax(&other.im, &max_diff.im)
+    }
+
+    #[inline]
+    fn eq_rmin(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+        self.re.eq_rmin(&other.re, &max_diff.re) && self.im.eq_rmin(&other.im, &max_diff.im)
+    }
+
+    #[inline]
+    fn eq_r1st(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+        self.re.eq_r1st(&other.re, &max_diff.re) && self.im.eq_r1st(&other.im, &max_diff.im)
+    }
+
+    #[inline]
+    fn eq_r2nd(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+        self.re.eq_r2nd(&other.re, &max_diff.re) && self.im.eq_r2nd(&other.im, &max_diff.im)
     }
 
     #[inline]
@@ -81,8 +96,23 @@ impl<T: FloatEqAll> FloatEqAll for Complex<T> {
     }
 
     #[inline]
-    fn eq_rel_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
-        self.re.eq_rel_all(&other.re, max_diff) && self.im.eq_rel_all(&other.im, max_diff)
+    fn eq_rmax_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
+        self.re.eq_rmax_all(&other.re, max_diff) && self.im.eq_rmax_all(&other.im, max_diff)
+    }
+
+    #[inline]
+    fn eq_rmin_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
+        self.re.eq_rmin_all(&other.re, max_diff) && self.im.eq_rmin_all(&other.im, max_diff)
+    }
+
+    #[inline]
+    fn eq_r1st_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
+        self.re.eq_r1st_all(&other.re, max_diff) && self.im.eq_r1st_all(&other.im, max_diff)
+    }
+
+    #[inline]
+    fn eq_r2nd_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
+        self.re.eq_r2nd_all(&other.re, max_diff) && self.im.eq_r2nd_all(&other.im, max_diff)
     }
 
     #[inline]
@@ -127,10 +157,34 @@ where
     }
 
     #[inline]
-    fn debug_rel_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+    fn debug_rmax_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
         Self::DebugEpsilon {
-            re: self.re.debug_rel_epsilon(&other.re, &max_diff.re),
-            im: self.im.debug_rel_epsilon(&other.im, &max_diff.im),
+            re: self.re.debug_rmax_epsilon(&other.re, &max_diff.re),
+            im: self.im.debug_rmax_epsilon(&other.im, &max_diff.im),
+        }
+    }
+
+    #[inline]
+    fn debug_rmin_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+        Self::DebugEpsilon {
+            re: self.re.debug_rmin_epsilon(&other.re, &max_diff.re),
+            im: self.im.debug_rmin_epsilon(&other.im, &max_diff.im),
+        }
+    }
+
+    #[inline]
+    fn debug_r1st_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+        Self::DebugEpsilon {
+            re: self.re.debug_r1st_epsilon(&other.re, &max_diff.re),
+            im: self.im.debug_r1st_epsilon(&other.im, &max_diff.im),
+        }
+    }
+
+    #[inline]
+    fn debug_r2nd_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+        Self::DebugEpsilon {
+            re: self.re.debug_r2nd_epsilon(&other.re, &max_diff.re),
+            im: self.im.debug_r2nd_epsilon(&other.im, &max_diff.im),
         }
     }
 
@@ -171,14 +225,50 @@ where
     }
 
     #[inline]
-    fn debug_rel_all_epsilon(
+    fn debug_rmax_all_epsilon(
         &self,
         other: &Self,
         max_diff: &Self::AllEpsilon,
     ) -> Self::AllDebugEpsilon {
         Self::AllDebugEpsilon {
-            re: self.re.debug_rel_all_epsilon(&other.re, max_diff),
-            im: self.im.debug_rel_all_epsilon(&other.im, max_diff),
+            re: self.re.debug_rmax_all_epsilon(&other.re, max_diff),
+            im: self.im.debug_rmax_all_epsilon(&other.im, max_diff),
+        }
+    }
+
+    #[inline]
+    fn debug_rmin_all_epsilon(
+        &self,
+        other: &Self,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
+        Self::AllDebugEpsilon {
+            re: self.re.debug_rmin_all_epsilon(&other.re, max_diff),
+            im: self.im.debug_rmin_all_epsilon(&other.im, max_diff),
+        }
+    }
+
+    #[inline]
+    fn debug_r1st_all_epsilon(
+        &self,
+        other: &Self,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
+        Self::AllDebugEpsilon {
+            re: self.re.debug_r1st_all_epsilon(&other.re, max_diff),
+            im: self.im.debug_r1st_all_epsilon(&other.im, max_diff),
+        }
+    }
+
+    #[inline]
+    fn debug_r2nd_all_epsilon(
+        &self,
+        other: &Self,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
+        Self::AllDebugEpsilon {
+            re: self.re.debug_r2nd_all_epsilon(&other.re, max_diff),
+            im: self.im.debug_r2nd_all_epsilon(&other.im, max_diff),
         }
     }
 

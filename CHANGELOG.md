@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   traits and the assert capability. The `FloatDiff` trait has been folded into
   `AssertFloatEq` both for clarity and because it is geared towards debug
   context and was not as general as the name implied.
+- Expanded `rel` checks into `rmax` (aka `rel`), `rmin`, `r1st` and `r2nd` to
+  select which operand to scale epsilon's precision to.
 - Updated `num-complex` dependency to 0.3.
 
 ## [0.4.1] - 2020-06-22

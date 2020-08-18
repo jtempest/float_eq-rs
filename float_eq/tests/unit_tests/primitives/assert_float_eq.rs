@@ -2,7 +2,7 @@ macro_rules! impl_tests {
     ($float:ident, $uint:ident) => {
         mod $float {
             use crate::$float::*;
-            use float_eq::AssertFloatEq;
+            use float_eq::{AssertFloatEq, AssertFloatEqAll};
 
             #[test]
             fn debug_abs_diff() {
@@ -56,11 +56,19 @@ macro_rules! impl_tests {
                 check(1.0, 1.0, Some(0));
                 check(-1.0, -1.0, Some(0));
 
-                // finite numbers
-                check(1.0, next_n(1.0, 10), Some(10));
+                // denormals
+                check(next(0.0), next_n(0.0, 10), Some(9));
+                check(next(-0.0), next_n(-0.0, 10), Some(9));
+
                 check(next(0.0), next(-0.0), None);
                 check(next(-0.0), next(0.0), None);
+
+                // normals
+                check(1.0, next_n(1.0, 10), Some(10));
                 check(-1.0, next_n(-1.0, 10), Some(10));
+
+                check(1.0, -1.0, None);
+                check(-1.0, 1.0, None);
 
                 // infinities
                 check(INFINITY, INFINITY, Some(0));
@@ -77,6 +85,60 @@ macro_rules! impl_tests {
                         assert!(a.debug_ulps_diff(b).is_none());
                     }
                 }
+            }
+
+            #[test]
+            fn debug_epsilon() {
+                let a: $float = 10.0;
+                let b: $float = 25.0;
+
+                assert_eq!(a.debug_abs_epsilon(&b, &3.0), 3.0);
+                assert_eq!(b.debug_abs_epsilon(&a, &3.0), 3.0);
+
+                assert_eq!(a.debug_rel_epsilon(&b, &0.5), 12.5);
+                assert_eq!(b.debug_rel_epsilon(&a, &0.5), 12.5);
+
+                assert_eq!(a.debug_rmax_epsilon(&b, &0.5), 12.5);
+                assert_eq!(b.debug_rmax_epsilon(&a, &0.5), 12.5);
+
+                assert_eq!(a.debug_rmin_epsilon(&b, &0.5), 5.0);
+                assert_eq!(b.debug_rmin_epsilon(&a, &0.5), 5.0);
+
+                assert_eq!(a.debug_r1st_epsilon(&b, &0.5), 5.0);
+                assert_eq!(b.debug_r1st_epsilon(&a, &0.5), 12.5);
+
+                assert_eq!(a.debug_r2nd_epsilon(&b, &0.5), 12.5);
+                assert_eq!(b.debug_r2nd_epsilon(&a, &0.5), 5.0);
+
+                assert_eq!(a.debug_ulps_epsilon(&b, &5), 5);
+                assert_eq!(b.debug_ulps_epsilon(&a, &5), 5);
+            }
+
+            #[test]
+            fn debug_all_epsilon() {
+                let a: $float = 10.0;
+                let b: $float = 25.0;
+
+                assert_eq!(a.debug_abs_all_epsilon(&b, &3.0), 3.0);
+                assert_eq!(b.debug_abs_all_epsilon(&a, &3.0), 3.0);
+
+                assert_eq!(a.debug_rel_all_epsilon(&b, &0.5), 12.5);
+                assert_eq!(b.debug_rel_all_epsilon(&a, &0.5), 12.5);
+
+                assert_eq!(a.debug_rmax_all_epsilon(&b, &0.5), 12.5);
+                assert_eq!(b.debug_rmax_all_epsilon(&a, &0.5), 12.5);
+
+                assert_eq!(a.debug_rmin_all_epsilon(&b, &0.5), 5.0);
+                assert_eq!(b.debug_rmin_all_epsilon(&a, &0.5), 5.0);
+
+                assert_eq!(a.debug_r1st_all_epsilon(&b, &0.5), 5.0);
+                assert_eq!(b.debug_r1st_all_epsilon(&a, &0.5), 12.5);
+
+                assert_eq!(a.debug_r2nd_all_epsilon(&b, &0.5), 12.5);
+                assert_eq!(b.debug_r2nd_all_epsilon(&a, &0.5), 5.0);
+
+                assert_eq!(a.debug_ulps_all_epsilon(&b, &5), 5);
+                assert_eq!(b.debug_ulps_all_epsilon(&a, &5), 5);
             }
         }
     };

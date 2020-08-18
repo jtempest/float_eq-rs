@@ -1,8 +1,144 @@
 use crate::{f32, f64};
-use float_eq::{assert_float_eq, float_eq, float_ne, AssertFloatEq};
+use float_eq::{assert_float_eq, assert_float_ne, AssertFloatEq};
 
 #[test]
-fn float_diff() {
+fn float_eq() {
+    // ()
+    assert_float_eq!((), (), abs <= ());
+    assert_float_eq!((), (), rel <= ());
+    assert_float_eq!((), (), rmax <= ());
+    assert_float_eq!((), (), rmin <= ());
+    assert_float_eq!((), (), r1st <= ());
+    assert_float_eq!((), (), r2nd <= ());
+    assert_float_eq!((), (), ulps <= ());
+
+    // (A,)
+    assert_float_eq!((1.0f32,), (1.5,), abs <= (0.5,));
+    assert_float_ne!((1.0f32,), (1.5,), abs <= (f32::prev(0.5),));
+    assert_float_eq!((4.0f32,), (4.000_000_5,), rel <= (f32::EPSILON,));
+    assert_float_ne!((4.0f32,), (4.000_000_5,), rel <= (0.5 * f32::EPSILON,));
+    assert_float_eq!((4.0f32,), (3.999_999_5,), rmax <= (1.0 * f32::EPSILON,));
+    assert_float_ne!((4.0f32,), (3.999_999_5,), rmax <= (0.5 * f32::EPSILON,));
+    assert_float_eq!((4.0f32,), (3.999_999_5,), rmin <= (2.0 * f32::EPSILON,));
+    assert_float_ne!((4.0f32,), (3.999_999_5,), rmin <= (1.0 * f32::EPSILON,));
+    assert_float_eq!((4.0f32,), (3.999_999_5,), r1st <= (1.0 * f32::EPSILON,));
+    assert_float_ne!((4.0f32,), (3.999_999_5,), r1st <= (0.5 * f32::EPSILON,));
+    assert_float_eq!((4.0f32,), (3.999_999_5,), r2nd <= (2.0 * f32::EPSILON,));
+    assert_float_ne!((4.0f32,), (3.999_999_5,), r2nd <= (1.0 * f32::EPSILON,));
+    assert_float_eq!((-4.0f32,), (-4.000_001,), ulps <= (2,));
+    assert_float_ne!((-4.0f32,), (-4.000_001,), ulps <= (1,));
+
+    // (A, B)
+    let a = (1.0f32, 2.0f64);
+    let b = (1.5, -3.0);
+    assert_float_eq!(a, b, abs <= (0.5, 5.0));
+    assert_float_ne!(a, b, abs <= (f32::prev(0.5), 5.0));
+    assert_float_ne!(a, b, abs <= (0.5, f64::prev(5.0)));
+
+    let a = (4.0f32, -8.0f64);
+    let b = (4.000_000_5, -8.000_000_000_000_004);
+    assert_float_eq!(a, b, rel <= (f32::EPSILON, 2.0 * f64::EPSILON));
+    assert_float_ne!(a, b, rel <= (0.5 * f32::EPSILON, 2.0 * f64::EPSILON));
+    assert_float_ne!(a, b, rel <= (f32::EPSILON, f64::EPSILON));
+
+    let a = (4.0f32, -8.0f64);
+    let b = (3.999_999_5, -7.999_999_999_999_996_4);
+
+    assert_float_eq!(a, b, rmax <= (1.0 * f32::EPSILON, 2.0 * f64::EPSILON));
+    assert_float_ne!(a, b, rmax <= (0.5 * f32::EPSILON, 2.0 * f64::EPSILON));
+    assert_float_ne!(a, b, rmax <= (1.0 * f32::EPSILON, 1.0 * f64::EPSILON));
+
+    assert_float_eq!(a, b, rmin <= (2.0 * f32::EPSILON, 4.0 * f64::EPSILON));
+    assert_float_ne!(a, b, rmin <= (1.0 * f32::EPSILON, 4.0 * f64::EPSILON));
+    assert_float_ne!(a, b, rmin <= (2.0 * f32::EPSILON, 2.0 * f64::EPSILON));
+
+    assert_float_eq!(a, b, r1st <= (1.0 * f32::EPSILON, 2.0 * f64::EPSILON));
+    assert_float_ne!(a, b, r1st <= (0.5 * f32::EPSILON, 2.0 * f64::EPSILON));
+    assert_float_ne!(a, b, r1st <= (1.0 * f32::EPSILON, 1.0 * f64::EPSILON));
+
+    assert_float_eq!(a, b, r2nd <= (2.0 * f32::EPSILON, 4.0 * f64::EPSILON));
+    assert_float_ne!(a, b, r2nd <= (1.0 * f32::EPSILON, 4.0 * f64::EPSILON));
+    assert_float_ne!(a, b, r2nd <= (2.0 * f32::EPSILON, 2.0 * f64::EPSILON));
+
+    let a = (4.0f32, -8.0f64);
+    let b = (4.000_000_5, -8.000_000_000_000_004);
+    assert_float_eq!(a, b, ulps <= (1, 2));
+    assert_float_ne!(a, b, ulps <= (0, 2));
+    assert_float_ne!(a, b, ulps <= (1, 1));
+
+    //...impl is by macro, so skip to the largest:
+
+    // (A, B, C, D, E, F, G, H, I, J, K, L)
+    let a = (
+        1.0f32, -2.0f64, 3.0f32, -4.0f64, 5.0f32, 6.0f64, 7.0f32, 8.0f64, 9.0f32, 10.0f64, 11.0f32,
+        12.0f64,
+    );
+    let b = (
+        2.0f32, 2.0f64, -3.0f32, -4.5f64, 5.125f32, 6.25f64, 7.375f32, 8.5f64, 9.625f32, 10.75f64,
+        11.875f32, 13.0f64,
+    );
+    let eps = (
+        1.0f32, 4.0f64, 6.0f32, 0.5f64, 0.125f32, 0.25f64, 0.375f32, 0.5f64, 0.625f32, 0.75f64,
+        0.875f32, 1.0f64,
+    );
+    assert_float_eq!(a, b, abs <= eps);
+    let mut eps0 = eps;
+    eps0.0 = f32::prev(eps.0);
+    assert_float_ne!(a, b, abs <= eps0);
+    let mut eps11 = eps;
+    eps11.11 = f64::prev(eps.11);
+    assert_float_ne!(a, b, abs <= eps11);
+
+    let c = (
+        f32::next_n(1.0f32, 1),
+        f64::next_n(-2.0f64, 2),
+        f32::next_n(3.0f32, 3),
+        f64::next_n(-4.0f64, 4),
+        f32::next_n(5.0f32, 5),
+        f64::next_n(6.0f64, 6),
+        f32::next_n(7.0f32, 7),
+        f64::next_n(8.0f64, 8),
+        f32::next_n(9.0f32, 9),
+        f64::next_n(10.0f64, 10),
+        f32::next_n(11.0f32, 11),
+        f64::next_n(12.0f64, 12),
+    );
+    let eps = (
+        f32::EPSILON,
+        2.0 * f64::EPSILON,
+        3.0 * f32::EPSILON,
+        4.0 * f64::EPSILON,
+        5.0 * f32::EPSILON,
+        6.0 * f64::EPSILON,
+        7.0 * f32::EPSILON,
+        8.0 * f64::EPSILON,
+        9.0 * f32::EPSILON,
+        10.0 * f64::EPSILON,
+        11.0 * f32::EPSILON,
+        12.0 * f64::EPSILON,
+    );
+    assert_float_eq!(a, c, rel <= eps);
+    let mut eps0 = eps;
+    eps0.0 = eps.0 * 0.5;
+    assert_float_ne!(a, c, rel <= eps0);
+    let mut eps11 = eps;
+    eps11.11 = eps.11 * 0.5;
+    assert_float_ne!(a, c, rel <= eps11);
+
+    //TODO: rmax, rmin, r1st, r2nd
+
+    let eps = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+    assert_float_eq!(a, c, ulps <= eps);
+    let mut eps0 = eps;
+    eps0.0 = eps.0 - 1;
+    assert_float_ne!(a, c, ulps <= eps0);
+    let mut eps11 = eps;
+    eps11.11 = eps.11 - 1;
+    assert_float_ne!(a, c, ulps <= eps11);
+}
+
+#[test]
+fn debug_diff() {
     // ()
     assert_eq!(().debug_abs_diff(&()), ());
     assert_eq!(().debug_ulps_diff(&()), ());
@@ -75,123 +211,34 @@ fn float_diff() {
 }
 
 #[test]
-fn float_eq() {
-    // ()
-    assert!(float_eq!((), (), abs <= ()));
-    assert!(float_eq!((), (), rel <= ()));
-    assert!(float_eq!((), (), ulps <= ()));
-
-    // (A,)
-    assert!(float_eq!((1.0f32,), (1.5,), abs <= (0.5,)));
-    assert!(float_ne!((1.0f32,), (1.5,), abs <= (f32::prev(0.5),)));
-    assert!(float_eq!((4.0f32,), (4.000_000_5,), rel <= (f32::EPSILON,)));
-    assert!(float_ne!(
-        (4.0f32,),
-        (4.000_000_5,),
-        rel <= (0.5 * f32::EPSILON,)
-    ));
-    assert!(float_eq!((-4.0f32,), (-4.000_001,), ulps <= (2,)));
-    assert!(float_ne!((-4.0f32,), (-4.000_001,), ulps <= (1,)));
-
-    // (A, B)
-    let a = (1.0f32, 2.0f64);
-    let b = (1.5, -3.0);
-    assert!(float_eq!(a, b, abs <= (0.5, 5.0)));
-    assert!(float_ne!(a, b, abs <= (f32::prev(0.5), 5.0)));
-    assert!(float_ne!(a, b, abs <= (0.5, f64::prev(5.0))));
-    let a = (4.0f32, -8.0f64);
-    let b = (4.000_000_5, -8.000_000_000_000_004);
-    assert!(float_eq!(a, b, rel <= (f32::EPSILON, 2.0 * f64::EPSILON)));
-    assert!(float_ne!(
-        a,
-        b,
-        rel <= (0.5 * f32::EPSILON, 2.0 * f64::EPSILON)
-    ));
-    assert!(float_ne!(a, b, rel <= (f32::EPSILON, f64::EPSILON)));
-    assert!(float_eq!(a, b, ulps <= (1, 2)));
-    assert!(float_ne!(a, b, ulps <= (0, 2)));
-    assert!(float_ne!(a, b, ulps <= (1, 1)));
-
-    //...impl is by macro, so skip to the largest:
-
-    // (A, B, C, D, E, F, G, H, I, J, K, L)
-    let a = (
-        1.0f32, -2.0f64, 3.0f32, -4.0f64, 5.0f32, 6.0f64, 7.0f32, 8.0f64, 9.0f32, 10.0f64, 11.0f32,
-        12.0f64,
-    );
-    let b = (
-        2.0f32, 2.0f64, -3.0f32, -4.5f64, 5.125f32, 6.25f64, 7.375f32, 8.5f64, 9.625f32, 10.75f64,
-        11.875f32, 13.0f64,
-    );
-    let eps = (
-        1.0f32, 4.0f64, 6.0f32, 0.5f64, 0.125f32, 0.25f64, 0.375f32, 0.5f64, 0.625f32, 0.75f64,
-        0.875f32, 1.0f64,
-    );
-    assert!(float_eq!(a, b, abs <= eps));
-    let mut eps0 = eps;
-    eps0.0 = f32::prev(eps.0);
-    assert!(float_ne!(a, b, abs <= eps0));
-    let mut eps11 = eps;
-    eps11.11 = f64::prev(eps.11);
-    assert!(float_ne!(a, b, abs <= eps11));
-
-    let c = (
-        f32::next_n(1.0f32, 1),
-        f64::next_n(-2.0f64, 2),
-        f32::next_n(3.0f32, 3),
-        f64::next_n(-4.0f64, 4),
-        f32::next_n(5.0f32, 5),
-        f64::next_n(6.0f64, 6),
-        f32::next_n(7.0f32, 7),
-        f64::next_n(8.0f64, 8),
-        f32::next_n(9.0f32, 9),
-        f64::next_n(10.0f64, 10),
-        f32::next_n(11.0f32, 11),
-        f64::next_n(12.0f64, 12),
-    );
-    let eps = (
-        f32::EPSILON,
-        2.0 * f64::EPSILON,
-        3.0 * f32::EPSILON,
-        4.0 * f64::EPSILON,
-        5.0 * f32::EPSILON,
-        6.0 * f64::EPSILON,
-        7.0 * f32::EPSILON,
-        8.0 * f64::EPSILON,
-        9.0 * f32::EPSILON,
-        10.0 * f64::EPSILON,
-        11.0 * f32::EPSILON,
-        12.0 * f64::EPSILON,
-    );
-    assert!(float_eq!(a, c, rel <= eps));
-    let mut eps0 = eps;
-    eps0.0 = eps.0 * 0.5;
-    assert!(float_ne!(a, c, rel <= eps0));
-    let mut eps11 = eps;
-    eps11.11 = eps.11 * 0.5;
-    assert!(float_ne!(a, c, rel <= eps11));
-
-    let eps = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
-    assert!(float_eq!(a, c, ulps <= eps));
-    let mut eps0 = eps;
-    eps0.0 = eps.0 - 1;
-    assert!(float_ne!(a, c, ulps <= eps0));
-    let mut eps11 = eps;
-    eps11.11 = eps.11 - 1;
-    assert!(float_ne!(a, c, ulps <= eps11));
-}
-
-#[test]
-fn float_eq_debug() {
+fn debug_epsilon() {
     // ()
     assert_eq!(().debug_abs_epsilon(&(), &()), ());
     assert_eq!(().debug_rel_epsilon(&(), &()), ());
+    assert_eq!(().debug_rmax_epsilon(&(), &()), ());
+    assert_eq!(().debug_rmin_epsilon(&(), &()), ());
+    assert_eq!(().debug_r1st_epsilon(&(), &()), ());
+    assert_eq!(().debug_r2nd_epsilon(&(), &()), ());
     assert_eq!(().debug_ulps_epsilon(&(), &()), ());
 
     // (A,)
     assert_eq!((1.0f32,).debug_abs_epsilon(&(1.0,), &(0.1,)), (0.1,));
+
     assert_eq!((1.0f32,).debug_rel_epsilon(&(2.0,), &(0.1,)), (0.2,));
     assert_eq!((2.0f32,).debug_rel_epsilon(&(1.0,), &(0.1,)), (0.2,));
+
+    assert_eq!((1.0f32,).debug_rmax_epsilon(&(2.0,), &(0.1,)), (0.2,));
+    assert_eq!((2.0f32,).debug_rmax_epsilon(&(1.0,), &(0.1,)), (0.2,));
+
+    assert_eq!((1.0f32,).debug_rmin_epsilon(&(2.0,), &(0.1,)), (0.1,));
+    assert_eq!((2.0f32,).debug_rmin_epsilon(&(1.0,), &(0.1,)), (0.1,));
+
+    assert_eq!((1.0f32,).debug_r1st_epsilon(&(2.0,), &(0.1,)), (0.1,));
+    assert_eq!((2.0f32,).debug_r1st_epsilon(&(1.0,), &(0.1,)), (0.2,));
+
+    assert_eq!((1.0f32,).debug_r2nd_epsilon(&(2.0,), &(0.1,)), (0.2,));
+    assert_eq!((2.0f32,).debug_r2nd_epsilon(&(1.0,), &(0.1,)), (0.1,));
+
     assert_eq!((1.0f32,).debug_ulps_epsilon(&(1.0f32,), &(1,)), (1,));
 
     // (A, B)
@@ -199,6 +246,7 @@ fn float_eq_debug() {
         (1.0f32, -2.0f64).debug_abs_epsilon(&(1.0, -2.0f64), &(0.1, 0.2)),
         (0.1, 0.2)
     );
+
     assert_eq!(
         (1.0f32, -4.0f64).debug_rel_epsilon(&(2.0, -2.0f64), &(0.1, 0.2)),
         (0.2, 0.8)
@@ -207,6 +255,43 @@ fn float_eq_debug() {
         (2.0f32, -2.0f64).debug_rel_epsilon(&(1.0, -4.0f64), &(0.1, 0.2)),
         (0.2, 0.8)
     );
+
+    assert_eq!(
+        (1.0f32, -4.0f64).debug_rmax_epsilon(&(2.0, -2.0f64), &(0.1, 0.2)),
+        (0.2, 0.8)
+    );
+    assert_eq!(
+        (2.0f32, -2.0f64).debug_rmax_epsilon(&(1.0, -4.0f64), &(0.1, 0.2)),
+        (0.2, 0.8)
+    );
+
+    assert_eq!(
+        (1.0f32, -4.0f64).debug_rmin_epsilon(&(2.0, -2.0f64), &(0.1, 0.2)),
+        (0.1, 0.4)
+    );
+    assert_eq!(
+        (2.0f32, -2.0f64).debug_rmin_epsilon(&(1.0, -4.0f64), &(0.1, 0.2)),
+        (0.1, 0.4)
+    );
+
+    assert_eq!(
+        (1.0f32, -4.0f64).debug_r1st_epsilon(&(2.0, -2.0f64), &(0.1, 0.2)),
+        (0.1, 0.8)
+    );
+    assert_eq!(
+        (2.0f32, -2.0f64).debug_r1st_epsilon(&(1.0, -4.0f64), &(0.1, 0.2)),
+        (0.2, 0.4)
+    );
+
+    assert_eq!(
+        (1.0f32, -4.0f64).debug_r2nd_epsilon(&(2.0, -2.0f64), &(0.1, 0.2)),
+        (0.2, 0.4)
+    );
+    assert_eq!(
+        (2.0f32, -2.0f64).debug_r2nd_epsilon(&(1.0, -4.0f64), &(0.1, 0.2)),
+        (0.1, 0.8)
+    );
+
     assert_eq!(
         (2.0f32, -2.0f64).debug_ulps_epsilon(&(1.0, -4.0f64), &(1, 2)),
         (1, 2)
@@ -250,6 +335,9 @@ fn float_eq_debug() {
             28.799_999_999_999_997
         )
     );
+
+    //TODO: rmax, rmin, r1st, r2nd
+
     assert_eq!(
         a.debug_ulps_epsilon(&b, &(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)),
         (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)

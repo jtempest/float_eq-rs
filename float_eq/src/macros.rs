@@ -708,6 +708,70 @@ impl FloatEqCmp {
     }
 
     #[inline]
+    pub fn rmax<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> bool
+    where
+        A: FloatEq<B>,
+    {
+        a.eq_rmax(b, max_diff)
+    }
+
+    #[inline]
+    pub fn rmax_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::AllEpsilon) -> bool
+    where
+        A: FloatEqAll<B>,
+    {
+        a.eq_rmax_all(b, max_diff)
+    }
+
+    #[inline]
+    pub fn rmin<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> bool
+    where
+        A: FloatEq<B>,
+    {
+        a.eq_rmin(b, max_diff)
+    }
+
+    #[inline]
+    pub fn rmin_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::AllEpsilon) -> bool
+    where
+        A: FloatEqAll<B>,
+    {
+        a.eq_rmin_all(b, max_diff)
+    }
+
+    #[inline]
+    pub fn r1st<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> bool
+    where
+        A: FloatEq<B>,
+    {
+        a.eq_r1st(b, max_diff)
+    }
+
+    #[inline]
+    pub fn r1st_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::AllEpsilon) -> bool
+    where
+        A: FloatEqAll<B>,
+    {
+        a.eq_r1st_all(b, max_diff)
+    }
+
+    #[inline]
+    pub fn r2nd<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> bool
+    where
+        A: FloatEq<B>,
+    {
+        a.eq_r2nd(b, max_diff)
+    }
+
+    #[inline]
+    pub fn r2nd_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::AllEpsilon) -> bool
+    where
+        A: FloatEqAll<B>,
+    {
+        a.eq_r2nd_all(b, max_diff)
+    }
+
+    #[inline]
     pub fn ulps<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &UlpsEpsilon<A::Epsilon>) -> bool
     where
         A: FloatEq<B>,
@@ -771,6 +835,86 @@ impl FloatCmpOpEpsilon {
         A: FloatEqAll<B> + AssertFloatEqAll<B>,
     {
         a.debug_rel_all_epsilon(b, max_diff)
+    }
+
+    #[inline]
+    pub fn rmax<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> A::DebugEpsilon
+    where
+        A: FloatEq<B> + AssertFloatEq<B>,
+    {
+        a.debug_rmax_epsilon(b, max_diff)
+    }
+
+    #[inline]
+    pub fn rmax_all<A: ?Sized, B: ?Sized>(
+        a: &A,
+        b: &B,
+        max_diff: &A::AllEpsilon,
+    ) -> A::AllDebugEpsilon
+    where
+        A: FloatEqAll<B> + AssertFloatEqAll<B>,
+    {
+        a.debug_rmax_all_epsilon(b, max_diff)
+    }
+
+    #[inline]
+    pub fn rmin<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> A::DebugEpsilon
+    where
+        A: FloatEq<B> + AssertFloatEq<B>,
+    {
+        a.debug_rmin_epsilon(b, max_diff)
+    }
+
+    #[inline]
+    pub fn rmin_all<A: ?Sized, B: ?Sized>(
+        a: &A,
+        b: &B,
+        max_diff: &A::AllEpsilon,
+    ) -> A::AllDebugEpsilon
+    where
+        A: FloatEqAll<B> + AssertFloatEqAll<B>,
+    {
+        a.debug_rmin_all_epsilon(b, max_diff)
+    }
+
+    #[inline]
+    pub fn r1st<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> A::DebugEpsilon
+    where
+        A: FloatEq<B> + AssertFloatEq<B>,
+    {
+        a.debug_r1st_epsilon(b, max_diff)
+    }
+
+    #[inline]
+    pub fn r1st_all<A: ?Sized, B: ?Sized>(
+        a: &A,
+        b: &B,
+        max_diff: &A::AllEpsilon,
+    ) -> A::AllDebugEpsilon
+    where
+        A: FloatEqAll<B> + AssertFloatEqAll<B>,
+    {
+        a.debug_r1st_all_epsilon(b, max_diff)
+    }
+
+    #[inline]
+    pub fn r2nd<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> A::DebugEpsilon
+    where
+        A: FloatEq<B> + AssertFloatEq<B>,
+    {
+        a.debug_r2nd_epsilon(b, max_diff)
+    }
+
+    #[inline]
+    pub fn r2nd_all<A: ?Sized, B: ?Sized>(
+        a: &A,
+        b: &B,
+        max_diff: &A::AllEpsilon,
+    ) -> A::AllDebugEpsilon
+    where
+        A: FloatEqAll<B> + AssertFloatEqAll<B>,
+    {
+        a.debug_r2nd_all_epsilon(b, max_diff)
     }
 
     #[inline]

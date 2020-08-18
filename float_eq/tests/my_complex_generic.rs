@@ -1,4 +1,6 @@
-#![allow(clippy::float_cmp, clippy::cognitive_complexity)]
+//TODO: update this to have proper tests for rmax/rmin/r1st/r2nd?
+
+#![allow(clippy::float_cmp)]
 
 use core::fmt;
 use float_eq::{
@@ -99,8 +101,20 @@ where
         self.re.eq_abs(&other.re, &max_diff.re) && self.im.eq_abs(&other.im, &max_diff.im)
     }
 
-    fn eq_rel(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
-        self.re.eq_rel(&other.re, &max_diff.re) && self.im.eq_rel(&other.im, &max_diff.im)
+    fn eq_rmax(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+        self.re.eq_rmax(&other.re, &max_diff.re) && self.im.eq_rmax(&other.im, &max_diff.im)
+    }
+
+    fn eq_rmin(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+        self.re.eq_rmin(&other.re, &max_diff.re) && self.im.eq_rmin(&other.im, &max_diff.im)
+    }
+
+    fn eq_r1st(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+        self.re.eq_r1st(&other.re, &max_diff.re) && self.im.eq_r1st(&other.im, &max_diff.im)
+    }
+
+    fn eq_r2nd(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+        self.re.eq_r2nd(&other.re, &max_diff.re) && self.im.eq_r2nd(&other.im, &max_diff.im)
     }
 
     fn eq_ulps(&self, other: &Self, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
@@ -121,6 +135,8 @@ fn float_eq() {
     assert!(a.ne_rel(&b, &MyComplex::new(0.000_000_15, 0.000_000_1)));
     assert!(a.ne_rel(&b, &MyComplex::new(0.000_000_25, 0.000_000_05)));
 
+    //todo: rmax, rmin, r1st, r2nd
+
     assert!(a.eq_ulps(&b, &MyComplexUlps::new(2, 1)));
     assert!(a.ne_ulps(&b, &MyComplexUlps::new(0, 1)));
     assert!(a.ne_ulps(&b, &MyComplexUlps::new(2, 0)));
@@ -139,8 +155,20 @@ where
         self.re.eq_abs_all(&other.re, &max_diff) && self.im.eq_abs_all(&other.im, &max_diff)
     }
 
-    fn eq_rel_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
-        self.re.eq_rel_all(&other.re, &max_diff) && self.im.eq_rel_all(&other.im, &max_diff)
+    fn eq_rmax_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
+        self.re.eq_rmax_all(&other.re, &max_diff) && self.im.eq_rmax_all(&other.im, &max_diff)
+    }
+
+    fn eq_rmin_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
+        self.re.eq_rmin_all(&other.re, &max_diff) && self.im.eq_rmin_all(&other.im, &max_diff)
+    }
+
+    fn eq_r1st_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
+        self.re.eq_r1st_all(&other.re, &max_diff) && self.im.eq_r1st_all(&other.im, &max_diff)
+    }
+
+    fn eq_r2nd_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
+        self.re.eq_r2nd_all(&other.re, &max_diff) && self.im.eq_r2nd_all(&other.im, &max_diff)
     }
 
     fn eq_ulps_all(&self, other: &Self, max_diff: &UlpsEpsilon<Self::AllEpsilon>) -> bool {
@@ -158,6 +186,8 @@ fn float_eq_all() {
 
     assert!(a.eq_rel_all(&b, &0.000_000_25));
     assert!(a.ne_rel_all(&b, &0.000_000_15));
+
+    //todo: rmax, rmin, r1st, r2nd
 
     assert!(a.eq_ulps_all(&b, &2));
     assert!(a.ne_ulps_all(&b, &1));
@@ -194,6 +224,8 @@ fn float_eq_macro() {
     ));
     assert!(float_eq!(a, b, rel_all <= 0.000_000_25));
     assert!(float_ne!(a, b, rel_all <= 0.000_000_15));
+
+    //todo: rmax, rmin, r1st, r2nd
 
     assert!(float_eq!(a, b, ulps <= MyComplexUlps::new(2, 1)));
     assert!(float_ne!(a, b, ulps <= MyComplexUlps::new(0, 1)));
@@ -240,10 +272,31 @@ where
         }
     }
 
-    fn debug_rel_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+    fn debug_rmax_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
         MyComplex {
-            re: self.re.debug_rel_epsilon(&other.re, &max_diff.re),
-            im: self.im.debug_rel_epsilon(&other.im, &max_diff.im),
+            re: self.re.debug_rmax_epsilon(&other.re, &max_diff.re),
+            im: self.im.debug_rmax_epsilon(&other.im, &max_diff.im),
+        }
+    }
+
+    fn debug_rmin_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+        MyComplex {
+            re: self.re.debug_rmin_epsilon(&other.re, &max_diff.re),
+            im: self.im.debug_rmin_epsilon(&other.im, &max_diff.im),
+        }
+    }
+
+    fn debug_r1st_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+        MyComplex {
+            re: self.re.debug_r1st_epsilon(&other.re, &max_diff.re),
+            im: self.im.debug_r1st_epsilon(&other.im, &max_diff.im),
+        }
+    }
+
+    fn debug_r2nd_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+        MyComplex {
+            re: self.re.debug_r2nd_epsilon(&other.re, &max_diff.re),
+            im: self.im.debug_r2nd_epsilon(&other.im, &max_diff.im),
         }
     }
 
@@ -298,6 +351,7 @@ fn float_eq_debug() {
         a.debug_rel_epsilon(&b, &MyComplex::new(0.1, 0.2)),
         MyComplex::new(5.0, 40.0)
     );
+    //todo: rmax, rmin, r1st, r2nd
     assert_eq!(
         a.debug_ulps_epsilon(&b, &MyComplexUlps::new(1, 2)),
         MyComplexUlps::new(1, 2)
@@ -329,14 +383,47 @@ where
         }
     }
 
-    fn debug_rel_all_epsilon(
+    fn debug_rmax_all_epsilon(
         &self,
         other: &Self,
         max_diff: &Self::AllEpsilon,
     ) -> Self::AllDebugEpsilon {
         Self::AllDebugEpsilon {
-            re: self.re.debug_rel_all_epsilon(&other.re, max_diff),
-            im: self.im.debug_rel_all_epsilon(&other.im, max_diff),
+            re: self.re.debug_rmax_all_epsilon(&other.re, max_diff),
+            im: self.im.debug_rmax_all_epsilon(&other.im, max_diff),
+        }
+    }
+
+    fn debug_rmin_all_epsilon(
+        &self,
+        other: &Self,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
+        Self::AllDebugEpsilon {
+            re: self.re.debug_rmin_all_epsilon(&other.re, max_diff),
+            im: self.im.debug_rmin_all_epsilon(&other.im, max_diff),
+        }
+    }
+
+    fn debug_r1st_all_epsilon(
+        &self,
+        other: &Self,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
+        Self::AllDebugEpsilon {
+            re: self.re.debug_r1st_all_epsilon(&other.re, max_diff),
+            im: self.im.debug_r1st_all_epsilon(&other.im, max_diff),
+        }
+    }
+
+    fn debug_r2nd_all_epsilon(
+        &self,
+        other: &Self,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
+        Self::AllDebugEpsilon {
+            re: self.re.debug_r2nd_all_epsilon(&other.re, max_diff),
+            im: self.im.debug_r2nd_all_epsilon(&other.im, max_diff),
         }
     }
 
@@ -362,6 +449,7 @@ fn float_eq_all_debug() {
         a.debug_rel_all_epsilon(&b, &0.2),
         MyComplex::new(10.0, 40.0)
     );
+    //todo: rmax, rmin, r1st, r2nd
     assert_eq!(a.debug_ulps_all_epsilon(&b, &2), MyComplexUlps::new(2, 2));
 }
 
@@ -384,6 +472,8 @@ fn assert_float_eq() {
     assert_float_ne!(a, b, rel <= MyComplex::new(0.000_000_25, 0.000_000_05));
     assert_float_eq!(a, b, rel_all <= 0.000_000_25);
     assert_float_ne!(a, b, rel_all <= 0.000_000_15);
+
+    //todo: rmax, rmin, r1st, r2nd
 
     assert_float_eq!(a, b, ulps <= MyComplexUlps::new(2, 1));
     assert_float_ne!(a, b, ulps <= MyComplexUlps::new(0, 1));

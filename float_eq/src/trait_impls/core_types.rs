@@ -22,8 +22,23 @@ macro_rules! impl_for_refs {
             }
 
             #[inline]
-            fn eq_rel(&self, other: &&$($b)? B, max_diff: &Self::Epsilon) -> bool {
-                FloatEq::eq_rel(*self, *other, max_diff)
+            fn eq_rmax(&self, other: &&$($b)? B, max_diff: &Self::Epsilon) -> bool {
+                FloatEq::eq_rmax(*self, *other, max_diff)
+            }
+
+            #[inline]
+            fn eq_rmin(&self, other: &&$($b)? B, max_diff: &Self::Epsilon) -> bool {
+                FloatEq::eq_rmin(*self, *other, max_diff)
+            }
+
+            #[inline]
+            fn eq_r1st(&self, other: &&$($b)? B, max_diff: &Self::Epsilon) -> bool {
+                FloatEq::eq_r1st(*self, *other, max_diff)
+            }
+
+            #[inline]
+            fn eq_r2nd(&self, other: &&$($b)? B, max_diff: &Self::Epsilon) -> bool {
+                FloatEq::eq_r2nd(*self, *other, max_diff)
             }
 
             #[inline]
@@ -44,8 +59,23 @@ macro_rules! impl_for_refs {
             }
 
             #[inline]
-            fn eq_rel_all(&self, other: &&$($b)? B, max_diff: &Self::AllEpsilon) -> bool {
-                FloatEqAll::eq_rel_all(*self, *other, max_diff)
+            fn eq_rmax_all(&self, other: &&$($b)? B, max_diff: &Self::AllEpsilon) -> bool {
+                FloatEqAll::eq_rmax_all(*self, *other, max_diff)
+            }
+
+            #[inline]
+            fn eq_rmin_all(&self, other: &&$($b)? B, max_diff: &Self::AllEpsilon) -> bool {
+                FloatEqAll::eq_rmin_all(*self, *other, max_diff)
+            }
+
+            #[inline]
+            fn eq_r1st_all(&self, other: &&$($b)? B, max_diff: &Self::AllEpsilon) -> bool {
+                FloatEqAll::eq_r1st_all(*self, *other, max_diff)
+            }
+
+            #[inline]
+            fn eq_r2nd_all(&self, other: &&$($b)? B, max_diff: &Self::AllEpsilon) -> bool {
+                FloatEqAll::eq_r2nd_all(*self, *other, max_diff)
             }
 
             #[inline]
@@ -81,12 +111,39 @@ macro_rules! impl_for_refs {
             }
 
             #[inline]
-            fn debug_rel_epsilon(
+            fn debug_rmax_epsilon(
                 &self,
                 other: &&$($b)? B,
                 max_diff: &Self::Epsilon
             ) -> Self::DebugEpsilon {
-                AssertFloatEq::debug_rel_epsilon(*self, *other, max_diff)
+                AssertFloatEq::debug_rmax_epsilon(*self, *other, max_diff)
+            }
+
+            #[inline]
+            fn debug_rmin_epsilon(
+                &self,
+                other: &&$($b)? B,
+                max_diff: &Self::Epsilon
+            ) -> Self::DebugEpsilon {
+                AssertFloatEq::debug_rmin_epsilon(*self, *other, max_diff)
+            }
+
+            #[inline]
+            fn debug_r1st_epsilon(
+                &self,
+                other: &&$($b)? B,
+                max_diff: &Self::Epsilon
+            ) -> Self::DebugEpsilon {
+                AssertFloatEq::debug_r1st_epsilon(*self, *other, max_diff)
+            }
+
+            #[inline]
+            fn debug_r2nd_epsilon(
+                &self,
+                other: &&$($b)? B,
+                max_diff: &Self::Epsilon
+            ) -> Self::DebugEpsilon {
+                AssertFloatEq::debug_r2nd_epsilon(*self, *other, max_diff)
             }
 
             #[inline]
@@ -118,12 +175,39 @@ macro_rules! impl_for_refs {
             }
 
             #[inline]
-            fn debug_rel_all_epsilon(
+            fn debug_rmax_all_epsilon(
                 &self,
                 other: &&$($b)? B,
                 max_diff: &Self::AllEpsilon
             ) -> Self::AllDebugEpsilon {
-                AssertFloatEqAll::debug_rel_all_epsilon(*self, *other, max_diff)
+                AssertFloatEqAll::debug_rmax_all_epsilon(*self, *other, max_diff)
+            }
+
+            #[inline]
+            fn debug_rmin_all_epsilon(
+                &self,
+                other: &&$($b)? B,
+                max_diff: &Self::AllEpsilon
+            ) -> Self::AllDebugEpsilon {
+                AssertFloatEqAll::debug_rmin_all_epsilon(*self, *other, max_diff)
+            }
+
+            #[inline]
+            fn debug_r1st_all_epsilon(
+                &self,
+                other: &&$($b)? B,
+                max_diff: &Self::AllEpsilon
+            ) -> Self::AllDebugEpsilon {
+                AssertFloatEqAll::debug_r1st_all_epsilon(*self, *other, max_diff)
+            }
+
+            #[inline]
+            fn debug_r2nd_all_epsilon(
+                &self,
+                other: &&$($b)? B,
+                max_diff: &Self::AllEpsilon
+            ) -> Self::AllDebugEpsilon {
+                AssertFloatEqAll::debug_r2nd_all_epsilon(*self, *other, max_diff)
             }
 
             #[inline]
@@ -151,6 +235,8 @@ impl_for_refs!(&mut, &mut);
 //
 // Note: The Option impls are over `impl<T>` and not `impl<A, B>` since that breaks
 // type inference and makes it harder to use `None`.
+//
+// Open question: should None == None? it currently does not.
 //------------------------------------------------------------------------------
 impl<T: FloatEqUlpsEpsilon> FloatEqUlpsEpsilon for Option<T>
 where
@@ -183,11 +269,47 @@ where
     }
 
     #[inline]
-    fn eq_rel(&self, other: &Option<T>, max_diff: &Self::Epsilon) -> bool {
+    fn eq_rmax(&self, other: &Option<T>, max_diff: &Self::Epsilon) -> bool {
         self.is_some()
             && other.is_some()
             && max_diff.is_some()
-            && FloatEq::eq_rel(
+            && FloatEq::eq_rmax(
+                self.as_ref().unwrap(),
+                other.as_ref().unwrap(),
+                max_diff.as_ref().unwrap(),
+            )
+    }
+
+    #[inline]
+    fn eq_rmin(&self, other: &Option<T>, max_diff: &Self::Epsilon) -> bool {
+        self.is_some()
+            && other.is_some()
+            && max_diff.is_some()
+            && FloatEq::eq_rmin(
+                self.as_ref().unwrap(),
+                other.as_ref().unwrap(),
+                max_diff.as_ref().unwrap(),
+            )
+    }
+
+    #[inline]
+    fn eq_r1st(&self, other: &Option<T>, max_diff: &Self::Epsilon) -> bool {
+        self.is_some()
+            && other.is_some()
+            && max_diff.is_some()
+            && FloatEq::eq_r1st(
+                self.as_ref().unwrap(),
+                other.as_ref().unwrap(),
+                max_diff.as_ref().unwrap(),
+            )
+    }
+
+    #[inline]
+    fn eq_r2nd(&self, other: &Option<T>, max_diff: &Self::Epsilon) -> bool {
+        self.is_some()
+            && other.is_some()
+            && max_diff.is_some()
+            && FloatEq::eq_r2nd(
                 self.as_ref().unwrap(),
                 other.as_ref().unwrap(),
                 max_diff.as_ref().unwrap(),
@@ -227,11 +349,47 @@ where
     }
 
     #[inline]
-    fn eq_rel_all(&self, other: &Option<T>, max_diff: &Self::AllEpsilon) -> bool {
+    fn eq_rmax_all(&self, other: &Option<T>, max_diff: &Self::AllEpsilon) -> bool {
         self.is_some()
             && other.is_some()
             && max_diff.is_some()
-            && FloatEqAll::eq_rel_all(
+            && FloatEqAll::eq_rmax_all(
+                self.as_ref().unwrap(),
+                other.as_ref().unwrap(),
+                max_diff.as_ref().unwrap(),
+            )
+    }
+
+    #[inline]
+    fn eq_rmin_all(&self, other: &Option<T>, max_diff: &Self::AllEpsilon) -> bool {
+        self.is_some()
+            && other.is_some()
+            && max_diff.is_some()
+            && FloatEqAll::eq_rmin_all(
+                self.as_ref().unwrap(),
+                other.as_ref().unwrap(),
+                max_diff.as_ref().unwrap(),
+            )
+    }
+
+    #[inline]
+    fn eq_r1st_all(&self, other: &Option<T>, max_diff: &Self::AllEpsilon) -> bool {
+        self.is_some()
+            && other.is_some()
+            && max_diff.is_some()
+            && FloatEqAll::eq_r1st_all(
+                self.as_ref().unwrap(),
+                other.as_ref().unwrap(),
+                max_diff.as_ref().unwrap(),
+            )
+    }
+
+    #[inline]
+    fn eq_r2nd_all(&self, other: &Option<T>, max_diff: &Self::AllEpsilon) -> bool {
+        self.is_some()
+            && other.is_some()
+            && max_diff.is_some()
+            && FloatEqAll::eq_r2nd_all(
                 self.as_ref().unwrap(),
                 other.as_ref().unwrap(),
                 max_diff.as_ref().unwrap(),
@@ -286,8 +444,51 @@ where
     }
 
     #[inline]
-    fn debug_rel_epsilon(&self, other: &Option<T>, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        Some(AssertFloatEq::debug_rel_epsilon(
+    fn debug_rmax_epsilon(
+        &self,
+        other: &Option<T>,
+        max_diff: &Self::Epsilon,
+    ) -> Self::DebugEpsilon {
+        Some(AssertFloatEq::debug_rmax_epsilon(
+            &self.as_ref()?,
+            &other.as_ref()?,
+            max_diff.as_ref()?,
+        ))
+    }
+
+    #[inline]
+    fn debug_rmin_epsilon(
+        &self,
+        other: &Option<T>,
+        max_diff: &Self::Epsilon,
+    ) -> Self::DebugEpsilon {
+        Some(AssertFloatEq::debug_rmin_epsilon(
+            &self.as_ref()?,
+            &other.as_ref()?,
+            max_diff.as_ref()?,
+        ))
+    }
+
+    #[inline]
+    fn debug_r1st_epsilon(
+        &self,
+        other: &Option<T>,
+        max_diff: &Self::Epsilon,
+    ) -> Self::DebugEpsilon {
+        Some(AssertFloatEq::debug_r1st_epsilon(
+            &self.as_ref()?,
+            &other.as_ref()?,
+            max_diff.as_ref()?,
+        ))
+    }
+
+    #[inline]
+    fn debug_r2nd_epsilon(
+        &self,
+        other: &Option<T>,
+        max_diff: &Self::Epsilon,
+    ) -> Self::DebugEpsilon {
+        Some(AssertFloatEq::debug_r2nd_epsilon(
             &self.as_ref()?,
             &other.as_ref()?,
             max_diff.as_ref()?,
@@ -330,12 +531,51 @@ where
     }
 
     #[inline]
-    fn debug_rel_all_epsilon(
+    fn debug_rmax_all_epsilon(
         &self,
         other: &Option<T>,
         max_diff: &Self::AllEpsilon,
     ) -> Self::AllDebugEpsilon {
-        Some(AssertFloatEqAll::debug_rel_all_epsilon(
+        Some(AssertFloatEqAll::debug_rmax_all_epsilon(
+            &self.as_ref()?,
+            &other.as_ref()?,
+            max_diff.as_ref()?,
+        ))
+    }
+
+    #[inline]
+    fn debug_rmin_all_epsilon(
+        &self,
+        other: &Option<T>,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
+        Some(AssertFloatEqAll::debug_rmin_all_epsilon(
+            &self.as_ref()?,
+            &other.as_ref()?,
+            max_diff.as_ref()?,
+        ))
+    }
+
+    #[inline]
+    fn debug_r1st_all_epsilon(
+        &self,
+        other: &Option<T>,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
+        Some(AssertFloatEqAll::debug_r1st_all_epsilon(
+            &self.as_ref()?,
+            &other.as_ref()?,
+            max_diff.as_ref()?,
+        ))
+    }
+
+    #[inline]
+    fn debug_r2nd_all_epsilon(
+        &self,
+        other: &Option<T>,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
+        Some(AssertFloatEqAll::debug_r2nd_all_epsilon(
             &self.as_ref()?,
             &other.as_ref()?,
             max_diff.as_ref()?,
@@ -375,8 +615,23 @@ where
     }
 
     #[inline]
-    fn eq_rel(&self, other: &Cell<B>, max_diff: &Self::Epsilon) -> bool {
-        FloatEq::eq_rel(&self.get(), &other.get(), max_diff)
+    fn eq_rmax(&self, other: &Cell<B>, max_diff: &Self::Epsilon) -> bool {
+        FloatEq::eq_rmax(&self.get(), &other.get(), max_diff)
+    }
+
+    #[inline]
+    fn eq_rmin(&self, other: &Cell<B>, max_diff: &Self::Epsilon) -> bool {
+        FloatEq::eq_rmin(&self.get(), &other.get(), max_diff)
+    }
+
+    #[inline]
+    fn eq_r1st(&self, other: &Cell<B>, max_diff: &Self::Epsilon) -> bool {
+        FloatEq::eq_r1st(&self.get(), &other.get(), max_diff)
+    }
+
+    #[inline]
+    fn eq_r2nd(&self, other: &Cell<B>, max_diff: &Self::Epsilon) -> bool {
+        FloatEq::eq_r2nd(&self.get(), &other.get(), max_diff)
     }
 
     #[inline]
@@ -398,8 +653,23 @@ where
     }
 
     #[inline]
-    fn eq_rel_all(&self, other: &Cell<B>, max_diff: &Self::AllEpsilon) -> bool {
-        FloatEqAll::eq_rel_all(&self.get(), &other.get(), max_diff)
+    fn eq_rmax_all(&self, other: &Cell<B>, max_diff: &Self::AllEpsilon) -> bool {
+        FloatEqAll::eq_rmax_all(&self.get(), &other.get(), max_diff)
+    }
+
+    #[inline]
+    fn eq_rmin_all(&self, other: &Cell<B>, max_diff: &Self::AllEpsilon) -> bool {
+        FloatEqAll::eq_rmin_all(&self.get(), &other.get(), max_diff)
+    }
+
+    #[inline]
+    fn eq_r1st_all(&self, other: &Cell<B>, max_diff: &Self::AllEpsilon) -> bool {
+        FloatEqAll::eq_r1st_all(&self.get(), &other.get(), max_diff)
+    }
+
+    #[inline]
+    fn eq_r2nd_all(&self, other: &Cell<B>, max_diff: &Self::AllEpsilon) -> bool {
+        FloatEqAll::eq_r2nd_all(&self.get(), &other.get(), max_diff)
     }
 
     #[inline]
@@ -432,8 +702,23 @@ where
     }
 
     #[inline]
-    fn debug_rel_epsilon(&self, other: &Cell<B>, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        AssertFloatEq::debug_rel_epsilon(&self.get(), &other.get(), max_diff)
+    fn debug_rmax_epsilon(&self, other: &Cell<B>, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+        AssertFloatEq::debug_rmax_epsilon(&self.get(), &other.get(), max_diff)
+    }
+
+    #[inline]
+    fn debug_rmin_epsilon(&self, other: &Cell<B>, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+        AssertFloatEq::debug_rmin_epsilon(&self.get(), &other.get(), max_diff)
+    }
+
+    #[inline]
+    fn debug_r1st_epsilon(&self, other: &Cell<B>, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+        AssertFloatEq::debug_r1st_epsilon(&self.get(), &other.get(), max_diff)
+    }
+
+    #[inline]
+    fn debug_r2nd_epsilon(&self, other: &Cell<B>, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+        AssertFloatEq::debug_r2nd_epsilon(&self.get(), &other.get(), max_diff)
     }
 
     #[inline]
@@ -466,12 +751,39 @@ where
     }
 
     #[inline]
-    fn debug_rel_all_epsilon(
+    fn debug_rmax_all_epsilon(
         &self,
         other: &Cell<B>,
         max_diff: &Self::AllEpsilon,
     ) -> Self::AllDebugEpsilon {
-        AssertFloatEqAll::debug_rel_all_epsilon(&self.get(), &other.get(), max_diff)
+        AssertFloatEqAll::debug_rmax_all_epsilon(&self.get(), &other.get(), max_diff)
+    }
+
+    #[inline]
+    fn debug_rmin_all_epsilon(
+        &self,
+        other: &Cell<B>,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
+        AssertFloatEqAll::debug_rmin_all_epsilon(&self.get(), &other.get(), max_diff)
+    }
+
+    #[inline]
+    fn debug_r1st_all_epsilon(
+        &self,
+        other: &Cell<B>,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
+        AssertFloatEqAll::debug_r1st_all_epsilon(&self.get(), &other.get(), max_diff)
+    }
+
+    #[inline]
+    fn debug_r2nd_all_epsilon(
+        &self,
+        other: &Cell<B>,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
+        AssertFloatEqAll::debug_r2nd_all_epsilon(&self.get(), &other.get(), max_diff)
     }
 
     #[inline]
@@ -502,8 +814,23 @@ where
     }
 
     #[inline]
-    fn eq_rel(&self, other: &RefCell<B>, max_diff: &Self::Epsilon) -> bool {
-        FloatEq::eq_rel(&*self.borrow(), &*other.borrow(), max_diff)
+    fn eq_rmax(&self, other: &RefCell<B>, max_diff: &Self::Epsilon) -> bool {
+        FloatEq::eq_rmax(&*self.borrow(), &*other.borrow(), max_diff)
+    }
+
+    #[inline]
+    fn eq_rmin(&self, other: &RefCell<B>, max_diff: &Self::Epsilon) -> bool {
+        FloatEq::eq_rmin(&*self.borrow(), &*other.borrow(), max_diff)
+    }
+
+    #[inline]
+    fn eq_r1st(&self, other: &RefCell<B>, max_diff: &Self::Epsilon) -> bool {
+        FloatEq::eq_r1st(&*self.borrow(), &*other.borrow(), max_diff)
+    }
+
+    #[inline]
+    fn eq_r2nd(&self, other: &RefCell<B>, max_diff: &Self::Epsilon) -> bool {
+        FloatEq::eq_r2nd(&*self.borrow(), &*other.borrow(), max_diff)
     }
 
     #[inline]
@@ -524,8 +851,23 @@ where
     }
 
     #[inline]
-    fn eq_rel_all(&self, other: &RefCell<B>, max_diff: &Self::AllEpsilon) -> bool {
-        FloatEqAll::eq_rel_all(&*self.borrow(), &*other.borrow(), max_diff)
+    fn eq_rmax_all(&self, other: &RefCell<B>, max_diff: &Self::AllEpsilon) -> bool {
+        FloatEqAll::eq_rmax_all(&*self.borrow(), &*other.borrow(), max_diff)
+    }
+
+    #[inline]
+    fn eq_rmin_all(&self, other: &RefCell<B>, max_diff: &Self::AllEpsilon) -> bool {
+        FloatEqAll::eq_rmin_all(&*self.borrow(), &*other.borrow(), max_diff)
+    }
+
+    #[inline]
+    fn eq_r1st_all(&self, other: &RefCell<B>, max_diff: &Self::AllEpsilon) -> bool {
+        FloatEqAll::eq_r1st_all(&*self.borrow(), &*other.borrow(), max_diff)
+    }
+
+    #[inline]
+    fn eq_r2nd_all(&self, other: &RefCell<B>, max_diff: &Self::AllEpsilon) -> bool {
+        FloatEqAll::eq_r2nd_all(&*self.borrow(), &*other.borrow(), max_diff)
     }
 
     #[inline]
@@ -562,12 +904,39 @@ where
     }
 
     #[inline]
-    fn debug_rel_epsilon(
+    fn debug_rmax_epsilon(
         &self,
         other: &RefCell<B>,
         max_diff: &Self::Epsilon,
     ) -> Self::DebugEpsilon {
-        AssertFloatEq::debug_rel_epsilon(&*self.borrow(), &*other.borrow(), max_diff)
+        AssertFloatEq::debug_rmax_epsilon(&*self.borrow(), &*other.borrow(), max_diff)
+    }
+
+    #[inline]
+    fn debug_rmin_epsilon(
+        &self,
+        other: &RefCell<B>,
+        max_diff: &Self::Epsilon,
+    ) -> Self::DebugEpsilon {
+        AssertFloatEq::debug_rmin_epsilon(&*self.borrow(), &*other.borrow(), max_diff)
+    }
+
+    #[inline]
+    fn debug_r1st_epsilon(
+        &self,
+        other: &RefCell<B>,
+        max_diff: &Self::Epsilon,
+    ) -> Self::DebugEpsilon {
+        AssertFloatEq::debug_r1st_epsilon(&*self.borrow(), &*other.borrow(), max_diff)
+    }
+
+    #[inline]
+    fn debug_r2nd_epsilon(
+        &self,
+        other: &RefCell<B>,
+        max_diff: &Self::Epsilon,
+    ) -> Self::DebugEpsilon {
+        AssertFloatEq::debug_r2nd_epsilon(&*self.borrow(), &*other.borrow(), max_diff)
     }
 
     #[inline]
@@ -600,12 +969,39 @@ where
     }
 
     #[inline]
-    fn debug_rel_all_epsilon(
+    fn debug_rmax_all_epsilon(
         &self,
         other: &RefCell<B>,
         max_diff: &Self::AllEpsilon,
     ) -> Self::AllDebugEpsilon {
-        AssertFloatEqAll::debug_rel_all_epsilon(&*self.borrow(), &*other.borrow(), max_diff)
+        AssertFloatEqAll::debug_rmax_all_epsilon(&*self.borrow(), &*other.borrow(), max_diff)
+    }
+
+    #[inline]
+    fn debug_rmin_all_epsilon(
+        &self,
+        other: &RefCell<B>,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
+        AssertFloatEqAll::debug_rmin_all_epsilon(&*self.borrow(), &*other.borrow(), max_diff)
+    }
+
+    #[inline]
+    fn debug_r1st_all_epsilon(
+        &self,
+        other: &RefCell<B>,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
+        AssertFloatEqAll::debug_r1st_all_epsilon(&*self.borrow(), &*other.borrow(), max_diff)
+    }
+
+    #[inline]
+    fn debug_r2nd_all_epsilon(
+        &self,
+        other: &RefCell<B>,
+        max_diff: &Self::AllEpsilon,
+    ) -> Self::AllDebugEpsilon {
+        AssertFloatEqAll::debug_r2nd_all_epsilon(&*self.borrow(), &*other.borrow(), max_diff)
     }
 
     #[inline]
@@ -651,14 +1047,47 @@ where
     }
 
     #[inline]
-    fn eq_rel(&self, other: &[B], max_diff: &Self::Epsilon) -> bool {
+    fn eq_rmax(&self, other: &[B], max_diff: &Self::Epsilon) -> bool {
         self.len() == other.len()
             && self.len() == max_diff.len()
             && self
                 .iter()
                 .zip(other.iter())
                 .zip(max_diff.iter())
-                .all(|((a, b), eps)| a.eq_rel(b, eps))
+                .all(|((a, b), eps)| a.eq_rmax(b, eps))
+    }
+
+    #[inline]
+    fn eq_rmin(&self, other: &[B], max_diff: &Self::Epsilon) -> bool {
+        self.len() == other.len()
+            && self.len() == max_diff.len()
+            && self
+                .iter()
+                .zip(other.iter())
+                .zip(max_diff.iter())
+                .all(|((a, b), eps)| a.eq_rmin(b, eps))
+    }
+
+    #[inline]
+    fn eq_r1st(&self, other: &[B], max_diff: &Self::Epsilon) -> bool {
+        self.len() == other.len()
+            && self.len() == max_diff.len()
+            && self
+                .iter()
+                .zip(other.iter())
+                .zip(max_diff.iter())
+                .all(|((a, b), eps)| a.eq_r1st(b, eps))
+    }
+
+    #[inline]
+    fn eq_r2nd(&self, other: &[B], max_diff: &Self::Epsilon) -> bool {
+        self.len() == other.len()
+            && self.len() == max_diff.len()
+            && self
+                .iter()
+                .zip(other.iter())
+                .zip(max_diff.iter())
+                .all(|((a, b), eps)| a.eq_r2nd(b, eps))
     }
 
     #[inline]
@@ -689,12 +1118,39 @@ where
     }
 
     #[inline]
-    fn eq_rel_all(&self, other: &[B], max_diff: &Self::AllEpsilon) -> bool {
+    fn eq_rmax_all(&self, other: &[B], max_diff: &Self::AllEpsilon) -> bool {
         self.len() == other.len()
             && self
                 .iter()
                 .zip(other.iter())
-                .all(|(a, b)| a.eq_rel_all(b, max_diff))
+                .all(|(a, b)| a.eq_rmax_all(b, max_diff))
+    }
+
+    #[inline]
+    fn eq_rmin_all(&self, other: &[B], max_diff: &Self::AllEpsilon) -> bool {
+        self.len() == other.len()
+            && self
+                .iter()
+                .zip(other.iter())
+                .all(|(a, b)| a.eq_rmin_all(b, max_diff))
+    }
+
+    #[inline]
+    fn eq_r1st_all(&self, other: &[B], max_diff: &Self::AllEpsilon) -> bool {
+        self.len() == other.len()
+            && self
+                .iter()
+                .zip(other.iter())
+                .all(|(a, b)| a.eq_r1st_all(b, max_diff))
+    }
+
+    #[inline]
+    fn eq_r2nd_all(&self, other: &[B], max_diff: &Self::AllEpsilon) -> bool {
+        self.len() == other.len()
+            && self
+                .iter()
+                .zip(other.iter())
+                .all(|(a, b)| a.eq_r2nd_all(b, max_diff))
     }
 
     #[inline]

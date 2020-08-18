@@ -334,8 +334,17 @@
 //! #     fn eq_abs(&self, other: &Self, max_diff: &Complex32) -> bool {
 //! #         self.re.eq_abs(&other.re, &max_diff.re) && self.im.eq_abs(&other.im, &max_diff.im)
 //! #     }
-//! #     fn eq_rel(&self, other: &Self, max_diff: &Complex32) -> bool {
-//! #         self.re.eq_rel(&other.re, &max_diff.re) && self.im.eq_rel(&other.im, &max_diff.im)
+//! #     fn eq_rmax(&self, other: &Self, max_diff: &Complex32) -> bool {
+//! #         self.re.eq_rmax(&other.re, &max_diff.re) && self.im.eq_rmax(&other.im, &max_diff.im)
+//! #     }
+//! #     fn eq_rmin(&self, other: &Self, max_diff: &Complex32) -> bool {
+//! #         self.re.eq_rmin(&other.re, &max_diff.re) && self.im.eq_rmin(&other.im, &max_diff.im)
+//! #     }
+//! #     fn eq_r1st(&self, other: &Self, max_diff: &Complex32) -> bool {
+//! #         self.re.eq_r1st(&other.re, &max_diff.re) && self.im.eq_r1st(&other.im, &max_diff.im)
+//! #     }
+//! #     fn eq_r2nd(&self, other: &Self, max_diff: &Complex32) -> bool {
+//! #         self.re.eq_r2nd(&other.re, &max_diff.re) && self.im.eq_r2nd(&other.im, &max_diff.im)
 //! #     }
 //! #     fn eq_ulps(&self, other: &Self, max_diff: &Complex32Ulps) -> bool {
 //! #         self.re.eq_ulps(&other.re, &max_diff.re) && self.im.eq_ulps(&other.im, &max_diff.im)
@@ -347,8 +356,17 @@
 //! #     fn eq_abs_all(&self, other: &Self, max_diff: &f32) -> bool {
 //! #         self.re.eq_abs_all(&other.re, &max_diff) && self.im.eq_abs_all(&other.im, &max_diff)
 //! #     }
-//! #     fn eq_rel_all(&self, other: &Self, max_diff: &f32) -> bool {
-//! #         self.re.eq_rel_all(&other.re, &max_diff) && self.im.eq_rel_all(&other.im, &max_diff)
+//! #     fn eq_rmax_all(&self, other: &Self, max_diff: &f32) -> bool {
+//! #         self.re.eq_rmax_all(&other.re, &max_diff) && self.im.eq_rmax_all(&other.im, &max_diff)
+//! #     }
+//! #     fn eq_rmin_all(&self, other: &Self, max_diff: &f32) -> bool {
+//! #         self.re.eq_rmin_all(&other.re, &max_diff) && self.im.eq_rmin_all(&other.im, &max_diff)
+//! #     }
+//! #     fn eq_r1st_all(&self, other: &Self, max_diff: &f32) -> bool {
+//! #         self.re.eq_r1st_all(&other.re, &max_diff) && self.im.eq_r1st_all(&other.im, &max_diff)
+//! #     }
+//! #     fn eq_r2nd_all(&self, other: &Self, max_diff: &f32) -> bool {
+//! #         self.re.eq_r2nd_all(&other.re, &max_diff) && self.im.eq_r2nd_all(&other.im, &max_diff)
 //! #     }
 //! #     fn eq_ulps_all(&self, other: &Self, max_diff: &u32) -> bool {
 //! #         self.re.eq_ulps_all(&other.re, &max_diff) && self.im.eq_ulps_all(&other.im, &max_diff)
@@ -376,10 +394,28 @@
 //! #             im: self.im.debug_abs_epsilon(&other.re, &max_diff.im),
 //! #         }
 //! #     }
-//! #     fn debug_rel_epsilon(&self, other: &Self, max_diff: &Complex32) -> Complex32 {
+//! #     fn debug_rmax_epsilon(&self, other: &Self, max_diff: &Complex32) -> Complex32 {
 //! #         Complex32 {
-//! #             re: self.re.debug_rel_epsilon(&other.re, &max_diff.re),
-//! #             im: self.im.debug_rel_epsilon(&other.re, &max_diff.im),
+//! #             re: self.re.debug_rmax_epsilon(&other.re, &max_diff.re),
+//! #             im: self.im.debug_rmax_epsilon(&other.re, &max_diff.im),
+//! #         }
+//! #     }
+//! #     fn debug_rmin_epsilon(&self, other: &Self, max_diff: &Complex32) -> Complex32 {
+//! #         Complex32 {
+//! #             re: self.re.debug_rmin_epsilon(&other.re, &max_diff.re),
+//! #             im: self.im.debug_rmin_epsilon(&other.re, &max_diff.im),
+//! #         }
+//! #     }
+//! #     fn debug_r1st_epsilon(&self, other: &Self, max_diff: &Complex32) -> Complex32 {
+//! #         Complex32 {
+//! #             re: self.re.debug_r1st_epsilon(&other.re, &max_diff.re),
+//! #             im: self.im.debug_r1st_epsilon(&other.re, &max_diff.im),
+//! #         }
+//! #     }
+//! #     fn debug_r2nd_epsilon(&self, other: &Self, max_diff: &Complex32) -> Complex32 {
+//! #         Complex32 {
+//! #             re: self.re.debug_r2nd_epsilon(&other.re, &max_diff.re),
+//! #             im: self.im.debug_r2nd_epsilon(&other.re, &max_diff.im),
 //! #         }
 //! #     }
 //! #     fn debug_ulps_epsilon(&self, other: &Self, max_diff: &Complex32Ulps) -> Complex32Ulps {
@@ -398,10 +434,28 @@
 //! #             im: self.im.debug_abs_all_epsilon(&other.re, &max_diff),
 //! #         }
 //! #     }
-//! #     fn debug_rel_all_epsilon(&self, other: &Self, max_diff: &f32) -> Complex32 {
+//! #     fn debug_rmax_all_epsilon(&self, other: &Self, max_diff: &f32) -> Complex32 {
 //! #         Complex32 {
-//! #             re: self.re.debug_rel_all_epsilon(&other.re, &max_diff),
-//! #             im: self.im.debug_rel_all_epsilon(&other.re, &max_diff),
+//! #             re: self.re.debug_rmax_all_epsilon(&other.re, &max_diff),
+//! #             im: self.im.debug_rmax_all_epsilon(&other.re, &max_diff),
+//! #         }
+//! #     }
+//! #     fn debug_rmin_all_epsilon(&self, other: &Self, max_diff: &f32) -> Complex32 {
+//! #         Complex32 {
+//! #             re: self.re.debug_rmin_all_epsilon(&other.re, &max_diff),
+//! #             im: self.im.debug_rmin_all_epsilon(&other.re, &max_diff),
+//! #         }
+//! #     }
+//! #     fn debug_r1st_all_epsilon(&self, other: &Self, max_diff: &f32) -> Complex32 {
+//! #         Complex32 {
+//! #             re: self.re.debug_r1st_all_epsilon(&other.re, &max_diff),
+//! #             im: self.im.debug_r1st_all_epsilon(&other.re, &max_diff),
+//! #         }
+//! #     }
+//! #     fn debug_r2nd_all_epsilon(&self, other: &Self, max_diff: &f32) -> Complex32 {
+//! #         Complex32 {
+//! #             re: self.re.debug_r2nd_all_epsilon(&other.re, &max_diff),
+//! #             im: self.im.debug_r2nd_all_epsilon(&other.re, &max_diff),
 //! #         }
 //! #     }
 //! #     fn debug_ulps_all_epsilon(&self, other: &Self, max_diff: &u32) -> Complex32Ulps {

@@ -59,6 +59,94 @@ mod assert_float_eq {
     }
 
     #[test]
+    #[should_panic(expected = r#"`float_eq!(left, right, rmax <= ε)`
+        left: `0.0`,
+       right: `1.0`,
+    abs_diff: `1.0`,
+   ulps_diff: `Some(1065353216)`,
+    [rmax] ε: `0.1`"#)]
+    fn rmax_fail() {
+        assert_float_eq!(0_f32, 1., rmax <= 0.1);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"`float_eq!(left, right, rmax_all <= ε)`
+        left: `0.0`,
+       right: `1.0`,
+    abs_diff: `1.0`,
+   ulps_diff: `Some(1065353216)`,
+[rmax_all] ε: `0.1`"#)]
+    fn rmax_all_fail() {
+        assert_float_eq!(0_f32, 1., rmax_all <= 0.1);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"`float_eq!(left, right, rmin <= ε)`
+        left: `0.0`,
+       right: `1.0`,
+    abs_diff: `1.0`,
+   ulps_diff: `Some(1065353216)`,
+    [rmin] ε: `0.0`"#)]
+    fn rmin_fail() {
+        assert_float_eq!(0_f32, 1., rmin <= 0.1);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"`float_eq!(left, right, rmin_all <= ε)`
+        left: `0.0`,
+       right: `1.0`,
+    abs_diff: `1.0`,
+   ulps_diff: `Some(1065353216)`,
+[rmin_all] ε: `0.0`"#)]
+    fn rmin_all_fail() {
+        assert_float_eq!(0_f32, 1., rmin_all <= 0.1);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"`float_eq!(left, right, r1st <= ε)`
+        left: `0.0`,
+       right: `1.0`,
+    abs_diff: `1.0`,
+   ulps_diff: `Some(1065353216)`,
+    [r1st] ε: `0.0`"#)]
+    fn r1st_fail() {
+        assert_float_eq!(0_f32, 1., r1st <= 0.1);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"`float_eq!(left, right, r1st_all <= ε)`
+        left: `0.0`,
+       right: `1.0`,
+    abs_diff: `1.0`,
+   ulps_diff: `Some(1065353216)`,
+[r1st_all] ε: `0.0`"#)]
+    fn r1st_all_fail() {
+        assert_float_eq!(0_f32, 1., r1st_all <= 0.1);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"`float_eq!(left, right, r2nd <= ε)`
+        left: `0.0`,
+       right: `1.0`,
+    abs_diff: `1.0`,
+   ulps_diff: `Some(1065353216)`,
+    [r2nd] ε: `0.1`"#)]
+    fn r2nd_fail() {
+        assert_float_eq!(0_f32, 1., r2nd <= 0.1);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"`float_eq!(left, right, r2nd_all <= ε)`
+        left: `0.0`,
+       right: `1.0`,
+    abs_diff: `1.0`,
+   ulps_diff: `Some(1065353216)`,
+[r2nd_all] ε: `0.1`"#)]
+    fn r2nd_all_fail() {
+        assert_float_eq!(0_f32, 1., r2nd_all <= 0.1);
+    }
+
+    #[test]
     #[should_panic(expected = r#"`float_eq!(left, right, ulps <= ε)`
         left: `1.0`,
        right: `1.0000002`,
@@ -277,6 +365,94 @@ mod assert_float_ne {
  [rel_all] ε: `2.0`"#)]
     fn rel_all_fail() {
         assert_float_ne!(0_f32, 2., rel_all <= 1.);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"`float_ne!(left, right, rmax <= ε)`
+        left: `0.0`,
+       right: `2.0`,
+    abs_diff: `2.0`,
+   ulps_diff: `Some(1073741824)`,
+    [rmax] ε: `2.0`"#)]
+    fn rmax_fail() {
+        assert_float_ne!(0_f32, 2., rmax <= 1.);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"`float_ne!(left, right, rmax_all <= ε)`
+        left: `0.0`,
+       right: `2.0`,
+    abs_diff: `2.0`,
+   ulps_diff: `Some(1073741824)`,
+[rmax_all] ε: `2.0`"#)]
+    fn rmax_all_fail() {
+        assert_float_ne!(0_f32, 2., rmax_all <= 1.);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"`float_ne!(left, right, rmin <= ε)`
+        left: `4.0`,
+       right: `2.0`,
+    abs_diff: `2.0`,
+   ulps_diff: `Some(8388608)`,
+    [rmin] ε: `2.0`"#)]
+    fn rmin_fail() {
+        assert_float_ne!(4_f32, 2., rmin <= 1.);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"`float_ne!(left, right, rmin_all <= ε)`
+        left: `4.0`,
+       right: `2.0`,
+    abs_diff: `2.0`,
+   ulps_diff: `Some(8388608)`,
+[rmin_all] ε: `2.0`"#)]
+    fn rmin_all_fail() {
+        assert_float_ne!(4_f32, 2., rmin_all <= 1.);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"`float_ne!(left, right, r1st <= ε)`
+        left: `3.0`,
+       right: `1.0`,
+    abs_diff: `2.0`,
+   ulps_diff: `Some(12582912)`,
+    [r1st] ε: `3.0`"#)]
+    fn r1st_fail() {
+        assert_float_ne!(3_f32, 1., r1st <= 1.);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"`float_ne!(left, right, r1st_all <= ε)`
+        left: `3.0`,
+       right: `1.0`,
+    abs_diff: `2.0`,
+   ulps_diff: `Some(12582912)`,
+[r1st_all] ε: `3.0`"#)]
+    fn r1st_all_fail() {
+        assert_float_ne!(3_f32, 1., r1st_all <= 1.);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"`float_ne!(left, right, r2nd <= ε)`
+        left: `0.0`,
+       right: `2.0`,
+    abs_diff: `2.0`,
+   ulps_diff: `Some(1073741824)`,
+    [r2nd] ε: `2.0`"#)]
+    fn r2nd_fail() {
+        assert_float_ne!(0_f32, 2., r2nd <= 1.);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"`float_ne!(left, right, r2nd_all <= ε)`
+        left: `0.0`,
+       right: `2.0`,
+    abs_diff: `2.0`,
+   ulps_diff: `Some(1073741824)`,
+[r2nd_all] ε: `2.0`"#)]
+    fn r2nd_all_fail() {
+        assert_float_ne!(0_f32, 2., r2nd_all <= 1.);
     }
 
     #[test]

@@ -1,4 +1,6 @@
-#![allow(clippy::float_cmp, clippy::cognitive_complexity)]
+//TODO: update this to have proper tests for rmax/rmin/r1st/r2nd?
+
+#![allow(clippy::float_cmp)]
 
 use float_eq::{
     assert_float_eq, assert_float_ne, float_eq, float_ne, AssertFloatEq, DebugUlpsDiff, FloatEq,
@@ -68,8 +70,20 @@ impl FloatEq<f32> for MyComplex32 {
         self.re.eq_abs(other, max_diff) && self.im.eq_abs(&0.0, max_diff)
     }
 
-    fn eq_rel(&self, other: &f32, max_diff: &Self::Epsilon) -> bool {
-        self.re.eq_rel(other, max_diff) && self.im.eq_rel(&0.0, max_diff)
+    fn eq_rmax(&self, other: &f32, max_diff: &Self::Epsilon) -> bool {
+        self.re.eq_rmax(other, max_diff) && self.im.eq_rmax(&0.0, max_diff)
+    }
+
+    fn eq_rmin(&self, other: &f32, max_diff: &Self::Epsilon) -> bool {
+        self.re.eq_rmin(other, max_diff) && self.im.eq_rmin(&0.0, max_diff)
+    }
+
+    fn eq_r1st(&self, other: &f32, max_diff: &Self::Epsilon) -> bool {
+        self.re.eq_r1st(other, max_diff) && self.im.eq_r1st(&0.0, max_diff)
+    }
+
+    fn eq_r2nd(&self, other: &f32, max_diff: &Self::Epsilon) -> bool {
+        self.re.eq_r2nd(other, max_diff) && self.im.eq_r2nd(&0.0, max_diff)
     }
 
     fn eq_ulps(&self, other: &f32, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
@@ -84,8 +98,20 @@ impl FloatEq<MyComplex32> for f32 {
         other.eq_abs(self, max_diff)
     }
 
-    fn eq_rel(&self, other: &MyComplex32, max_diff: &Self::Epsilon) -> bool {
-        other.eq_rel(self, max_diff)
+    fn eq_rmax(&self, other: &MyComplex32, max_diff: &Self::Epsilon) -> bool {
+        other.eq_rmax(self, max_diff)
+    }
+
+    fn eq_rmin(&self, other: &MyComplex32, max_diff: &Self::Epsilon) -> bool {
+        other.eq_rmin(self, max_diff)
+    }
+
+    fn eq_r1st(&self, other: &MyComplex32, max_diff: &Self::Epsilon) -> bool {
+        other.eq_r1st(self, max_diff)
+    }
+
+    fn eq_r2nd(&self, other: &MyComplex32, max_diff: &Self::Epsilon) -> bool {
+        other.eq_r2nd(self, max_diff)
     }
 
     fn eq_ulps(&self, other: &MyComplex32, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
@@ -100,6 +126,8 @@ fn float_eq_f32() {
         re: 1_000_000.0,
         im: 2.0,
     };
+
+    //todo: rmax, rmin, r1st, r2nd
 
     assert!(a.ne_abs(&b, &0.07));
     assert!(a.ne_rel(&b, &0.000_000_12));
@@ -119,6 +147,8 @@ fn float_eq_f32() {
 
     let c = 2.000_000_5;
     let d = MyComplex32 { re: 2.0, im: 0.0 };
+
+    //todo: rmax, rmin, r1st, r2nd
 
     assert!(c.ne_abs(&d, &0.000_000_4));
     assert!(c.ne_rel(&d, &0.000_000_23));
@@ -145,6 +175,8 @@ fn float_eq_macro_f32() {
         im: 2.0,
     };
 
+    //todo: rmax, rmin, r1st, r2nd
+
     assert!(float_ne!(a, b, abs <= 0.07));
     assert!(float_ne!(a, b, rel <= 0.000_000_12));
     assert!(float_ne!(a, b, ulps <= 1));
@@ -163,6 +195,8 @@ fn float_eq_macro_f32() {
 
     let c = 2.000_000_5_f32;
     let d = MyComplex32 { re: 2.0, im: 0.0 };
+
+    //todo: rmax, rmin, r1st, r2nd
 
     assert!(float_ne!(c, d, abs <= 0.000_000_4));
     assert!(float_ne!(c, d, rel <= 0.000_000_23));
@@ -209,10 +243,31 @@ impl AssertFloatEq<f32> for MyComplex32 {
         }
     }
 
-    fn debug_rel_epsilon(&self, other: &f32, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+    fn debug_rmax_epsilon(&self, other: &f32, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
         MyComplex32 {
-            re: self.re.debug_rel_epsilon(other, max_diff),
-            im: self.im.debug_rel_epsilon(&0.0, max_diff),
+            re: self.re.debug_rmax_epsilon(other, max_diff),
+            im: self.im.debug_rmax_epsilon(&0.0, max_diff),
+        }
+    }
+
+    fn debug_rmin_epsilon(&self, other: &f32, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+        MyComplex32 {
+            re: self.re.debug_rmin_epsilon(other, max_diff),
+            im: self.im.debug_rmin_epsilon(&0.0, max_diff),
+        }
+    }
+
+    fn debug_r1st_epsilon(&self, other: &f32, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+        MyComplex32 {
+            re: self.re.debug_r1st_epsilon(other, max_diff),
+            im: self.im.debug_r1st_epsilon(&0.0, max_diff),
+        }
+    }
+
+    fn debug_r2nd_epsilon(&self, other: &f32, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+        MyComplex32 {
+            re: self.re.debug_r2nd_epsilon(other, max_diff),
+            im: self.im.debug_r2nd_epsilon(&0.0, max_diff),
         }
     }
 
@@ -248,12 +303,36 @@ impl AssertFloatEq<MyComplex32> for f32 {
         other.debug_abs_epsilon(self, max_diff)
     }
 
-    fn debug_rel_epsilon(
+    fn debug_rmax_epsilon(
         &self,
         other: &MyComplex32,
         max_diff: &Self::Epsilon,
     ) -> Self::DebugEpsilon {
-        other.debug_rel_epsilon(self, max_diff)
+        other.debug_rmax_epsilon(self, max_diff)
+    }
+
+    fn debug_rmin_epsilon(
+        &self,
+        other: &MyComplex32,
+        max_diff: &Self::Epsilon,
+    ) -> Self::DebugEpsilon {
+        other.debug_rmin_epsilon(self, max_diff)
+    }
+
+    fn debug_r1st_epsilon(
+        &self,
+        other: &MyComplex32,
+        max_diff: &Self::Epsilon,
+    ) -> Self::DebugEpsilon {
+        other.debug_r1st_epsilon(self, max_diff)
+    }
+
+    fn debug_r2nd_epsilon(
+        &self,
+        other: &MyComplex32,
+        max_diff: &Self::Epsilon,
+    ) -> Self::DebugEpsilon {
+        other.debug_r2nd_epsilon(self, max_diff)
     }
 
     fn debug_ulps_epsilon(
@@ -272,6 +351,8 @@ fn float_diff_f32() {
         re: 1.0,
         im: 2.000_003_6,
     };
+
+    //todo: rmax, rmin, r1st, r2nd
 
     assert_eq!(
         a.debug_abs_diff(&b),
@@ -299,6 +380,8 @@ fn float_eq_debug_f32() {
         im: 200.0,
     };
     let b = 1.0_f32;
+
+    //todo: rmax, rmin, r1st, r2nd
 
     assert_eq!(
         a.debug_abs_epsilon(&b, &0.1),
@@ -347,6 +430,8 @@ fn float_eq_debug_f32() {
         }
     );
 
+    //todo: rmax, rmin, r1st, r2nd
+
     assert_eq!(
         a.debug_ulps_epsilon(&c, &42),
         MyComplex32Ulps { re: 42, im: 42 }
@@ -368,6 +453,8 @@ fn assert_float_eq_f32() {
         im: 2.0,
     };
 
+    //todo: rmax, rmin, r1st, r2nd
+
     assert_float_ne!(a, b, abs <= 0.07);
     assert_float_ne!(a, b, rel <= 0.000_000_12);
     assert_float_ne!(a, b, ulps <= 1);
@@ -386,6 +473,8 @@ fn assert_float_eq_f32() {
 
     let c = 2.000_000_5_f32;
     let d = MyComplex32 { re: 2.0, im: 0.0 };
+
+    //todo: rmax, rmin, r1st, r2nd
 
     assert_float_ne!(c, d, abs <= 0.000_000_4);
     assert_float_ne!(c, d, rel <= 0.000_000_23);

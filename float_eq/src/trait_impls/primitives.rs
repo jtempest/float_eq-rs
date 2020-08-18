@@ -43,11 +43,39 @@ macro_rules! impl_traits {
             }
 
             #[inline]
-            fn eq_rel(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+            fn eq_rmax(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
                 // the PartialEq check covers equality of infinities
                 self == other || {
                     let largest = $float::abs(*self).max($float::abs(*other));
                     let epsilon = largest * max_diff;
+                    $float::abs(self - other) <= epsilon
+                }
+            }
+
+            #[inline]
+            fn eq_rmin(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+                // the PartialEq check covers equality of infinities
+                self == other || {
+                    let largest = $float::abs(*self).min($float::abs(*other));
+                    let epsilon = largest * max_diff;
+                    $float::abs(self - other) <= epsilon
+                }
+            }
+
+            #[inline]
+            fn eq_r1st(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+                // the PartialEq check covers equality of infinities
+                self == other || {
+                    let epsilon = $float::abs(*self) * max_diff;
+                    $float::abs(self - other) <= epsilon
+                }
+            }
+
+            #[inline]
+            fn eq_r2nd(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
+                // the PartialEq check covers equality of infinities
+                self == other || {
+                    let epsilon = $float::abs(*other) * max_diff;
                     $float::abs(self - other) <= epsilon
                 }
             }
@@ -77,8 +105,23 @@ macro_rules! impl_traits {
             }
 
             #[inline]
-            fn eq_rel_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
-                self.eq_rel(other, max_diff)
+            fn eq_rmax_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
+                self.eq_rmax(other, max_diff)
+            }
+
+            #[inline]
+            fn eq_rmin_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
+                self.eq_rmin(other, max_diff)
+            }
+
+            #[inline]
+            fn eq_r1st_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
+                self.eq_r1st(other, max_diff)
+            }
+
+            #[inline]
+            fn eq_r2nd_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
+                self.eq_r2nd(other, max_diff)
             }
 
             #[inline]
@@ -123,12 +166,39 @@ macro_rules! impl_traits {
             }
 
             #[inline]
-            fn debug_rel_epsilon(
+            fn debug_rmax_epsilon(
                 &self,
                 other: &Self,
                 max_diff: &Self::Epsilon,
             ) -> Self::DebugEpsilon {
                 $float::abs(*self).max($float::abs(*other)) * max_diff
+            }
+
+            #[inline]
+            fn debug_rmin_epsilon(
+                &self,
+                other: &Self,
+                max_diff: &Self::Epsilon,
+            ) -> Self::DebugEpsilon {
+                $float::abs(*self).min($float::abs(*other)) * max_diff
+            }
+
+            #[inline]
+            fn debug_r1st_epsilon(
+                &self,
+                _other: &Self,
+                max_diff: &Self::Epsilon,
+            ) -> Self::DebugEpsilon {
+                $float::abs(*self) * max_diff
+            }
+
+            #[inline]
+            fn debug_r2nd_epsilon(
+                &self,
+                other: &Self,
+                max_diff: &Self::Epsilon,
+            ) -> Self::DebugEpsilon {
+                $float::abs(*other) * max_diff
             }
 
             #[inline]
@@ -154,12 +224,39 @@ macro_rules! impl_traits {
             }
 
             #[inline]
-            fn debug_rel_all_epsilon(
+            fn debug_rmax_all_epsilon(
                 &self,
                 other: &Self,
                 max_diff: &Self::AllEpsilon,
             ) -> Self::AllDebugEpsilon {
-                self.debug_rel_epsilon(other, max_diff)
+                self.debug_rmax_epsilon(other, max_diff)
+            }
+
+            #[inline]
+            fn debug_rmin_all_epsilon(
+                &self,
+                other: &Self,
+                max_diff: &Self::AllEpsilon,
+            ) -> Self::AllDebugEpsilon {
+                self.debug_rmin_epsilon(other, max_diff)
+            }
+
+            #[inline]
+            fn debug_r1st_all_epsilon(
+                &self,
+                other: &Self,
+                max_diff: &Self::AllEpsilon,
+            ) -> Self::AllDebugEpsilon {
+                self.debug_r1st_epsilon(other, max_diff)
+            }
+
+            #[inline]
+            fn debug_r2nd_all_epsilon(
+                &self,
+                other: &Self,
+                max_diff: &Self::AllEpsilon,
+            ) -> Self::AllDebugEpsilon {
+                self.debug_r2nd_epsilon(other, max_diff)
             }
 
             #[inline]

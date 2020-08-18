@@ -131,20 +131,22 @@ macro_rules! impl_tests {
 
             #[test]
             fn one() {
-                check_eq_self(1.0);
                 check_eq_zero(1.0);
 
-                check_ne(1.0, prev_n(1.0, 2), 0.5 * EPSILON); // precision below power of two...
-                check_eq(1.0, prev_n(1.0, 2), EPSILON);
+                // range of -2 to +2 ULPs
+                check_eq(1.0, prev_n(1.0, 2), 1.0 * EPSILON);
+                check_ne(1.0, prev_n(1.0, 2), 0.5 * EPSILON);
 
-                check_ne(1.0, prev(1.0), 0.0);
-                check_eq(1.0, prev(1.0), EPSILON);
+                check_eq(1.0, prev(1.0), 0.5 * EPSILON);
+                check_ne(1.0, prev(1.0), 0.25 * EPSILON);
 
-                check_ne(1.0, next(1.0), 0.0);
-                check_eq(1.0, next(1.0), EPSILON);
+                check_eq_self(1.0);
 
-                check_ne(1.0, next_n(1.0, 2), EPSILON);
-                check_eq(1.0, next_n(1.0, 2), 2.0 * EPSILON); // ..is double that of above it
+                check_ne(1.0, next(1.0), 0.5 * EPSILON);
+                check_eq(1.0, next(1.0), 1.0 * EPSILON);
+
+                check_ne(1.0, next_n(1.0, 2), 1.0 * EPSILON);
+                check_eq(1.0, next_n(1.0, 2), 2.0 * EPSILON);
 
                 // ranges of -f to f
                 check_ne(1.0, -1.0, prev(2.0));
@@ -153,26 +155,27 @@ macro_rules! impl_tests {
 
             #[test]
             fn two() {
-                check_eq_self(2.0);
                 check_eq_zero(2.0);
 
-                check_ne(2.0, prev_n(2.0, 2), EPSILON); // precision below power of two...
+                // range of -2 to +2 ULPs
                 check_eq(2.0, prev_n(2.0, 2), 2.0 * EPSILON);
+                check_ne(2.0, prev_n(2.0, 2), 1.0 * EPSILON);
 
-                check_ne(2.0, prev(2.0), 0.0);
-                check_eq(2.0, prev(2.0), EPSILON);
+                check_eq(2.0, prev(2.0), 1.0 * EPSILON);
+                check_ne(2.0, prev(2.0), 0.5 * EPSILON);
 
-                check_ne(2.0, next(2.0), 0.0);
+                check_eq_self(2.0);
+
+                check_ne(2.0, next(2.0), 1.0 * EPSILON);
                 check_eq(2.0, next(2.0), 2.0 * EPSILON);
 
                 check_ne(2.0, next_n(2.0, 2), 2.0 * EPSILON);
-                check_eq(2.0, next_n(2.0, 2), 4.0 * EPSILON); // ..is double that of above it
+                check_eq(2.0, next_n(2.0, 2), 4.0 * EPSILON);
 
                 // ranges of -f to f
                 check_ne(2.0, -2.0, prev(4.0));
                 check_eq(2.0, -2.0, 4.0);
             }
-
             #[test]
             fn infinities() {
                 check_eq_self(INFINITY);
