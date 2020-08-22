@@ -106,7 +106,7 @@ pub type UlpsEpsilon<T> = <T as FloatEqUlpsEpsilon>::UlpsEpsilon;
 /// specified as the result of calculating a diff in [ULPs]. It is used by testing
 /// and debugging tools to show the difference between two values on a per-field
 /// basis and is built for clarity, not runtime efficiency. The [`DebugUlpsDiff`]
-//// type alias exists to simplify usage, for example `DebugUlpsDiff<f32>` is
+/// type alias exists to simplify usage, for example `DebugUlpsDiff<f32>` is
 /// `Option<u32>`. Usually, this type is named `FooDebugUlpsDiff` for a given
 /// type `Foo`.
 ///
@@ -201,8 +201,7 @@ pub type DebugUlpsDiff<T> = <T as FloatEqDebugUlpsDiff>::DebugUlpsDiff;
 /// Compare IEEE floating point values for equality using per-field thresholds.
 ///
 /// This trait is used in the implementation of the [`float_eq!`] and [`assert_float_eq!`]
-/// families of macros to provide `abs`, `rel` and `ulps` checks. It may be called
-/// directly, but the macros usually provide a friendlier interface.
+/// families of macros.
 ///
 /// ## Derivable
 #[cfg_attr(
@@ -324,60 +323,6 @@ assert!(a.ne_ulps(&c, &PointUlps { x: 1, y: 1 }));
 /// assert!(a.ne_ulps(&b, &MyComplex32Ulps { re: 1, im: 14 }));
 /// ```
 ///
-/// ## How can I compare two different types?
-///
-/// The type to be compared with is controlled by `FloatEq`'s parameter. Following
-/// on from our previous example, if we wanted to treat `f32` as a complex number
-/// with an imaginary component of `0.0`:
-///
-/// ```
-/// # use float_eq::{FloatEqUlpsEpsilon, FloatEq, UlpsEpsilon};
-/// # #[derive(Debug, Copy, Clone, PartialEq)]
-/// # struct MyComplex32 { re: f32, im: f32 }
-/// # #[derive(Debug, Copy, Clone, PartialEq)]
-/// # struct MyComplex32Ulps { re: UlpsEpsilon<f32>, im: UlpsEpsilon<f32> }
-/// # impl FloatEqUlpsEpsilon for MyComplex32 { type UlpsEpsilon = MyComplex32Ulps; }
-/// impl FloatEq<f32> for MyComplex32 {
-///     type Epsilon = MyComplex32;
-///
-///     fn eq_abs(&self, other: &f32, max_diff: &MyComplex32) -> bool {
-///         self.re.eq_abs(other, &max_diff.re) && self.im.eq_abs(&0.0, &max_diff.im)
-///     }
-///
-///     fn eq_rmax(&self, other: &f32, max_diff: &MyComplex32) -> bool {
-///         self.re.eq_rmax(other, &max_diff.re) && self.im.eq_rmax(&0.0, &max_diff.im)
-///     }
-///
-///     fn eq_rmin(&self, other: &f32, max_diff: &MyComplex32) -> bool {
-///         self.re.eq_rmin(other, &max_diff.re) && self.im.eq_rmin(&0.0, &max_diff.im)
-///     }
-///
-///     fn eq_r1st(&self, other: &f32, max_diff: &MyComplex32) -> bool {
-///         self.re.eq_r1st(other, &max_diff.re) && self.im.eq_r1st(&0.0, &max_diff.im)
-///     }
-///
-///     fn eq_r2nd(&self, other: &f32, max_diff: &MyComplex32) -> bool {
-///         self.re.eq_r2nd(other, &max_diff.re) && self.im.eq_r2nd(&0.0, &max_diff.im)
-///     }
-///
-///     fn eq_ulps(&self, other: &f32, max_diff: &UlpsEpsilon<MyComplex32>) -> bool {
-///         self.re.eq_ulps(other, &max_diff.re) && self.im.eq_ulps(&0.0, &max_diff.im)
-///     }
-/// }
-///
-/// let a = MyComplex32 { re: 4.000_000_5, im: 0.0 };
-/// let b = 4.0_f32;
-///
-/// assert!(a.eq_abs(&b, &MyComplex32 { re: 0.000_000_8, im: 0.0 }));
-/// assert!(a.ne_abs(&b, &MyComplex32 { re: 0.000_000_4, im: 0.0 }));
-///
-/// assert!(a.eq_rel(&b, &MyComplex32 { re: 0.000_000_12, im: 0.0 }));
-/// assert!(a.ne_rel(&b, &MyComplex32 { re: 0.000_000_11, im: 0.0 }));
-///
-/// assert!(a.eq_ulps(&b, &MyComplex32Ulps { re: 1, im: 0 }));
-/// assert!(a.ne_ulps(&b, &MyComplex32Ulps { re: 0, im: 0 }));
-/// ```
-///
 /// ## Examples
 ///
 /// ```
@@ -433,20 +378,8 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// Check whether `self` is equal to `other`, using a [relative epsilon
     /// comparison].
     ///
-    /// The implementation should be the equivalent of:
-    ///
-    /// ```
-    /// # trait TestFloatEq { fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool; }
-    /// # impl TestFloatEq for f32 {
-    /// # fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool {
-    /// // the PartialEq check covers equality of infinities
-    /// self == other || {
-    ///     let largest = self.abs().max(other.abs());
-    ///     let epsilon = largest * max_diff;
-    ///     (self - other).abs() <= epsilon
-    /// }
-    /// # }}
-    /// ```
+    /// Equal to `self.eq_rmax(other, max_diff)`, there is no need to reimplement
+    /// this for your own types.
     ///
     /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     #[inline]
@@ -466,37 +399,134 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
         !self.eq_rel(other, max_diff)
     }
 
-    /// TODO
+    /// Check whether `self` is equal to `other`, using a [relative epsilon
+    /// comparison], scaled to the granularity of the input with the largest
+    /// magnitude.
+    ///
+    /// The implementation should be the equivalent of:
+    ///
+    /// ```
+    /// # trait TestFloatEq { fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool; }
+    /// # impl TestFloatEq for f32 {
+    /// # fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool {
+    /// // the PartialEq check covers equality of infinities
+    /// self == other || {
+    ///     let largest = self.abs().max(other.abs());
+    ///     let epsilon = largest * max_diff;
+    ///     (self - other).abs() <= epsilon
+    /// }
+    /// # }}
+    /// ```
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     fn eq_rmax(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool;
 
-    /// TODO
+    /// Check whether `self` is not equal to `other`, using a [relative epsilon
+    /// comparison].
+    ///
+    /// Equal to `!self.eq_rmax(other, max_diff)`, there is no need to reimplement
+    /// this for your own types.
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     #[inline]
     fn ne_rmax(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
         !self.eq_rmax(other, max_diff)
     }
 
-    /// TODO
+    /// Check whether `self` is equal to `other`, using a [relative epsilon
+    /// comparison], scaled to the granularity of the input with the smallest
+    /// magnitude.
+    ///
+    /// The implementation should be the equivalent of:
+    ///
+    /// ```
+    /// # trait TestFloatEq { fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool; }
+    /// # impl TestFloatEq for f32 {
+    /// # fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool {
+    /// // the PartialEq check covers equality of infinities
+    /// self == other || {
+    ///     let smallest = self.abs().min(other.abs());
+    ///     let epsilon = smallest * max_diff;
+    ///     (self - other).abs() <= epsilon
+    /// }
+    /// # }}
+    /// ```
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     fn eq_rmin(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool;
 
-    /// TODO
+    /// Check whether `self` is not equal to `other`, using a [relative epsilon
+    /// comparison].
+    ///
+    /// Equal to `!self.eq_rmin(other, max_diff)`, there is no need to reimplement
+    /// this for your own types.
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     #[inline]
     fn ne_rmin(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
         !self.eq_rmin(other, max_diff)
     }
 
-    /// TODO
+    /// Check whether `self` is equal to `other`, using a [relative epsilon
+    /// comparison], scaled to the granularity of the first input.
+    ///
+    /// The implementation should be the equivalent of:
+    ///
+    /// ```
+    /// # trait TestFloatEq { fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool; }
+    /// # impl TestFloatEq for f32 {
+    /// # fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool {
+    /// // the PartialEq check covers equality of infinities
+    /// self == other || {
+    ///     let epsilon = self.abs() * max_diff;
+    ///     (self - other).abs() <= epsilon
+    /// }
+    /// # }}
+    /// ```
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     fn eq_r1st(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool;
 
-    /// TODO
+    /// Check whether `self` is not equal to `other`, using a [relative epsilon
+    /// comparison].
+    ///
+    /// Equal to `!self.eq_r1st(other, max_diff)`, there is no need to reimplement
+    /// this for your own types.
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     #[inline]
     fn ne_r1st(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
         !self.eq_r1st(other, max_diff)
     }
 
-    /// TODO
+    /// Check whether `self` is equal to `other`, using a [relative epsilon
+    /// comparison], scaled to the granularity of the input with the largest
+    /// magnitude.
+    ///
+    /// The implementation should be the equivalent of:
+    ///
+    /// ```
+    /// # trait TestFloatEq { fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool; }
+    /// # impl TestFloatEq for f32 {
+    /// # fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool {
+    /// // the PartialEq check covers equality of infinities
+    /// self == other || {
+    ///     let epsilon = other.abs() * max_diff;
+    ///     (self - other).abs() <= epsilon
+    /// }
+    /// # }}
+    /// ```
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     fn eq_r2nd(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool;
 
-    /// TODO
+    /// Check whether `self` is not equal to `other`, using a [relative epsilon
+    /// comparison].
+    ///
+    /// Equal to `!self.eq_r2nd(other, max_diff)`, there is no need to reimplement
+    /// this for your own types.
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     #[inline]
     fn ne_r2nd(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
         !self.eq_r2nd(other, max_diff)
@@ -543,11 +573,9 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
 /// Compare IEEE floating point values for equality using a uniform threshold.
 ///
 /// This trait is used in the implementation of the [`float_eq!`] and [`assert_float_eq!`]
-/// families of macros to provide `abs_all`, `rel_all` and `ulps_all` checks. It
-/// may be called directly, but the macros usually provide a friendlier interface.
-/// Comparison via this trait may not fit every composite type. For example, it
-/// likely ought not to be implemented for `(f32, f64)`, which has a big difference
-/// in precision between its fields.
+/// families of macros. Comparison via this trait may not fit every composite
+/// type. For example, it likely ought not to be implemented for `(f32, f64)`,
+/// which has a big difference in granularity between its fields.
 ///
 /// ## Derivable
 #[cfg_attr(
@@ -648,62 +676,11 @@ assert!(a.ne_ulps_all(&c, &1));
 /// assert!(a.eq_abs_all(&b, &0.000_003_6));
 /// assert!(a.ne_abs_all(&b, &0.000_003_5));
 ///
-/// assert!(a.eq_rel_all(&b, &0.000_001_8));
-/// assert!(a.ne_rel_all(&b, &0.000_001_7));
+/// assert!(a.eq_rmax_all(&b, &0.000_001_8));
+/// assert!(a.ne_rmax_all(&b, &0.000_001_7));
 ///
 /// assert!(a.eq_ulps_all(&b, &15));
 /// assert!(a.ne_ulps_all(&b, &14));
-/// ```
-///
-/// ## How can I compare two different types?
-///
-/// The type to be compared with is controlled by `FloatEqAll`'s parameter. Following
-/// on from our previous example, if we wanted to treat `f32` as a complex number
-/// with an imaginary component of `0.0`:
-///
-/// ```
-/// # use float_eq::{FloatEqAll, UlpsEpsilon};
-/// # #[derive(Debug, Copy, Clone, PartialEq)]
-/// # struct MyComplex32 { re: f32, im: f32 }
-/// impl FloatEqAll<f32> for MyComplex32 {
-///     type AllEpsilon = f32;
-///
-///     fn eq_abs_all(&self, other: &f32, max_diff: &f32) -> bool {
-///         self.re.eq_abs_all(other, max_diff) && self.im.eq_abs_all(&0.0, max_diff)
-///     }
-///
-///     fn eq_rmax_all(&self, other: &f32, max_diff: &f32) -> bool {
-///         self.re.eq_rmax_all(other, max_diff) && self.im.eq_rmax_all(&0.0, max_diff)
-///     }
-///
-///     fn eq_rmin_all(&self, other: &f32, max_diff: &f32) -> bool {
-///         self.re.eq_rmin_all(other, max_diff) && self.im.eq_rmin_all(&0.0, max_diff)
-///     }
-///
-///     fn eq_r1st_all(&self, other: &f32, max_diff: &f32) -> bool {
-///         self.re.eq_r1st_all(other, max_diff) && self.im.eq_r1st_all(&0.0, max_diff)
-///     }
-///
-///     fn eq_r2nd_all(&self, other: &f32, max_diff: &f32) -> bool {
-///         self.re.eq_r2nd_all(other, max_diff) && self.im.eq_r2nd_all(&0.0, max_diff)
-///     }
-///
-///     fn eq_ulps_all(&self, other: &f32, max_diff: &UlpsEpsilon<f32>) -> bool {
-///         self.re.eq_ulps_all(other, max_diff) && self.im.eq_ulps_all(&0.0, max_diff)
-///     }
-/// }
-///
-/// let a = MyComplex32 { re: 4.000_000_5, im: 0.0 };
-/// let b = 4.0_f32;
-///
-/// assert!(a.eq_abs_all(&b, &0.000_000_8));
-/// assert!(a.ne_abs_all(&b, &0.000_000_4));
-///
-/// assert!(a.eq_rel_all(&b, &0.000_000_12));
-/// assert!(a.ne_rel_all(&b, &0.000_000_11));
-///
-/// assert!(a.eq_ulps_all(&b, &1));
-/// assert!(a.ne_ulps_all(&b, &0));
 /// ```
 ///
 /// ## Examples
@@ -716,8 +693,8 @@ assert!(a.ne_ulps_all(&c, &1));
 /// assert!(a.eq_abs_all(&b, &0.000_002));
 /// assert!(a.ne_abs_all(&b, &0.000_001));
 ///
-/// assert!(a.eq_rel_all(&b, &0.000_001));
-/// assert!(a.ne_rel_all(&b, &0.000_000_5));
+/// assert!(a.eq_rmax_all(&b, &0.000_001));
+/// assert!(a.ne_rmax_all(&b, &0.000_000_5));
 ///
 /// assert!(a.eq_ulps_all(&b, &8));
 /// assert!(a.ne_ulps_all(&b, &7));
@@ -757,9 +734,9 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     /// Check whether `self` is equal to `other`, using a [relative epsilon
     /// comparison].
     ///
-    /// This must use the same algorithm as [`FloatEq::eq_rel`].
+    /// Equal to `self.eq_rmax_all(other, max_diff)`, there is no need to reimplement
+    /// this for your own types.
     ///
-    /// [`FloatEq::eq_rel`]: trait.FloatEq.html#tymethod.eq_rel
     /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     #[inline]
     fn eq_rel_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool {
@@ -778,37 +755,85 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
         !self.eq_rel_all(other, max_diff)
     }
 
-    /// TODO
+    /// Check whether `self` is equal to `other`, using a [relative epsilon
+    /// comparison].
+    ///
+    /// This must use the same algorithm as [`FloatEq::eq_rmax`].
+    ///
+    /// [`FloatEq::eq_rmax`]: trait.FloatEq.html#tymethod.eq_rmax
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     fn eq_rmax_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool;
 
-    /// TODO
+    /// Check whether `self` is not equal to `other`, using a [relative epsilon
+    /// comparison].
+    ///
+    /// Equal to `!self.eq_rmax_all(other, max_diff)`, there is no need to reimplement
+    /// this for your own types.
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     #[inline]
     fn ne_rmax_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool {
         !self.eq_rmax_all(other, max_diff)
     }
 
-    /// TODO
+    /// Check whether `self` is equal to `other`, using a [relative epsilon
+    /// comparison].
+    ///
+    /// This must use the same algorithm as [`FloatEq::eq_rmin`].
+    ///
+    /// [`FloatEq::eq_rmin`]: trait.FloatEq.html#tymethod.eq_rmin
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     fn eq_rmin_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool;
 
-    /// TODO
+    /// Check whether `self` is not equal to `other`, using a [relative epsilon
+    /// comparison].
+    ///
+    /// Equal to `!self.eq_rmin_all(other, max_diff)`, there is no need to reimplement
+    /// this for your own types.
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     #[inline]
     fn ne_rmin_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool {
         !self.eq_rmin_all(other, max_diff)
     }
 
-    /// TODO
+    /// Check whether `self` is equal to `other`, using a [relative epsilon
+    /// comparison].
+    ///
+    /// This must use the same algorithm as [`FloatEq::eq_r1st`].
+    ///
+    /// [`FloatEq::eq_r1st`]: trait.FloatEq.html#tymethod.eq_r1st
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     fn eq_r1st_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool;
 
-    /// TODO
+    /// Check whether `self` is not equal to `other`, using a [relative epsilon
+    /// comparison].
+    ///
+    /// Equal to `!self.eq_r1st_all(other, max_diff)`, there is no need to reimplement
+    /// this for your own types.
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     #[inline]
     fn ne_r1st_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool {
         !self.eq_r1st_all(other, max_diff)
     }
 
-    /// TODO
+    /// Check whether `self` is equal to `other`, using a [relative epsilon
+    /// comparison].
+    ///
+    /// This must use the same algorithm as [`FloatEq::eq_r2nd`].
+    ///
+    /// [`FloatEq::eq_r2nd`]: trait.FloatEq.html#tymethod.eq_r2nd
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     fn eq_r2nd_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool;
 
-    /// TODO
+    /// Check whether `self` is not equal to `other`, using a [relative epsilon
+    /// comparison].
+    ///
+    /// Equal to `!self.eq_r2nd_all(other, max_diff)`, there is no need to reimplement
+    /// this for your own types.
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     #[inline]
     fn ne_r2nd_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool {
         !self.eq_r2nd_all(other, max_diff)
@@ -834,10 +859,9 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     }
 }
 
-/// Debug context for when an assert using [`FloatEq`](trait.FloatEq.html) fails.
+/// Debug context for when an assert fails.
 ///
-/// This is used internally by the [`assert_float_eq!`] family of macros to provide
-/// debug context information to the user when `abs`, `rel` or `ulps` checks fail.
+/// This is used internally by the [`assert_float_eq!`] family of macros.
 ///
 /// ## Derivable
 #[cfg_attr(
@@ -883,7 +907,7 @@ struct Point {
 let a = Point { x: 1.0, y: 200.0 };
 let b = Point { x: 50.0, y: 1.0 };
 let eps = Point { x: 0.1, y: 0.2 };
-assert_eq!(a.debug_rel_epsilon(&b, &eps), Point { x: 5.0, y: 40.0 });
+assert_eq!(a.debug_rmax_epsilon(&b, &eps), Point { x: 5.0, y: 40.0 });
 ```
 "##
 )]
@@ -1046,151 +1070,8 @@ assert_eq!(a.debug_rel_epsilon(&b, &eps), Point { x: 5.0, y: 40.0 });
 ///     MyComplex32 { re: 0.1, im: 0.2 }
 /// );
 /// assert_eq!(
-///     a.debug_rel_epsilon(&b, &MyComplex32 { re: 0.1, im: 0.2 }),
+///     a.debug_rmax_epsilon(&b, &MyComplex32 { re: 0.1, im: 0.2 }),
 ///     MyComplex32 { re: 5.0, im: 40.0 }
-/// );
-/// assert_eq!(
-///     a.debug_ulps_epsilon(&b, &MyComplex32Ulps { re: 4, im: 8 }),
-///     MyComplex32Ulps { re: 4, im: 8 }
-/// );
-/// ```
-///
-/// ## How can I compare two different types?
-///
-/// The type to be compared with is controlled by `AssertFloatEq`'s parameter.
-/// Following on from our previous example, if we wanted to treat `f32` as a
-/// complex number with an imaginary component of `0.0`:
-///
-/// ```
-/// # use float_eq::{
-/// #   FloatEqUlpsEpsilon, FloatEq, FloatEqDebugUlpsDiff, AssertFloatEq, UlpsEpsilon, DebugUlpsDiff
-/// # };
-/// # #[derive(Debug, Clone, Copy, PartialEq)]
-/// # struct MyComplex32 { re: f32, im: f32, }
-/// # #[derive(Debug, Clone, Copy, PartialEq)]
-/// # struct MyComplex32Ulps { re: UlpsEpsilon<f32>, im: UlpsEpsilon<f32> }
-/// # impl FloatEqUlpsEpsilon for MyComplex32 { type UlpsEpsilon = MyComplex32Ulps; }
-/// # struct MyComplex32DebugUlpsDiff { re: DebugUlpsDiff<f32>, im: DebugUlpsDiff<f32> }
-/// # impl FloatEqDebugUlpsDiff for MyComplex32 { type DebugUlpsDiff = MyComplex32DebugUlpsDiff; }
-/// impl FloatEq<f32> for MyComplex32 {
-///     type Epsilon = MyComplex32;
-///
-///     fn eq_abs(&self, other: &f32, max_diff: &MyComplex32) -> bool {
-///         self.re.eq_abs(other, &max_diff.re) && self.im.eq_abs(&0.0, &max_diff.im)
-///     }
-///
-///     fn eq_rmax(&self, other: &f32, max_diff: &MyComplex32) -> bool {
-///         self.re.eq_rmax(other, &max_diff.re) && self.im.eq_rmax(&0.0, &max_diff.im)
-///     }
-///
-///     fn eq_rmin(&self, other: &f32, max_diff: &MyComplex32) -> bool {
-///         self.re.eq_rmin(other, &max_diff.re) && self.im.eq_rmin(&0.0, &max_diff.im)
-///     }
-///
-///     fn eq_r1st(&self, other: &f32, max_diff: &MyComplex32) -> bool {
-///         self.re.eq_r1st(other, &max_diff.re) && self.im.eq_r1st(&0.0, &max_diff.im)
-///     }
-///
-///     fn eq_r2nd(&self, other: &f32, max_diff: &MyComplex32) -> bool {
-///         self.re.eq_r2nd(other, &max_diff.re) && self.im.eq_r2nd(&0.0, &max_diff.im)
-///     }
-///
-///     fn eq_ulps(&self, other: &f32, max_diff: &MyComplex32Ulps) -> bool {
-///         self.re.eq_ulps(other, &max_diff.re) && self.im.eq_ulps(&0.0, &max_diff.im)
-///     }
-/// }
-///
-/// impl AssertFloatEq<f32> for MyComplex32 {
-///     type DebugAbsDiff = Self;
-///     type DebugEpsilon = Self;
-///
-///     fn debug_abs_diff(&self, other: &f32) -> MyComplex32 {
-///         MyComplex32 {
-///             re: self.re.debug_abs_diff(&other),
-///             im: self.im.debug_abs_diff(&0.0),
-///         }
-///     }
-///
-///     fn debug_ulps_diff(&self, other: &f32) -> MyComplex32DebugUlpsDiff {
-///         MyComplex32DebugUlpsDiff {
-///             re: self.re.debug_ulps_diff(&other),
-///             im: self.im.debug_ulps_diff(&0.0),
-///         }
-///     }
-///
-///     fn debug_abs_epsilon(&self, other: &f32, max_diff: &Self) -> Self {
-///         MyComplex32 {
-///             re: self.re.debug_abs_epsilon(other, &max_diff.re),
-///             im: self.im.debug_abs_epsilon(&0.0, &max_diff.im),
-///         }
-///     }
-///
-///     fn debug_rmax_epsilon(
-///         &self,
-///         other: &f32,
-///         max_diff: &Self::Epsilon
-///     ) -> Self::DebugEpsilon {
-///         MyComplex32 {
-///             re: self.re.debug_rmax_epsilon(other, &max_diff.re),
-///             im: self.im.debug_rmax_epsilon(&0.0, &max_diff.im),
-///         }
-///     }
-///
-///     fn debug_rmin_epsilon(
-///         &self,
-///         other: &f32,
-///         max_diff: &Self::Epsilon
-///     ) -> Self::DebugEpsilon {
-///         MyComplex32 {
-///             re: self.re.debug_rmin_epsilon(other, &max_diff.re),
-///             im: self.im.debug_rmin_epsilon(&0.0, &max_diff.im),
-///         }
-///     }
-///
-///     fn debug_r1st_epsilon(
-///         &self,
-///         other: &f32,
-///         max_diff: &Self::Epsilon
-///     ) -> Self::DebugEpsilon {
-///         MyComplex32 {
-///             re: self.re.debug_r1st_epsilon(other, &max_diff.re),
-///             im: self.im.debug_r1st_epsilon(&0.0, &max_diff.im),
-///         }
-///     }
-///
-///     fn debug_r2nd_epsilon(
-///         &self,
-///         other: &f32,
-///         max_diff: &Self::Epsilon
-///     ) -> Self::DebugEpsilon {
-///         MyComplex32 {
-///             re: self.re.debug_r2nd_epsilon(other, &max_diff.re),
-///             im: self.im.debug_r2nd_epsilon(&0.0, &max_diff.im),
-///         }
-///     }
-///
-///     fn debug_ulps_epsilon(
-///         &self,
-///         other: &f32,
-///         max_diff: &UlpsEpsilon<Self::Epsilon>,
-///     ) -> UlpsEpsilon<Self::DebugEpsilon> {
-///         MyComplex32Ulps {
-///             re: self.re.debug_ulps_epsilon(other, &max_diff.re),
-///             im: self.im.debug_ulps_epsilon(&0.0, &max_diff.im),
-///         }
-///     }
-/// }
-///
-/// let a = MyComplex32 { re: 1.0, im: 200.0 };
-/// let b = 9000.0_f32;
-///
-/// assert_eq!(
-///     a.debug_abs_epsilon(&b, &MyComplex32 { re: 0.1, im: 0.2 }),
-///     MyComplex32 { re: 0.1, im: 0.2 }
-/// );
-/// assert_eq!(
-///     a.debug_rel_epsilon(&b, &MyComplex32 { re: 0.1, im: 0.2 }),
-///     MyComplex32 { re: 900.0, im: 40.0 }
 /// );
 /// assert_eq!(
 ///     a.debug_ulps_epsilon(&b, &MyComplex32Ulps { re: 4, im: 8 }),
@@ -1277,8 +1158,8 @@ pub trait AssertFloatEq<Rhs: ?Sized = Self>: FloatEq<Rhs> {
     /// The epsilon used by a `rel` [relative epsilon comparison], displayed when
     /// an assert fails.
     ///
-    /// This should take into account the fact that the epsilon values are scaled
-    /// based on the size of their inputs.
+    /// Equivalent to `self.debug_rmax_epsilon(self, other, max_diff)`, there is
+    /// no need to reimplement this for your own types.
     ///
     /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     #[inline]
@@ -1286,16 +1167,40 @@ pub trait AssertFloatEq<Rhs: ?Sized = Self>: FloatEq<Rhs> {
         self.debug_rmax_epsilon(other, max_diff)
     }
 
-    /// TODO
+    /// The epsilon used by an `rmax` [relative epsilon comparison], displayed when
+    /// an assert fails.
+    ///
+    /// This should take into account the fact that the epsilon values are scaled
+    /// based on the size of their inputs.
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     fn debug_rmax_epsilon(&self, other: &Rhs, max_diff: &Self::Epsilon) -> Self::DebugEpsilon;
 
-    /// TODO
+    /// The epsilon used by an `rmin` [relative epsilon comparison], displayed when
+    /// an assert fails.
+    ///
+    /// This should take into account the fact that the epsilon values are scaled
+    /// based on the size of their inputs.
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     fn debug_rmin_epsilon(&self, other: &Rhs, max_diff: &Self::Epsilon) -> Self::DebugEpsilon;
 
-    /// TODO
+    /// The epsilon used by an `r1st` [relative epsilon comparison], displayed when
+    /// an assert fails.
+    ///
+    /// This should take into account the fact that the epsilon values are scaled
+    /// based on the size of their inputs.
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     fn debug_r1st_epsilon(&self, other: &Rhs, max_diff: &Self::Epsilon) -> Self::DebugEpsilon;
 
-    /// TODO
+    /// The epsilon used by an `r2nd` [relative epsilon comparison], displayed when
+    /// an assert fails.
+    ///
+    /// This should take into account the fact that the epsilon values are scaled
+    /// based on the size of their inputs.
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     fn debug_r2nd_epsilon(&self, other: &Rhs, max_diff: &Self::Epsilon) -> Self::DebugEpsilon;
 
     /// The epsilon used by an `ulps` [ULPs comparison], displayed when an assert
@@ -1311,11 +1216,9 @@ pub trait AssertFloatEq<Rhs: ?Sized = Self>: FloatEq<Rhs> {
         UlpsEpsilon<Self::DebugEpsilon>: Sized;
 }
 
-/// Debug context for when an assert using [`FloatEqAll`](trait.FloatEqAll.html) fails.
+/// Debug context for when an assert using an `all` check fails.
 ///
-/// This is used internally by the [`assert_float_eq!`] family of macros to provide
-/// debug context information to the user when `abs_all`, `rel_all` or `ulps_all`
-/// checks fail.
+/// This is used internally by the [`assert_float_eq!`] family of macros.
 ///
 /// ## Derivable
 #[cfg_attr(
@@ -1370,7 +1273,7 @@ struct Point {
 let a = Point { x: 1.0, y: 200.0 };
 let b = Point { x: 50.0, y: 1.0 };
 assert_eq!(
-    a.debug_rel_all_epsilon(&b, &0.2),
+    a.debug_rmax_all_epsilon(&b, &0.2),
     Point { x: 10.0, y: 40.0 }
 );
 ```
@@ -1509,136 +1412,8 @@ assert_eq!(
 ///     MyComplex32 { re: 0.2, im: 0.2 }
 /// );
 /// assert_eq!(
-///     a.debug_rel_all_epsilon(&b, &0.2),
+///     a.debug_rmax_all_epsilon(&b, &0.2),
 ///     MyComplex32 { re: 10.0, im: 40.0 }
-/// );
-/// assert_eq!(
-///     a.debug_ulps_all_epsilon(&b, &8),
-///     MyComplex32Ulps { re: 8, im: 8 }
-/// );
-/// ```
-///
-/// ## How can I compare two different types?
-///
-/// The type to be compared with is controlled by `AssertFloatEqAll`'s parameter.
-/// Following on from our previous example, if we wanted to treat `f32` as a
-/// complex number with an imaginary component of `0.0`:
-///
-/// ```
-/// # use float_eq::{FloatEqUlpsEpsilon, FloatEqAll, AssertFloatEqAll, UlpsEpsilon};
-/// # #[derive(Debug, Clone, Copy, PartialEq)]
-/// # struct MyComplex32 { re: f32, im: f32, }
-/// # #[derive(Debug, Clone, Copy, PartialEq)]
-/// # struct MyComplex32Ulps { re: UlpsEpsilon<f32>, im: UlpsEpsilon<f32> }
-/// # impl FloatEqUlpsEpsilon for MyComplex32 { type UlpsEpsilon = MyComplex32Ulps; }
-/// impl FloatEqAll<f32> for MyComplex32 {
-///     type AllEpsilon = f32;
-///
-///     fn eq_abs_all(&self, other: &f32, max_diff: &f32) -> bool {
-///         self.re.eq_abs_all(other, max_diff) && self.im.eq_abs_all(&0.0, max_diff)
-///     }
-///
-///     fn eq_rmax_all(&self, other: &f32, max_diff: &f32) -> bool {
-///         self.re.eq_rmax_all(other, max_diff) && self.im.eq_rmax_all(&0.0, max_diff)
-///     }
-///
-///     fn eq_rmin_all(&self, other: &f32, max_diff: &f32) -> bool {
-///         self.re.eq_rmin_all(other, max_diff) && self.im.eq_rmin_all(&0.0, max_diff)
-///     }
-///
-///     fn eq_r1st_all(&self, other: &f32, max_diff: &f32) -> bool {
-///         self.re.eq_r1st_all(other, max_diff) && self.im.eq_r1st_all(&0.0, max_diff)
-///     }
-///
-///     fn eq_r2nd_all(&self, other: &f32, max_diff: &f32) -> bool {
-///         self.re.eq_r2nd_all(other, max_diff) && self.im.eq_r2nd_all(&0.0, max_diff)
-///     }
-///
-///     fn eq_ulps_all(&self, other: &f32, max_diff: &UlpsEpsilon<f32>) -> bool {
-///         self.re.eq_ulps_all(other, max_diff) && self.im.eq_ulps_all(&0.0, max_diff)
-///     }
-/// }
-///
-/// impl AssertFloatEqAll<f32> for MyComplex32 {
-///     type AllDebugEpsilon = MyComplex32;
-///
-///     fn debug_abs_all_epsilon(
-///         &self,
-///         other: &f32,
-///         max_diff: &Self::AllEpsilon
-///     ) -> Self::AllDebugEpsilon {
-///         MyComplex32 {
-///             re: self.re.debug_abs_all_epsilon(other, max_diff),
-///             im: self.im.debug_abs_all_epsilon(&0.0, max_diff),
-///         }
-///     }
-///
-///     fn debug_rmax_all_epsilon(
-///         &self,
-///         other: &f32,
-///         max_diff: &Self::AllEpsilon
-///     ) -> Self::AllDebugEpsilon {
-///         MyComplex32 {
-///             re: self.re.debug_rmax_all_epsilon(other, max_diff),
-///             im: self.im.debug_rmax_all_epsilon(&0.0, max_diff),
-///         }
-///     }
-///
-///     fn debug_rmin_all_epsilon(
-///         &self,
-///         other: &f32,
-///         max_diff: &Self::AllEpsilon
-///     ) -> Self::AllDebugEpsilon {
-///         MyComplex32 {
-///             re: self.re.debug_rmin_all_epsilon(other, max_diff),
-///             im: self.im.debug_rmin_all_epsilon(&0.0, max_diff),
-///         }
-///     }
-///
-///     fn debug_r1st_all_epsilon(
-///         &self,
-///         other: &f32,
-///         max_diff: &Self::AllEpsilon
-///     ) -> Self::AllDebugEpsilon {
-///         MyComplex32 {
-///             re: self.re.debug_r1st_all_epsilon(other, max_diff),
-///             im: self.im.debug_r1st_all_epsilon(&0.0, max_diff),
-///         }
-///     }
-///
-///     fn debug_r2nd_all_epsilon(
-///         &self,
-///         other: &f32,
-///         max_diff: &Self::AllEpsilon
-///     ) -> Self::AllDebugEpsilon {
-///         MyComplex32 {
-///             re: self.re.debug_r2nd_all_epsilon(other, max_diff),
-///             im: self.im.debug_r2nd_all_epsilon(&0.0, max_diff),
-///         }
-///     }
-///
-///     fn debug_ulps_all_epsilon(
-///         &self,
-///         other: &f32,
-///         max_diff: &UlpsEpsilon<Self::AllEpsilon>,
-///     ) -> UlpsEpsilon<Self::AllDebugEpsilon> {
-///         MyComplex32Ulps {
-///             re: self.re.debug_ulps_all_epsilon(other, max_diff),
-///             im: self.im.debug_ulps_all_epsilon(&0.0, max_diff),
-///         }
-///     }
-/// }
-///
-/// let a = MyComplex32 { re: 1.0, im: 200.0 };
-/// let b = 9000.0_f32;
-///
-/// assert_eq!(
-///     a.debug_abs_all_epsilon(&b, &0.2),
-///     MyComplex32 { re: 0.2, im: 0.2 }
-/// );
-/// assert_eq!(
-///     a.debug_rel_all_epsilon(&b, &0.2),
-///     MyComplex32 { re: 1800.0, im: 40.0 }
 /// );
 /// assert_eq!(
 ///     a.debug_ulps_all_epsilon(&b, &8),
@@ -1673,8 +1448,8 @@ pub trait AssertFloatEqAll<Rhs: ?Sized = Self>: FloatEqAll<Rhs> {
     /// The epsilon used by a `rel_all` [relative epsilon comparison], displayed
     /// when an assert fails.
     ///
-    /// This should take into account the fact that the epsilon values are scaled
-    /// based on the size of their inputs.
+    /// Equivalent to `self.debug_rmax_all_epsilon(self, other, max_diff)`, there
+    /// is no need to reimplement this for your own types.
     ///
     /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     #[inline]
@@ -1686,28 +1461,52 @@ pub trait AssertFloatEqAll<Rhs: ?Sized = Self>: FloatEqAll<Rhs> {
         self.debug_rmax_all_epsilon(other, max_diff)
     }
 
-    /// TODO
+    /// The epsilon used by an `rmax_all` [relative epsilon comparison], displayed
+    /// when an assert fails.
+    ///
+    /// This should take into account the fact that the epsilon values are scaled
+    /// based on the size of their inputs.
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     fn debug_rmax_all_epsilon(
         &self,
         other: &Rhs,
         max_diff: &Self::AllEpsilon,
     ) -> Self::AllDebugEpsilon;
 
-    /// TODO
+    /// The epsilon used by an `rmin_all` [relative epsilon comparison], displayed
+    /// when an assert fails.
+    ///
+    /// This should take into account the fact that the epsilon values are scaled
+    /// based on the size of their inputs.
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     fn debug_rmin_all_epsilon(
         &self,
         other: &Rhs,
         max_diff: &Self::AllEpsilon,
     ) -> Self::AllDebugEpsilon;
 
-    /// TODO
+    /// The epsilon used by an `r1st_all` [relative epsilon comparison], displayed
+    /// when an assert fails.
+    ///
+    /// This should take into account the fact that the epsilon values are scaled
+    /// based on the size of their inputs.
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     fn debug_r1st_all_epsilon(
         &self,
         other: &Rhs,
         max_diff: &Self::AllEpsilon,
     ) -> Self::AllDebugEpsilon;
 
-    /// TODO
+    /// The epsilon used by an `r2nd_all` [relative epsilon comparison], displayed
+    /// when an assert fails.
+    ///
+    /// This should take into account the fact that the epsilon values are scaled
+    /// based on the size of their inputs.
+    ///
+    /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
     fn debug_r2nd_all_epsilon(
         &self,
         other: &Rhs,

@@ -403,24 +403,6 @@ where
     }
 
     #[inline]
-    fn debug_rel_all_epsilon(
-        &self,
-        other: &[B],
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
-        if self.len() == other.len() {
-            Some(
-                self.iter()
-                    .zip(other.iter())
-                    .map(|(a, b)| a.debug_rel_all_epsilon(b, max_diff))
-                    .collect(),
-            )
-        } else {
-            None
-        }
-    }
-
-    #[inline]
     fn debug_rmax_all_epsilon(
         &self,
         other: &[B],

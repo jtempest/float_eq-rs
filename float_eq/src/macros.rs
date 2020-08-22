@@ -6,14 +6,20 @@ use crate::{AssertFloatEq, AssertFloatEqAll, FloatEq, FloatEqAll, UlpsEpsilon};
 /// early if a positive result is found.
 ///
 /// - `abs <= max_diff` is an [absolute epsilon comparison].
-/// - `rel <= max_diff` is a [relative epsilon comparison].
+/// - `rmax <= max_diff` is a [relative epsilon comparison].
+/// - `rmin <= max_diff` is a [relative epsilon comparison].
+/// - `r1st <= max_diff` is a [relative epsilon comparison].
+/// - `r2nd <= max_diff` is a [relative epsilon comparison].
 /// - `ulps <= max_diff` is an [ULPs comparison].
 ///
 /// When comparing [composite types], variants that use a uniform `max_diff`
 /// value across all fields are also available:
 ///
 /// - `abs_all <= max_diff` is an [absolute epsilon comparison].
-/// - `rel_all <= max_diff` is a [relative epsilon comparison].
+/// - `rmax_all <= max_diff` is a [relative epsilon comparison].
+/// - `rmin_all <= max_diff` is a [relative epsilon comparison].
+/// - `r1st_all <= max_diff` is a [relative epsilon comparison].
+/// - `r2nd_all <= max_diff` is a [relative epsilon comparison].
 /// - `ulps_all <= max_diff` is an [ULPs comparison].
 ///
 /// # Examples
@@ -23,9 +29,9 @@ use crate::{AssertFloatEq, AssertFloatEqAll, FloatEq, FloatEqAll, UlpsEpsilon};
 /// let a: f32 = 4.0;
 /// let b: f32 = 4.000_002_5;
 ///
-/// assert!( float_eq!(a, 3.999_999_8, rel <= f32::EPSILON) );
-/// assert!( float_eq!(a - b, 0.0, abs <= 0.000_01, rel <= f32::EPSILON) );
-/// assert!( float_eq!(a - b, 0.0, abs <= 0.000_01, ulps <= 10) );
+/// assert!(float_eq!(a, 3.999_999_6, rmax <= 2.0 * f32::EPSILON));
+/// assert!(float_eq!(a - b, 0.0, abs <= 0.000_01));
+/// assert!(float_eq!(a, b, abs <= 0.000_01, ulps <= 10));
 /// ```
 ///
 /// [`FloatEq`]: trait.FloatEq.html
@@ -53,14 +59,20 @@ macro_rules! float_eq {
 /// early if a positive result is found.
 ///
 /// - `abs <= max_diff` is an [absolute epsilon comparison].
-/// - `rel <= max_diff` is a [relative epsilon comparison].
+/// - `rmax <= max_diff` is a [relative epsilon comparison].
+/// - `rmin <= max_diff` is a [relative epsilon comparison].
+/// - `r1st <= max_diff` is a [relative epsilon comparison].
+/// - `r2nd <= max_diff` is a [relative epsilon comparison].
 /// - `ulps <= max_diff` is an [ULPs comparison].
 ///
 /// When comparing [composite types], variants that use a uniform `max_diff`
 /// value across all fields are also available:
 ///
 /// - `abs_all <= max_diff` is an [absolute epsilon comparison].
-/// - `rel_all <= max_diff` is a [relative epsilon comparison].
+/// - `rmax_all <= max_diff` is a [relative epsilon comparison].
+/// - `rmin_all <= max_diff` is a [relative epsilon comparison].
+/// - `r1st_all <= max_diff` is a [relative epsilon comparison].
+/// - `r2nd_all <= max_diff` is a [relative epsilon comparison].
 /// - `ulps_all <= max_diff` is an [ULPs comparison].
 ///
 /// # Examples
@@ -70,9 +82,9 @@ macro_rules! float_eq {
 /// let a: f32 = 4.0;
 /// let b: f32 = 4.1;
 ///
-/// assert!( float_ne!(a, 3.999_999, rel <= f32::EPSILON) );
-/// assert!( float_ne!(a - b, 0.0, abs <= 0.000_01, rel <= f32::EPSILON) );
-/// assert!( float_ne!(a - b, 0.0, abs <= 0.000_01, ulps <= 10) );
+/// assert!(float_ne!(a, b, rmax <= 2.0 * f32::EPSILON));
+/// assert!(float_ne!(a - b, 0.0, abs <= 0.000_01));
+/// assert!(float_ne!(a, b, abs <= 0.000_01, ulps <= 10));
 /// ```
 ///
 /// [`FloatEq`]: trait.FloatEq.html
@@ -92,20 +104,29 @@ macro_rules! float_ne {
 
 /// Asserts that two floating point expressions are equal to each other.
 ///
+/// Comparisons are applied in order from left to right, shortcutting to return
+/// early if a positive result is found.
+///
 /// - `abs <= max_diff` is an [absolute epsilon comparison].
-/// - `rel <= max_diff` is a [relative epsilon comparison].
+/// - `rmax <= max_diff` is a [relative epsilon comparison].
+/// - `rmin <= max_diff` is a [relative epsilon comparison].
+/// - `r1st <= max_diff` is a [relative epsilon comparison].
+/// - `r2nd <= max_diff` is a [relative epsilon comparison].
 /// - `ulps <= max_diff` is an [ULPs comparison].
 ///
 /// When comparing [composite types], variants that use a uniform `max_diff`
 /// value across all fields are also available:
 ///
 /// - `abs_all <= max_diff` is an [absolute epsilon comparison].
-/// - `rel_all <= max_diff` is a [relative epsilon comparison].
+/// - `rmax_all <= max_diff` is a [relative epsilon comparison].
+/// - `rmin_all <= max_diff` is a [relative epsilon comparison].
+/// - `r1st_all <= max_diff` is a [relative epsilon comparison].
+/// - `r2nd_all <= max_diff` is a [relative epsilon comparison].
 /// - `ulps_all <= max_diff` is an [ULPs comparison].
 ///
 /// On panic, this macro will print the values of the expressions with their debug
 /// representations, with additional information from the comparison operations
-/// (using [`AssertFloatEq`], [`AssertFloatEqAll`] and [`FloatDiff`]).
+/// (using [`AssertFloatEq`] and [`AssertFloatEqAll`]).
 ///
 /// Like [`assert!`], this macro has a second form, where a custom panic message can
 /// be provided.
@@ -117,9 +138,9 @@ macro_rules! float_ne {
 /// let a: f32 = 4.0;
 /// let b: f32 = 4.000_002_5;
 ///
-/// assert_float_eq!(a, 3.999_999_8, rel <= f32::EPSILON);
-/// assert_float_eq!(a - b, 0.0, abs <= 0.000_01, rel <= f32::EPSILON);
-/// assert_float_eq!(a - b, 0.0, abs <= 0.000_01, ulps <= 10);
+/// assert_float_eq!(a, 3.999_999_6, rmax <= 2.0 * f32::EPSILON);
+/// assert_float_eq!(a - b, 0.0, abs <= 0.000_01);
+/// assert_float_eq!(a, b, abs <= 0.000_01, ulps <= 10);
 ///
 /// assert_float_eq!(a - b, 0.0, abs <= 0.000_01, ulps <= 10, "Checking that {} == {}", a, b);
 /// ```
@@ -129,7 +150,6 @@ macro_rules! float_ne {
 /// [`FloatEq`]: trait.FloatEq.html
 /// [`AssertFloatEq`]: trait.AssertFloatEq.html
 /// [`AssertFloatEqAll`]: trait.AssertFloatEqAll.html
-/// [`FloatDiff`]: trait.FloatDiff.html
 /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
 /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
 /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
@@ -328,20 +348,29 @@ macro_rules! assert_float_eq {
 
 /// Asserts that two floating point expressions are not equal to each other.
 ///
+/// Comparisons are applied in order from left to right, shortcutting to return
+/// early if a positive result is found.
+///
 /// - `abs <= max_diff` is an [absolute epsilon comparison].
-/// - `rel <= max_diff` is a [relative epsilon comparison].
+/// - `rmax <= max_diff` is a [relative epsilon comparison].
+/// - `rmin <= max_diff` is a [relative epsilon comparison].
+/// - `r1st <= max_diff` is a [relative epsilon comparison].
+/// - `r2nd <= max_diff` is a [relative epsilon comparison].
 /// - `ulps <= max_diff` is an [ULPs comparison].
 ///
 /// When comparing [composite types], variants that use a uniform `max_diff`
 /// value across all fields are also available:
 ///
 /// - `abs_all <= max_diff` is an [absolute epsilon comparison].
-/// - `rel_all <= max_diff` is a [relative epsilon comparison].
+/// - `rmax_all <= max_diff` is a [relative epsilon comparison].
+/// - `rmin_all <= max_diff` is a [relative epsilon comparison].
+/// - `r1st_all <= max_diff` is a [relative epsilon comparison].
+/// - `r2nd_all <= max_diff` is a [relative epsilon comparison].
 /// - `ulps_all <= max_diff` is an [ULPs comparison].
 ///
 /// On panic, this macro will print the values of the expressions with their debug
 /// representations, with additional information from the comparison operations
-/// (using [`AssertFloatEq`], [`AssertFloatEqAll`] and [`FloatDiff`]).
+/// (using [`AssertFloatEq`] and [`AssertFloatEqAll`]).
 ///
 /// Like [`assert!`], this macro has a second form, where a custom panic message can
 /// be provided.
@@ -353,11 +382,11 @@ macro_rules! assert_float_eq {
 /// let a: f32 = 4.0;
 /// let b: f32 = 4.1;
 ///
-/// assert_float_ne!(a, 3.9999990, rel <= f32::EPSILON);
-/// assert_float_ne!(a - b, 0.0, abs <= 0.00001, rel <= f32::EPSILON);
-/// assert_float_ne!(a - b, 0.0, abs <= 0.00001, ulps <= 10);
+/// assert_float_ne!(a, b, rmax <= 2.0 * f32::EPSILON);
+/// assert_float_ne!(a - b, 0.0, abs <= 0.000_01);
+/// assert_float_ne!(a, b, abs <= 0.000_01, ulps <= 10);
 ///
-/// assert_float_ne!(a - b, 0.0, abs <= 0.00001, ulps <= 10, "Checking that {} != {}", a, b);
+/// assert_float_ne!(a - b, 0.0, abs <= 0.000_01, ulps <= 10, "Checking that {} != {}", a, b);
 /// ```
 ///
 /// [`assert!`]: https://doc.rust-lang.org/std/macro.assert.html
@@ -365,7 +394,6 @@ macro_rules! assert_float_eq {
 /// [`FloatEq`]: trait.FloatEq.html
 /// [`AssertFloatEq`]: trait.AssertFloatEq.html
 /// [`AssertFloatEqAll`]: trait.AssertFloatEqAll.html
-/// [`FloatDiff`]: trait.FloatDiff.html
 /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
 /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
 /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
@@ -564,20 +592,29 @@ macro_rules! assert_float_ne {
 
 /// Asserts that two floating point expressions are equal to each other.
 ///
+/// Comparisons are applied in order from left to right, shortcutting to return
+/// early if a positive result is found.
+///
 /// - `abs <= max_diff` is an [absolute epsilon comparison].
-/// - `rel <= max_diff` is a [relative epsilon comparison].
+/// - `rmax <= max_diff` is a [relative epsilon comparison].
+/// - `rmin <= max_diff` is a [relative epsilon comparison].
+/// - `r1st <= max_diff` is a [relative epsilon comparison].
+/// - `r2nd <= max_diff` is a [relative epsilon comparison].
 /// - `ulps <= max_diff` is an [ULPs comparison].
 ///
 /// When comparing [composite types], variants that use a uniform `max_diff`
 /// value across all fields are also available:
 ///
 /// - `abs_all <= max_diff` is an [absolute epsilon comparison].
-/// - `rel_all <= max_diff` is a [relative epsilon comparison].
+/// - `rmax_all <= max_diff` is a [relative epsilon comparison].
+/// - `rmin_all <= max_diff` is a [relative epsilon comparison].
+/// - `r1st_all <= max_diff` is a [relative epsilon comparison].
+/// - `r2nd_all <= max_diff` is a [relative epsilon comparison].
 /// - `ulps_all <= max_diff` is an [ULPs comparison].
 ///
 /// On panic, this macro will print the values of the expressions with their debug
 /// representations, with additional information from the comparison operations
-/// (using [`AssertFloatEq`], [`AssertFloatEqAll`] and [`FloatDiff`]).
+/// (using [`AssertFloatEq`] and [`AssertFloatEqAll`]).
 ///
 /// Like [`assert!`], this macro has a second form, where a custom panic message can
 /// be provided.
@@ -590,13 +627,13 @@ macro_rules! assert_float_ne {
 /// # use float_eq::debug_assert_float_eq;
 /// # use std::f32;
 /// let a: f32 = 4.0;
-/// let b: f32 = 4.0000025;
+/// let b: f32 = 4.000_002_5;
 ///
-/// debug_assert_float_eq!(a, 3.9999998, rel <= f32::EPSILON);
-/// debug_assert_float_eq!(a - b, 0.0, abs <= 0.00001, rel <= f32::EPSILON);
-/// debug_assert_float_eq!(a - b, 0.0, abs <= 0.00001, ulps <= 10);
+/// debug_assert_float_eq!(a, 3.999_999_6, rmax <= 2.0 * f32::EPSILON);
+/// debug_assert_float_eq!(a - b, 0.0, abs <= 0.000_01);
+/// debug_assert_float_eq!(a, b, abs <= 0.000_01, ulps <= 10);
 ///
-/// debug_assert_float_eq!(a - b, 0.0, abs <= 0.00001, ulps <= 10, "Checking that {} == {}", a, b);
+/// debug_assert_float_eq!(a - b, 0.0, abs <= 0.000_01, ulps <= 10, "Checking that {} == {}", a, b);
 /// ```
 ///
 /// [`assert_float_eq!`]: macro.assert_float_eq.html
@@ -606,7 +643,6 @@ macro_rules! assert_float_ne {
 /// [`FloatEq`]: trait.FloatEq.html
 /// [`AssertFloatEq`]: trait.AssertFloatEq.html
 /// [`AssertFloatEqAll`]: trait.AssertFloatEqAll.html
-/// [`FloatDiff`]: trait.FloatDiff.html
 /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
 /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
 /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
@@ -618,20 +654,29 @@ macro_rules! debug_assert_float_eq {
 
 /// Asserts that two floating point expressions are not equal to each other.
 ///
+/// Comparisons are applied in order from left to right, shortcutting to return
+/// early if a positive result is found.
+///
 /// - `abs <= max_diff` is an [absolute epsilon comparison].
-/// - `rel <= max_diff` is a [relative epsilon comparison].
+/// - `rmax <= max_diff` is a [relative epsilon comparison].
+/// - `rmin <= max_diff` is a [relative epsilon comparison].
+/// - `r1st <= max_diff` is a [relative epsilon comparison].
+/// - `r2nd <= max_diff` is a [relative epsilon comparison].
 /// - `ulps <= max_diff` is an [ULPs comparison].
 ///
 /// When comparing [composite types], variants that use a uniform `max_diff`
 /// value across all fields are also available:
 ///
 /// - `abs_all <= max_diff` is an [absolute epsilon comparison].
-/// - `rel_all <= max_diff` is a [relative epsilon comparison].
+/// - `rmax_all <= max_diff` is a [relative epsilon comparison].
+/// - `rmin_all <= max_diff` is a [relative epsilon comparison].
+/// - `r1st_all <= max_diff` is a [relative epsilon comparison].
+/// - `r2nd_all <= max_diff` is a [relative epsilon comparison].
 /// - `ulps_all <= max_diff` is an [ULPs comparison].
 ///
 /// On panic, this macro will print the values of the expressions with their debug
 /// representations, with additional information from the comparison operations
-/// (using [`AssertFloatEq`], [`AssertFloatEqAll`] and [`FloatDiff`]).
+/// (using [`AssertFloatEq`], [`AssertFloatEqAll`]).
 ///
 /// Like [`assert!`], this macro has a second form, where a custom panic message can
 /// be provided.
@@ -646,11 +691,11 @@ macro_rules! debug_assert_float_eq {
 /// let a: f32 = 4.0;
 /// let b: f32 = 4.1;
 ///
-/// debug_assert_float_ne!(a, 3.9999990, rel <= f32::EPSILON);
-/// debug_assert_float_ne!(a - b, 0.0, abs <= 0.00001, rel <= f32::EPSILON);
-/// debug_assert_float_ne!(a - b, 0.0, abs <= 0.00001, ulps <= 10);
+/// debug_assert_float_ne!(a, b, rmax <= 2.0 * f32::EPSILON);
+/// debug_assert_float_ne!(a - b, 0.0, abs <= 0.000_01);
+/// debug_assert_float_ne!(a, b, abs <= 0.000_01, ulps <= 10);
 ///
-/// debug_assert_float_ne!(a - b, 0.0, abs <= 0.00001, ulps <= 10, "Checking that {} == {}", a, b);
+/// debug_assert_float_ne!(a - b, 0.0, abs <= 0.000_01, ulps <= 10, "Checking that {} != {}", a, b);
 /// ```
 ///
 /// [`assert_float_ne!`]: macro.assert_float_ne.html
@@ -660,7 +705,6 @@ macro_rules! debug_assert_float_eq {
 /// [`FloatEq`]: trait.FloatEq.html
 /// [`AssertFloatEq`]: trait.AssertFloatEq.html
 /// [`AssertFloatEqAll`]: trait.AssertFloatEqAll.html
-/// [`FloatDiff`]: trait.FloatDiff.html
 /// [absolute epsilon comparison]: index.html#absolute-epsilon-comparison
 /// [relative epsilon comparison]: index.html#relative-epsilon-comparison
 /// [ULPs comparison]: index.html#units-in-the-last-place-ulps-comparison
