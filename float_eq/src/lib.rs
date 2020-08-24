@@ -534,7 +534,7 @@ For example, add this to your Cargo.toml:
 
 ```text
 [dependencies.float_eq]
-version = "0.4"
+version = "0.5"
 features = ["derive"]
 ```
 "##
