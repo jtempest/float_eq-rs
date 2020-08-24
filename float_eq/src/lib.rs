@@ -66,7 +66,7 @@
 //!
 //! A common issue in equality comparison is when comparing the result of subtracting
 //! two numbers from one another against zero. Due to the relative differences in
-//! magnitude between the inputs and the result, this will vastly amplify any
+//! granularity between the inputs and the result, this will vastly amplify any
 //! existing *relative* error margins in a calculation. It is worth noting that
 //! the error in *absolute* terms is preserved. This is known as *[catastrophic
 //! cancellation]*.
@@ -286,8 +286,8 @@
 //! assert_float_eq!(a - b, 0.0, abs <= 0.000_001);
 //! ```
 //!
-//! If one of your values may be zero and the other a normal value, you should
-//! try combining an `abs` check with a relative check of some kind:
+//! If your values may be zero or normals, you should try combining an `abs`
+//! check with a relative check of some kind:
 //!
 //! ```
 //! # use float_eq::assert_float_eq;
@@ -514,7 +514,7 @@
 //!        right: `4.000008`,
 //!     abs_diff: `0.000008106232`,
 //!    ulps_diff: `Some(17)`,
-//!     [rmax] ε: `0.000004000008`',, assert_failure.rs:15:5
+//!     [rmax] ε: `0.000004000008`', assert_failure.rs:15:5
 //! ```
 //!
 //! # Comparing custom types
