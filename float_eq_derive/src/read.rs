@@ -123,11 +123,10 @@ help: try adding `#[float_eq(debug_ulps_diff = "{}DebugUlpsDiff")]` to your type
 
     pub fn all_epsilon_type(&self) -> Result<&Ident, syn::Error> {
         self.all_epsilon_type_name.as_ref().ok_or({
-            let msg = format!(
+            let msg = 
                 r#"Missing Epsilon type name required to derive trait.
 
-help: try adding `#[float_eq(all_epsilon = "T")]` to your type, where T is commonly `f32` or `f64`."#
-            );
+help: try adding `#[float_eq(all_epsilon = "T")]` to your type, where T is commonly `f32` or `f64`."#;
             syn::Error::new(Span::call_site(), msg)
         })
     }
@@ -197,7 +196,7 @@ fn name_type_pair_list(
             r#"float_eq attribute must be a list of options, for example `#[float_eq(ulps_epsilon = "{}Ulps")]`"#,
             struct_name.to_string()
         );
-        Err(syn::Error::new(attr.span(), msg))
+        Err(syn::Error::new(attr.path.span(), msg))
     }
 }
 
@@ -213,7 +212,7 @@ pub fn name_type_pair(meta: &NestedMeta) -> Result<NameTypePair, syn::Error> {
                 if let Ok(value) = value.parse::<Ident>() {
                     return Ok(NameTypePair {
                         name: name.clone(),
-                        value: value.clone(),
+                        value,
                     });
                 }
             }
