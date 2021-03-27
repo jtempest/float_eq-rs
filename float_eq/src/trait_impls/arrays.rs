@@ -1,10 +1,20 @@
-#![allow(clippy::reversed_empty_ranges)]
-
 use crate::{
     AssertFloatEq, AssertFloatEqAll, DebugUlpsDiff, FloatEq, FloatEqAll, FloatEqDebugUlpsDiff,
     FloatEqUlpsEpsilon, UlpsEpsilon,
 };
 use core::mem::MaybeUninit;
+
+// Uses the same technique as MaybeUninit::uninit_array.
+#[inline(always)]
+fn uninit_array<T, const N: usize>() -> [MaybeUninit<T>; N] {
+    unsafe { MaybeUninit::<[MaybeUninit<T>; N]>::uninit().assume_init() }
+}
+
+// Uses the same technique as MaybeUninit::array_assume_init.
+#[inline(always)]
+unsafe fn array_assume_init<T, const N: usize>(array: [MaybeUninit<T>; N]) -> [T; N] {
+    (&array as *const _ as *const [T; N]).read()
+}
 
 impl<T: FloatEqUlpsEpsilon, const N: usize> FloatEqUlpsEpsilon for [T; N]
 where
@@ -148,66 +158,65 @@ where
 
     #[inline]
     fn debug_abs_diff(&self, other: &[B; N]) -> Self::DebugAbsDiff {
-        let mut result: Self::DebugAbsDiff = unsafe { MaybeUninit::uninit().assume_init() };
+        let mut result: [MaybeUninit<A::DebugAbsDiff>; N] = uninit_array();
         for i in 0..N {
-            result[i] = self[i].debug_abs_diff(&other[i])
+            result[i] = MaybeUninit::new(self[i].debug_abs_diff(&other[i]));
         }
-        result
+        unsafe { array_assume_init(result) }
     }
 
     #[inline]
     fn debug_ulps_diff(&self, other: &[B; N]) -> DebugUlpsDiff<Self::DebugAbsDiff> {
-        let mut result: DebugUlpsDiff<Self::DebugAbsDiff> =
-            unsafe { MaybeUninit::uninit().assume_init() };
+        let mut result: [MaybeUninit<DebugUlpsDiff<A::DebugAbsDiff>>; N] = uninit_array();
         for i in 0..N {
-            result[i] = self[i].debug_ulps_diff(&other[i])
+            result[i] = MaybeUninit::new(self[i].debug_ulps_diff(&other[i]));
         }
-        result
+        unsafe { array_assume_init(result) }
     }
 
     #[inline]
     fn debug_abs_epsilon(&self, other: &[B; N], max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+        let mut result: [MaybeUninit<A::DebugEpsilon>; N] = uninit_array();
         for i in 0..N {
-            result[i] = self[i].debug_abs_epsilon(&other[i], &max_diff[i])
+            result[i] = MaybeUninit::new(self[i].debug_abs_epsilon(&other[i], &max_diff[i]));
         }
-        result
+        unsafe { array_assume_init(result) }
     }
 
     #[inline]
     fn debug_rmax_epsilon(&self, other: &[B; N], max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+        let mut result: [MaybeUninit<A::DebugEpsilon>; N] = uninit_array();
         for i in 0..N {
-            result[i] = self[i].debug_rmax_epsilon(&other[i], &max_diff[i])
+            result[i] = MaybeUninit::new(self[i].debug_rmax_epsilon(&other[i], &max_diff[i]));
         }
-        result
+        unsafe { array_assume_init(result) }
     }
 
     #[inline]
     fn debug_rmin_epsilon(&self, other: &[B; N], max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+        let mut result: [MaybeUninit<A::DebugEpsilon>; N] = uninit_array();
         for i in 0..N {
-            result[i] = self[i].debug_rmin_epsilon(&other[i], &max_diff[i])
+            result[i] = MaybeUninit::new(self[i].debug_rmin_epsilon(&other[i], &max_diff[i]));
         }
-        result
+        unsafe { array_assume_init(result) }
     }
 
     #[inline]
     fn debug_r1st_epsilon(&self, other: &[B; N], max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+        let mut result: [MaybeUninit<A::DebugEpsilon>; N] = uninit_array();
         for i in 0..N {
-            result[i] = self[i].debug_r1st_epsilon(&other[i], &max_diff[i])
+            result[i] = MaybeUninit::new(self[i].debug_r1st_epsilon(&other[i], &max_diff[i]));
         }
-        result
+        unsafe { array_assume_init(result) }
     }
 
     #[inline]
     fn debug_r2nd_epsilon(&self, other: &[B; N], max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        let mut result: Self::DebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+        let mut result: [MaybeUninit<A::DebugEpsilon>; N] = uninit_array();
         for i in 0..N {
-            result[i] = self[i].debug_r2nd_epsilon(&other[i], &max_diff[i])
+            result[i] = MaybeUninit::new(self[i].debug_r2nd_epsilon(&other[i], &max_diff[i]));
         }
-        result
+        unsafe { array_assume_init(result) }
     }
 
     #[inline]
@@ -216,12 +225,11 @@ where
         other: &[B; N],
         max_diff: &UlpsEpsilon<Self::Epsilon>,
     ) -> UlpsEpsilon<Self::DebugEpsilon> {
-        let mut result: UlpsEpsilon<Self::DebugEpsilon> =
-            unsafe { MaybeUninit::uninit().assume_init() };
+        let mut result: [MaybeUninit<UlpsEpsilon<A::DebugEpsilon>>; N] = uninit_array();
         for i in 0..N {
-            result[i] = self[i].debug_ulps_epsilon(&other[i], &max_diff[i])
+            result[i] = MaybeUninit::new(self[i].debug_ulps_epsilon(&other[i], &max_diff[i]));
         }
-        result
+        unsafe { array_assume_init(result) }
     }
 }
 
@@ -238,11 +246,11 @@ where
         other: &[B; N],
         max_diff: &Self::AllEpsilon,
     ) -> Self::AllDebugEpsilon {
-        let mut result: Self::AllDebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+        let mut result: [MaybeUninit<A::AllDebugEpsilon>; N] = uninit_array();
         for i in 0..N {
-            result[i] = self[i].debug_abs_all_epsilon(&other[i], max_diff)
+            result[i] = MaybeUninit::new(self[i].debug_abs_all_epsilon(&other[i], max_diff));
         }
-        result
+        unsafe { array_assume_init(result) }
     }
 
     #[inline]
@@ -251,11 +259,11 @@ where
         other: &[B; N],
         max_diff: &Self::AllEpsilon,
     ) -> Self::AllDebugEpsilon {
-        let mut result: Self::AllDebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+        let mut result: [MaybeUninit<A::AllDebugEpsilon>; N] = uninit_array();
         for i in 0..N {
-            result[i] = self[i].debug_rmax_all_epsilon(&other[i], max_diff)
+            result[i] = MaybeUninit::new(self[i].debug_rmax_all_epsilon(&other[i], max_diff));
         }
-        result
+        unsafe { array_assume_init(result) }
     }
 
     #[inline]
@@ -264,11 +272,11 @@ where
         other: &[B; N],
         max_diff: &Self::AllEpsilon,
     ) -> Self::AllDebugEpsilon {
-        let mut result: Self::AllDebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+        let mut result: [MaybeUninit<A::AllDebugEpsilon>; N] = uninit_array();
         for i in 0..N {
-            result[i] = self[i].debug_rmin_all_epsilon(&other[i], max_diff)
+            result[i] = MaybeUninit::new(self[i].debug_rmin_all_epsilon(&other[i], max_diff));
         }
-        result
+        unsafe { array_assume_init(result) }
     }
 
     #[inline]
@@ -277,11 +285,11 @@ where
         other: &[B; N],
         max_diff: &Self::AllEpsilon,
     ) -> Self::AllDebugEpsilon {
-        let mut result: Self::AllDebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+        let mut result: [MaybeUninit<A::AllDebugEpsilon>; N] = uninit_array();
         for i in 0..N {
-            result[i] = self[i].debug_r1st_all_epsilon(&other[i], max_diff)
+            result[i] = MaybeUninit::new(self[i].debug_r1st_all_epsilon(&other[i], max_diff));
         }
-        result
+        unsafe { array_assume_init(result) }
     }
 
     #[inline]
@@ -290,11 +298,11 @@ where
         other: &[B; N],
         max_diff: &Self::AllEpsilon,
     ) -> Self::AllDebugEpsilon {
-        let mut result: Self::AllDebugEpsilon = unsafe { MaybeUninit::uninit().assume_init() };
+        let mut result: [MaybeUninit<A::AllDebugEpsilon>; N] = uninit_array();
         for i in 0..N {
-            result[i] = self[i].debug_r2nd_all_epsilon(&other[i], max_diff)
+            result[i] = MaybeUninit::new(self[i].debug_r2nd_all_epsilon(&other[i], max_diff));
         }
-        result
+        unsafe { array_assume_init(result) }
     }
 
     #[inline]
@@ -303,11 +311,10 @@ where
         other: &[B; N],
         max_diff: &UlpsEpsilon<Self::AllEpsilon>,
     ) -> UlpsEpsilon<Self::AllDebugEpsilon> {
-        let mut result: UlpsEpsilon<Self::AllDebugEpsilon> =
-            unsafe { MaybeUninit::uninit().assume_init() };
+        let mut result: [MaybeUninit<UlpsEpsilon<A::AllDebugEpsilon>>; N] = uninit_array();
         for i in 0..N {
-            result[i] = self[i].debug_ulps_all_epsilon(&other[i], max_diff)
+            result[i] = MaybeUninit::new(self[i].debug_ulps_all_epsilon(&other[i], max_diff));
         }
-        result
+        unsafe { array_assume_init(result) }
     }
 }

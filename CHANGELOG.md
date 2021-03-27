@@ -6,8 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
 - Implementation of traits for arrays of any size using const generics.
 - Updated `num-complex` dependency to 0.4.
+
+### Fixed
+- Safer behaviour when initialising debug output for array trait impls,
+  including the removal of a source of undefined behaviour.
 
 ## [0.5.0] - 2020-08-24
 Bumped up the version number since this release includes breaking API changes
