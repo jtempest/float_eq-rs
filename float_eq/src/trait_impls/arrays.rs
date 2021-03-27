@@ -6,9 +6,6 @@ use crate::{
 };
 use core::mem::MaybeUninit;
 
-// arrays
-//TODO: Should this be publically available for users to conditionally implement
-// support if they need it?
 impl<T: FloatEqUlpsEpsilon, const N: usize> FloatEqUlpsEpsilon for [T; N]
 where
     UlpsEpsilon<T>: Sized,
