@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Implementation of traits for arrays of any size using const generics.
+
 ## [0.5.0] - 2020-08-24
 Bumped up the version number since this release includes breaking API changes
 to the extension traits.

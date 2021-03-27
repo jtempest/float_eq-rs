@@ -115,7 +115,7 @@ assert_float_eq!(a, b, ulps <= Complex32Ulps { re: 2, im: 4 });
 assert_float_eq!(a, b, ulps_all <= 4);
 ```
 
-Arrays of size 0 to 32 (inclusive) are supported:
+Arrays of any size are supported:
 
 ```rust
 let a = [1.0, -2.0, 3.0];
