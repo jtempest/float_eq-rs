@@ -28,7 +28,7 @@ coveralls = { repository = "jtempest/float_eq-rs" }
 trybuild = "1"
 
 [dependencies.num-complex]
-version = "0.3"
+version = "0.4"
 optional = true
 
 [dependencies.float_eq_derive]
