@@ -47,7 +47,6 @@ macro_rules! impl_tests {
             #[test]
 
             fn debug_float_diff() {
-                //TODO: Use const generics once they're stable
                 check_debug_float_diff!(0);
                 check_debug_float_diff!(1);
                 check_debug_float_diff!(2);
@@ -126,7 +125,6 @@ macro_rules! impl_tests {
             #[test]
 
             fn float_eq() {
-                //TODO: Use const generics once they're stable
                 check_float_eq!(0);
                 check_float_eq!(1);
                 check_float_eq!(2);
@@ -191,7 +189,6 @@ macro_rules! impl_tests {
             #[test]
 
             fn float_eq_all() {
-                //TODO: Use const generics once they're stable
                 check_float_eq_all!(0);
                 check_float_eq_all!(1);
                 check_float_eq_all!(2);
@@ -269,7 +266,6 @@ macro_rules! impl_tests {
 
             #[test]
             fn debug_epsilon() {
-                //TODO: Use const generics once they're stable
                 check_debug_epsilon!(0);
                 check_debug_epsilon!(1);
                 check_debug_epsilon!(2);
@@ -346,7 +342,6 @@ macro_rules! impl_tests {
             #[test]
 
             fn debug_all_epsilon() {
-                //TODO: Use const generics once they're stable
                 check_debug_all_epsilon!(0);
                 check_debug_all_epsilon!(1);
                 check_debug_all_epsilon!(2);
