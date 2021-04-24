@@ -345,12 +345,12 @@ fn debug_epsilon() {
 }
 
 #[test]
-#[should_panic(expected = r#"`float_eq!(left, right, abs <= ε)`
+#[should_panic(expected = r#"`float_eq!(left, right, abs <= t)`
         left: `(1.0, 2.0)`,
        right: `(1.5, -2.5)`,
     abs_diff: `(0.5, 4.5)`,
    ulps_diff: `(Some(4194304), None)`,
-     [abs] ε: `(0.1, 0.2)"#)]
+     [abs] t: `(0.1, 0.2)"#)]
 fn test_assert_fail_message() {
     assert_float_eq!((1.0f32, 2.0f64), (1.5f32, -2.5f64), abs <= (0.1, 0.2))
 }

@@ -356,14 +356,14 @@ impl_tests!(f32);
 impl_tests!(f64);
 
 #[test]
-#[should_panic(expected = r#"`float_eq!(left, right, abs <= ε, rel <= ε, ulps <= ε)`
+#[should_panic(expected = r#"`float_eq!(left, right, abs <= t, rel <= t, ulps <= t)`
         left: `[1.0, 2.0]`,
        right: `[3.0, -5.0]`,
     abs_diff: `[2.0, 7.0]`,
    ulps_diff: `[Some(6755399441055744), None]`,
-     [abs] ε: `[0.1, 0.25]`,
-     [rel] ε: `[0.30000000000000004, 1.25]`,
-    [ulps] ε: `[1, 2]`"#)]
+     [abs] t: `[0.1, 0.25]`,
+     [rel] t: `[0.30000000000000004, 1.25]`,
+    [ulps] t: `[1, 2]`"#)]
 fn assert_fail_message() {
     assert_float_eq!(
         [1., 2.],
@@ -376,14 +376,14 @@ fn assert_fail_message() {
 
 #[test]
 #[should_panic(
-    expected = r#"`float_eq!(left, right, abs_all <= ε, rel_all <= ε, ulps_all <= ε)`
+    expected = r#"`float_eq!(left, right, abs_all <= t, rel_all <= t, ulps_all <= t)`
         left: `[1.0, 2.0]`,
        right: `[3.0, -5.0]`,
     abs_diff: `[2.0, 7.0]`,
    ulps_diff: `[Some(6755399441055744), None]`,
- [abs_all] ε: `[0.25, 0.25]`,
- [rel_all] ε: `[0.75, 1.25]`,
-[ulps_all] ε: `[3, 3]"#
+ [abs_all] t: `[0.25, 0.25]`,
+ [rel_all] t: `[0.75, 1.25]`,
+[ulps_all] t: `[3, 3]"#
 )]
 fn assert_fail_all_message() {
     assert_float_eq!(

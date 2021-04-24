@@ -151,7 +151,7 @@ thread 'main' panicked at 'assertion failed: `float_eq!(left, right, rmax <= t)`
        right: `4.000008`,
     abs_diff: `0.000008106232`,
    ulps_diff: `Some(17)`,
-    [rmax] ε: `0.000004000008`', assert_failure.rs:15:5
+    [rmax] t: `0.000004000008`', assert_failure.rs:15:5
 ```
 
 Where `[rmax] t` shows the tolerance value that the absolute difference was

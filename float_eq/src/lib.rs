@@ -62,13 +62,19 @@
 //! they are applied left to right and will shortcut on success. For example:
 //!
 //! ```
+//! # use float_eq::float_eq;
+//! # let a = 0.1; let b = 0.1; let abs_tol = 0.0; let ulps_tol: u64 = 0;
 //! float_eq!(a, b, abs <= abs_tol, ulps <= ulps_tol)
+//! # ;
 //! ```
 //!
 //! Is equivalent to:
 //!
 //! ```
+//! # use float_eq::float_eq;
+//! # let a = 0.1; let b = 0.1; let abs_tol = 0.0; let ulps_tol: u64 = 0;
 //! float_eq!(a, b, abs <= abs_tol) || float_eq!(a, b, ulps <= ulps_tol)
+//! # ;
 //! ```
 //!
 //! # Extending float_eq over custom types
