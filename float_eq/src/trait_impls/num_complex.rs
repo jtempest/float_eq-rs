@@ -39,14 +39,12 @@ impl<T: FloatEqDebugUlpsDiff> FloatEqDebugUlpsDiff for Complex<T> {
 
 /// [`ComplexUlps<T>`] type matching [`Complex32`].
 ///
-/// [`ComplexUlps<T>`]: struct.ComplexUlps.html
-/// [`Complex32`]: https://docs.rs/num-complex/0.2.4/num_complex/type.Complex32.html
+/// [`Complex32`]: https://docs.rs/num-complex/0.3/num_complex/type.Complex32.html
 pub type ComplexUlps32 = UlpsEpsilon<Complex<f32>>;
 
 /// [`ComplexUlps<T>`] type matching [`Complex64`].
 ///
-/// [`ComplexUlps<T>`]: struct.ComplexUlps.html
-/// [`Complex64`]: https://docs.rs/num-complex/0.2.4/num_complex/type.Complex64.html
+/// [`Complex64`]: https://docs.rs/num-complex/0.3/num_complex/type.Complex64.html
 pub type ComplexUlps64 = UlpsEpsilon<Complex<f64>>;
 
 impl<T: FloatEq> FloatEq for Complex<T>

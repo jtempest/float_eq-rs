@@ -1,3 +1,6 @@
+# A checklist/sequence of actions to take to package a new build and upload it
+# to crates.io.
+
 - cargo hack test --feature-powerset
 - Make sure documentation is up to date
   - `cargo doc` (derive help)
@@ -12,7 +15,8 @@
   - float_eq/Cargo.toml
   - float_eq_derive/Cargo.toml
   - float_eq/crates-io.md
-  - float_eq/traits.rs
+  - book/book.toml
+  - book/src/how_to/compare_custom_types.md
 - Make release tag in git
   - git tag -s x.y.z -m "x.y.z release"
   - git push origin --tags

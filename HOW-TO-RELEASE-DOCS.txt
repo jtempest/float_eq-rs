@@ -1,0 +1,28 @@
+# Follow these commands to deploy the cargo documentation and md book to the
+# github pages branch. This is not a script since if something goes wrong during
+# the process the repo could become seriously messed up, so be careful.
+
+# 1) Build docs
+cargo clean 
+./docs-build.bat
+
+# 2) Temporarily add gh-pages branch to workspace (be careful!)
+git worktree add gh-pages gh-pages
+
+# 3) Refresh contents of gh-pages branch
+Remove-Item -Recurse gh-pages/*
+New-Item -Name gh-pages/book/ -ItemType Directory
+Copy-Item -Recurse target/book/* gh-pages/book/
+New-Item -Name gh-pages/doc/ -ItemType Directory
+Copy-Item -Recurse target/doc/* gh-pages/doc/
+Copy-Item docs-index.html gh-pages/index.html
+
+# 4) Commit new gh-pages content (be careful!)
+Set-Location gh-pages
+git add -A
+git commit -S -m "docs deployment"
+git push origin gh-pages
+
+# 5) Remove temporary gh-pages branch from workspace
+Set-Location ..
+git worktree remove gh-pages --force

@@ -1,0 +1,6 @@
+[book]
+authors = ["jtempest"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Documentation for float_eq 0.5.1-pre"

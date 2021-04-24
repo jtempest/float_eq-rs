@@ -10,27 +10,14 @@
 [![Travis status](https://travis-ci.com/jtempest/float_eq-rs.svg?branch=master)](https://travis-ci.com/github/jtempest/float_eq-rs)
 [![Coverage Status](https://coveralls.io/repos/github/jtempest/float_eq-rs/badge.svg?branch=master)](https://coveralls.io/github/jtempest/float_eq-rs?branch=master)
 
-Compare IEEE floating point values for equality.
+Compare IEEE floating point primitives, structs and collections for equality.
 
-Comparing floating point values for equality is notoriously difficult,
-getting it right requires careful reasoning and iteration. This API provides
-a variety of comparison algorithms and debugging tools to help make the
-process more intuitive and your choices explicit and clear to future
-maintainers.
+This crate provides an API with a focus on making the choices of comparison 
+algorithm(s) and margins intuitive to implementers and maintainers, and of
+providing clear output for debugging and development iteration.
 
-# Background
-
-Given how widely algorithmic requirements can vary, `float_eq` explores the
-idea that there are no generally sensible default margins for comparisons.
-This is in contrast to the approach taken by many other crates, which often
-provide default epsilon values in checks or implicitly favour particular
-algorithms. The author's hope is that by exposing the inherent complexity
-in a uniform way, programmers will find it easier to develop an intuition
-for effective use of floats.
-
-This work builds on the definitions in Knuth's The Art Of Computer Programming,
-(Vol. 2, Seminumerical Algorithms, Third Edition, section 4.2.2), and *that* 
-Random ASCII article on [floating point comparison].
+This readme is a quick tour of the crate. For introductory material, guides and
+discussion see [the float_eq book].
 
 ## Usage
 
@@ -58,60 +45,37 @@ use float_eq::{assert_float_eq, float_eq};
 This crate provides boolean comparison operations:
 
 ```rust
-assert!(float_eq!(1000.0f32, 1000.0002, ulps <= 4));
-
-const ROUNDING_ERROR: f32 = 0.000_345_266_98;
-assert!(float_ne!(4.0f32, 4.1, rmax <= ROUNDING_ERROR));
+if (float_eq!(y_pos, 0.0, abs <= 0.000_1)) {
+    //...
+}
 ```
 
 And asserts:
 
 ```rust
-const RECIP_REL_EPSILON: f32 = 0.000_366_210_94; 
-assert_float_eq!(0.1f32.recip(), 10.0, r2nd <= RECIP_REL_EPSILON);
-
-assert_float_ne!(0.0f32, 0.000_1, abs <= 0.000_05, ulps <= 4);
+const RECIP_REL_TOL: f32 = 0.000_366_210_94;
+assert_float_eq!(x.recip(), 10.0, r2nd <= RECIP_REL_TOL);
 ```
 
-Checks are invoked by name and with a threshold, so for example `abs <= 0.000_05`
-should be read as *"an absolute epsilon comparison with a maximum difference of
-less than or equal to `0.000_05`"*. Similarly, `rmax`, `rmin`, `r1st` and `r2nd`
-provide a variety of kinds of relative epsilon comparison with thresholds that
-scale to the granularity of one or input value or the other and `ulps` is an
-ULPs based comparison that takes advantage of the underlying bitwise 
-representation. See the [API documentation] for a long form introduction
-to the different kinds of checks, their uses and limitations.
-
-## Combining checks
-
-If more than one check is specified by a comparison then they are performed
-in order from left to right. If any check is true, then the two values are
-considered equal. For example, this expression:
-
-```rust
-float_eq!(a, b, abs <= 0.000_01, ulps <= 4)
-```
-
-Is equivalent to:
-
-```rust
-float_eq!(a, b, abs <= 0.000_01) || float_eq!(a, b, ulps <= 4)
-```
-
-This allows you to build comparison expressions as needed, only paying for what
-you use.
+Using absolute tolerance, relative tolerance or ULPs based [comparison
+algorithms].
 
 ## Composite types
 
-Composite types that implement `FloatEq` may be compared on a field-by-field
-basis, and types that implement `FloatEqAll` may be compared with a uniformly
-applied epsilon value across all fields:
+Composite types may implement the provided extension traits to be compared on a
+field-by-field basis:
 
 ```rust
 let a = Complex32 { re: 2.0, im: 4.000_002 };
 let b = Complex32 { re: 2.000_000_5, im: 4.0 };
 
 assert_float_eq!(a, b, ulps <= Complex32Ulps { re: 2, im: 4 });
+```
+
+...and if they are homogeneous, with a uniformly applied tolerance across all
+fields:
+
+```rust
 assert_float_eq!(a, b, ulps_all <= 4);
 ```
 
@@ -129,22 +93,26 @@ As are tuples up to size 12 (inclusive):
 ```rust
 let a = (1.0f32, 2.0f64);
 let b = (1.5f32, -2.0f64);
-assert_float_eq!(a, b, abs <= (0.5, 4.0));
+assert_float_eq!(a, b, r2nd <= (0.5, 2.0));
 ```
 
-There are also blanket trait impls for comparing mutable and immutable reference
+Many standard and core types like `Vec` are supported:
+
+```rust
+let a = vec![1.0, -2.0, 3.0];
+let b = vec![-1.0, 2.0, 3.5];
+assert_float_eq!(a, b, rmax <= vec![2.0, 2.0, 0.25]);
+assert_float_eq!(a, b, rmax_all <= 2.0);
+```
+
+There are blanket trait impls for comparing mutable and immutable reference
 types, the contents of `Cell`, `RefCell`, `Rc`, `Arc` and `Box` instances, as
 well as for slices, `Option`, `Vec`, `VecDeque`, `LinkedList`, `BTreeMap` and
 `HashMap`.
 
-Types that also implement `AssertFloatEq`/`AssertFloatEqAll` may be used in the
-assert forms.
-
 ## Derivable
 
-If the optional `"derive"` feature is enabled, all of the traits may be 
-implemented using `#[derive]`. The easiest way to do so is to make use of the 
-`#[derive_float_eq]` helper macro:
+The extension traits may be easily derived in most cases:
 
 ```rust
 #[derive_float_eq(
@@ -169,8 +137,7 @@ assert_float_eq!(a, c, ulps_all <= 4);
 
 ## Error messages
 
-Assertion failure output tries to provide useful context information without
-going overboard. For example, this call:
+Asserts provide additional useful context information. For example:
 
 ```rust
 assert_float_eq!(4.0f32, 4.000_008, rmax <= 0.000_001);
@@ -179,7 +146,7 @@ assert_float_eq!(4.0f32, 4.000_008, rmax <= 0.000_001);
 Panics with this error message:
 
 ```
-thread 'main' panicked at 'assertion failed: `float_eq!(left, right, rmax <= ε)`
+thread 'main' panicked at 'assertion failed: `float_eq!(left, right, rmax <= t)`
         left: `4.0`,
        right: `4.000008`,
     abs_diff: `0.000008106232`,
@@ -187,9 +154,7 @@ thread 'main' panicked at 'assertion failed: `float_eq!(left, right, rmax <= ε)
     [rmax] ε: `0.000004000008`', assert_failure.rs:15:5
 ```
 
-The message shows the values of the expressions being compared and the
-difference between them both in absolute terms and in terms of ULPs. The 
-`[rmax] ε` line shows the epsilon value that the absolute difference was
+Where `[rmax] t` shows the tolerance value that the absolute difference was
 compared against after being appropriately scaled.
 
 ## Optional features
@@ -210,11 +175,15 @@ Other optional features:
 
 ## Related efforts
 
-The [`approx`] and [`float-cmp`] crates provide a similar style of general
-comparison operations, whereas [`assert_float_eq`] focuses specifically on
-assertions. The [`almost`] crate instead divides its API into algorithms 
-comparing against zero and non-zero values. In contrast, [`efloat`] takes the
-approach of tracking the error bounds of values as operations are applied.
+The [`approx`], [`float-cmp`] and [`assert_float_eq`] crates provide similar
+floating point comparison capabilities to `float_eq`. The [`almost`] crate
+divides its API into comparison of floats against zero and non-zero values. The
+[`efloat`] crate provides an `f32` equivalent type that tracks the maximum
+possible error bounds that may have occured due to rounding.
+
+The [`ieee754`] crate is not a comparison library, but provides useful
+functionality for decomposing floats into their component parts, iterating over
+representable values and working with ULPs directly, amoung other things.
 
 ## Contributing 
 
@@ -225,14 +194,15 @@ Constructive feedback, suggestions and contributions welcomed, please
 
 Release information is available in [CHANGELOG.md](CHANGELOG.md).
 
-[API documentation]: https://docs.rs/float_eq
-[floating point comparison]: https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
+[comparison algorithms]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html
 [open an issue]: https://github.com/jtempest/float_eq-rs/issues/
+[the float_eq book]: https://jtempest.github.io/float_eq-rs/book/introduction.html
 [`almost`]: https://crates.io/crates/almost
 [`approx`]: https://crates.io/crates/approx
 [`assert_float_eq`]: https://crates.io/crates/assert_float_eq
 [`efloat`]: https://crates.io/crates/efloat
 [`float-cmp`]: https://crates.io/crates/float-cmp
+[`ieee754`]: https://crates.io/crates/ieee754
 
 <br>
 
