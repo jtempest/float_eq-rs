@@ -1,0 +1,348 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Float comparison algorithms - Documentation for float_eq 0.5.1-pre</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="../favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="../favicon.png">
+        
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        
+        <link rel="stylesheet" href="../css/print.css" media="print">
+        
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="../fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../tutorials.html"><strong aria-hidden="true">2.</strong> Tutorials</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../tutorials/basic_usage.html"><strong aria-hidden="true">2.1.</strong> Basic usage</a></li></ol></li><li class="chapter-item expanded "><a href="../how_to.html"><strong aria-hidden="true">3.</strong> How to</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../how_to/compare_floating_point_numbers.html"><strong aria-hidden="true">3.1.</strong> Compare floating point numbers</a></li><li class="chapter-item expanded "><a href="../how_to/compare_composite_types.html"><strong aria-hidden="true">3.2.</strong> Compare composite types</a></li><li class="chapter-item expanded "><a href="../how_to/interpret_assert_failure_messages.html"><strong aria-hidden="true">3.3.</strong> Interpret assert failure messages</a></li><li class="chapter-item expanded "><a href="../how_to/compare_custom_types.html"><strong aria-hidden="true">3.4.</strong> Compare custom types</a></li></ol></li><li class="chapter-item expanded "><a href="../background.html"><strong aria-hidden="true">4.</strong> Background</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../background/float_comparison_algorithms.html" class="active"><strong aria-hidden="true">4.1.</strong> Float comparison algorithms</a></li></ol></li><li class="chapter-item expanded "><a href="../api_documentation.html"><strong aria-hidden="true">5.</strong> API documentation</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../about_this_documentation.html">About this documentation</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">Documentation for float_eq 0.5.1-pre</h1>
+
+                    <div class="right-buttons">
+                        
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#floating-point-comparison-algorithms" id="floating-point-comparison-algorithms">Floating point comparison algorithms</a></h1>
+<p>Descriptions of the underlying comparison algorithms used by <a href="http://crates.io/crates/float_eq">float_eq</a>.</p>
+<h2><a class="header" href="#absolute-tolerance-comparison" id="absolute-tolerance-comparison">Absolute tolerance comparison</a></h2>
+<pre><code>abs &lt;= tol
+</code></pre>
+<p>A check to see how far apart two expressions are by comparing the absolute
+difference between them to an absolute tolerance. Mathematically, this is:</p>
+<pre><code>|a - b| &lt;= tol
+</code></pre>
+<p>Equivalent to, using <code>f32</code> as an example:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn float_eq_abs(a: f32, b: f32, tol: f32) -&gt; bool {
+    // the PartialEq check covers equality of infinities
+    a == b || (a - b).abs() &lt;= tol
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>This is the simplest method of testing the equality of two floats and may be
+sufficient if you know the absolute margin of error for your calculation given
+the values being tested. However, absolute tolerance tests <em>do not</em> work well for
+general comparison of floating point numbers, because they do not take into
+account that normal values' granularity changes with their magnitude. Thus any
+given choice of <code>tol</code> is likely to work for one specific exponent's range and
+poorly outside of it.</p>
+<p>In some circumstances absolute tolerance comparisons are required. If you wish
+to compare against zero, an infinity, or subnormal values then the assumptions
+that relative tolerance or ULPs based checks make about how neighbouring values
+are related to one another break down. Similarly, if the underlying mathematics
+of your algorithm is <a href="https://nhigham.com/2020/08/04/what-is-numerical-stability/">numerically unstable</a>, for example if it is prone to
+<a href="https://en.wikipedia.org/wiki/Catastrophic_cancellation">catastrophic cancellation</a>, then you may find that you need to reach for an
+absolute tolerance comparison.</p>
+<h2><a class="header" href="#relative-tolerance-comparison" id="relative-tolerance-comparison">Relative tolerance comparison</a></h2>
+<pre><code>r1st &lt;= tol
+r2nd &lt;= tol
+rmax &lt;= tol
+rmin &lt;= tol
+</code></pre>
+<p>A check to see how far apart two expressions are by comparing the absolute
+difference between them to an tolerance that is scaled to the granularity of
+one of the inputs. Mathematically, this is:</p>
+<pre><code>|a - b| &lt;= func(|a|, |b|) * tol
+</code></pre>
+<p>Equivalent to, using <code>f32</code> as an example:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn float_eq_relative(a: f32, b: f32, tol: f32) -&gt; bool {
+    // the PartialEq check covers equality of infinities
+    a == b || {
+        let chosen = func(a.abs(), b.abs());
+        (a - b).abs() &lt;= (chosen * tol)
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Where <code>func</code> is one of:</p>
+<ul>
+<li><code>r1st</code>: the first input (<code>a</code>)</li>
+<li><code>r2nd</code>: the second input (<code>b</code>)</li>
+<li><code>rmax</code>: the larger magnitude (aka <code>rel</code> for legacy reasons)</li>
+<li><code>rmin</code>: the smaller magnitude</li>
+</ul>
+<p>If you are checking for equality versus an expected normal floating point value,
+you may wish to calculate the error margin based on that value, so using <code>r1st</code>
+or <code>r2nd</code> will allow you to select it.</p>
+<p>If you are generally testing two values for equality and know they are both
+normal floating point values, then <code>rmax</code> is a good general algorithm to start
+with. If either number may also be subnormal or close to zero, or may have had
+its error amplified by how it was calculated, then you may wish to combine a
+relative check with an absolute tolerance check. Note that an implicit absolute
+tolerance check is not included by default.</p>
+<p>Choice of <code>tol</code> will depend on the tolerances inherent in the specific
+mathematical function or algorithm you have implemented. Note that a tolerance
+of <code>n * f32::EPSILON</code> will test that a value is within <code>n</code> representable values
+of another. However, you should be aware that the errors inherent in your inputs
+and calculations are likely to be much greater than the small rounding errors
+this form would imply.</p>
+<h2><a class="header" href="#units-in-the-last-place-ulps-comparison" id="units-in-the-last-place-ulps-comparison">Units in the Last Place (ULPs) comparison</a></h2>
+<pre><code>ulps &lt;= tol
+</code></pre>
+<p>A check to see how far apart two expressions are by comparing the number of
+representable values between them. This works by interpreting the bitwise
+representation of the input values as integers and comparing the absolute
+difference between those. Equivalent to, using <code>f32</code> as an example:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn float_eq_ulps(a: f32, b: f32, tol: u32) -&gt; bool {
+    if a.is_nan() || b.is_nan() {
+        false // NaNs are never equal
+    } else if a.is_sign_positive() != b.is_sign_positive() {
+        a == b // values of different signs are only equal if both are zero.
+    } else {
+        let a_bits = a.to_bits();
+        let b_bits = b.to_bits();
+        let max = a_bits.max(b_bits);
+        let min = a_bits.min(b_bits);
+        (max - min) &lt;= tol
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Thanks to a deliberate quirk in the way the <a href="https://randomascii.wordpress.com/2012/01/23/stupid-float-tricks-2/">underlying format</a> of IEEE floats
+was designed, this is a measure of how near two values are that scales with
+their relative granularity. Note that <code>tol</code> is an unsigned integer, so for
+example <code>ulps &lt;= 4</code> means <em>&quot;check that a and b are equal to within a distance of
+four or less representable values&quot;</em>.</p>
+<p>ULPs comparisons are very similar to relative tolerance checks, and as such are
+useful for testing equality of normal floats but not for comparisons with zero
+or infinity. Additionally, because floats use their most significant bit to
+indicate their sign, ULPs comparisons are not valid for comparing values with
+different signs.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../background.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../api_documentation.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a rel="prev" href="../background.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a rel="next" href="../api_documentation.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

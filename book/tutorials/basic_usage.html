@@ -1,0 +1,782 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Basic usage - Documentation for float_eq 0.5.1-pre</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="../favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="../favicon.png">
+        
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        
+        <link rel="stylesheet" href="../css/print.css" media="print">
+        
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="../fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../tutorials.html"><strong aria-hidden="true">2.</strong> Tutorials</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../tutorials/basic_usage.html" class="active"><strong aria-hidden="true">2.1.</strong> Basic usage</a></li></ol></li><li class="chapter-item expanded "><a href="../how_to.html"><strong aria-hidden="true">3.</strong> How to</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../how_to/compare_floating_point_numbers.html"><strong aria-hidden="true">3.1.</strong> Compare floating point numbers</a></li><li class="chapter-item expanded "><a href="../how_to/compare_composite_types.html"><strong aria-hidden="true">3.2.</strong> Compare composite types</a></li><li class="chapter-item expanded "><a href="../how_to/interpret_assert_failure_messages.html"><strong aria-hidden="true">3.3.</strong> Interpret assert failure messages</a></li><li class="chapter-item expanded "><a href="../how_to/compare_custom_types.html"><strong aria-hidden="true">3.4.</strong> Compare custom types</a></li></ol></li><li class="chapter-item expanded "><a href="../background.html"><strong aria-hidden="true">4.</strong> Background</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../background/float_comparison_algorithms.html"><strong aria-hidden="true">4.1.</strong> Float comparison algorithms</a></li></ol></li><li class="chapter-item expanded "><a href="../api_documentation.html"><strong aria-hidden="true">5.</strong> API documentation</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../about_this_documentation.html">About this documentation</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">Documentation for float_eq 0.5.1-pre</h1>
+
+                    <div class="right-buttons">
+                        
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#basic-usage" id="basic-usage">Basic usage</a></h1>
+<p>So you have attempted to perform a simple floating point calculation in Rust,
+perhaps an <a href="https://0.30000000000000004.com/">old classic</a>:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let sum = 0.1 + 0.2;
+
+if sum == 0.3 {
+    println!(&quot;Decimal math is working as expected!&quot;);
+} else {
+    println!(&quot;Something has gone horribly wrong!&quot;);
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>And it turns out that:</p>
+<pre><code class="language-txt">Something has gone horribly wrong!
+</code></pre>
+<p>What's going on? Let's take a closer look at the result of the sum:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>println!(&quot;0.1 + 0.2 = {}&quot;, sum);
+<span class="boring">}
+</span></code></pre></pre>
+<pre><code class="language-txt">0.1 + 0.2 = 0.30000000000000004
+</code></pre>
+<p>That doesn't seem like the right answer at all! It's very close, but why is it
+off by a tiny amount?</p>
+<p>Well, what's happened is that the <code>f64</code> type being used to calculate <code>sum</code> has a
+<em>binary</em> numeric representation, and our inputs are specified as <em>decimal</em>
+numbers. Neither 0.1 nor 0.2 can be <a href="https://www.exploringbinary.com/why-0-point-1-does-not-exist-in-floating-point/">represented exactly</a> in binary and so they
+have been rounded to the nearest values which can be. The addition is performed
+using binary arithmetic and finally is converted back into a decimal
+representation to be printed.</p>
+<p>We can see how these values have been rounded by printing them with a high
+enough precision:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>println!(&quot;0.1 -&gt; {:.55}&quot;, 0.1);
+println!(&quot;0.2 -&gt; {:.55}&quot;, 0.2);
+<span class="boring">}
+</span></code></pre></pre>
+<pre><code class="language-txt">0.1 -&gt; 0.1000000000000000055511151231257827021181583404541015625
+0.2 -&gt; 0.2000000000000000111022302462515654042363166809082031250
+</code></pre>
+<h2><a class="header" href="#close-so-very-close" id="close-so-very-close">Close, so very close</a></h2>
+<p>Very few decimal numbers may be exactly represented in binary. Only powers of
+two:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>println!(&quot;4.0   -&gt; {:.55}&quot;, 4.0);
+println!(&quot;2.0   -&gt; {:.55}&quot;, 2.0);
+println!(&quot;1.0   -&gt; {:.55}&quot;, 1.0);
+println!(&quot;0.5   -&gt; {:.55}&quot;, 0.5);
+println!(&quot;0.25  -&gt; {:.55}&quot;, 0.25);
+println!(&quot;0.125 -&gt; {:.55}&quot;, 0.125);
+<span class="boring">}
+</span></code></pre></pre>
+<pre><code class="language-txt">4.0   -&gt; 4.0000000000000000000000000000000000000000000000000000000
+2.0   -&gt; 2.0000000000000000000000000000000000000000000000000000000
+1.0   -&gt; 1.0000000000000000000000000000000000000000000000000000000
+0.5   -&gt; 0.5000000000000000000000000000000000000000000000000000000
+0.25  -&gt; 0.2500000000000000000000000000000000000000000000000000000
+0.125 -&gt; 0.1250000000000000000000000000000000000000000000000000000
+</code></pre>
+<p>And sums of powers of two:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>println!(&quot;{:.55}&quot;, 0.5 + 0.25);
+println!(&quot;{:.55}&quot;, 4.0 + 0.5 + 0.125);
+<span class="boring">}
+</span></code></pre></pre>
+<pre><code class="language-txt">0.7500000000000000000000000000000000000000000000000000000
+4.6250000000000000000000000000000000000000000000000000000
+</code></pre>
+<p>Where:</p>
+<ul>
+<li>4.000 = 2<sup>2</sup></li>
+<li>2.000 = 2<sup>1</sup></li>
+<li>1.000 = 2<sup>0</sup></li>
+<li>0.500 = 2<sup>-1</sup></li>
+<li>0.250 = 2<sup>-2</sup></li>
+<li>0.125 = 2<sup>-3</sup></li>
+</ul>
+<p>Most decimal numbers are not sums of powers of two<sup class="footnote-reference"><a href="#decimals">1</a></sup>, so every time we
+convert a decimal into floating point there is a high chance that it will be
+rounded. The difference between the input value and the converted <code>f64</code> floating
+point value is known as the initial <a href="https://en.wikipedia.org/wiki/Round-off_error">roundoff error</a>.</p>
+<h2><a class="header" href="#accumulating-errors" id="accumulating-errors">Accumulating errors</a></h2>
+<p>Conversion from decimal to binary is not the only source of error in floating
+point arithmetic. If the only problem was the initial roundoff error, then we
+could reasonably expect the sum 0.1 + 0.2 to be computed exactly and be equal
+to the converted constant 0.3 when we test it with <code>==</code>.</p>
+<p>It is not:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let sum = 0.1 + 0.2;
+
+println!(&quot;sum -&gt; {:.55}&quot;, sum);
+println!(&quot;0.3 -&gt; {:.55}&quot;, 0.3);
+<span class="boring">}
+</span></code></pre></pre>
+<pre><code class="language-txt">sum -&gt; 0.3000000000000000444089209850062616169452667236328125000
+0.3 -&gt; 0.2999999999999999888977697537484345957636833190917968750
+</code></pre>
+<p>Why aren't they the same? Well, <code>sum</code> has been rounded <em>up</em> to the nearest
+representable <code>f64</code> number, and 0.3 has been rounded <em>down</em>.</p>
+<p>Let's think a bit more about the original inputs. They have both been rounded
+<em>up</em> compared to their decimal values:</p>
+<pre><code class="language-txt">0.1 -&gt; 0.1000000000000000055511151231257827021181583404541015625
+0.2 -&gt; 0.2000000000000000111022302462515654042363166809082031250
+</code></pre>
+<p>If we add these rounded values together by hand, we get a number that is just
+slightly above 0.3:</p>
+<pre><code class="language-txt">  0.1000000000000000055511151231257827021181583404541015625
++ 0.2000000000000000111022302462515654042363166809082031250
+= 0.3000000000000000166533453693773481063544750213623046775
+</code></pre>
+<p>The results of operations on floating point values are rounded to the nearest
+representable value<sup class="footnote-reference"><a href="#default">2</a></sup>. It just so happens that in this example, the <code>sum</code> of the
+two rounded values is high enough to be rounded up, whereas 0.3 is low enough to
+be rounded down. This is why checking they are equal with <code>==</code> returns false.</p>
+<p>Nearly every operation on floating point numbers can result in further rounding,
+amplifying the effect of previous rounding. You may be able to mitigate this
+somewhat by reordering operations to reduce the margin, but it is impossible to
+avoid error entirely.</p>
+<h2><a class="header" href="#distant-relatives" id="distant-relatives">Distant relatives</a></h2>
+<p>Wait a minute though. If our two input two values are exactly representable as
+binary numbers then why was the result of adding them together rounded at all?
+Shouldn't <code>sum</code> be the same as the answer we calculated by hand? It is somewhat
+higher than we expected:</p>
+<pre><code class="language-txt">by hand: 0.3000000000000000166533453693773481063544750213623046775
+by f64:  0.3000000000000000444089209850062616169452667236328125000
+</code></pre>
+<p>They are different because of the fundamental design of floating point numbers.
+The big advantage of floating point types, and the reason that we may be happy
+to deal with the small errors inherent in using them, is that they can represent
+a literally <em>astronomically</em> larger range of absolute values than integer types
+can in the same number of bits.</p>
+<p>The trade off is that the granularity of floating point numbers changes with
+their magnitude. As floating point numbers get larger the <em>absolute</em> distance
+between adjacent values grows, and as they get smaller it shrinks, whereas the
+<em>relative</em> ratio between values remains constant. This is in contrast to integer
+types where, regardless of magnitude, adjacent values are always the same
+<em>absolute</em> distance away from each another (one), but their <em>relative</em> ratio
+changes.</p>
+<p>Let's make this more concrete by comparing <code>i32</code> and <code>f32</code>. Each can represent
+4,294,967,296 different values using their 32 bits, but they make very different
+choices as to what those values are.</p>
+<p>The positive range of <code>i32</code> can represent:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>0
+1
+...
+2147483646
+2147483647 // i32::MAX
+<span class="boring">}
+</span></code></pre></pre>
+<p>The positive range of <code>f32</code> can represent:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>0.0
+...
+0.000000000000000000000000000000000000011754944 // f32::MIN_POSITIVE
+0.000000000000000000000000000000000000011754945
+...
+340282330000000000000000000000000000000.0
+340282350000000000000000000000000000000.0 // f32::MAX
+∞ // f32::INFINITY                                        
+<span class="boring">}
+</span></code></pre></pre>
+<p>As mentioned above, the <em>absolute</em> distance between every adjacent pair of <code>i32</code>
+numbers within its range is always one, but their <em>relative</em> ratio changes
+depending on their magnitude:</p>
+<pre><code class="language-txt">0 -&gt; 1:
+absolute: 1 - 0 = 1
+relative: 1 / 0 = ∞
+
+1 -&gt; 2:
+absolute: 2 - 1 = 1
+relative: 2 / 1 = 2
+
+...
+
+2147483646 -&gt; 2147483647:
+absolute: 2147483647 - 2147483646 = 1
+relative: 2147483647 / 2147483646 = 1.0000000004656612873077392578125
+</code></pre>
+<p>The <code>f32</code> number line is a bit more complex. Zero and infinity are special
+values at the extremes and the tiny range of subnormal values just above zero
+act differently but the vast majority of <code>f32</code> values are <a href="https://en.wikipedia.org/wiki/Normal_number_(computing)">normal floating point
+numbers</a> in the range from <code>f32::MIN_POSITIVE</code> to <code>f32::MAX</code>.</p>
+<p>The absolute distance between each pair of adjacent normal <code>f32</code> values varies
+depending on their size but their relative ratio is always 1.0000001. We can
+illustrate this with some help from the <a href="https://crates.io/crates/ieee754">ieee754</a> crate:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use ieee754::Ieee754;
+
+let a = f32::MIN_POSITIVE;
+let b = a.next();
+println!(&quot;{} -&gt;\n{}:&quot;, a, b);
+println!(&quot;absolute: {}&quot;, b - a);
+println!(&quot;relative: {}\n&quot;, b / a);
+
+let c = f32::MIN_POSITIVE.next();
+let d = c.next();
+println!(&quot;{} -&gt;\n{}:&quot;, c, d);
+println!(&quot;absolute: {}&quot;, d - c);
+println!(&quot;relative: {}\n&quot;, d / c);
+
+println!(&quot;...\n&quot;);
+
+let e = f32::MAX.prev();
+let f = f32::MAX;
+println!(&quot;{} -&gt;\n{}:&quot;, e, f);
+println!(&quot;absolute: {}&quot;, f - e);
+println!(&quot;relative: {}&quot;, f / e);
+<span class="boring">}
+</span></code></pre></pre>
+<pre><code class="language-txt">0.000000000000000000000000000000000000011754944 -&gt;
+0.000000000000000000000000000000000000011754945:
+absolute: 0.000000000000000000000000000000000000000000001
+relative: 1.0000001
+
+0.000000000000000000000000000000000000011754945 -&gt;
+0.000000000000000000000000000000000000011754946:
+absolute: 0.000000000000000000000000000000000000000000001
+relative: 1.0000001
+
+...
+
+340282330000000000000000000000000000000 -&gt;
+340282350000000000000000000000000000000:
+absolute: 20282410000000000000000000000000
+relative: 1.0000001
+</code></pre>
+<h3><a class="header" href="#machine-epsilon" id="machine-epsilon">Machine epsilon</a></h3>
+<p>The absolute distance between adjacent numbers for a floating point type is
+determined by multiples of that type's <em>machine epsilon</em>. This is the distance
+between adjacent values in the range 1.0 to 2.0. For <code>f64</code> this is the constant
+<code>f64::EPSILON</code>. We can scale it for every other range of powers of two to
+determine the absolute distance between numbers in those ranges:</p>
+<ul>
+<li>0.25 to 0.5 contains 8,388,608 values, all a distance of <code>0.25 * f64::EPSILON</code> apart.</li>
+<li>0.5  to 1.0 contains 8,388,608 values, all a distance of <code>0.5 * f64::EPSILON</code> apart.</li>
+<li>1.0  to 2.0 contains 8,388,608 values, all a distance of <code>f64::EPSILON</code> apart.</li>
+<li>2.0  to 4.0 contains 8,388,608 values, all a distance of <code>2.0 * f64::EPSILON</code> apart.</li>
+<li>4.0  to 8.0 contains 8,388,608 values, all a distance of <code>4.0 * f64::EPSILON</code> apart.</li>
+</ul>
+<p>This is why our addition was unexpectedly rounded up:</p>
+<ul>
+<li><code>0.1</code> is in the range 0.0625 to 0.125, which are all <code>0.0625 f64::EPSILON</code> apart.</li>
+<li><code>0.2</code> is in the range 0.125 to 0.25, which are all <code>0.125 * f64::EPSILON</code> apart.</li>
+<li><code>0.1 + 0.2</code> is in the range 0.25 to 0.5, which are all <code>0.25 * f64::EPSILON</code> apart.</li>
+</ul>
+<p>The input values 0.1 and 0.2 were both rounded up to the nearest values in their
+respective ranges. The result of adding them together is within a range with
+a lower granularity and was not exactly representable, so it needed to be
+rounded to the nearest value that is.</p>
+<h2><a class="header" href="#it-gets-much-worse" id="it-gets-much-worse">It gets much worse</a></h2>
+<p>But that's not the end of the story.</p>
+<p>There are far more significant sources of error in most numerical calculations
+than the roundoff errors we have described so far. If the inputs are real world
+values, then there is almost certainly some <a href="https://en.wikipedia.org/wiki/Observational_error">measurement error</a> in how they were
+collected. Algorithms like physics simulations that use discrete steps to
+approximate continuous functions introduce <a href="https://en.wikipedia.org/wiki/Truncation_error">truncation error</a>. Even the
+underyling mathematics may amplify existing error if it is <a href="https://nhigham.com/2020/08/04/what-is-numerical-stability/">numerically
+unstable</a>, for example when dividing large numbers by much smaller ones or if
+values undergo <a href="https://en.wikipedia.org/wiki/Catastrophic_cancellation">catastrophic cancellation</a>.</p>
+<p>I'll say that again, because it's so important: in most real world programs,
+floating point roundoff error is so small as to be insignificant compared to
+other sources of error. Floating point numerics may be inappropriate for values
+that have strict absolute precision requirements, such as currency, but in
+general there is no need to shy away from using them because of their rounding
+behaviour.</p>
+<p>Every numerical algorithm is unique and there is no one size fits all solution
+or set of defaults to account for the error inherent in them and hide it away.
+In fact, there is an entire field of active mathematical research concerned with
+computational error, <a href="https://en.wikipedia.org/wiki/Numerical_analysis">Numerical Analysis</a>. What we can do, however, is learn to
+reason about these sources of error and provide tools for taking it into account
+and communicating our thoughts to future readers and maintainers.</p>
+<h2><a class="header" href="#close-enough" id="close-enough">Close enough</a></h2>
+<p>Bearing that in mind, let's return to our original comparison. Now that we know
+why the exact <code>==</code> comparison failed, we can instead check that the difference
+between the expected and actual values lies within a margin of error, also known
+as the tolerance. This is what the <a href="../../doc/float_eq/macro.float_eq.html"><code>float_eq!</code></a> macro is for.</p>
+<h3><a class="header" href="#absolute-tolerance-comparison" id="absolute-tolerance-comparison">Absolute tolerance comparison</a></h3>
+<p>The simplest algorithm to check if two floating point numbers are equal is an
+<a href="../background/float_comparison_algorithms.html#absolute-tolerance-comparison">absolute tolerance comparison</a>. This tests that the absolute difference between
+two values lies within a specified tolerance and is invoked with the syntax
+<code>abs &lt;= tol</code>. We have calculated that in our very simple example the values may
+differ by at most <code>0.25 * f64::EPSILON</code>:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use float_eq::float_eq;
+
+let sum = 0.1 + 0.2;
+
+if float_eq!(sum, 0.3, abs &lt;= 0.25 * f64::EPSILON) {
+    println!(&quot;Floating point math is working as expected!&quot;);
+} else {
+    println!(&quot;Something has gone horribly wrong!&quot;);
+}
+<span class="boring">}
+</span></code></pre></pre>
+<pre><code class="language-txt">Floating point math is working as expected!
+</code></pre>
+<h3><a class="header" href="#relative-tolerance-comparison" id="relative-tolerance-comparison">Relative tolerance comparison</a></h3>
+<p>Hurray! However, manually scaling the tolerance to the range of the operands is
+not very elegant. Fortunately, given that we know that we are comparing two
+normal numbers, we can use a <a href="../background/float_comparison_algorithms.html#relative-tolerance-comparison">relative tolerance comparison</a> to scale the
+tolerance for us. The second operand is our expected value, so we may choose to
+use <code>r2nd &lt;= tol</code>. With a relative tolerance comparison, the tolerance should be
+as if we were testing a value in the range 1.0 to 2.0, so <code>f64::EPSILON</code>
+indicates we are expecting our operands to be no more than one representable
+value apart from each other<sup class="footnote-reference"><a href="#relative">3</a></sup>:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use float_eq::float_eq;
+</span><span class="boring">let sum = 0.1 + 0.2;
+</span>if float_eq!(sum, 0.3, r2nd &lt;= f64::EPSILON) {
+    println!(&quot;Floating point math is working as expected!&quot;);
+} else {
+    println!(&quot;Something has gone horribly wrong!&quot;);
+}
+<span class="boring">}
+</span></code></pre></pre>
+<pre><code class="language-txt">Floating point math is working as expected!
+</code></pre>
+<h3><a class="header" href="#ulps-based-comparison" id="ulps-based-comparison">ULPs based comparison</a></h3>
+<p>If both numbers are normal <em>and</em> the same sign, which is often the case, we can
+use an <a href="../background/float_comparison_algorithms.html#units-in-the-last-place-ulps-comparison">ULPs comparison</a>, another form of relative check. This uses a property
+of the <a href="https://randomascii.wordpress.com/2012/01/23/stupid-float-tricks-2/">underlying representation</a> of floating point numbers which means that
+when we interpret their bits as unsigned integers, the adjacent floats are the
+adjacent integer values above and below. By using <code>ulps &lt;= tol</code> to invoke one of
+these checks, the tolerance is the maximum number of representable values apart
+they may be regardless of their magnitude. In our example, we know they may be
+at most one representable <code>f64</code> value apart:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use float_eq::float_eq;
+</span><span class="boring">let sum = 0.1 + 0.2;
+</span>if float_eq!(sum, 0.3, ulps &lt;= 1) {
+    println!(&quot;Floating point math is working as expected!&quot;);
+} else {
+    println!(&quot;Something has gone horribly wrong!&quot;);
+}
+<span class="boring">}
+</span></code></pre></pre>
+<pre><code class="language-txt">Floating point math is working as expected!
+</code></pre>
+<h2><a class="header" href="#asserting-ourselves" id="asserting-ourselves">Asserting ourselves</a></h2>
+<p>The <code>float_eq</code> library also includes <a href="../../doc/float_eq/macro.assert_float_eq.html"><code>assert_float_eq!</code></a> to accompany the
+boolean <a href="../../doc/float_eq/macro.float_eq.html"><code>float_eq!</code></a> operator. To illustrate their use and show some more
+advanced comparison techniques, we will define a very simple numerical
+integrator. This function takes an initial value and step size, then advances
+the value by an arbitrary number of steps:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn integrate(initial: f64, step: f64, count: usize) -&gt; f64 {
+    let mut sum = initial;
+    for _ in 0..count {
+        sum += step;
+    }
+    sum
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Say we want to unit test a number of different sets of input to this algorithm,
+we might build ourselves a wrapper for it:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn test_integrate(initial: f64, step: f64, count: usize, expected: f64) {
+    let actual = integrate(initial, step, count);
+    assert_float_eq!(actual, expected, r2nd &lt;= f64::EPSILON);
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Note that the syntax for assert, <code>r2nd &lt;= tol</code> is the same as for the boolean
+form, and that you may use any of the same algorithms if you wish. Arbitrarily,
+we have begun with the same tolerance as for our first example comparison. This
+means that the equivalent of our first simple comparison will pass this test
+just fine:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>test_integrate(0.2, 0.1, 1, 0.3);
+<span class="boring">}
+</span></code></pre></pre>
+<h3><a class="header" href="#drifting-away" id="drifting-away">Drifting away</a></h3>
+<p>Let's add some tests which use an increasing step size. Our first two are within
+the existing expected margin of error:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>test_integrate(0.0, 0.1, 1, 0.1);
+test_integrate(0.0, 0.1, 10, 1.0);
+<span class="boring">}
+</span></code></pre></pre>
+<p>But when we look at 100 steps, we find that our test fails:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>test_integrate(0.0, 0.1, 100, 10.0);
+<span class="boring">}
+</span></code></pre></pre>
+<pre><code class="language-txt">thread 'main' panicked at 'assertion failed: `float_eq!(left, right, r2nd &lt;= t)`
+        left: `9.99999999999998`,
+       right: `10.0`,
+    abs_diff: `0.000000000000019539925233402755`,
+   ulps_diff: `Some(11)`,
+    [r2nd] t: `0.000000000000002220446049250313`', src\main.rs:15:9
+</code></pre>
+<p>This assert form prints out the values of the operands, like the standard Rust
+asserts, but it also provides additional context information to help us make
+sense of why it failed. Here, t is the tolerance:</p>
+<ul>
+<li><code>abs_diff</code> is the absolute difference between the two values: 
+<code>(left - right).abs()</code>.</li>
+<li><code>ulps_diff</code> is the difference in ULPs between the two values, the count of
+representable values they are apart. It may be <code>None</code> if two numbers have
+different signs.</li>
+<li><code>[r2nd] t</code> is the tolerance as scaled to the range of <code>right</code> (the second
+operand).</li>
+</ul>
+<p>We can see that our actual and expected values are eleven ULPs from one another.
+That means that our margin of <code>f64::EPSILON</code>, equivalent to one ULP, is
+inadequate. This is because we are performing <code>count</code> number of additions, and
+each one of those provides an answer accurate to within 0.5 ULPs, so they have
+accumulated more error than a single step or ten steps would. We might reason
+that our tolerance should therefore be some function of the number of steps,
+perhaps <code>(count * 0.5) * f64::EPSILON</code>:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn test_integrate(initial: f64, step: f64, count: usize, expected: f64) {
+    let actual = integrate(initial, step, count);
+    assert_float_eq!(
+        actual,
+        expected,
+        r2nd &lt;= ((count as f64) * 0.5) * f64::EPSILON
+    );
+}
+<span class="boring">}
+</span></code></pre></pre>
+<h3><a class="header" href="#absolute-zero" id="absolute-zero">Absolute zero</a></h3>
+<p>Let's take a look at another failure case, when we count backwards to zero:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>test_integrate(10.0, -0.1, 100, 0.0);
+<span class="boring">}
+</span></code></pre></pre>
+<pre><code class="language-txt">thread 'main' panicked at 'assertion failed: `float_eq!(left, right, r2nd &lt;= t)`
+        left: `0.000000000000018790524691780774`,
+       right: `0.0`,
+    abs_diff: `0.000000000000018790524691780774`,
+   ulps_diff: `Some(4401468191289638912)`,
+    [r2nd] t: `0.0`', src\main.rs:15:9
+</code></pre>
+<p>Wow! There are a couple of things to note about this failure. The first is that
+because we are comparing versus zero, scaling our epsilon doesn't work - zero
+times anything is zero, so the margin does not take into account the step count.
+Even more noticable though is just <em>how far away</em> our actual value is in terms
+of representable numbers.</p>
+<p>There are two reasons why this has happened. The first is that, as mentioned
+above, zero is a special number and does not have the same properties as normal
+floating point numbers. The second is that our final subtraction leaves us with
+a result many orders of magnitude smaller than the previous sum total, resulting
+in a <a href="https://en.wikipedia.org/wiki/Catastrophic_cancellation">catastrophic cancellation</a>.</p>
+<p>The solution here is to use a more sophisticated margin for our tolerance, one
+that takes into account the nature of the calculation itself. It needs to be an
+absolute test, since we may be comparing versus zero. It should also scale
+relative to the largest intermediate value in the calculation and take into
+account the potential rounding errors from our repeated addition:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn test_integrate(initial: f64, step: f64, count: usize, expected: f64) {
+    let actual = integrate(initial, step, count);
+    let half_count = (count as f64) * 0.5;
+    let tol = f64::EPSILON * half_count * f64::max(initial.abs(), actual.abs());
+    assert_float_eq!(actual, expected, abs &lt;= tol);
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>This further illustates that there is no one right or general way to express the
+tolerances of numeric algorithms. Every comparison will be based on the specific
+calculation being performed and frequently the particular inputs.</p>
+<h3><a class="header" href="#custom-messages" id="custom-messages">Custom messages</a></h3>
+<p>The assert macros may include a custom message in the same manner as the
+standard Rust asserts:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>assert_float_eq!(
+    actual,
+    expected,
+    r2nd &lt;= f64::EPSILON,
+    &quot;\nWhere: initial: {}, step: {}, count:{}&quot;,
+    initial,
+    step,
+    count
+);
+<span class="boring">}
+</span></code></pre></pre>
+<pre><code class="language-txt">thread 'main' panicked at 'assertion failed: `float_eq!(left, right, r2nd &lt;= t)`
+        left: `9.99999999999998`,
+       right: `10.0`,
+    abs_diff: `0.000000000000019539925233402755`,
+   ulps_diff: `Some(11)`,
+    [r2nd] t: `0.000000000000002220446049250313`:
+Where: initial: 0, step: 0.1, count:100', src\main.rs:14:9
+</code></pre>
+<h2><a class="header" href="#staying-afloat" id="staying-afloat">Staying afloat</a></h2>
+<p>Hopefully that's given you some flavour of the issues that crop up when
+implementing numerical methods and how <code>float_eq</code> may aid you when they do. At
+this point you may be interested in learning how to perform some <a href="../how_to.html">specific
+tasks</a>, reading some more general <a href="../background.html">background</a> explanations or browsing the <a href="../api_documentation.html">API
+documentation</a>.</p>
+<hr />
+<div class="footnote-definition" id="decimals"><sup class="footnote-definition-label">1</sup>
+<p>They are in fact all exact sums of multiples of powers of ten.</p>
+</div>
+<div class="footnote-definition" id="default"><sup class="footnote-definition-label">2</sup>
+<p>By default. Other rounding modes such as always rounding up, down or
+toward zero are available.</p>
+</div>
+<div class="footnote-definition" id="relative"><sup class="footnote-definition-label">3</sup>
+<p>In general, <code>n * fXX::EPSILON</code> as a relative margin means &quot;at most
+n representable values apart&quot;, for example you might use a margin of
+<code>4.0 * f64::EPSILON</code>.</p>
+</div>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../tutorials.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../how_to.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a rel="prev" href="../tutorials.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a rel="next" href="../how_to.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>
