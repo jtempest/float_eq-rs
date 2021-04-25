@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Implementation of traits for arrays of any size using const generics.
 - Updated `num-complex` dependency to 0.4.
+- Reworked the documentation, added a tutorial.
 
 ### Fixed
 - Safer behaviour when initialising debug output for array trait impls,
