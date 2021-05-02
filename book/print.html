@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Documentation for float_eq 0.5.1-pre</title>
+        <title>Documentation for float_eq 0.6.0-pre</title>
         
         <meta name="robots" content="noindex" />
         
@@ -129,7 +129,7 @@
                         
                     </div>
 
-                    <h1 class="menu-title">Documentation for float_eq 0.5.1-pre</h1>
+                    <h1 class="menu-title">Documentation for float_eq 0.6.0-pre</h1>
 
                     <div class="right-buttons">
                         
@@ -218,10 +218,10 @@ if sum == 0.3 {
 off by a tiny amount?</p>
 <p>Well, what's happened is that the <code>f64</code> type being used to calculate <code>sum</code> has a
 <em>binary</em> numeric representation, and our inputs are specified as <em>decimal</em>
-numbers. Neither 0.1 nor 0.2 can be <a href="https://www.exploringbinary.com/why-0-point-1-does-not-exist-in-floating-point/">represented exactly</a> in binary and so they
-have been rounded to the nearest values which can be. The addition is performed
-using binary arithmetic and finally is converted back into a decimal
-representation to be printed.</p>
+numbers. Neither 0.1 nor 0.2 in decimal can be <a href="https://www.exploringbinary.com/why-0-point-1-does-not-exist-in-floating-point/">represented exactly</a> in binary
+and so they have been rounded to the nearest values which can be. The addition
+is performed using binary arithmetic and finally is converted back into a
+decimal representation to be printed.</p>
 <p>We can see how these values have been rounded by printing them with a high
 enough precision:</p>
 <pre><pre class="playground"><code class="language-rust">
@@ -316,8 +316,8 @@ two rounded values is high enough to be rounded up, whereas 0.3 is low enough to
 be rounded down. This is why checking they are equal with <code>==</code> returns false.</p>
 <p>Nearly every operation on floating point numbers can result in further rounding,
 amplifying the effect of previous rounding. You may be able to mitigate this
-somewhat by reordering operations to reduce the margin, but it is impossible to
-avoid error entirely.</p>
+somewhat by reordering operations to reduce the magnitude, but it is impossible
+to avoid error entirely.</p>
 <h2><a class="header" href="#distant-relatives" id="distant-relatives">Distant relatives</a></h2>
 <p>Wait a minute though. If our two input two values are exactly representable as
 binary numbers then why was the result of adding them together rounded at all?
@@ -481,8 +481,8 @@ and communicating our thoughts to future readers and maintainers.</p>
 <h2><a class="header" href="#close-enough" id="close-enough">Close enough</a></h2>
 <p>Bearing that in mind, let's return to our original comparison. Now that we know
 why the exact <code>==</code> comparison failed, we can instead check that the difference
-between the expected and actual values lies within a margin of error, also known
-as the tolerance. This is what the <a href="tutorials/../../doc/float_eq/macro.float_eq.html"><code>float_eq!</code></a> macro is for.</p>
+between the expected and actual values lies within a margin of error, known as
+the tolerance. This is what the <a href="tutorials/../../doc/float_eq/macro.float_eq.html"><code>float_eq!</code></a> macro is for.</p>
 <h3><a class="header" href="#absolute-tolerance-comparison" id="absolute-tolerance-comparison">Absolute tolerance comparison</a></h3>
 <p>The simplest algorithm to check if two floating point numbers are equal is an
 <a href="tutorials/../background/float_comparison_algorithms.html#absolute-tolerance-comparison">absolute tolerance comparison</a>. This tests that the absolute difference between
@@ -511,9 +511,9 @@ not very elegant. Fortunately, given that we know that we are comparing two
 normal numbers, we can use a <a href="tutorials/../background/float_comparison_algorithms.html#relative-tolerance-comparison">relative tolerance comparison</a> to scale the
 tolerance for us. The second operand is our expected value, so we may choose to
 use <code>r2nd &lt;= tol</code>. With a relative tolerance comparison, the tolerance should be
-as if we were testing a value in the range 1.0 to 2.0, so <code>f64::EPSILON</code>
-indicates we are expecting our operands to be no more than one representable
-value apart from each other<sup class="footnote-reference"><a href="#relative">3</a></sup>:</p>
+specified as if we were testing a value in the range 1.0 to 2.0, so
+<code>f64::EPSILON</code> indicates we are expecting our operands to be no more than one
+representable value apart from each other<sup class="footnote-reference"><a href="#relative">3</a></sup>:</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -593,7 +593,7 @@ just fine:</p>
 </span></code></pre></pre>
 <h3><a class="header" href="#drifting-away" id="drifting-away">Drifting away</a></h3>
 <p>Let's add some tests which use an increasing step size. Our first two are within
-the existing expected margin of error:</p>
+the existing expected tolerance:</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -628,7 +628,7 @@ different signs.</li>
 operand).</li>
 </ul>
 <p>We can see that our actual and expected values are eleven ULPs from one another.
-That means that our margin of <code>f64::EPSILON</code>, equivalent to one ULP, is
+That means that our tolerance of <code>f64::EPSILON</code>, equivalent to one ULP, is
 inadequate. This is because we are performing <code>count</code> number of additions, and
 each one of those provides an answer accurate to within 0.5 ULPs, so they have
 accumulated more error than a single step or ten steps would. We might reason
@@ -663,18 +663,18 @@ perhaps <code>(count * 0.5) * f64::EPSILON</code>:</p>
     [r2nd] t: `0.0`', src\main.rs:15:9
 </code></pre>
 <p>Wow! There are a couple of things to note about this failure. The first is that
-because we are comparing versus zero, scaling our epsilon doesn't work - zero
-times anything is zero, so the margin does not take into account the step count.
-Even more noticable though is just <em>how far away</em> our actual value is in terms
-of representable numbers.</p>
+because we are comparing versus zero, scaling our tolerance doesn't work - zero
+times anything is zero, so the tolerance does not take into account the step
+count. Even more noticable though is just <em>how far away</em> our actual value is in
+terms of representable numbers.</p>
 <p>There are two reasons why this has happened. The first is that, as mentioned
 above, zero is a special number and does not have the same properties as normal
 floating point numbers. The second is that our final subtraction leaves us with
 a result many orders of magnitude smaller than the previous sum total, resulting
 in a <a href="https://en.wikipedia.org/wiki/Catastrophic_cancellation">catastrophic cancellation</a>.</p>
-<p>The solution here is to use a more sophisticated margin for our tolerance, one
-that takes into account the nature of the calculation itself. It needs to be an
-absolute test, since we may be comparing versus zero. It should also scale
+<p>The solution here is to use a more sophisticated calculation for our tolerance,
+one that takes into account the nature of the calculation itself. It needs to be
+an absolute test, since we may be comparing versus zero. It should also scale
 relative to the largest intermediate value in the calculation and take into
 account the potential rounding errors from our repeated addition:</p>
 <pre><pre class="playground"><code class="language-rust">
@@ -701,7 +701,7 @@ standard Rust asserts:</p>
     actual,
     expected,
     r2nd &lt;= f64::EPSILON,
-    &quot;\nWhere: initial: {}, step: {}, count:{}&quot;,
+    &quot;\nWhere: initial: {}, step: {}, count: {}&quot;,
     initial,
     step,
     count
@@ -714,7 +714,7 @@ standard Rust asserts:</p>
     abs_diff: `0.000000000000019539925233402755`,
    ulps_diff: `Some(11)`,
     [r2nd] t: `0.000000000000002220446049250313`:
-Where: initial: 0, step: 0.1, count:100', src\main.rs:14:9
+Where: initial: 0, step: 0.1, count: 100', src\main.rs:14:9
 </code></pre>
 <h2><a class="header" href="#staying-afloat" id="staying-afloat">Staying afloat</a></h2>
 <p>Hopefully that's given you some flavour of the issues that crop up when
@@ -731,8 +731,8 @@ documentation</a>.</p>
 toward zero are available.</p>
 </div>
 <div class="footnote-definition" id="relative"><sup class="footnote-definition-label">3</sup>
-<p>In general, <code>n * fXX::EPSILON</code> as a relative margin means &quot;at most
-n representable values apart&quot;, for example you might use a margin of
+<p>In general, <code>n * fXX::EPSILON</code> as a relative tolerance means &quot;at
+most n representable values apart&quot;, for example you might use a tolerance of
 <code>4.0 * f64::EPSILON</code>.</p>
 </div>
 <h1><a class="header" href="#how-to" id="how-to">How to</a></h1>
@@ -836,7 +836,7 @@ in determining how a check failed. For example, this line:</p>
 <li><strong>right</strong> - the value of the second operand.</li>
 <li><strong>abs_diff</strong> - the absolute difference between <code>left</code> and <code>right</code>.</li>
 <li><strong>ulps_diff</strong> - the difference between <code>left</code> and <code>right</code> in ULPs. If it is
-None, that is because they have different signs.</li>
+None, that is because they have different signs or at least one is <code>NaN</code>.</li>
 <li><strong>[rmax] t</strong> - the tolerance used in the comparison against the relevant
 difference, here <code>abs_diff</code>, <em>after</em> it has been scaled relative to an operand,
 in this case <code>max(left, right)</code> since it is <code>rmax</code>.</li>
@@ -846,7 +846,7 @@ in this case <code>max(left, right)</code> since it is <code>rmax</code>.</li>
 relevant traits:</p>
 <ol>
 <li>
-<p><a href="how_to/../../doc/float_eq/macro.float_eq.html">float_eq!</a> requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsEpsilon.html">FloatEqUlpsEpsilon</a> and <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a>.</p>
+<p><a href="how_to/../../doc/float_eq/macro.float_eq.html">float_eq!</a> and <a href="how_to/../../doc/float_eq/macro.float_ne.html">float_ne!</a> require <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a> and <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a>.</p>
 </li>
 <li>
 <p>If your type is homogeneous, that is if it consists of fields that are all
@@ -854,42 +854,42 @@ the same underlying floating point type, you should implement the optional
 <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a> to enable the <code>_all</code> comparison algorithms.</p>
 </li>
 <li>
-<p><a href="how_to/../../doc/float_eq/macro.assert_float_eq.html">assert_float_eq!</a> requires the same traits plus <a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a>
-and <a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a>. If you have implemented <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a> you should also
-implement <a href="how_to/../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFloatEqAll</a></p>
+<p><a href="how_to/../../doc/float_eq/macro.assert_float_eq.html">assert_float_eq!</a> and <a href="how_to/../../doc/float_eq/macro.assert_float_ne.html">assert_float_ne!</a> require the same traits plus
+<a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a> and <a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a>. If you have implemented <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a>
+you should also implement <a href="how_to/../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFloatEqAll</a>.</p>
 </li>
 </ol>
 <p>If your type is a non-generic struct or tuple struct that consists entirely of
 already supported fields, then the easiest way to implement these traits is to
 make use of the <code>#[derive_float_eq]</code> helper macro. It is also possible to
 <code>#[derive]</code> individual traits. If you cannot derive an implementation, then you
-will need to implement the traits directly.</p>
+will need to implement the traits <a href="how_to/compare_custom_types.html#implementing-the-traits-directly">directly</a>.</p>
 <h2><a class="header" href="#derive_float_eq" id="derive_float_eq">#[derive_float_eq]</a></h2>
 <p>If your type is a non-generic struct or tuple struct then you may derive the
 relevant traits using this helper macro. Enable the &quot;derive&quot; feature by adding
 this to your Cargo.toml:</p>
 <pre><code class="language-toml">[dependencies.float_eq]
-version = &quot;0.5&quot;
+version = &quot;0.6&quot;
 features = [&quot;derive&quot;]
 </code></pre>
 <p>Add <a href="how_to/../../doc/float_eq/attr.derive_float_eq.html"><code>#[derive_float_eq]</code></a> to your
-type. The <code>ulps_epsilon</code> and <code>debug_ulps_diff</code> parameters are required. They are
+type. The <code>ulps_tol</code> and <code>debug_ulps_diff</code> parameters are required. They are
 used to name two new types that match the structure of the type being derived
 from. The first is used to provide ULPs tolerance values per field, and the
 second is used to provide debug information for the differerence between values
 in ULPs.</p>
-<p>The <code>all_epsilon</code> parameter is optional, and ought to be provided if your type
+<p>The <code>all_tol</code> parameter is optional, and ought to be provided if your type
 is homogeneous and consists of fields that are all the same underlying floating
 point type. If provided, it will additionally implement the traits required to
-use the <code>_all</code> variants of checks, using the given epsilon type (usually <code>f32</code>
+use the <code>_all</code> variants of checks, using the given tolerance type (usually <code>f32</code>
 or <code>f64</code>). </p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive_float_eq(
-    ulps_epsilon = &quot;PointUlps&quot;, 
+    ulps_tol = &quot;PointUlps&quot;, 
     debug_ulps_diff = &quot;PointDebugUlpsDiff&quot;,
-    all_epsilon = &quot;f64&quot;
+    all_tol = &quot;f64&quot;
 )]
 #[derive(Debug, PartialEq, Clone, Copy)]
 struct Point {
@@ -906,8 +906,8 @@ and <code>PartialEq</code>:</p>
 </span><span class="boring">fn main() {
 </span>#[derive(Debug, Clone, Copy, PartialEq)]
 struct PointUlps {
-    x: UlpsEpsilon&lt;f64&gt;,
-    y: UlpsEpsilon&lt;f64&gt;,
+    x: UlpsTol&lt;f64&gt;,
+    y: UlpsTol&lt;f64&gt;,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -941,20 +941,20 @@ assert_float_eq!(a, c, ulps_all &lt;= 4);
 <p>If you cannot use <code>#[derive_float_eq]</code> then you may be able to derive individual
 traits manually. Enable the &quot;derive&quot; feature by adding this to your Cargo.toml:</p>
 <pre><code class="language-toml">[dependencies.float_eq]
-version = &quot;0.5&quot;
+version = &quot;0.6&quot;
 features = [&quot;derive&quot;]
 </code></pre>
-<h3><a class="header" href="#deriveulpsepsilon" id="deriveulpsepsilon">#[derive(UlpsEpsilon)]</a></h3>
-<p>Add a <code>#[float_eq]</code> attribute and provide <code>ulps_epsilon</code>, which will be used as
+<h3><a class="header" href="#derivefloatequlpstol" id="derivefloatequlpstol">#[derive(FloatEqUlpsTol)]</a></h3>
+<p>Add a <code>#[float_eq]</code> attribute and provide <code>ulps_tol</code>, which will be used as
 the name of a new type. This type will be structurally identical to the type
 being derived, using the same visibility as the parent type and with identically
-named fields that use the derived fields' types wrapped by <code>UlpsEpsilon</code>. The
+named fields that use the derived fields' types wrapped by <code>UlpsTol</code>. The
 new struct derives <code>Debug</code>, <code>Clone</code>, <code>Copy</code> and <code>PartialEq</code>.</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>#[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsEpsilon)]
-#[float_eq(ulps_epsilon = &quot;PointUlps&quot;)]
+</span>#[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsTol)]
+#[float_eq(ulps_tol = &quot;PointUlps&quot;)]
 struct Point {
     x: f64,
     y: f64,
@@ -967,20 +967,20 @@ struct Point {
 </span><span class="boring">fn main() {
 </span>#[derive(Debug, Clone, Copy, PartialEq)]
 struct PointUlps {
-    x: UlpsEpsilon&lt;f64&gt;,
-    y: UlpsEpsilon&lt;f64&gt;,
+    x: UlpsTol&lt;f64&gt;,
+    y: UlpsTol&lt;f64&gt;,
 }
 <span class="boring">}
 </span></code></pre></pre>
 <h3><a class="header" href="#derivefloateq" id="derivefloateq">#[derive(FloatEq)]</a></h3>
-<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsEpsilon.html">FloatEqUlpsEpsilon</a>. Add a <code>#[float_eq]</code> attribute and provide
-<code>ulps_epsilon</code>, which should match the name of the <code>UlpsEpsilon</code> type. Two
+<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a>. Add a <code>#[float_eq]</code> attribute and provide
+<code>ulps_tol</code>, which should match the name of the <code>FloatEqUlpsTol</code> type. Two
 instances are equal if all fields are equal, and not equal if any are not.</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>#[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsEpsilon, FloatEq)]
-#[float_eq(ulps_epsilon = &quot;PointUlps&quot;)]
+</span>#[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsTol, FloatEq)]
+#[float_eq(ulps_tol = &quot;PointUlps&quot;)]
 struct Point {
     x: f64,
     y: f64,
@@ -988,16 +988,20 @@ struct Point {
 <span class="boring">}
 </span></code></pre></pre>
 <h3><a class="header" href="#derivefloateqall" id="derivefloateqall">#[derive(FloatEqAll)]</a></h3>
-<p>Add a <code>#[float_eq]</code> attribute and specify <code>all_epsilon</code>, which is the type to be
-used as <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html#associatedtype.AllEpsilon">AllEpsilon</a>, usually <code>f32</code> or <code>f64</code>. Two instances are equal if all
+<p>Add a <code>#[float_eq]</code> attribute and specify <code>all_tol</code>, which is the type to be
+used as <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html#associatedtype.AllTol">AllTol</a>, usually <code>f32</code> or <code>f64</code>. Two instances are equal if all
 fields are equal, and not equal if any are not.</p>
-<pre><code>#[derive(Debug, Clone, Copy, PartialEq, FloatEqAll)]
-#[float_eq(ulps_epsilon = &quot;PointUlps&quot;, all_epsilon = &quot;f64&quot;)]
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug, Clone, Copy, PartialEq, FloatEqAll)]
+#[float_eq(ulps_tol = &quot;PointUlps&quot;, all_tol = &quot;f64&quot;)]
 struct Point {
     x: f64,
     y: f64,
 }
-</code></pre>
+<span class="boring">}
+</span></code></pre></pre>
 <h3><a class="header" href="#derivefloateqdebugulpsdiff" id="derivefloateqdebugulpsdiff">#[derive(FloatEqDebugUlpsDiff)]</a></h3>
 <p>Add a <code>#[float_eq]</code> attribute and provide <code>debug_ulps_diff</code>, which will be used
 as the name of a new type. This type will be structurally identical to the type
@@ -1027,16 +1031,16 @@ struct PointDebugUlpsDiff {
 <span class="boring">}
 </span></code></pre></pre>
 <h3><a class="header" href="#deriveassertfloateq" id="deriveassertfloateq">#derive[(AssertFloatEq)]</a></h3>
-<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsEpsilon.html">FloatEqUlpsEpsilon</a>, <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a> and <a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a>. Add a
-<code>#[float_eq]</code> attribute and provide <code>ulps_epsilon</code> and <code>ulps_debug_diff</code>, which
-should match the name of the <code>UlpsEpsilon</code> and <code>DebugUlpsDiff</code> types. Each
-field's epsilon is calculated via a recursive call to the algorithm being used.</p>
+<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a>, <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a> and <a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a>. Add a
+<code>#[float_eq]</code> attribute and provide <code>ulps_tol</code> and <code>ulps_debug_diff</code>, which
+should match the name of the <code>UlpsTol</code> and <code>DebugUlpsDiff</code> types. Each
+field's tolerance is calculated via a recursive call to the algorithm being used.</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(Debug, Clone, Copy, PartialEq)]
-#[derive(FloatEqUlpsEpsilon, FloatEq, FloatEqDebugUlpsDiff, AssertFloatEq)]
-#[float_eq(ulps_epsilon = &quot;PointUlps&quot;, debug_ulps_diff = &quot;PointDebugUlpsDiff&quot;)]
+#[derive(FloatEqUlpsTol, FloatEq, FloatEqDebugUlpsDiff, AssertFloatEq)]
+#[float_eq(ulps_tol = &quot;PointUlps&quot;, debug_ulps_diff = &quot;PointDebugUlpsDiff&quot;)]
 struct Point {
     x: f64,
     y: f64,
@@ -1044,23 +1048,23 @@ struct Point {
 <span class="boring">}
 </span></code></pre></pre>
 <h3><a class="header" href="#deriveassertfloateqall" id="deriveassertfloateqall">#[derive(AssertFloatEqAll)]</a></h3>
-<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsEpsilon.html">FloatEqUlpsEpsilon</a>, <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a>, <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a>, <a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a>
-and <a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a>. Add a <code>#[float_eq]</code> attribute and provide <code>ulps_epsilon</code>,
-<code>ulps_debug_diff</code>, and <code>all_epsilon</code>, which should match the names of the
-<code>UlpsEpsilon</code>, <code>DebugUlpsDiff</code> and <code>AllEpsilon</code> types. Each field's epsilon is
+<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a>, <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a>, <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a>, <a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a>
+and <a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a>. Add a <code>#[float_eq]</code> attribute and provide <code>ulps_tol</code>,
+<code>ulps_debug_diff</code>, and <code>all_tol</code>, which should match the names of the
+<code>UlpsTol</code>, <code>DebugUlpsDiff</code> and <code>AllTol</code> types. Each field's tolerance is
 calculated via a recursive call to the algorithm being used.</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(Debug, Clone, Copy, PartialEq)]
 #[derive(
-    FloatEqUlpsEpsilon, FloatEq, FloatEqAll,
+    FloatEqUlpsTol, FloatEq, FloatEqAll,
     FloatEqDebugUlpsDiff, AssertFloatEq, AssertFloatEqAll
 )]
 #[float_eq(
-    ulps_epsilon = &quot;PointUlps&quot;,
+    ulps_tol = &quot;PointUlps&quot;,
     debug_ulps_diff = &quot;PointUlpsDebugUlpsDiff&quot;,
-    all_epsilon = &quot;f64&quot;,
+    all_tol = &quot;f64&quot;,
 )]
 struct Point {
     x: f64,
@@ -1082,24 +1086,24 @@ struct Point {
 }
 <span class="boring">}
 </span></code></pre></pre>
-<h3><a class="header" href="#implementing-floatequlpsepsilon" id="implementing-floatequlpsepsilon">Implementing FloatEqUlpsEpsilon</a></h3>
-<p>Types should provide an <a href="how_to/../../doc/float_eq/type.UlpsEpsilon.html">UlpsEpsilon</a> representation for each of their fields:</p>
+<h3><a class="header" href="#implementing-floatequlpstol" id="implementing-floatequlpstol">Implementing FloatEqUlpsTol</a></h3>
+<p>Types should provide an <a href="how_to/../../doc/float_eq/type.UlpsTol.html">UlpsTol</a> representation for each of their fields:</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(Debug, Clone, Copy, PartialEq)]
 struct PointUlps {
-    x: UlpsEpsilon&lt;f64&gt;,
-    y: UlpsEpsilon&lt;f64&gt;,
+    x: UlpsTol&lt;f64&gt;,
+    y: UlpsTol&lt;f64&gt;,
 }
 
-impl FloatEqUlpsEpsilon for Point {
-    type UlpsEpsilon = PointUlps;
+impl FloatEqUlpsTol for Point {
+    type UlpsTol = PointUlps;
 }
 <span class="boring">}
 </span></code></pre></pre>
 <h3><a class="header" href="#implementing-floateq" id="implementing-floateq">Implementing FloatEq</a></h3>
-<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsEpsilon.html">FloatEqUlpsEpsilon</a>. Implementation is then usually a matter of
+<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a>. Implementation is then usually a matter of
 calling through to an underlying <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a> method for each field in turn. If
 not, you will need to take a close look at the descriptions of the algorithms on
 a method by method basis:</p>
@@ -1107,36 +1111,36 @@ a method by method basis:</p>
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>impl FloatEq for Point {
-    type Epsilon = Point;
+    type Tol = Point;
 
-    fn eq_abs(&amp;self, other: &amp;Self, max_diff: &amp;Point) -&gt; bool {
-        self.x.eq_abs(&amp;other.x, &amp;max_diff.x) &amp;&amp;
-        self.y.eq_abs(&amp;other.y, &amp;max_diff.y)
+    fn eq_abs(&amp;self, other: &amp;Self, tol: &amp;Point) -&gt; bool {
+        self.x.eq_abs(&amp;other.x, &amp;tol.x) &amp;&amp;
+        self.y.eq_abs(&amp;other.y, &amp;tol.y)
     }
 
-    fn eq_rmax(&amp;self, other: &amp;Self, max_diff: &amp;Point) -&gt; bool {
-        self.x.eq_rmax(&amp;other.x, &amp;max_diff.x) &amp;&amp;
-        self.y.eq_rmax(&amp;other.y, &amp;max_diff.y)
+    fn eq_rmax(&amp;self, other: &amp;Self, tol: &amp;Point) -&gt; bool {
+        self.x.eq_rmax(&amp;other.x, &amp;tol.x) &amp;&amp;
+        self.y.eq_rmax(&amp;other.y, &amp;tol.y)
     }
 
-    fn eq_rmin(&amp;self, other: &amp;Self, max_diff: &amp;Point) -&gt; bool {
-        self.x.eq_rmin(&amp;other.x, &amp;max_diff.x) &amp;&amp;
-        self.y.eq_rmin(&amp;other.y, &amp;max_diff.y)
+    fn eq_rmin(&amp;self, other: &amp;Self, tol: &amp;Point) -&gt; bool {
+        self.x.eq_rmin(&amp;other.x, &amp;tol.x) &amp;&amp;
+        self.y.eq_rmin(&amp;other.y, &amp;tol.y)
     }
 
-    fn eq_r1st(&amp;self, other: &amp;Self, max_diff: &amp;Point) -&gt; bool {
-        self.x.eq_r1st(&amp;other.x, &amp;max_diff.x) &amp;&amp;
-        self.y.eq_r1st(&amp;other.y, &amp;max_diff.y)
+    fn eq_r1st(&amp;self, other: &amp;Self, tol: &amp;Point) -&gt; bool {
+        self.x.eq_r1st(&amp;other.x, &amp;tol.x) &amp;&amp;
+        self.y.eq_r1st(&amp;other.y, &amp;tol.y)
     }
 
-    fn eq_r2nd(&amp;self, other: &amp;Self, max_diff: &amp;Point) -&gt; bool {
-        self.x.eq_r2nd(&amp;other.x, &amp;max_diff.x) &amp;&amp;
-        self.y.eq_r2nd(&amp;other.y, &amp;max_diff.y)
+    fn eq_r2nd(&amp;self, other: &amp;Self, tol: &amp;Point) -&gt; bool {
+        self.x.eq_r2nd(&amp;other.x, &amp;tol.x) &amp;&amp;
+        self.y.eq_r2nd(&amp;other.y, &amp;tol.y)
     }
 
-    fn eq_ulps(&amp;self, other: &amp;Self, max_diff: &amp;UlpsEpsilon&lt;Point&gt;) -&gt; bool {
-        self.x.eq_ulps(&amp;other.x, &amp;max_diff.x) &amp;&amp;
-        self.y.eq_ulps(&amp;other.y, &amp;max_diff.y)
+    fn eq_ulps(&amp;self, other: &amp;Self, tol: &amp;UlpsTol&lt;Point&gt;) -&gt; bool {
+        self.x.eq_ulps(&amp;other.x, &amp;tol.x) &amp;&amp;
+        self.y.eq_ulps(&amp;other.y, &amp;tol.y)
     }
 }
 <span class="boring">}
@@ -1151,36 +1155,36 @@ by method basis:</p>
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>impl FloatEqAll for Point {
-    type AllEpsilon = f64;
+    type AllTol = f64;
 
-    fn eq_abs_all(&amp;self, other: &amp;Self, max_diff: &amp;f64) -&gt; bool {
-        self.x.eq_abs_all(&amp;other.x, max_diff) &amp;&amp;
-        self.y.eq_abs_all(&amp;other.y, max_diff)
+    fn eq_abs_all(&amp;self, other: &amp;Self, tol: &amp;f64) -&gt; bool {
+        self.x.eq_abs_all(&amp;other.x, tol) &amp;&amp;
+        self.y.eq_abs_all(&amp;other.y, tol)
     }
 
-    fn eq_rmax_all(&amp;self, other: &amp;Self, max_diff: &amp;f64) -&gt; bool {
-        self.x.eq_rmax_all(&amp;other.x, max_diff) &amp;&amp;
-        self.y.eq_rmax_all(&amp;other.y, max_diff)
+    fn eq_rmax_all(&amp;self, other: &amp;Self, tol: &amp;f64) -&gt; bool {
+        self.x.eq_rmax_all(&amp;other.x, tol) &amp;&amp;
+        self.y.eq_rmax_all(&amp;other.y, tol)
     }
 
-    fn eq_rmin_all(&amp;self, other: &amp;Self, max_diff: &amp;f64) -&gt; bool {
-        self.x.eq_rmin_all(&amp;other.x, max_diff) &amp;&amp;
-        self.y.eq_rmin_all(&amp;other.y, max_diff)
+    fn eq_rmin_all(&amp;self, other: &amp;Self, tol: &amp;f64) -&gt; bool {
+        self.x.eq_rmin_all(&amp;other.x, tol) &amp;&amp;
+        self.y.eq_rmin_all(&amp;other.y, tol)
     }
 
-    fn eq_r1st_all(&amp;self, other: &amp;Self, max_diff: &amp;f64) -&gt; bool {
-        self.x.eq_r1st_all(&amp;other.x, max_diff) &amp;&amp;
-        self.y.eq_r1st_all(&amp;other.y, max_diff)
+    fn eq_r1st_all(&amp;self, other: &amp;Self, tol: &amp;f64) -&gt; bool {
+        self.x.eq_r1st_all(&amp;other.x, tol) &amp;&amp;
+        self.y.eq_r1st_all(&amp;other.y, tol)
     }
 
-    fn eq_r2nd_all(&amp;self, other: &amp;Self, max_diff: &amp;f64) -&gt; bool {
-        self.x.eq_r2nd_all(&amp;other.x, max_diff) &amp;&amp;
-        self.y.eq_r2nd_all(&amp;other.y, max_diff)
+    fn eq_r2nd_all(&amp;self, other: &amp;Self, tol: &amp;f64) -&gt; bool {
+        self.x.eq_r2nd_all(&amp;other.x, tol) &amp;&amp;
+        self.y.eq_r2nd_all(&amp;other.y, tol)
     }
 
-    fn eq_ulps_all(&amp;self, other: &amp;Self, max_diff: &amp;UlpsEpsilon&lt;f64&gt;) -&gt; bool {
-        self.x.eq_ulps_all(&amp;other.x, max_diff) &amp;&amp;
-        self.y.eq_ulps_all(&amp;other.y, max_diff)
+    fn eq_ulps_all(&amp;self, other: &amp;Self, tol: &amp;UlpsTol&lt;f64&gt;) -&gt; bool {
+        self.x.eq_ulps_all(&amp;other.x, tol) &amp;&amp;
+        self.y.eq_ulps_all(&amp;other.y, tol)
     }
 }
 <span class="boring">}
@@ -1202,7 +1206,7 @@ impl FloatEqDebugUlpsDiff for Point {
 <span class="boring">}
 </span></code></pre></pre>
 <h3><a class="header" href="#implementing-assertfloateq" id="implementing-assertfloateq">Implementing AssertFloatEq</a></h3>
-<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsEpsilon.html">FloatEqUlpsEpsilon</a>, <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a> and <a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a>.
+<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a>, <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a> and <a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a>.
 Implementation is then usually a matter of simply calling through to an
 underlying <a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a> method for each field in turn. If not, you will need
 to take a close look at the descriptions of the algorithms on a method by method
@@ -1212,7 +1216,7 @@ basis:</p>
 </span><span class="boring">fn main() {
 </span>impl AssertFloatEq for Point {
     type DebugAbsDiff = Self;
-    type DebugEpsilon = Self;
+    type DebugTol = Self;
 
     fn debug_abs_diff(&amp;self, other: &amp;Self) -&gt; Point {
         Point {
@@ -1228,76 +1232,76 @@ basis:</p>
         }
     }
 
-    fn debug_abs_epsilon(
+    fn debug_abs_tol(
         &amp;self,
         other: &amp;Self,
-        max_diff: &amp;Point
+        tol: &amp;Point
     ) -&gt; Point {
         Point {
-            x: self.x.debug_abs_epsilon(&amp;other.x, &amp;max_diff.x),
-            y: self.y.debug_abs_epsilon(&amp;other.y, &amp;max_diff.y),
+            x: self.x.debug_abs_tol(&amp;other.x, &amp;tol.x),
+            y: self.y.debug_abs_tol(&amp;other.y, &amp;tol.y),
         }
     }
 
-    fn debug_rmax_epsilon(
+    fn debug_rmax_tol(
         &amp;self,
         other: &amp;Self,
-        max_diff: &amp;Point
+        tol: &amp;Point
     ) -&gt; Point {
         Point {
-            x: self.x.debug_rmax_epsilon(&amp;other.x, &amp;max_diff.x),
-            y: self.y.debug_rmax_epsilon(&amp;other.y, &amp;max_diff.y),
+            x: self.x.debug_rmax_tol(&amp;other.x, &amp;tol.x),
+            y: self.y.debug_rmax_tol(&amp;other.y, &amp;tol.y),
         }
     }
 
-    fn debug_rmin_epsilon(
+    fn debug_rmin_tol(
         &amp;self,
         other: &amp;Self,
-        max_diff: &amp;Point
+        tol: &amp;Point
     ) -&gt; Point {
         Point {
-            x: self.x.debug_rmin_epsilon(&amp;other.x, &amp;max_diff.x),
-            y: self.y.debug_rmin_epsilon(&amp;other.y, &amp;max_diff.y),
+            x: self.x.debug_rmin_tol(&amp;other.x, &amp;tol.x),
+            y: self.y.debug_rmin_tol(&amp;other.y, &amp;tol.y),
         }
     }
 
-    fn debug_r1st_epsilon(
+    fn debug_r1st_tol(
         &amp;self,
         other: &amp;Self,
-        max_diff: &amp;Point
+        tol: &amp;Point
     ) -&gt; Point {
         Point {
-            x: self.x.debug_r1st_epsilon(&amp;other.x, &amp;max_diff.x),
-            y: self.y.debug_r1st_epsilon(&amp;other.y, &amp;max_diff.y),
+            x: self.x.debug_r1st_tol(&amp;other.x, &amp;tol.x),
+            y: self.y.debug_r1st_tol(&amp;other.y, &amp;tol.y),
         }
     }
 
-    fn debug_r2nd_epsilon(
+    fn debug_r2nd_tol(
         &amp;self,
         other: &amp;Self,
-        max_diff: &amp;Point
+        tol: &amp;Point
     ) -&gt; Point {
         Point {
-            x: self.x.debug_r2nd_epsilon(&amp;other.x, &amp;max_diff.x),
-            y: self.y.debug_r2nd_epsilon(&amp;other.y, &amp;max_diff.y),
+            x: self.x.debug_r2nd_tol(&amp;other.x, &amp;tol.x),
+            y: self.y.debug_r2nd_tol(&amp;other.y, &amp;tol.y),
         }
     }
 
-    fn debug_ulps_epsilon(
+    fn debug_ulps_tol(
         &amp;self,
         other: &amp;Self,
-        max_diff: &amp;PointUlps,
+        tol: &amp;PointUlps,
     ) -&gt; PointUlps {
         PointUlps {
-            x: self.x.debug_ulps_epsilon(&amp;other.x, &amp;max_diff.x),
-            y: self.y.debug_ulps_epsilon(&amp;other.y, &amp;max_diff.y),
+            x: self.x.debug_ulps_tol(&amp;other.x, &amp;tol.x),
+            y: self.y.debug_ulps_tol(&amp;other.y, &amp;tol.y),
         }
     }
 }
 <span class="boring">}
 </span></code></pre></pre>
 <h3><a class="header" href="#implementing-assertfloateqall" id="implementing-assertfloateqall">Implementing AssertFloatEqAll</a></h3>
-<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsEpsilon.html">FloatEqUlpsEpsilon</a>, <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a>, <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a>, <a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a>
+<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a>, <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a>, <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a>, <a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a>
 and <a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a>. Implementation is then usually a matter of simply calling
 through to an underlying <a href="how_to/../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFloatEqAll</a> method for each field in turn. If
 not, you will need to take a close look at the descriptions of the algorithms on
@@ -1306,71 +1310,71 @@ a method by method basis:</p>
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>impl AssertFloatEqAll for Point {
-    type AllDebugEpsilon = Self;
+    type AllDebugTol = Self;
 
-    fn debug_abs_all_epsilon(
+    fn debug_abs_all_tol(
         &amp;self,
         other: &amp;Self,
-        max_diff: &amp;Self::AllEpsilon
-    ) -&gt; Self::AllDebugEpsilon {
+        tol: &amp;Self::AllTol
+    ) -&gt; Self::AllDebugTol {
         Point {
-            x: self.x.debug_abs_all_epsilon(&amp;other.x, max_diff),
-            y: self.y.debug_abs_all_epsilon(&amp;other.y, max_diff),
+            x: self.x.debug_abs_all_tol(&amp;other.x, tol),
+            y: self.y.debug_abs_all_tol(&amp;other.y, tol),
         }
     }
 
-    fn debug_rmax_all_epsilon(
+    fn debug_rmax_all_tol(
         &amp;self,
         other: &amp;Self,
-        max_diff: &amp;Self::AllEpsilon
-    ) -&gt; Self::AllDebugEpsilon {
+        tol: &amp;Self::AllTol
+    ) -&gt; Self::AllDebugTol {
         Point {
-            x: self.x.debug_rmax_all_epsilon(&amp;other.x, max_diff),
-            y: self.y.debug_rmax_all_epsilon(&amp;other.y, max_diff),
+            x: self.x.debug_rmax_all_tol(&amp;other.x, tol),
+            y: self.y.debug_rmax_all_tol(&amp;other.y, tol),
         }
     }
 
-    fn debug_rmin_all_epsilon(
+    fn debug_rmin_all_tol(
         &amp;self,
         other: &amp;Self,
-        max_diff: &amp;Self::AllEpsilon
-    ) -&gt; Self::AllDebugEpsilon {
+        tol: &amp;Self::AllTol
+    ) -&gt; Self::AllDebugTol {
         Point {
-            x: self.x.debug_rmin_all_epsilon(&amp;other.x, max_diff),
-            y: self.y.debug_rmin_all_epsilon(&amp;other.y, max_diff),
+            x: self.x.debug_rmin_all_tol(&amp;other.x, tol),
+            y: self.y.debug_rmin_all_tol(&amp;other.y, tol),
         }
     }
 
-    fn debug_r1st_all_epsilon(
+    fn debug_r1st_all_tol(
         &amp;self,
         other: &amp;Self,
-        max_diff: &amp;Self::AllEpsilon
-    ) -&gt; Self::AllDebugEpsilon {
+        tol: &amp;Self::AllTol
+    ) -&gt; Self::AllDebugTol {
         Point {
-            x: self.x.debug_r1st_all_epsilon(&amp;other.x, max_diff),
-            y: self.y.debug_r1st_all_epsilon(&amp;other.y, max_diff),
+            x: self.x.debug_r1st_all_tol(&amp;other.x, tol),
+            y: self.y.debug_r1st_all_tol(&amp;other.y, tol),
         }
     }
 
-    fn debug_r2nd_all_epsilon(
+    fn debug_r2nd_all_tol(
         &amp;self,
         other: &amp;Self,
-        max_diff: &amp;Self::AllEpsilon
-    ) -&gt; Self::AllDebugEpsilon {
+        tol: &amp;Self::AllTol
+    ) -&gt; Self::AllDebugTol {
         Point {
-            x: self.x.debug_r2nd_all_epsilon(&amp;other.x, max_diff),
-            y: self.y.debug_r2nd_all_epsilon(&amp;other.y, max_diff),
+            x: self.x.debug_r2nd_all_tol(&amp;other.x, tol),
+            y: self.y.debug_r2nd_all_tol(&amp;other.y, tol),
         }
     }
 
-    fn debug_ulps_all_epsilon(
+    fn debug_ulps_all_tol(
         &amp;self,
         other: &amp;Self,
-        max_diff: &amp;UlpsEpsilon&lt;Self::AllEpsilon&gt;,
-    ) -&gt; UlpsEpsilon&lt;Self::AllDebugEpsilon&gt; {
+        tol: &amp;UlpsTol&lt;Self::AllTol&gt;,
+    ) -&gt; UlpsTol&lt;Self::AllDebugTol&gt; {
         PointUlps {
-            x: self.x.debug_ulps_all_epsilon(&amp;other.x, max_diff),
-            y: self.y.debug_ulps_all_epsilon(&amp;other.y, max_diff),
+            x: self.x.debug_ulps_all_tol(&amp;other.x, tol),
+            y: self.y.debug_ulps_all_tol(&amp;other.y, tol),
         }
     }
 }
@@ -1444,21 +1448,19 @@ one of the inputs. Mathematically, this is:</p>
 <li><code>rmax</code>: the larger magnitude (aka <code>rel</code> for legacy reasons)</li>
 <li><code>rmin</code>: the smaller magnitude</li>
 </ul>
-<p>If you are checking for equality versus an expected normal floating point value,
-you may wish to calculate the error margin based on that value, so using <code>r1st</code>
-or <code>r2nd</code> will allow you to select it.</p>
-<p>If you are generally testing two values for equality and know they are both
-normal floating point values, then <code>rmax</code> is a good general algorithm to start
-with. If either number may also be subnormal or close to zero, or may have had
-its error amplified by how it was calculated, then you may wish to combine a
-relative check with an absolute tolerance check. Note that an implicit absolute
-tolerance check is not included by default.</p>
+<p>If you are checking for equality versus an expected normal floating point value
+then you may wish to calculate the tolerance based on that value and so using
+<code>r1st</code> or <code>r2nd</code> will allow you to select it. If you are generally testing two
+normal floating point values then <code>rmax</code> is a good general choice. If either
+number may also be subnormal or close to zero, then you may need to calculate a
+tolerance based on an intermediate value for an absolute tolerance check
+instead.</p>
 <p>Choice of <code>tol</code> will depend on the tolerances inherent in the specific
 mathematical function or algorithm you have implemented. Note that a tolerance
-of <code>n * f32::EPSILON</code> will test that a value is within <code>n</code> representable values
-of another. However, you should be aware that the errors inherent in your inputs
-and calculations are likely to be much greater than the small rounding errors
-this form would imply.</p>
+of <code>n * EPSILON</code> (e.g. <code>f32::EPSILON</code>) will test that two expressions are within
+<code>n</code> representable values of another. However, you should be aware that the
+errors inherent in your inputs and calculations are likely to be much greater
+than the small rounding errors this form would imply.</p>
 <h2><a class="header" href="#units-in-the-last-place-ulps-comparison" id="units-in-the-last-place-ulps-comparison">Units in the Last Place (ULPs) comparison</a></h2>
 <pre><code>ulps &lt;= tol
 </code></pre>

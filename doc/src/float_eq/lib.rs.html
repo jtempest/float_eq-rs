@@ -134,15 +134,15 @@
 <span class="doccomment">//! ```</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Each of which invokes a specific comparison algorithm with an explictly</span>
-<span class="doccomment">//! provided margin. In these examples:</span>
+<span class="doccomment">//! provided toelrance. In these examples:</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! - `abs &lt;= 0.000_1` is an absolute tolerance comparison with a margin of `0.000_1`.</span>
-<span class="doccomment">//! - `r2nd &lt;= TOL` is a relative tolerance comparison with a margin of `TOL`,</span>
+<span class="doccomment">//! - `abs &lt;= 0.000_1` is an absolute tolerance comparison with a tolerance of `0.000_1`.</span>
+<span class="doccomment">//! - `r2nd &lt;= TOL` is a relative tolerance comparison with a tolerance of `TOL`,</span>
 <span class="doccomment">//!   scaled to the precision of the second operand.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # Comparison algorithms</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! These are always of the form `CHECK &lt;= margin`, where `CHECK` is one of:</span>
+<span class="doccomment">//! These are always of the form `CHECK &lt;= tol`, where `CHECK` is one of:</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! - `abs`: an [absolute tolerance comparison].</span>
 <span class="doccomment">//! - `rmax`: a [relative tolerance comparison], scaled to the precision of the larger operand/field.</span>
@@ -152,7 +152,7 @@
 <span class="doccomment">//! - `ulps`: an [ULPs comparison].</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! When comparing homogeneous composite types that implement [`FloatEqAll`],</span>
-<span class="doccomment">//! variants that use a uniform `margin` value across all fields are also available:</span>
+<span class="doccomment">//! variants that use a uniform `tol` across all fields are also available:</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! - `abs_all`: an [absolute tolerance comparison].</span>
 <span class="doccomment">//! - `rmax_all`: a [relative tolerance comparison], scaled to the precision of the larger field.</span>

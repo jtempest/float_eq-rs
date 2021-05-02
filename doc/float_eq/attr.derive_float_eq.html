@@ -2,12 +2,15 @@
 <link rel="alternate icon" type="image/png" href="../favicon-16x16.png">
 <link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc attr"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../float_eq/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class="location"><a href="index.html">float_eq</a></p><div id="sidebar-vars" data-name="derive_float_eq" data-ty="attr" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Attribute Macro <a href="index.html">float_eq</a>::<wbr><a class="attr" href="">derive_float_eq</a></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></span></h1><pre class="rust attr">#[derive_float_eq]</pre><div class="docblock"><p>Helper for deriving the various float_eq traits.</p>
-<p>By default, this will derive <a href="trait.FloatEqUlpsEpsilon.html"><code>FloatEqUlpsEpsilon</code></a>, <a href="trait.FloatEq.html"><code>FloatEq</code></a>, <a href="trait.FloatEqDebugUlpsDiff.html"><code>FloatEqDebugUlpsDiff</code></a>
-and <a href="trait.AssertFloatEq.html"><code>AssertFloatEq</code></a>. Attribute parameters are passed through to the
-<code>#[float_eq(...)]</code> attribute, see the docs for each trait for more details,
-note that <code>ulps_epsilon</code> and <code>debug_ulps_diff</code> are required.</p>
-<p>If the optional <code>all_epsilon</code> parameter is provided then <a href="trait.FloatEqAll.html"><code>FloatEqAll</code></a> and
-<a href="trait.AssertFloatEqAll.html"><code>AssertFloatEqAll</code></a> are also derived.</p>
-<p><a href="index.html#derivable">Example usage</a> is available in the top level <code>float_eq</code> documentation.</p>
+<p>By default, this will derive <a href="trait.FloatEqUlpsTol.html"><code>FloatEqUlpsTol</code></a>, <a href="trait.FloatEq.html"><code>FloatEq</code></a>, <a href="trait.FloatEqDebugUlpsDiff.html"><code>FloatEqDebugUlpsDiff</code></a>
+and <a href="trait.AssertFloatEq.html"><code>AssertFloatEq</code></a>.</p>
+<p>Attribute parameters are passed through to the <code>#[float_eq(...)]</code> attribute:
+<code>ulps_tol</code> is the name of the type generated for <a href="trait.FloatEqUlpsTol.html"><code>FloatEqUlpsTol</code></a> and
+<code>debug_ulps_diff</code> the name of the type generated for <a href="trait.FloatEqDebugUlpsDiff.html"><code>FloatEqDebugUlpsDiff</code></a>.
+Both are required.</p>
+<p>If the optional <code>all_tol</code> parameter is provided, which names the type to be
+used by <code>FloatEqAll::AllTol</code> then <a href="trait.FloatEqAll.html"><code>FloatEqAll</code></a> and <a href="trait.AssertFloatEqAll.html"><code>AssertFloatEqAll</code></a>
+are also derived.</p>
+<p>See <a href="https://jtempest.github.io/float_eq-rs/book/how_to/compare_custom_types.html#derive_float_eq">How to compare custom types</a> for more information and example usage.</p>
 </div></section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="float_eq"></div>
     <script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

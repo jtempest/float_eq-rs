@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Interpret assert failure messages - Documentation for float_eq 0.5.1-pre</title>
+        <title>Interpret assert failure messages - Documentation for float_eq 0.6.0-pre</title>
         
         
 
@@ -127,7 +127,7 @@
                         
                     </div>
 
-                    <h1 class="menu-title">Documentation for float_eq 0.5.1-pre</h1>
+                    <h1 class="menu-title">Documentation for float_eq 0.6.0-pre</h1>
 
                     <div class="right-buttons">
                         
@@ -187,7 +187,7 @@ in determining how a check failed. For example, this line:</p>
 <li><strong>right</strong> - the value of the second operand.</li>
 <li><strong>abs_diff</strong> - the absolute difference between <code>left</code> and <code>right</code>.</li>
 <li><strong>ulps_diff</strong> - the difference between <code>left</code> and <code>right</code> in ULPs. If it is
-None, that is because they have different signs.</li>
+None, that is because they have different signs or at least one is <code>NaN</code>.</li>
 <li><strong>[rmax] t</strong> - the tolerance used in the comparison against the relevant
 difference, here <code>abs_diff</code>, <em>after</em> it has been scaled relative to an operand,
 in this case <code>max(left, right)</code> since it is <code>rmax</code>.</li>
