@@ -28,13 +28,13 @@ Add this to your cargo.toml:
 float_eq = "0.6"
 ```
 
-and, if you're using the 2015 edition, this to your crate root:
+And, if you're using the 2015 edition, this to your crate root:
 
 ```rust
 extern crate float_eq;
 ```
 
-then, you can import items with `use`:
+Then, you can import items with `use`:
 
 ```rust
 use float_eq::{assert_float_eq, float_eq};
