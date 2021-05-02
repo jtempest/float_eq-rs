@@ -1,6 +1,6 @@
-use float_eq::FloatEqUlpsEpsilon;
+use float_eq::FloatEqUlpsTol;
 
-#[derive(Debug, PartialEq, FloatEqUlpsEpsilon)]
+#[derive(Debug, PartialEq, FloatEqUlpsTol)]
 #[float_eq]
 struct MyComplex32 {
     re: f32,

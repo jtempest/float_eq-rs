@@ -75,23 +75,20 @@ Where `func` is one of:
 - `rmax`: the larger magnitude (aka `rel` for legacy reasons)
 - `rmin`: the smaller magnitude
 
-If you are checking for equality versus an expected normal floating point value,
-you may wish to calculate the error margin based on that value, so using `r1st`
-or `r2nd` will allow you to select it.
-
-If you are generally testing two values for equality and know they are both
-normal floating point values, then `rmax` is a good general algorithm to start
-with. If either number may also be subnormal or close to zero, or may have had
-its error amplified by how it was calculated, then you may wish to combine a
-relative check with an absolute tolerance check. Note that an implicit absolute
-tolerance check is not included by default.
+If you are checking for equality versus an expected normal floating point value
+then you may wish to calculate the tolerance based on that value and so using
+`r1st` or `r2nd` will allow you to select it. If you are generally testing two
+normal floating point values then `rmax` is a good general choice. If either
+number may also be subnormal or close to zero, then you may need to calculate a
+tolerance based on an intermediate value for an absolute tolerance check
+instead.
 
 Choice of `tol` will depend on the tolerances inherent in the specific
 mathematical function or algorithm you have implemented. Note that a tolerance
-of `n * f32::EPSILON` will test that a value is within `n` representable values
-of another. However, you should be aware that the errors inherent in your inputs
-and calculations are likely to be much greater than the small rounding errors
-this form would imply.
+of `n * EPSILON` (e.g. `f32::EPSILON`) will test that two expressions are within
+`n` representable values of another. However, you should be aware that the
+errors inherent in your inputs and calculations are likely to be much greater
+than the small rounding errors this form would imply.
 
 ## Units in the Last Place (ULPs) comparison
 

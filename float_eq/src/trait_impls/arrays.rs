@@ -1,6 +1,6 @@
 use crate::{
     AssertFloatEq, AssertFloatEqAll, DebugUlpsDiff, FloatEq, FloatEqAll, FloatEqDebugUlpsDiff,
-    FloatEqUlpsEpsilon, UlpsEpsilon,
+    FloatEqUlpsTol, UlpsTol,
 };
 use core::mem::MaybeUninit;
 
@@ -16,11 +16,11 @@ unsafe fn array_assume_init<T, const N: usize>(array: [MaybeUninit<T>; N]) -> [T
     (&array as *const _ as *const [T; N]).read()
 }
 
-impl<T: FloatEqUlpsEpsilon, const N: usize> FloatEqUlpsEpsilon for [T; N]
+impl<T: FloatEqUlpsTol, const N: usize> FloatEqUlpsTol for [T; N]
 where
-    UlpsEpsilon<T>: Sized,
+    UlpsTol<T>: Sized,
 {
-    type UlpsEpsilon = [UlpsEpsilon<T>; N];
+    type UlpsTol = [UlpsTol<T>; N];
 }
 
 impl<T: FloatEqDebugUlpsDiff, const N: usize> FloatEqDebugUlpsDiff for [T; N] {
@@ -30,15 +30,15 @@ impl<T: FloatEqDebugUlpsDiff, const N: usize> FloatEqDebugUlpsDiff for [T; N] {
 impl<A, B, const N: usize> FloatEq<[B; N]> for [A; N]
 where
     A: FloatEq<B>,
-    A::Epsilon: Sized,
-    UlpsEpsilon<A::Epsilon>: Sized,
+    A::Tol: Sized,
+    UlpsTol<A::Tol>: Sized,
 {
-    type Epsilon = [A::Epsilon; N];
+    type Tol = [A::Tol; N];
 
     #[inline]
-    fn eq_abs(&self, other: &[B; N], max_diff: &Self::Epsilon) -> bool {
+    fn eq_abs(&self, other: &[B; N], tol: &Self::Tol) -> bool {
         for i in 0..N {
-            if !self[i].eq_abs(&other[i], &max_diff[i]) {
+            if !self[i].eq_abs(&other[i], &tol[i]) {
                 return false;
             }
         }
@@ -46,9 +46,9 @@ where
     }
 
     #[inline]
-    fn eq_rmax(&self, other: &[B; N], max_diff: &Self::Epsilon) -> bool {
+    fn eq_rmax(&self, other: &[B; N], tol: &Self::Tol) -> bool {
         for i in 0..N {
-            if !self[i].eq_rmax(&other[i], &max_diff[i]) {
+            if !self[i].eq_rmax(&other[i], &tol[i]) {
                 return false;
             }
         }
@@ -56,9 +56,9 @@ where
     }
 
     #[inline]
-    fn eq_rmin(&self, other: &[B; N], max_diff: &Self::Epsilon) -> bool {
+    fn eq_rmin(&self, other: &[B; N], tol: &Self::Tol) -> bool {
         for i in 0..N {
-            if !self[i].eq_rmin(&other[i], &max_diff[i]) {
+            if !self[i].eq_rmin(&other[i], &tol[i]) {
                 return false;
             }
         }
@@ -66,9 +66,9 @@ where
     }
 
     #[inline]
-    fn eq_r1st(&self, other: &[B; N], max_diff: &Self::Epsilon) -> bool {
+    fn eq_r1st(&self, other: &[B; N], tol: &Self::Tol) -> bool {
         for i in 0..N {
-            if !self[i].eq_r1st(&other[i], &max_diff[i]) {
+            if !self[i].eq_r1st(&other[i], &tol[i]) {
                 return false;
             }
         }
@@ -76,9 +76,9 @@ where
     }
 
     #[inline]
-    fn eq_r2nd(&self, other: &[B; N], max_diff: &Self::Epsilon) -> bool {
+    fn eq_r2nd(&self, other: &[B; N], tol: &Self::Tol) -> bool {
         for i in 0..N {
-            if !self[i].eq_r2nd(&other[i], &max_diff[i]) {
+            if !self[i].eq_r2nd(&other[i], &tol[i]) {
                 return false;
             }
         }
@@ -86,9 +86,9 @@ where
     }
 
     #[inline]
-    fn eq_ulps(&self, other: &[B; N], max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
+    fn eq_ulps(&self, other: &[B; N], tol: &UlpsTol<Self::Tol>) -> bool {
         for i in 0..N {
-            if !self[i].eq_ulps(&other[i], &max_diff[i]) {
+            if !self[i].eq_ulps(&other[i], &tol[i]) {
                 return false;
             }
         }
@@ -100,61 +100,61 @@ impl<A, B, const N: usize> FloatEqAll<[B; N]> for [A; N]
 where
     A: FloatEqAll<B>,
 {
-    type AllEpsilon = A::AllEpsilon;
+    type AllTol = A::AllTol;
 
     #[inline]
-    fn eq_abs_all(&self, other: &[B; N], max_diff: &Self::AllEpsilon) -> bool {
+    fn eq_abs_all(&self, other: &[B; N], tol: &Self::AllTol) -> bool {
         self.iter()
             .zip(other.iter())
-            .all(|(a, b)| a.eq_abs_all(b, max_diff))
+            .all(|(a, b)| a.eq_abs_all(b, tol))
     }
 
     #[inline]
-    fn eq_rmax_all(&self, other: &[B; N], max_diff: &Self::AllEpsilon) -> bool {
+    fn eq_rmax_all(&self, other: &[B; N], tol: &Self::AllTol) -> bool {
         self.iter()
             .zip(other.iter())
-            .all(|(a, b)| a.eq_rmax_all(b, max_diff))
+            .all(|(a, b)| a.eq_rmax_all(b, tol))
     }
 
     #[inline]
-    fn eq_rmin_all(&self, other: &[B; N], max_diff: &Self::AllEpsilon) -> bool {
+    fn eq_rmin_all(&self, other: &[B; N], tol: &Self::AllTol) -> bool {
         self.iter()
             .zip(other.iter())
-            .all(|(a, b)| a.eq_rmin_all(b, max_diff))
+            .all(|(a, b)| a.eq_rmin_all(b, tol))
     }
 
     #[inline]
-    fn eq_r1st_all(&self, other: &[B; N], max_diff: &Self::AllEpsilon) -> bool {
+    fn eq_r1st_all(&self, other: &[B; N], tol: &Self::AllTol) -> bool {
         self.iter()
             .zip(other.iter())
-            .all(|(a, b)| a.eq_r1st_all(b, max_diff))
+            .all(|(a, b)| a.eq_r1st_all(b, tol))
     }
 
     #[inline]
-    fn eq_r2nd_all(&self, other: &[B; N], max_diff: &Self::AllEpsilon) -> bool {
+    fn eq_r2nd_all(&self, other: &[B; N], tol: &Self::AllTol) -> bool {
         self.iter()
             .zip(other.iter())
-            .all(|(a, b)| a.eq_r2nd_all(b, max_diff))
+            .all(|(a, b)| a.eq_r2nd_all(b, tol))
     }
 
     #[inline]
-    fn eq_ulps_all(&self, other: &[B; N], max_diff: &UlpsEpsilon<Self::AllEpsilon>) -> bool {
+    fn eq_ulps_all(&self, other: &[B; N], tol: &UlpsTol<Self::AllTol>) -> bool {
         self.iter()
             .zip(other.iter())
-            .all(|(a, b)| a.eq_ulps_all(b, max_diff))
+            .all(|(a, b)| a.eq_ulps_all(b, tol))
     }
 }
 
 impl<A, B, const N: usize> AssertFloatEq<[B; N]> for [A; N]
 where
     A: AssertFloatEq<B>,
-    A::Epsilon: Sized,
-    A::DebugEpsilon: Sized,
-    UlpsEpsilon<A::Epsilon>: Sized,
-    UlpsEpsilon<A::DebugEpsilon>: Sized,
+    A::Tol: Sized,
+    A::DebugTol: Sized,
+    UlpsTol<A::Tol>: Sized,
+    UlpsTol<A::DebugTol>: Sized,
 {
     type DebugAbsDiff = [A::DebugAbsDiff; N];
-    type DebugEpsilon = [A::DebugEpsilon; N];
+    type DebugTol = [A::DebugTol; N];
 
     #[inline]
     fn debug_abs_diff(&self, other: &[B; N]) -> Self::DebugAbsDiff {
@@ -175,59 +175,59 @@ where
     }
 
     #[inline]
-    fn debug_abs_epsilon(&self, other: &[B; N], max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        let mut result: [MaybeUninit<A::DebugEpsilon>; N] = uninit_array();
+    fn debug_abs_tol(&self, other: &[B; N], tol: &Self::Tol) -> Self::DebugTol {
+        let mut result: [MaybeUninit<A::DebugTol>; N] = uninit_array();
         for i in 0..N {
-            result[i] = MaybeUninit::new(self[i].debug_abs_epsilon(&other[i], &max_diff[i]));
+            result[i] = MaybeUninit::new(self[i].debug_abs_tol(&other[i], &tol[i]));
         }
         unsafe { array_assume_init(result) }
     }
 
     #[inline]
-    fn debug_rmax_epsilon(&self, other: &[B; N], max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        let mut result: [MaybeUninit<A::DebugEpsilon>; N] = uninit_array();
+    fn debug_rmax_tol(&self, other: &[B; N], tol: &Self::Tol) -> Self::DebugTol {
+        let mut result: [MaybeUninit<A::DebugTol>; N] = uninit_array();
         for i in 0..N {
-            result[i] = MaybeUninit::new(self[i].debug_rmax_epsilon(&other[i], &max_diff[i]));
+            result[i] = MaybeUninit::new(self[i].debug_rmax_tol(&other[i], &tol[i]));
         }
         unsafe { array_assume_init(result) }
     }
 
     #[inline]
-    fn debug_rmin_epsilon(&self, other: &[B; N], max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        let mut result: [MaybeUninit<A::DebugEpsilon>; N] = uninit_array();
+    fn debug_rmin_tol(&self, other: &[B; N], tol: &Self::Tol) -> Self::DebugTol {
+        let mut result: [MaybeUninit<A::DebugTol>; N] = uninit_array();
         for i in 0..N {
-            result[i] = MaybeUninit::new(self[i].debug_rmin_epsilon(&other[i], &max_diff[i]));
+            result[i] = MaybeUninit::new(self[i].debug_rmin_tol(&other[i], &tol[i]));
         }
         unsafe { array_assume_init(result) }
     }
 
     #[inline]
-    fn debug_r1st_epsilon(&self, other: &[B; N], max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        let mut result: [MaybeUninit<A::DebugEpsilon>; N] = uninit_array();
+    fn debug_r1st_tol(&self, other: &[B; N], tol: &Self::Tol) -> Self::DebugTol {
+        let mut result: [MaybeUninit<A::DebugTol>; N] = uninit_array();
         for i in 0..N {
-            result[i] = MaybeUninit::new(self[i].debug_r1st_epsilon(&other[i], &max_diff[i]));
+            result[i] = MaybeUninit::new(self[i].debug_r1st_tol(&other[i], &tol[i]));
         }
         unsafe { array_assume_init(result) }
     }
 
     #[inline]
-    fn debug_r2nd_epsilon(&self, other: &[B; N], max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        let mut result: [MaybeUninit<A::DebugEpsilon>; N] = uninit_array();
+    fn debug_r2nd_tol(&self, other: &[B; N], tol: &Self::Tol) -> Self::DebugTol {
+        let mut result: [MaybeUninit<A::DebugTol>; N] = uninit_array();
         for i in 0..N {
-            result[i] = MaybeUninit::new(self[i].debug_r2nd_epsilon(&other[i], &max_diff[i]));
+            result[i] = MaybeUninit::new(self[i].debug_r2nd_tol(&other[i], &tol[i]));
         }
         unsafe { array_assume_init(result) }
     }
 
     #[inline]
-    fn debug_ulps_epsilon(
+    fn debug_ulps_tol(
         &self,
         other: &[B; N],
-        max_diff: &UlpsEpsilon<Self::Epsilon>,
-    ) -> UlpsEpsilon<Self::DebugEpsilon> {
-        let mut result: [MaybeUninit<UlpsEpsilon<A::DebugEpsilon>>; N] = uninit_array();
+        tol: &UlpsTol<Self::Tol>,
+    ) -> UlpsTol<Self::DebugTol> {
+        let mut result: [MaybeUninit<UlpsTol<A::DebugTol>>; N] = uninit_array();
         for i in 0..N {
-            result[i] = MaybeUninit::new(self[i].debug_ulps_epsilon(&other[i], &max_diff[i]));
+            result[i] = MaybeUninit::new(self[i].debug_ulps_tol(&other[i], &tol[i]));
         }
         unsafe { array_assume_init(result) }
     }
@@ -236,84 +236,64 @@ where
 impl<A, B, const N: usize> AssertFloatEqAll<[B; N]> for [A; N]
 where
     A: AssertFloatEqAll<B>,
-    UlpsEpsilon<A::AllDebugEpsilon>: Sized,
+    UlpsTol<A::AllDebugTol>: Sized,
 {
-    type AllDebugEpsilon = [A::AllDebugEpsilon; N];
+    type AllDebugTol = [A::AllDebugTol; N];
 
     #[inline]
-    fn debug_abs_all_epsilon(
-        &self,
-        other: &[B; N],
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
-        let mut result: [MaybeUninit<A::AllDebugEpsilon>; N] = uninit_array();
+    fn debug_abs_all_tol(&self, other: &[B; N], tol: &Self::AllTol) -> Self::AllDebugTol {
+        let mut result: [MaybeUninit<A::AllDebugTol>; N] = uninit_array();
         for i in 0..N {
-            result[i] = MaybeUninit::new(self[i].debug_abs_all_epsilon(&other[i], max_diff));
+            result[i] = MaybeUninit::new(self[i].debug_abs_all_tol(&other[i], tol));
         }
         unsafe { array_assume_init(result) }
     }
 
     #[inline]
-    fn debug_rmax_all_epsilon(
-        &self,
-        other: &[B; N],
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
-        let mut result: [MaybeUninit<A::AllDebugEpsilon>; N] = uninit_array();
+    fn debug_rmax_all_tol(&self, other: &[B; N], tol: &Self::AllTol) -> Self::AllDebugTol {
+        let mut result: [MaybeUninit<A::AllDebugTol>; N] = uninit_array();
         for i in 0..N {
-            result[i] = MaybeUninit::new(self[i].debug_rmax_all_epsilon(&other[i], max_diff));
+            result[i] = MaybeUninit::new(self[i].debug_rmax_all_tol(&other[i], tol));
         }
         unsafe { array_assume_init(result) }
     }
 
     #[inline]
-    fn debug_rmin_all_epsilon(
-        &self,
-        other: &[B; N],
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
-        let mut result: [MaybeUninit<A::AllDebugEpsilon>; N] = uninit_array();
+    fn debug_rmin_all_tol(&self, other: &[B; N], tol: &Self::AllTol) -> Self::AllDebugTol {
+        let mut result: [MaybeUninit<A::AllDebugTol>; N] = uninit_array();
         for i in 0..N {
-            result[i] = MaybeUninit::new(self[i].debug_rmin_all_epsilon(&other[i], max_diff));
+            result[i] = MaybeUninit::new(self[i].debug_rmin_all_tol(&other[i], tol));
         }
         unsafe { array_assume_init(result) }
     }
 
     #[inline]
-    fn debug_r1st_all_epsilon(
-        &self,
-        other: &[B; N],
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
-        let mut result: [MaybeUninit<A::AllDebugEpsilon>; N] = uninit_array();
+    fn debug_r1st_all_tol(&self, other: &[B; N], tol: &Self::AllTol) -> Self::AllDebugTol {
+        let mut result: [MaybeUninit<A::AllDebugTol>; N] = uninit_array();
         for i in 0..N {
-            result[i] = MaybeUninit::new(self[i].debug_r1st_all_epsilon(&other[i], max_diff));
+            result[i] = MaybeUninit::new(self[i].debug_r1st_all_tol(&other[i], tol));
         }
         unsafe { array_assume_init(result) }
     }
 
     #[inline]
-    fn debug_r2nd_all_epsilon(
-        &self,
-        other: &[B; N],
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
-        let mut result: [MaybeUninit<A::AllDebugEpsilon>; N] = uninit_array();
+    fn debug_r2nd_all_tol(&self, other: &[B; N], tol: &Self::AllTol) -> Self::AllDebugTol {
+        let mut result: [MaybeUninit<A::AllDebugTol>; N] = uninit_array();
         for i in 0..N {
-            result[i] = MaybeUninit::new(self[i].debug_r2nd_all_epsilon(&other[i], max_diff));
+            result[i] = MaybeUninit::new(self[i].debug_r2nd_all_tol(&other[i], tol));
         }
         unsafe { array_assume_init(result) }
     }
 
     #[inline]
-    fn debug_ulps_all_epsilon(
+    fn debug_ulps_all_tol(
         &self,
         other: &[B; N],
-        max_diff: &UlpsEpsilon<Self::AllEpsilon>,
-    ) -> UlpsEpsilon<Self::AllDebugEpsilon> {
-        let mut result: [MaybeUninit<UlpsEpsilon<A::AllDebugEpsilon>>; N] = uninit_array();
+        tol: &UlpsTol<Self::AllTol>,
+    ) -> UlpsTol<Self::AllDebugTol> {
+        let mut result: [MaybeUninit<UlpsTol<A::AllDebugTol>>; N] = uninit_array();
         for i in 0..N {
-            result[i] = MaybeUninit::new(self[i].debug_ulps_all_epsilon(&other[i], max_diff));
+            result[i] = MaybeUninit::new(self[i].debug_ulps_all_tol(&other[i], tol));
         }
         unsafe { array_assume_init(result) }
     }

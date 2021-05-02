@@ -1,4 +1,4 @@
-use crate::{AssertFloatEq, AssertFloatEqAll, FloatEq, FloatEqAll, UlpsEpsilon};
+use crate::{AssertFloatEq, AssertFloatEqAll, FloatEq, FloatEqAll, UlpsTol};
 
 /// Checks if two floating point expressions are equal to each other.
 ///
@@ -20,15 +20,15 @@ use crate::{AssertFloatEq, AssertFloatEqAll, FloatEq, FloatEqAll, UlpsEpsilon};
 /// [from left to right]: index.html#combining-checks
 #[macro_export]
 macro_rules! float_eq {
-    ($a:expr, $b:expr, $($eq:ident <= $max_diff:expr),+) => ({
+    ($a:expr, $b:expr, $($eq:ident <= $tol:expr),+) => ({
         match (&$a, &$b) {
             (a_val, b_val) => {
-                false $(|| $crate::FloatEqCmp::$eq(a_val, b_val, &$max_diff))+
+                false $(|| $crate::FloatEqCmp::$eq(a_val, b_val, &$tol))+
             }
         }
     });
-    ($a:expr, $b:expr, $($eq:ident <= $max_diff:expr),+,) => ({
-        $crate::float_eq!($a, $b $(, $eq <= $max_diff)+)
+    ($a:expr, $b:expr, $($eq:ident <= $tol:expr),+,) => ({
+        $crate::float_eq!($a, $b $(, $eq <= $tol)+)
     })
 }
 
@@ -52,11 +52,11 @@ macro_rules! float_eq {
 /// [from left to right]: index.html#combining-checks
 #[macro_export]
 macro_rules! float_ne {
-    ($a:expr, $b:expr, $($eq:ident <= $max_diff:expr),+) => ({
-        !$crate::float_eq!($a, $b $(, $eq <= $max_diff)+)
+    ($a:expr, $b:expr, $($eq:ident <= $tol:expr),+) => ({
+        !$crate::float_eq!($a, $b $(, $eq <= $tol)+)
     });
-    ($a:expr, $b:expr, $($eq:ident <= $max_diff:expr),+,) => ({
-        !$crate::float_eq!($a, $b $(, $eq <= $max_diff)+)
+    ($a:expr, $b:expr, $($eq:ident <= $tol:expr),+,) => ({
+        !$crate::float_eq!($a, $b $(, $eq <= $tol)+)
     });
 }
 
@@ -89,15 +89,15 @@ macro_rules! float_ne {
 macro_rules! assert_float_eq {
     // the order of these rules matters a *lot* for the format string functionality
     // to work, otherwise we end up consuming the general case too early.
-    ($left:expr, $right:expr, $eq1:ident <= $max_diff_1:expr, $eq2:ident <= $max_diff_2:expr, $eq3:ident <= $max_diff_3:expr) => ({
-        match (&$left, &$right, &$max_diff_1, &$max_diff_2, &$max_diff_3) {
-            (left_val, right_val, max_diff_1_val, max_diff_2_val, max_diff_3_val) => {
+    ($left:expr, $right:expr, $eq1:ident <= $tol_1:expr, $eq2:ident <= $tol_2:expr, $eq3:ident <= $tol_3:expr) => ({
+        match (&$left, &$right, &$tol_1, &$tol_2, &$tol_3) {
+            (left_val, right_val, tol_1_val, tol_2_val, tol_3_val) => {
                 if !$crate::float_eq!(
                     *left_val,
                     *right_val,
-                    $eq1 <= *max_diff_1_val,
-                    $eq2 <= *max_diff_2_val,
-                    $eq3 <= *max_diff_3_val) {
+                    $eq1 <= *tol_1_val,
+                    $eq2 <= *tol_2_val,
+                    $eq3 <= *tol_3_val) {
                     // The reborrows below are intentional. See assert_eq! in the standard library.
                     panic!(concat!(
 "assertion failed: `float_eq!(left, right, ", stringify!($eq1), " <= t, ", stringify!($eq2), " <= t, ", stringify!($eq3), r#" <= t)`
@@ -113,24 +113,24 @@ macro_rules! assert_float_eq {
                         $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
                         $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpTol::$eq1(&*left_val, &*right_val, &*tol_1_val),
                         concat!("[", stringify!($eq2), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq2(&*left_val, &*right_val, &*max_diff_2_val),
+                        $crate::FloatCmpOpTol::$eq2(&*left_val, &*right_val, &*tol_2_val),
                         concat!("[", stringify!($eq3), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq3(&*left_val, &*right_val, &*max_diff_3_val)
+                        $crate::FloatCmpOpTol::$eq3(&*left_val, &*right_val, &*tol_3_val)
                     )
                 }
             }
         }
     });
-    ($left:expr, $right:expr, $eq1:ident <= $max_diff_1:expr, $eq2:ident <= $max_diff_2:expr) => ({
-        match (&$left, &$right, &$max_diff_1, &$max_diff_2) {
-            (left_val, right_val, max_diff_1_val, max_diff_2_val) => {
+    ($left:expr, $right:expr, $eq1:ident <= $tol_1:expr, $eq2:ident <= $tol_2:expr) => ({
+        match (&$left, &$right, &$tol_1, &$tol_2) {
+            (left_val, right_val, tol_1_val, tol_2_val) => {
                 if !$crate::float_eq!(
                     *left_val,
                     *right_val,
-                    $eq1 <= *max_diff_1_val,
-                    $eq2 <= *max_diff_2_val) {
+                    $eq1 <= *tol_1_val,
+                    $eq2 <= *tol_2_val) {
                     // The reborrows below are intentional. See assert_eq! in the standard library.
                     panic!(concat!(
 "assertion failed: `float_eq!(left, right, ", stringify!($eq1), " <= t, ", stringify!($eq2), r#" <= t)`
@@ -145,21 +145,21 @@ macro_rules! assert_float_eq {
                         $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
                         $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpTol::$eq1(&*left_val, &*right_val, &*tol_1_val),
                         concat!("[", stringify!($eq2), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq2(&*left_val, &*right_val, &*max_diff_2_val),
+                        $crate::FloatCmpOpTol::$eq2(&*left_val, &*right_val, &*tol_2_val),
                     )
                 }
             }
         }
     });
-    ($left:expr, $right:expr, $eq1:ident <= $max_diff_1:expr) => ({
-        match (&$left, &$right, &$max_diff_1) {
-            (left_val, right_val, max_diff_1_val) => {
+    ($left:expr, $right:expr, $eq1:ident <= $tol_1:expr) => ({
+        match (&$left, &$right, &$tol_1) {
+            (left_val, right_val, tol_1_val) => {
                 if !$crate::float_eq!(
                     *left_val,
                     *right_val,
-                    $eq1 <= *max_diff_1_val) {
+                    $eq1 <= *tol_1_val) {
                     // The reborrows below are intentional. See assert_eq! in the standard library.
                     panic!(concat!(
 "assertion failed: `float_eq!(left, right, ", stringify!($eq1), r#" <= t)`
@@ -173,24 +173,24 @@ macro_rules! assert_float_eq {
                         $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
                         $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpTol::$eq1(&*left_val, &*right_val, &*tol_1_val),
                     )
                 }
             }
         }
     });
-    ($left:expr, $right:expr, $($eq:ident <= $max_diff:expr,)+) => ({
-        $crate::assert_float_eq!($left, $right $(, $eq <= $max_diff)+)
+    ($left:expr, $right:expr, $($eq:ident <= $tol:expr,)+) => ({
+        $crate::assert_float_eq!($left, $right $(, $eq <= $tol)+)
     });
-    ($left:expr, $right:expr, $eq1:ident <= $max_diff_1:expr, $eq2:ident <= $max_diff_2:expr, $eq3:ident <= $max_diff_3:expr, $($arg:tt)+) => ({
-        match (&$left, &$right, &$max_diff_1, &$max_diff_2, &$max_diff_3) {
-            (left_val, right_val, max_diff_1_val, max_diff_2_val, max_diff_3_val) => {
+    ($left:expr, $right:expr, $eq1:ident <= $tol_1:expr, $eq2:ident <= $tol_2:expr, $eq3:ident <= $tol_3:expr, $($arg:tt)+) => ({
+        match (&$left, &$right, &$tol_1, &$tol_2, &$tol_3) {
+            (left_val, right_val, tol_1_val, tol_2_val, tol_3_val) => {
                 if !$crate::float_eq!(
                     *left_val,
                     *right_val,
-                    $eq1 <= *max_diff_1_val,
-                    $eq2 <= *max_diff_2_val,
-                    $eq3 <= *max_diff_3_val) {
+                    $eq1 <= *tol_1_val,
+                    $eq2 <= *tol_2_val,
+                    $eq3 <= *tol_3_val) {
                     // The reborrows below are intentional. See assert_eq! in the standard library.
                     panic!(concat!(
 "assertion failed: `float_eq!(left, right, ", stringify!($eq1), " <= t, ", stringify!($eq2), " <= t, ", stringify!($eq3), r#" <= t)`
@@ -206,25 +206,25 @@ macro_rules! assert_float_eq {
                         $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
                         $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpTol::$eq1(&*left_val, &*right_val, &*tol_1_val),
                         concat!("[", stringify!($eq2), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq2(&*left_val, &*right_val, &*max_diff_2_val),
+                        $crate::FloatCmpOpTol::$eq2(&*left_val, &*right_val, &*tol_2_val),
                         concat!("[", stringify!($eq3), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq3(&*left_val, &*right_val, &*max_diff_3_val),
+                        $crate::FloatCmpOpTol::$eq3(&*left_val, &*right_val, &*tol_3_val),
                         format_args!($($arg)+)
                     )
                 }
             }
         }
     });
-    ($left:expr, $right:expr, $eq1:ident <= $max_diff_1:expr, $eq2:ident <= $max_diff_2:expr, $($arg:tt)+) => ({
-        match (&$left, &$right, &$max_diff_1, &$max_diff_2) {
-            (left_val, right_val, max_diff_1_val, max_diff_2_val) => {
+    ($left:expr, $right:expr, $eq1:ident <= $tol_1:expr, $eq2:ident <= $tol_2:expr, $($arg:tt)+) => ({
+        match (&$left, &$right, &$tol_1, &$tol_2) {
+            (left_val, right_val, tol_1_val, tol_2_val) => {
                 if !$crate::float_eq!(
                     *left_val,
                     *right_val,
-                    $eq1 <= *max_diff_1_val,
-                    $eq2 <= *max_diff_2_val) {
+                    $eq1 <= *tol_1_val,
+                    $eq2 <= *tol_2_val) {
                     // The reborrows below are intentional. See assert_eq! in the standard library.
                     panic!(concat!(
 "assertion failed: `float_eq!(left, right, ", stringify!($eq1), " <= t, ", stringify!($eq2), r#" <= t)`
@@ -239,22 +239,22 @@ macro_rules! assert_float_eq {
                         $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
                         $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpTol::$eq1(&*left_val, &*right_val, &*tol_1_val),
                         concat!("[", stringify!($eq2), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq2(&*left_val, &*right_val, &*max_diff_2_val),
+                        $crate::FloatCmpOpTol::$eq2(&*left_val, &*right_val, &*tol_2_val),
                         format_args!($($arg)+)
                     )
                 }
             }
         }
     });
-    ($left:expr, $right:expr, $eq1:ident <= $max_diff_1:expr, $($arg:tt)+) => ({
-        match (&$left, &$right, &$max_diff_1) {
-            (left_val, right_val, max_diff_1_val) => {
+    ($left:expr, $right:expr, $eq1:ident <= $tol_1:expr, $($arg:tt)+) => ({
+        match (&$left, &$right, &$tol_1) {
+            (left_val, right_val, tol_1_val) => {
                 if !$crate::float_eq!(
                     *left_val,
                     *right_val,
-                    $eq1 <= *max_diff_1_val) {
+                    $eq1 <= *tol_1_val) {
                     // The reborrows below are intentional. See assert_eq! in the standard library.
                     panic!(concat!(
 "assertion failed: `float_eq!(left, right, ", stringify!($eq1), r#" <= t)`
@@ -268,7 +268,7 @@ macro_rules! assert_float_eq {
                         $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
                         $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpTol::$eq1(&*left_val, &*right_val, &*tol_1_val),
                         format_args!($($arg)+)
                     )
                 }
@@ -306,15 +306,15 @@ macro_rules! assert_float_eq {
 macro_rules! assert_float_ne {
     // the order of these rules matters a *lot* for the format string functionality
     // to work, otherwise we end up consuming the general case too early.
-    ($left:expr, $right:expr, $eq1:ident <= $max_diff_1:expr, $eq2:ident <= $max_diff_2:expr, $eq3:ident <= $max_diff_3:expr) => ({
-        match (&$left, &$right, &$max_diff_1, &$max_diff_2, &$max_diff_3) {
-            (left_val, right_val, max_diff_1_val, max_diff_2_val, max_diff_3_val) => {
+    ($left:expr, $right:expr, $eq1:ident <= $tol_1:expr, $eq2:ident <= $tol_2:expr, $eq3:ident <= $tol_3:expr) => ({
+        match (&$left, &$right, &$tol_1, &$tol_2, &$tol_3) {
+            (left_val, right_val, tol_1_val, tol_2_val, tol_3_val) => {
                 if !$crate::float_ne!(
                     *left_val,
                     *right_val,
-                    $eq1 <= *max_diff_1_val,
-                    $eq2 <= *max_diff_2_val,
-                    $eq3 <= *max_diff_3_val) {
+                    $eq1 <= *tol_1_val,
+                    $eq2 <= *tol_2_val,
+                    $eq3 <= *tol_3_val) {
                     // The reborrows below are intentional. See assert_eq! in the standard library.
                     panic!(concat!(
 "assertion failed: `float_ne!(left, right, ", stringify!($eq1), " <= t, ", stringify!($eq2), " <= t, ", stringify!($eq3), r#" <= t)`
@@ -330,24 +330,24 @@ macro_rules! assert_float_ne {
                         $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
                         $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpTol::$eq1(&*left_val, &*right_val, &*tol_1_val),
                         concat!("[", stringify!($eq2), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq2(&*left_val, &*right_val, &*max_diff_2_val),
+                        $crate::FloatCmpOpTol::$eq2(&*left_val, &*right_val, &*tol_2_val),
                         concat!("[", stringify!($eq3), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq3(&*left_val, &*right_val, &*max_diff_3_val)
+                        $crate::FloatCmpOpTol::$eq3(&*left_val, &*right_val, &*tol_3_val)
                     )
                 }
             }
         }
     });
-    ($left:expr, $right:expr, $eq1:ident <= $max_diff_1:expr, $eq2:ident <= $max_diff_2:expr) => ({
-        match (&$left, &$right, &$max_diff_1, &$max_diff_2) {
-            (left_val, right_val, max_diff_1_val, max_diff_2_val) => {
+    ($left:expr, $right:expr, $eq1:ident <= $tol_1:expr, $eq2:ident <= $tol_2:expr) => ({
+        match (&$left, &$right, &$tol_1, &$tol_2) {
+            (left_val, right_val, tol_1_val, tol_2_val) => {
                 if !$crate::float_ne!(
                     *left_val,
                     *right_val,
-                    $eq1 <= *max_diff_1_val,
-                    $eq2 <= *max_diff_2_val) {
+                    $eq1 <= *tol_1_val,
+                    $eq2 <= *tol_2_val) {
                     // The reborrows below are intentional. See assert_eq! in the standard library.
                     panic!(concat!(
 "assertion failed: `float_ne!(left, right, ", stringify!($eq1), " <= t, ", stringify!($eq2), r#" <= t)`
@@ -362,21 +362,21 @@ macro_rules! assert_float_ne {
                         $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
                         $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpTol::$eq1(&*left_val, &*right_val, &*tol_1_val),
                         concat!("[", stringify!($eq2), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq2(&*left_val, &*right_val, &*max_diff_2_val),
+                        $crate::FloatCmpOpTol::$eq2(&*left_val, &*right_val, &*tol_2_val),
                     )
                 }
             }
         }
     });
-    ($left:expr, $right:expr, $eq1:ident <= $max_diff_1:expr) => ({
-        match (&$left, &$right, &$max_diff_1) {
-            (left_val, right_val, max_diff_1_val) => {
+    ($left:expr, $right:expr, $eq1:ident <= $tol_1:expr) => ({
+        match (&$left, &$right, &$tol_1) {
+            (left_val, right_val, tol_1_val) => {
                 if !$crate::float_ne!(
                     *left_val,
                     *right_val,
-                    $eq1 <= *max_diff_1_val) {
+                    $eq1 <= *tol_1_val) {
                     // The reborrows below are intentional. See assert_eq! in the standard library.
                     panic!(concat!(
 "assertion failed: `float_ne!(left, right, ", stringify!($eq1), r#" <= t)`
@@ -390,24 +390,24 @@ macro_rules! assert_float_ne {
                         $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
                         $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpTol::$eq1(&*left_val, &*right_val, &*tol_1_val),
                     )
                 }
             }
         }
     });
-    ($left:expr, $right:expr, $($eq:ident <= $max_diff:expr,)+) => ({
-        $crate::assert_float_ne!($left, $right $(, $eq <= $max_diff)+)
+    ($left:expr, $right:expr, $($eq:ident <= $tol:expr,)+) => ({
+        $crate::assert_float_ne!($left, $right $(, $eq <= $tol)+)
     });
-    ($left:expr, $right:expr, $eq1:ident <= $max_diff_1:expr, $eq2:ident <= $max_diff_2:expr, $eq3:ident <= $max_diff_3:expr, $($arg:tt)+) => ({
-        match (&$left, &$right, &$max_diff_1, &$max_diff_2, &$max_diff_3) {
-            (left_val, right_val, max_diff_1_val, max_diff_2_val, max_diff_3_val) => {
+    ($left:expr, $right:expr, $eq1:ident <= $tol_1:expr, $eq2:ident <= $tol_2:expr, $eq3:ident <= $tol_3:expr, $($arg:tt)+) => ({
+        match (&$left, &$right, &$tol_1, &$tol_2, &$tol_3) {
+            (left_val, right_val, tol_1_val, tol_2_val, tol_3_val) => {
                 if !$crate::float_ne!(
                     *left_val,
                     *right_val,
-                    $eq1 <= *max_diff_1_val,
-                    $eq2 <= *max_diff_2_val,
-                    $eq3 <= *max_diff_3_val) {
+                    $eq1 <= *tol_1_val,
+                    $eq2 <= *tol_2_val,
+                    $eq3 <= *tol_3_val) {
                     // The reborrows below are intentional. See assert_eq! in the standard library.
                     panic!(concat!(
 "assertion failed: `float_ne!(left, right, ", stringify!($eq1), " <= t, ", stringify!($eq2), " <= t, ", stringify!($eq3), r#" <= t)`
@@ -423,25 +423,25 @@ macro_rules! assert_float_ne {
                         $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
                         $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpTol::$eq1(&*left_val, &*right_val, &*tol_1_val),
                         concat!("[", stringify!($eq2), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq2(&*left_val, &*right_val, &*max_diff_2_val),
+                        $crate::FloatCmpOpTol::$eq2(&*left_val, &*right_val, &*tol_2_val),
                         concat!("[", stringify!($eq3), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq3(&*left_val, &*right_val, &*max_diff_3_val),
+                        $crate::FloatCmpOpTol::$eq3(&*left_val, &*right_val, &*tol_3_val),
                         format_args!($($arg)+)
                     )
                 }
             }
         }
     });
-    ($left:expr, $right:expr, $eq1:ident <= $max_diff_1:expr, $eq2:ident <= $max_diff_2:expr, $($arg:tt)+) => ({
-        match (&$left, &$right, &$max_diff_1, &$max_diff_2) {
-            (left_val, right_val, max_diff_1_val, max_diff_2_val) => {
+    ($left:expr, $right:expr, $eq1:ident <= $tol_1:expr, $eq2:ident <= $tol_2:expr, $($arg:tt)+) => ({
+        match (&$left, &$right, &$tol_1, &$tol_2) {
+            (left_val, right_val, tol_1_val, tol_2_val) => {
                 if !$crate::float_ne!(
                     *left_val,
                     *right_val,
-                    $eq1 <= *max_diff_1_val,
-                    $eq2 <= *max_diff_2_val) {
+                    $eq1 <= *tol_1_val,
+                    $eq2 <= *tol_2_val) {
                     // The reborrows below are intentional. See assert_eq! in the standard library.
                     panic!(concat!(
 "assertion failed: `float_ne!(left, right, ", stringify!($eq1), " <= t, ", stringify!($eq2), r#" <= t)`
@@ -456,22 +456,22 @@ macro_rules! assert_float_ne {
                         $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
                         $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpTol::$eq1(&*left_val, &*right_val, &*tol_1_val),
                         concat!("[", stringify!($eq2), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq2(&*left_val, &*right_val, &*max_diff_2_val),
+                        $crate::FloatCmpOpTol::$eq2(&*left_val, &*right_val, &*tol_2_val),
                         format_args!($($arg)+)
                     )
                 }
             }
         }
     });
-    ($left:expr, $right:expr, $eq1:ident <= $max_diff_1:expr, $($arg:tt)+) => ({
-        match (&$left, &$right, &$max_diff_1) {
-            (left_val, right_val, max_diff_1_val) => {
+    ($left:expr, $right:expr, $eq1:ident <= $tol_1:expr, $($arg:tt)+) => ({
+        match (&$left, &$right, &$tol_1) {
+            (left_val, right_val, tol_1_val) => {
                 if !$crate::float_ne!(
                     *left_val,
                     *right_val,
-                    $eq1 <= *max_diff_1_val) {
+                    $eq1 <= *tol_1_val) {
                     // The reborrows below are intentional. See assert_eq! in the standard library.
                     panic!(concat!(
 "assertion failed: `float_ne!(left, right, ", stringify!($eq1), r#" <= t)`
@@ -485,7 +485,7 @@ macro_rules! assert_float_ne {
                         $crate::AssertFloatEq::debug_abs_diff(&*left_val, &*right_val),
                         $crate::AssertFloatEq::debug_ulps_diff(&*left_val, &*right_val),
                         concat!("[", stringify!($eq1), "]"),
-                        $crate::FloatCmpOpEpsilon::$eq1(&*left_val, &*right_val, &*max_diff_1_val),
+                        $crate::FloatCmpOpTol::$eq1(&*left_val, &*right_val, &*tol_1_val),
                         format_args!($($arg)+)
                     )
                 }
@@ -568,270 +568,242 @@ pub struct FloatEqCmp;
 #[doc(hidden)]
 impl FloatEqCmp {
     #[inline]
-    pub fn abs<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> bool
+    pub fn abs<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::Tol) -> bool
     where
         A: FloatEq<B>,
     {
-        a.eq_abs(b, max_diff)
+        a.eq_abs(b, tol)
     }
 
     #[inline]
-    pub fn abs_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::AllEpsilon) -> bool
+    pub fn abs_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::AllTol) -> bool
     where
         A: FloatEqAll<B>,
     {
-        a.eq_abs_all(b, max_diff)
+        a.eq_abs_all(b, tol)
     }
 
     #[inline]
-    pub fn rel<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> bool
+    pub fn rel<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::Tol) -> bool
     where
         A: FloatEq<B>,
     {
-        a.eq_rel(b, max_diff)
+        a.eq_rel(b, tol)
     }
 
     #[inline]
-    pub fn rel_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::AllEpsilon) -> bool
+    pub fn rel_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::AllTol) -> bool
     where
         A: FloatEqAll<B>,
     {
-        a.eq_rel_all(b, max_diff)
+        a.eq_rel_all(b, tol)
     }
 
     #[inline]
-    pub fn rmax<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> bool
+    pub fn rmax<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::Tol) -> bool
     where
         A: FloatEq<B>,
     {
-        a.eq_rmax(b, max_diff)
+        a.eq_rmax(b, tol)
     }
 
     #[inline]
-    pub fn rmax_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::AllEpsilon) -> bool
+    pub fn rmax_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::AllTol) -> bool
     where
         A: FloatEqAll<B>,
     {
-        a.eq_rmax_all(b, max_diff)
+        a.eq_rmax_all(b, tol)
     }
 
     #[inline]
-    pub fn rmin<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> bool
+    pub fn rmin<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::Tol) -> bool
     where
         A: FloatEq<B>,
     {
-        a.eq_rmin(b, max_diff)
+        a.eq_rmin(b, tol)
     }
 
     #[inline]
-    pub fn rmin_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::AllEpsilon) -> bool
+    pub fn rmin_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::AllTol) -> bool
     where
         A: FloatEqAll<B>,
     {
-        a.eq_rmin_all(b, max_diff)
+        a.eq_rmin_all(b, tol)
     }
 
     #[inline]
-    pub fn r1st<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> bool
+    pub fn r1st<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::Tol) -> bool
     where
         A: FloatEq<B>,
     {
-        a.eq_r1st(b, max_diff)
+        a.eq_r1st(b, tol)
     }
 
     #[inline]
-    pub fn r1st_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::AllEpsilon) -> bool
+    pub fn r1st_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::AllTol) -> bool
     where
         A: FloatEqAll<B>,
     {
-        a.eq_r1st_all(b, max_diff)
+        a.eq_r1st_all(b, tol)
     }
 
     #[inline]
-    pub fn r2nd<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> bool
+    pub fn r2nd<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::Tol) -> bool
     where
         A: FloatEq<B>,
     {
-        a.eq_r2nd(b, max_diff)
+        a.eq_r2nd(b, tol)
     }
 
     #[inline]
-    pub fn r2nd_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::AllEpsilon) -> bool
+    pub fn r2nd_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::AllTol) -> bool
     where
         A: FloatEqAll<B>,
     {
-        a.eq_r2nd_all(b, max_diff)
+        a.eq_r2nd_all(b, tol)
     }
 
     #[inline]
-    pub fn ulps<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &UlpsEpsilon<A::Epsilon>) -> bool
+    pub fn ulps<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &UlpsTol<A::Tol>) -> bool
     where
         A: FloatEq<B>,
     {
-        a.eq_ulps(b, max_diff)
+        a.eq_ulps(b, tol)
     }
 
     #[inline]
-    pub fn ulps_all<A: ?Sized, B: ?Sized>(
-        a: &A,
-        b: &B,
-        max_diff: &UlpsEpsilon<A::AllEpsilon>,
-    ) -> bool
+    pub fn ulps_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &UlpsTol<A::AllTol>) -> bool
     where
         A: FloatEqAll<B>,
     {
-        a.eq_ulps_all(b, max_diff)
+        a.eq_ulps_all(b, tol)
     }
 }
 
 #[doc(hidden)]
-pub struct FloatCmpOpEpsilon;
+pub struct FloatCmpOpTol;
 
 #[doc(hidden)]
-impl FloatCmpOpEpsilon {
+impl FloatCmpOpTol {
     #[inline]
-    pub fn abs<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> A::DebugEpsilon
+    pub fn abs<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::Tol) -> A::DebugTol
     where
         A: FloatEq<B> + AssertFloatEq<B>,
     {
-        a.debug_abs_epsilon(b, max_diff)
+        a.debug_abs_tol(b, tol)
     }
 
     #[inline]
-    pub fn abs_all<A: ?Sized, B: ?Sized>(
-        a: &A,
-        b: &B,
-        max_diff: &A::AllEpsilon,
-    ) -> A::AllDebugEpsilon
+    pub fn abs_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::AllTol) -> A::AllDebugTol
     where
         A: FloatEqAll<B> + AssertFloatEqAll<B>,
     {
-        a.debug_abs_all_epsilon(b, max_diff)
+        a.debug_abs_all_tol(b, tol)
     }
 
     #[inline]
-    pub fn rel<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> A::DebugEpsilon
+    pub fn rel<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::Tol) -> A::DebugTol
     where
         A: FloatEq<B> + AssertFloatEq<B>,
     {
-        a.debug_rel_epsilon(b, max_diff)
+        a.debug_rel_tol(b, tol)
     }
 
     #[inline]
-    pub fn rel_all<A: ?Sized, B: ?Sized>(
-        a: &A,
-        b: &B,
-        max_diff: &A::AllEpsilon,
-    ) -> A::AllDebugEpsilon
+    pub fn rel_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::AllTol) -> A::AllDebugTol
     where
         A: FloatEqAll<B> + AssertFloatEqAll<B>,
     {
-        a.debug_rel_all_epsilon(b, max_diff)
+        a.debug_rel_all_tol(b, tol)
     }
 
     #[inline]
-    pub fn rmax<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> A::DebugEpsilon
+    pub fn rmax<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::Tol) -> A::DebugTol
     where
         A: FloatEq<B> + AssertFloatEq<B>,
     {
-        a.debug_rmax_epsilon(b, max_diff)
+        a.debug_rmax_tol(b, tol)
     }
 
     #[inline]
-    pub fn rmax_all<A: ?Sized, B: ?Sized>(
-        a: &A,
-        b: &B,
-        max_diff: &A::AllEpsilon,
-    ) -> A::AllDebugEpsilon
+    pub fn rmax_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::AllTol) -> A::AllDebugTol
     where
         A: FloatEqAll<B> + AssertFloatEqAll<B>,
     {
-        a.debug_rmax_all_epsilon(b, max_diff)
+        a.debug_rmax_all_tol(b, tol)
     }
 
     #[inline]
-    pub fn rmin<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> A::DebugEpsilon
+    pub fn rmin<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::Tol) -> A::DebugTol
     where
         A: FloatEq<B> + AssertFloatEq<B>,
     {
-        a.debug_rmin_epsilon(b, max_diff)
+        a.debug_rmin_tol(b, tol)
     }
 
     #[inline]
-    pub fn rmin_all<A: ?Sized, B: ?Sized>(
-        a: &A,
-        b: &B,
-        max_diff: &A::AllEpsilon,
-    ) -> A::AllDebugEpsilon
+    pub fn rmin_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::AllTol) -> A::AllDebugTol
     where
         A: FloatEqAll<B> + AssertFloatEqAll<B>,
     {
-        a.debug_rmin_all_epsilon(b, max_diff)
+        a.debug_rmin_all_tol(b, tol)
     }
 
     #[inline]
-    pub fn r1st<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> A::DebugEpsilon
+    pub fn r1st<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::Tol) -> A::DebugTol
     where
         A: FloatEq<B> + AssertFloatEq<B>,
     {
-        a.debug_r1st_epsilon(b, max_diff)
+        a.debug_r1st_tol(b, tol)
     }
 
     #[inline]
-    pub fn r1st_all<A: ?Sized, B: ?Sized>(
-        a: &A,
-        b: &B,
-        max_diff: &A::AllEpsilon,
-    ) -> A::AllDebugEpsilon
+    pub fn r1st_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::AllTol) -> A::AllDebugTol
     where
         A: FloatEqAll<B> + AssertFloatEqAll<B>,
     {
-        a.debug_r1st_all_epsilon(b, max_diff)
+        a.debug_r1st_all_tol(b, tol)
     }
 
     #[inline]
-    pub fn r2nd<A: ?Sized, B: ?Sized>(a: &A, b: &B, max_diff: &A::Epsilon) -> A::DebugEpsilon
+    pub fn r2nd<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::Tol) -> A::DebugTol
     where
         A: FloatEq<B> + AssertFloatEq<B>,
     {
-        a.debug_r2nd_epsilon(b, max_diff)
+        a.debug_r2nd_tol(b, tol)
     }
 
     #[inline]
-    pub fn r2nd_all<A: ?Sized, B: ?Sized>(
-        a: &A,
-        b: &B,
-        max_diff: &A::AllEpsilon,
-    ) -> A::AllDebugEpsilon
+    pub fn r2nd_all<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &A::AllTol) -> A::AllDebugTol
     where
         A: FloatEqAll<B> + AssertFloatEqAll<B>,
     {
-        a.debug_r2nd_all_epsilon(b, max_diff)
+        a.debug_r2nd_all_tol(b, tol)
     }
 
     #[inline]
     pub fn ulps<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &UlpsEpsilon<A::Epsilon>,
-    ) -> UlpsEpsilon<A::DebugEpsilon>
+        tol: &UlpsTol<A::Tol>,
+    ) -> UlpsTol<A::DebugTol>
     where
         A: FloatEq<B> + AssertFloatEq<B>,
-        UlpsEpsilon<A::DebugEpsilon>: Sized,
+        UlpsTol<A::DebugTol>: Sized,
     {
-        a.debug_ulps_epsilon(b, max_diff)
+        a.debug_ulps_tol(b, tol)
     }
 
     #[inline]
     pub fn ulps_all<A: ?Sized, B: ?Sized>(
         a: &A,
         b: &B,
-        max_diff: &UlpsEpsilon<A::AllEpsilon>,
-    ) -> UlpsEpsilon<A::AllDebugEpsilon>
+        tol: &UlpsTol<A::AllTol>,
+    ) -> UlpsTol<A::AllDebugTol>
     where
         A: FloatEqAll<B> + AssertFloatEqAll<B>,
-        UlpsEpsilon<A::AllDebugEpsilon>: Sized,
+        UlpsTol<A::AllDebugTol>: Sized,
     {
-        a.debug_ulps_all_epsilon(b, max_diff)
+        a.debug_ulps_all_tol(b, tol)
     }
 }

@@ -88,57 +88,57 @@ macro_rules! impl_tests {
             }
 
             #[test]
-            fn debug_epsilon() {
+            fn debug_tol() {
                 let a: $float = 10.0;
                 let b: $float = 25.0;
 
-                assert_eq!(a.debug_abs_epsilon(&b, &3.0), 3.0);
-                assert_eq!(b.debug_abs_epsilon(&a, &3.0), 3.0);
+                assert_eq!(a.debug_abs_tol(&b, &3.0), 3.0);
+                assert_eq!(b.debug_abs_tol(&a, &3.0), 3.0);
 
-                assert_eq!(a.debug_rel_epsilon(&b, &0.5), 12.5);
-                assert_eq!(b.debug_rel_epsilon(&a, &0.5), 12.5);
+                assert_eq!(a.debug_rel_tol(&b, &0.5), 12.5);
+                assert_eq!(b.debug_rel_tol(&a, &0.5), 12.5);
 
-                assert_eq!(a.debug_rmax_epsilon(&b, &0.5), 12.5);
-                assert_eq!(b.debug_rmax_epsilon(&a, &0.5), 12.5);
+                assert_eq!(a.debug_rmax_tol(&b, &0.5), 12.5);
+                assert_eq!(b.debug_rmax_tol(&a, &0.5), 12.5);
 
-                assert_eq!(a.debug_rmin_epsilon(&b, &0.5), 5.0);
-                assert_eq!(b.debug_rmin_epsilon(&a, &0.5), 5.0);
+                assert_eq!(a.debug_rmin_tol(&b, &0.5), 5.0);
+                assert_eq!(b.debug_rmin_tol(&a, &0.5), 5.0);
 
-                assert_eq!(a.debug_r1st_epsilon(&b, &0.5), 5.0);
-                assert_eq!(b.debug_r1st_epsilon(&a, &0.5), 12.5);
+                assert_eq!(a.debug_r1st_tol(&b, &0.5), 5.0);
+                assert_eq!(b.debug_r1st_tol(&a, &0.5), 12.5);
 
-                assert_eq!(a.debug_r2nd_epsilon(&b, &0.5), 12.5);
-                assert_eq!(b.debug_r2nd_epsilon(&a, &0.5), 5.0);
+                assert_eq!(a.debug_r2nd_tol(&b, &0.5), 12.5);
+                assert_eq!(b.debug_r2nd_tol(&a, &0.5), 5.0);
 
-                assert_eq!(a.debug_ulps_epsilon(&b, &5), 5);
-                assert_eq!(b.debug_ulps_epsilon(&a, &5), 5);
+                assert_eq!(a.debug_ulps_tol(&b, &5), 5);
+                assert_eq!(b.debug_ulps_tol(&a, &5), 5);
             }
 
             #[test]
-            fn debug_all_epsilon() {
+            fn debug_all_tol() {
                 let a: $float = 10.0;
                 let b: $float = 25.0;
 
-                assert_eq!(a.debug_abs_all_epsilon(&b, &3.0), 3.0);
-                assert_eq!(b.debug_abs_all_epsilon(&a, &3.0), 3.0);
+                assert_eq!(a.debug_abs_all_tol(&b, &3.0), 3.0);
+                assert_eq!(b.debug_abs_all_tol(&a, &3.0), 3.0);
 
-                assert_eq!(a.debug_rel_all_epsilon(&b, &0.5), 12.5);
-                assert_eq!(b.debug_rel_all_epsilon(&a, &0.5), 12.5);
+                assert_eq!(a.debug_rel_all_tol(&b, &0.5), 12.5);
+                assert_eq!(b.debug_rel_all_tol(&a, &0.5), 12.5);
 
-                assert_eq!(a.debug_rmax_all_epsilon(&b, &0.5), 12.5);
-                assert_eq!(b.debug_rmax_all_epsilon(&a, &0.5), 12.5);
+                assert_eq!(a.debug_rmax_all_tol(&b, &0.5), 12.5);
+                assert_eq!(b.debug_rmax_all_tol(&a, &0.5), 12.5);
 
-                assert_eq!(a.debug_rmin_all_epsilon(&b, &0.5), 5.0);
-                assert_eq!(b.debug_rmin_all_epsilon(&a, &0.5), 5.0);
+                assert_eq!(a.debug_rmin_all_tol(&b, &0.5), 5.0);
+                assert_eq!(b.debug_rmin_all_tol(&a, &0.5), 5.0);
 
-                assert_eq!(a.debug_r1st_all_epsilon(&b, &0.5), 5.0);
-                assert_eq!(b.debug_r1st_all_epsilon(&a, &0.5), 12.5);
+                assert_eq!(a.debug_r1st_all_tol(&b, &0.5), 5.0);
+                assert_eq!(b.debug_r1st_all_tol(&a, &0.5), 12.5);
 
-                assert_eq!(a.debug_r2nd_all_epsilon(&b, &0.5), 12.5);
-                assert_eq!(b.debug_r2nd_all_epsilon(&a, &0.5), 5.0);
+                assert_eq!(a.debug_r2nd_all_tol(&b, &0.5), 12.5);
+                assert_eq!(b.debug_r2nd_all_tol(&a, &0.5), 5.0);
 
-                assert_eq!(a.debug_ulps_all_epsilon(&b, &5), 5);
-                assert_eq!(b.debug_ulps_all_epsilon(&a, &5), 5);
+                assert_eq!(a.debug_ulps_all_tol(&b, &5), 5);
+                assert_eq!(b.debug_ulps_all_tol(&a, &5), 5);
             }
         }
     };

@@ -1,10 +1,10 @@
-use float_eq::{AssertFloatEq, FloatEq, FloatEqDebugUlpsDiff, FloatEqUlpsEpsilon};
+use float_eq::{AssertFloatEq, FloatEq, FloatEqDebugUlpsDiff, FloatEqUlpsTol};
 
 #[derive(
-    Debug, Clone, Copy, PartialEq, FloatEqUlpsEpsilon, FloatEq, FloatEqDebugUlpsDiff, AssertFloatEq,
+    Debug, Clone, Copy, PartialEq, FloatEqUlpsTol, FloatEq, FloatEqDebugUlpsDiff, AssertFloatEq,
 )]
 #[float_eq(
-    ulps_epsilon = "MyUnitTypeUlps",
+    ulps_tol = "MyUnitTypeUlps",
     debug_ulps_diff = "MyUnitTypeDebugUlpsDiff"
 )]
 struct MyUnitType();
@@ -19,19 +19,19 @@ fn debug_diff() {
     assert_eq!(a.debug_ulps_diff(&b), MyUnitTypeDebugUlpsDiff {});
 }
 
-fn debug_epsilon() {
+fn debug_tol() {
     let a = MyUnitType {};
     let b = MyUnitType {};
 
-    assert_eq!(a.debug_abs_epsilon(&b, &MyUnitType {}), MyUnitType {});
-    assert_eq!(a.debug_rel_epsilon(&b, &MyUnitType {}), MyUnitType {});
+    assert_eq!(a.debug_abs_tol(&b, &MyUnitType {}), MyUnitType {});
+    assert_eq!(a.debug_rel_tol(&b, &MyUnitType {}), MyUnitType {});
     assert_eq!(
-        a.debug_ulps_epsilon(&b, &MyUnitTypeUlps {}),
+        a.debug_ulps_tol(&b, &MyUnitTypeUlps {}),
         MyUnitTypeUlps {}
     );
 }
 
 fn main() {
     debug_diff();
-    debug_epsilon();
+    debug_tol();
 }

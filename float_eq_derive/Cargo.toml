@@ -1,12 +1,12 @@
 [package]
 name = "float_eq_derive"
-version = "0.5.1-pre"
+version = "0.6.0-pre"
 authors = ["jtempest"]
 license = "MIT OR Apache-2.0"
 description = "Derive macro support for float_eq."
-homepage = "https://github.com/jtempest/float_eq-rs"
+homepage = "https://jtempest.github.io/float_eq-rs/"
 repository = "https://github.com/jtempest/float_eq-rs"
-documentation = "https://docs.rs/float_eq/"
+documentation = "https://jtempest.github.io/float_eq-rs/book/"
 keywords = ["approximate", "assert", "comparison", "equality", "float"]
 categories = ["algorithms", "development-tools::debugging", "no-std"]
 readme = "crates-io.md"

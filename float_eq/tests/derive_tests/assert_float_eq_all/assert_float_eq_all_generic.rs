@@ -1,5 +1,5 @@
 use float_eq::{
-    AssertFloatEq, AssertFloatEqAll, FloatEq, FloatEqAll, FloatEqDebugUlpsDiff, FloatEqUlpsEpsilon,
+    AssertFloatEq, AssertFloatEqAll, FloatEq, FloatEqAll, FloatEqDebugUlpsDiff, FloatEqUlpsTol,
 };
 
 #[derive(
@@ -7,14 +7,14 @@ use float_eq::{
     Clone,
     Copy,
     PartialEq,
-    FloatEqUlpsEpsilon,
+    FloatEqUlpsTol,
     FloatEq,
     FloatEqDebugUlpsDiff,
     AssertFloatEq,
     FloatEqAll,
     AssertFloatEqAll,
 )]
-#[float_eq(ulps_epsilon = "MyComplexUlps")]
+#[float_eq(ulps_tol = "MyComplexUlps")]
 struct MyComplexUlps<T> {
     re: T,
     im: T,

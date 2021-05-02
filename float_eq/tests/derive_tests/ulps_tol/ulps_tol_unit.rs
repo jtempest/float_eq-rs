@@ -1,7 +1,7 @@
-use float_eq::FloatEqUlpsEpsilon;
+use float_eq::FloatEqUlpsTol;
 
-#[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsEpsilon)]
-#[float_eq(ulps_epsilon = "MyComplex32Ulps")]
+#[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsTol)]
+#[float_eq(ulps_tol = "MyComplex32Ulps")]
 struct MyComplex32();
 
 fn main() {

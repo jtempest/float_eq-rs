@@ -1,6 +1,6 @@
 use float_eq::{
-    AssertFloatEq, AssertFloatEqAll, FloatEq, FloatEqAll, FloatEqDebugUlpsDiff, FloatEqUlpsEpsilon,
-    UlpsEpsilon,
+    AssertFloatEq, AssertFloatEqAll, FloatEq, FloatEqAll, FloatEqDebugUlpsDiff, FloatEqUlpsTol,
+    UlpsTol,
 };
 
 #[derive(
@@ -8,7 +8,7 @@ use float_eq::{
     Clone,
     Copy,
     PartialEq,
-    FloatEqUlpsEpsilon,
+    FloatEqUlpsTol,
     FloatEq,
     FloatEqDebugUlpsDiff,
     AssertFloatEq,
@@ -16,9 +16,9 @@ use float_eq::{
     AssertFloatEqAll,
 )]
 #[float_eq(
-    ulps_epsilon = "MyComplex32Ulps",
+    ulps_tol = "MyComplex32Ulps",
     debug_ulps_diff = "MyComplex32DebugUlpsDiff",
-    all_epsilon = "f32"
+    all_tol = "f32"
 )]
 struct MyComplex32 {
     re: f32,
@@ -32,7 +32,7 @@ impl MyComplex32 {
 }
 
 impl MyComplex32Ulps {
-    fn new(re: UlpsEpsilon<f32>, im: UlpsEpsilon<f32>) -> MyComplex32Ulps {
+    fn new(re: UlpsTol<f32>, im: UlpsTol<f32>) -> MyComplex32Ulps {
         MyComplex32Ulps { re, im }
     }
 }
@@ -42,12 +42,12 @@ fn main() {
     let b = MyComplex32 { re: 50.0, im: 1.0 };
 
     assert_eq!(
-        a.debug_abs_all_epsilon(&b, &0.2),
+        a.debug_abs_all_tol(&b, &0.2),
         MyComplex32::new(0.2, 0.2)
     );
     assert_eq!(
-        a.debug_rel_all_epsilon(&b, &0.2),
+        a.debug_rel_all_tol(&b, &0.2),
         MyComplex32::new(10.0, 40.0)
     );
-    assert_eq!(a.debug_ulps_all_epsilon(&b, &2), MyComplex32Ulps::new(2, 2));
+    assert_eq!(a.debug_ulps_all_tol(&b, &2), MyComplex32Ulps::new(2, 2));
 }

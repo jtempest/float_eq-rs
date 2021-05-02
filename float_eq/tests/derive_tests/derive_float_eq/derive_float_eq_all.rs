@@ -1,9 +1,9 @@
 use float_eq::{assert_float_eq, assert_float_ne, derive_float_eq};
 
 #[derive_float_eq(
-    ulps_epsilon = "MyComplex32Ulps",
+    ulps_tol = "MyComplex32Ulps",
     debug_ulps_diff = "MyComplex32UlpsDiff",
-    all_epsilon = "f32"
+    all_tol = "f32"
 )]
 #[derive(Debug, Clone, Copy, PartialEq)]
 struct MyComplex32 {

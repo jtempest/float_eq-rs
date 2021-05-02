@@ -1,7 +1,7 @@
-use float_eq::{FloatEq, FloatEqUlpsEpsilon};
+use float_eq::{FloatEq, FloatEqUlpsTol};
 
-#[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsEpsilon, FloatEq)]
-#[float_eq(ulps_epsilon = "MyTupleTypeUlps")]
+#[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsTol, FloatEq)]
+#[float_eq(ulps_tol = "MyTupleTypeUlps")]
 struct MyTupleType(f32, f64);
 
 fn main() {

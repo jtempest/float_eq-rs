@@ -33,10 +33,10 @@ off by a tiny amount?
 
 Well, what's happened is that the `f64` type being used to calculate `sum` has a
 *binary* numeric representation, and our inputs are specified as *decimal*
-numbers. Neither 0.1 nor 0.2 can be [represented exactly] in binary and so they
-have been rounded to the nearest values which can be. The addition is performed
-using binary arithmetic and finally is converted back into a decimal
-representation to be printed.
+numbers. Neither 0.1 nor 0.2 in decimal can be [represented exactly] in binary
+and so they have been rounded to the nearest values which can be. The addition
+is performed using binary arithmetic and finally is converted back into a
+decimal representation to be printed.
 
 We can see how these values have been rounded by printing them with a high
 enough precision:
@@ -143,8 +143,8 @@ be rounded down. This is why checking they are equal with `==` returns false.
 
 Nearly every operation on floating point numbers can result in further rounding,
 amplifying the effect of previous rounding. You may be able to mitigate this
-somewhat by reordering operations to reduce the margin, but it is impossible to
-avoid error entirely.
+somewhat by reordering operations to reduce the magnitude, but it is impossible
+to avoid error entirely.
 
 ## Distant relatives 
 
@@ -326,8 +326,8 @@ and communicating our thoughts to future readers and maintainers.
 
 Bearing that in mind, let's return to our original comparison. Now that we know
 why the exact `==` comparison failed, we can instead check that the difference
-between the expected and actual values lies within a margin of error, also known
-as the tolerance. This is what the [`float_eq!`] macro is for.
+between the expected and actual values lies within a margin of error, known as
+the tolerance. This is what the [`float_eq!`] macro is for.
 
 ### Absolute tolerance comparison
 
@@ -359,9 +359,9 @@ not very elegant. Fortunately, given that we know that we are comparing two
 normal numbers, we can use a [relative tolerance comparison] to scale the
 tolerance for us. The second operand is our expected value, so we may choose to
 use `r2nd <= tol`. With a relative tolerance comparison, the tolerance should be
-as if we were testing a value in the range 1.0 to 2.0, so `f64::EPSILON`
-indicates we are expecting our operands to be no more than one representable
-value apart from each other[^relative]:
+specified as if we were testing a value in the range 1.0 to 2.0, so
+`f64::EPSILON` indicates we are expecting our operands to be no more than one
+representable value apart from each other[^relative]:
 
 ```rust
 # use float_eq::float_eq;
@@ -441,7 +441,7 @@ test_integrate(0.2, 0.1, 1, 0.3);
 ### Drifting away
 
 Let's add some tests which use an increasing step size. Our first two are within
-the existing expected margin of error:
+the existing expected tolerance:
 
 ```rust
 test_integrate(0.0, 0.1, 1, 0.1);
@@ -475,7 +475,7 @@ different signs.
 operand).
 
 We can see that our actual and expected values are eleven ULPs from one another.
-That means that our margin of `f64::EPSILON`, equivalent to one ULP, is
+That means that our tolerance of `f64::EPSILON`, equivalent to one ULP, is
 inadequate. This is because we are performing `count` number of additions, and
 each one of those provides an answer accurate to within 0.5 ULPs, so they have
 accumulated more error than a single step or ten steps would. We might reason
@@ -510,10 +510,10 @@ thread 'main' panicked at 'assertion failed: `float_eq!(left, right, r2nd <= t)`
 ```
 
 Wow! There are a couple of things to note about this failure. The first is that
-because we are comparing versus zero, scaling our epsilon doesn't work - zero
-times anything is zero, so the margin does not take into account the step count.
-Even more noticable though is just *how far away* our actual value is in terms
-of representable numbers.
+because we are comparing versus zero, scaling our tolerance doesn't work - zero
+times anything is zero, so the tolerance does not take into account the step
+count. Even more noticable though is just *how far away* our actual value is in
+terms of representable numbers.
 
 There are two reasons why this has happened. The first is that, as mentioned
 above, zero is a special number and does not have the same properties as normal
@@ -521,9 +521,9 @@ floating point numbers. The second is that our final subtraction leaves us with
 a result many orders of magnitude smaller than the previous sum total, resulting
 in a [catastrophic cancellation].
 
-The solution here is to use a more sophisticated margin for our tolerance, one
-that takes into account the nature of the calculation itself. It needs to be an
-absolute test, since we may be comparing versus zero. It should also scale
+The solution here is to use a more sophisticated calculation for our tolerance,
+one that takes into account the nature of the calculation itself. It needs to be
+an absolute test, since we may be comparing versus zero. It should also scale
 relative to the largest intermediate value in the calculation and take into
 account the potential rounding errors from our repeated addition:
 
@@ -550,7 +550,7 @@ assert_float_eq!(
     actual,
     expected,
     r2nd <= f64::EPSILON,
-    "\nWhere: initial: {}, step: {}, count:{}",
+    "\nWhere: initial: {}, step: {}, count: {}",
     initial,
     step,
     count
@@ -563,7 +563,7 @@ thread 'main' panicked at 'assertion failed: `float_eq!(left, right, r2nd <= t)`
     abs_diff: `0.000000000000019539925233402755`,
    ulps_diff: `Some(11)`,
     [r2nd] t: `0.000000000000002220446049250313`:
-Where: initial: 0, step: 0.1, count:100', src\main.rs:14:9
+Where: initial: 0, step: 0.1, count: 100', src\main.rs:14:9
 ```
 
 ## Staying afloat
@@ -581,8 +581,8 @@ documentation].
 [^default]: By default. Other rounding modes such as always rounding up, down or
 toward zero are available.
 
-[^relative]: In general, `n * fXX::EPSILON` as a relative margin means "at most
-n representable values apart", for example you might use a margin of
+[^relative]: In general, `n * fXX::EPSILON` as a relative tolerance means "at
+most n representable values apart", for example you might use a tolerance of
 `4.0 * f64::EPSILON`.
 
 [absolute tolerance comparison]: ../background/float_comparison_algorithms.html#absolute-tolerance-comparison

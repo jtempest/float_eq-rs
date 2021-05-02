@@ -8,50 +8,50 @@ macro_rules! impl_tests {
                 assert_float_eq, assert_float_ne, float_eq, float_ne, FloatEq, FloatEqAll,
             };
 
-            fn check_eq_ulps(a: $float, b: $float, max_diff: $uint) {
-                assert_float_eq!(a, b, ulps <= max_diff);
-                assert_float_eq!(a, b, ulps_all <= max_diff);
+            fn check_eq_ulps(a: $float, b: $float, tol: $uint) {
+                assert_float_eq!(a, b, ulps <= tol);
+                assert_float_eq!(a, b, ulps_all <= tol);
 
-                assert!(float_eq!(a, b, ulps <= max_diff));
-                assert!(float_eq!(a, b, ulps_all <= max_diff));
-                assert!(!float_ne!(a, b, ulps <= max_diff));
-                assert!(!float_ne!(a, b, ulps_all <= max_diff));
+                assert!(float_eq!(a, b, ulps <= tol));
+                assert!(float_eq!(a, b, ulps_all <= tol));
+                assert!(!float_ne!(a, b, ulps <= tol));
+                assert!(!float_ne!(a, b, ulps_all <= tol));
 
-                assert!(a.eq_ulps(&b, &max_diff));
-                assert!(a.eq_ulps_all(&b, &max_diff));
-                assert!(!a.ne_ulps(&b, &max_diff));
-                assert!(!a.ne_ulps_all(&b, &max_diff));
+                assert!(a.eq_ulps(&b, &tol));
+                assert!(a.eq_ulps_all(&b, &tol));
+                assert!(!a.ne_ulps(&b, &tol));
+                assert!(!a.ne_ulps_all(&b, &tol));
             }
 
-            fn check_ne_ulps(a: $float, b: $float, max_diff: $uint) {
-                assert_float_ne!(a, b, ulps <= max_diff);
-                assert_float_ne!(a, b, ulps_all <= max_diff);
+            fn check_ne_ulps(a: $float, b: $float, tol: $uint) {
+                assert_float_ne!(a, b, ulps <= tol);
+                assert_float_ne!(a, b, ulps_all <= tol);
 
-                assert!(!float_eq!(a, b, ulps <= max_diff));
-                assert!(!float_eq!(a, b, ulps_all <= max_diff));
-                assert!(float_ne!(a, b, ulps <= max_diff));
-                assert!(float_ne!(a, b, ulps_all <= max_diff));
+                assert!(!float_eq!(a, b, ulps <= tol));
+                assert!(!float_eq!(a, b, ulps_all <= tol));
+                assert!(float_ne!(a, b, ulps <= tol));
+                assert!(float_ne!(a, b, ulps_all <= tol));
 
-                assert!(!a.eq_ulps(&b, &max_diff));
-                assert!(!a.eq_ulps_all(&b, &max_diff));
-                assert!(a.ne_ulps(&b, &max_diff));
-                assert!(a.ne_ulps_all(&b, &max_diff));
-            }
-
-            // also covers commutativity and negative values
-            fn check_eq(a: $float, b: $float, max_diff: $uint) {
-                check_eq_ulps(a, b, max_diff);
-                check_eq_ulps(b, a, max_diff);
-                check_eq_ulps(-a, -b, max_diff);
-                check_eq_ulps(-b, -a, max_diff);
+                assert!(!a.eq_ulps(&b, &tol));
+                assert!(!a.eq_ulps_all(&b, &tol));
+                assert!(a.ne_ulps(&b, &tol));
+                assert!(a.ne_ulps_all(&b, &tol));
             }
 
             // also covers commutativity and negative values
-            fn check_ne(a: $float, b: $float, max_diff: $uint) {
-                check_ne_ulps(a, b, max_diff);
-                check_ne_ulps(b, a, max_diff);
-                check_ne_ulps(-a, -b, max_diff);
-                check_ne_ulps(-b, -a, max_diff);
+            fn check_eq(a: $float, b: $float, tol: $uint) {
+                check_eq_ulps(a, b, tol);
+                check_eq_ulps(b, a, tol);
+                check_eq_ulps(-a, -b, tol);
+                check_eq_ulps(-b, -a, tol);
+            }
+
+            // also covers commutativity and negative values
+            fn check_ne(a: $float, b: $float, tol: $uint) {
+                check_ne_ulps(a, b, tol);
+                check_ne_ulps(b, a, tol);
+                check_ne_ulps(-a, -b, tol);
+                check_ne_ulps(-b, -a, tol);
             }
 
             // also covers tests over -f

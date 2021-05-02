@@ -1,5 +1,5 @@
 use float_eq::{
-    AssertFloatEq, AssertFloatEqAll, FloatEq, FloatEqAll, FloatEqDebugUlpsDiff, FloatEqUlpsEpsilon,
+    AssertFloatEq, AssertFloatEqAll, FloatEq, FloatEqAll, FloatEqDebugUlpsDiff, FloatEqUlpsTol,
 };
 
 #[derive(
@@ -8,7 +8,7 @@ use float_eq::{
     Debug,
     PartialEq,
     PartialOrd,
-    FloatEqUlpsEpsilon,
+    FloatEqUlpsTol,
     FloatEq,
     FloatEqDebugUlpsDiff,
     AssertFloatEq,

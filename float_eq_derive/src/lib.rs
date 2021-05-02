@@ -12,23 +12,27 @@ mod read;
 
 /// Helper for deriving the various float_eq traits.
 ///
-/// By default, this will derive [`FloatEqUlpsEpsilon`], [`FloatEq`], [`FloatEqDebugUlpsDiff`]
-/// and [`AssertFloatEq`]. Attribute parameters are passed through to the
-/// `#[float_eq(...)]` attribute, see the docs for each trait for more details,
-/// note that `ulps_epsilon` and `debug_ulps_diff` are required.
+/// By default, this will derive [`FloatEqUlpsTol`], [`FloatEq`], [`FloatEqDebugUlpsDiff`]
+/// and [`AssertFloatEq`].
 ///
-/// If the optional `all_epsilon` parameter is provided then [`FloatEqAll`] and
-/// [`AssertFloatEqAll`] are also derived.
+/// Attribute parameters are passed through to the `#[float_eq(...)]` attribute:
+/// `ulps_tol` is the name of the type generated for [`FloatEqUlpsTol`] and
+/// `debug_ulps_diff` the name of the type generated for [`FloatEqDebugUlpsDiff`].
+/// Both are required.
 ///
-/// [Example usage] is available in the top level `float_eq` documentation.
+/// If the optional `all_tol` parameter is provided, which names the type to be
+/// used by `FloatEqAll::AllTol` then [`FloatEqAll`] and [`AssertFloatEqAll`]
+/// are also derived.
 ///
-/// [`FloatEqUlpsEpsilon`]: trait.FloatEqUlpsEpsilon.html
+/// See [How to compare custom types] for more information and example usage.
+///
+/// [`FloatEqUlpsTol`]: trait.FloatEqUlpsTol.html
 /// [`FloatEqDebugUlpsDiff`]: trait.FloatEqDebugUlpsDiff.html
 /// [`FloatEq`]: trait.FloatEq.html
 /// [`FloatEqAll`]: trait.FloatEqAll.html
 /// [`AssertFloatEq`]: trait.AssertFloatEq.html
 /// [`AssertFloatEqAll`]: trait.AssertFloatEqAll.html
-/// [Example usage]: index.html#derivable
+/// [How to compare custom types]: https://jtempest.github.io/float_eq-rs/book/how_to/compare_custom_types.html#derive_float_eq
 #[proc_macro_attribute]
 pub fn derive_float_eq(
     args: proc_macro::TokenStream,
@@ -57,11 +61,11 @@ fn expand_derive_float_eq(
         })
     };
 
-    if !has_arg("ulps_epsilon") {
+    if !has_arg("ulps_tol") {
         let msg = format!(
-            r#"Missing epsilon ULPs type name required to derive trait.
+            r#"Missing ULPs tolerance type name required to derive trait.
 
-help: try specifying `ulps_epsilon = "{}Ulps"` in `derive_float_eq`."#,
+help: try specifying `ulps_tol = "{}Ulps"` in `derive_float_eq`."#,
             item.ident
         );
         return Err(syn::Error::new(Span::call_site(), msg));
@@ -78,12 +82,12 @@ help: try specifying `debug_ulps_diff = "{}DebugUlpsDiff"` in `derive_float_eq`.
     }
 
     let mut trait_names = vec![
-        "FloatEqUlpsEpsilon",
+        "FloatEqUlpsTol",
         "FloatEq",
         "FloatEqDebugUlpsDiff",
         "AssertFloatEq",
     ];
-    if has_arg("all_epsilon") {
+    if has_arg("all_tol") {
         trait_names.push("FloatEqAll");
         trait_names.push("AssertFloatEqAll");
     }
@@ -102,27 +106,27 @@ help: try specifying `debug_ulps_diff = "{}DebugUlpsDiff"` in `derive_float_eq`.
 }
 
 #[doc(hidden)]
-#[proc_macro_derive(FloatEqUlpsEpsilon, attributes(float_eq))]
-pub fn derive_float_eq_ulps_epsilon(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+#[proc_macro_derive(FloatEqUlpsTol, attributes(float_eq))]
+pub fn derive_float_eq_ulps_tol(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
-    expand_float_eq_ulps_epsilon(input)
+    expand_float_eq_ulps_tol(input)
         .unwrap_or_else(|e| e.to_compile_error())
         .into()
 }
 
-fn expand_float_eq_ulps_epsilon(input: DeriveInput) -> Result<TokenStream, syn::Error> {
+fn expand_float_eq_ulps_tol(input: DeriveInput) -> Result<TokenStream, syn::Error> {
     let vis = &input.vis;
     let struct_name = &input.ident;
-    let fields = read::all_fields_info("FloatEqUlpsEpsilon", &input)?;
+    let fields = read::all_fields_info("FloatEqUlpsTol", &input)?;
     let params = read::float_eq_attr(&input)?;
-    let ulps_name = params.ulps_epsilon_type()?;
+    let ulps_name = params.ulps_tol_type()?;
 
     let ulps_type = match fields.ty {
         read::FieldListType::Named => {
             let ulps_fields = fields.expand(|field| {
                 let name = &field.name;
                 let ty = &field.ty;
-                quote! { #name: float_eq::UlpsEpsilon<#ty> }
+                quote! { #name: float_eq::UlpsTol<#ty> }
             });
             quote! {
                 #vis struct #ulps_name {
@@ -133,7 +137,7 @@ fn expand_float_eq_ulps_epsilon(input: DeriveInput) -> Result<TokenStream, syn::
         read::FieldListType::Tuple => {
             let ulps_fields = fields.expand(|field| {
                 let ty = &field.ty;
-                quote! { float_eq::UlpsEpsilon<#ty> }
+                quote! { float_eq::UlpsTol<#ty> }
             });
             quote! {
                 #vis struct #ulps_name( #(#ulps_fields,)* );
@@ -145,7 +149,7 @@ fn expand_float_eq_ulps_epsilon(input: DeriveInput) -> Result<TokenStream, syn::
     };
 
     let doc = format!(
-        "Floating point ULPs epsilon representation derived from {}, used by float_eq.",
+        "Floating point ULPs tolerance representation derived from {}, used by float_eq.",
         struct_name.to_string()
     );
     Ok(quote! {
@@ -153,8 +157,8 @@ fn expand_float_eq_ulps_epsilon(input: DeriveInput) -> Result<TokenStream, syn::
         #[derive(Clone, Copy, Debug, PartialEq)]
         #ulps_type
 
-        impl float_eq::FloatEqUlpsEpsilon for #struct_name {
-            type UlpsEpsilon = #ulps_name;
+        impl float_eq::FloatEqUlpsTol for #struct_name {
+            type UlpsTol = #ulps_name;
         }
     })
 }
@@ -226,13 +230,13 @@ fn expand_float_eq(input: DeriveInput) -> Result<TokenStream, syn::Error> {
     let struct_name = &input.ident;
     let fields = read::all_fields_info("FloatEq", &input)?;
     let params = read::float_eq_attr(&input)?;
-    let ulps_name = params.ulps_epsilon_type()?;
+    let ulps_name = params.ulps_tol_type()?;
 
     let expand_exprs = |method| {
         let mut expanded = fields.expand(|field| {
             let name = &field.name;
             let method = Ident::new(method, Span::call_site());
-            quote! { self.#name.#method(&other.#name, &max_diff.#name) }
+            quote! { self.#name.#method(&other.#name, &tol.#name) }
         });
         if expanded.is_empty() {
             expanded.push(quote! { true });
@@ -249,35 +253,35 @@ fn expand_float_eq(input: DeriveInput) -> Result<TokenStream, syn::Error> {
 
     Ok(quote! {
         impl float_eq::FloatEq for #struct_name {
-            type Epsilon = Self;
+            type Tol = Self;
 
             #[inline]
-            fn eq_abs(&self, other: &Self, max_diff: &Self) -> bool {
+            fn eq_abs(&self, other: &Self, tol: &Self) -> bool {
                 #(#eq_abs)&&*
             }
 
             #[inline]
-            fn eq_rmax(&self, other: &Self, max_diff: &Self) -> bool {
+            fn eq_rmax(&self, other: &Self, tol: &Self) -> bool {
                 #(#eq_rmax)&&*
             }
 
             #[inline]
-            fn eq_rmin(&self, other: &Self, max_diff: &Self) -> bool {
+            fn eq_rmin(&self, other: &Self, tol: &Self) -> bool {
                 #(#eq_rmin)&&*
             }
 
             #[inline]
-            fn eq_r1st(&self, other: &Self, max_diff: &Self) -> bool {
+            fn eq_r1st(&self, other: &Self, tol: &Self) -> bool {
                 #(#eq_r1st)&&*
             }
 
             #[inline]
-            fn eq_r2nd(&self, other: &Self, max_diff: &Self) -> bool {
+            fn eq_r2nd(&self, other: &Self, tol: &Self) -> bool {
                 #(#eq_r2nd)&&*
             }
 
             #[inline]
-            fn eq_ulps(&self, other: &Self, max_diff: &#ulps_name) -> bool {
+            fn eq_ulps(&self, other: &Self, tol: &#ulps_name) -> bool {
                 #(#eq_ulps)&&*
             }
         }
@@ -297,7 +301,7 @@ fn expand_assert_float_eq(input: DeriveInput) -> Result<TokenStream, syn::Error>
     let struct_name = &input.ident;
     let fields = read::all_fields_info("AssertFloatEq", &input)?;
     let params = read::float_eq_attr(&input)?;
-    let ulps_name = params.ulps_epsilon_type()?;
+    let ulps_name = params.ulps_tol_type()?;
     let diff_name = params.debug_ulps_diff()?;
 
     let expand_diff_fields = |method| {
@@ -315,21 +319,21 @@ fn expand_assert_float_eq(input: DeriveInput) -> Result<TokenStream, syn::Error>
         fields.expand(|field| {
             let name = &field.name;
             let method = Ident::new(method, Span::call_site());
-            quote! { #name: self.#name.#method(&other.#name, &max_diff.#name) }
+            quote! { #name: self.#name.#method(&other.#name, &tol.#name) }
         })
     };
 
-    let abs_eps_fields = expand_eps_fields("debug_abs_epsilon");
-    let rmax_eps_fields = expand_eps_fields("debug_rmax_epsilon");
-    let rmin_eps_fields = expand_eps_fields("debug_rmin_epsilon");
-    let r1st_eps_fields = expand_eps_fields("debug_r1st_epsilon");
-    let r2nd_eps_fields = expand_eps_fields("debug_r2nd_epsilon");
-    let ulps_eps_fields = expand_eps_fields("debug_ulps_epsilon");
+    let abs_eps_fields = expand_eps_fields("debug_abs_tol");
+    let rmax_eps_fields = expand_eps_fields("debug_rmax_tol");
+    let rmin_eps_fields = expand_eps_fields("debug_rmin_tol");
+    let r1st_eps_fields = expand_eps_fields("debug_r1st_tol");
+    let r2nd_eps_fields = expand_eps_fields("debug_r2nd_tol");
+    let ulps_eps_fields = expand_eps_fields("debug_ulps_tol");
 
     Ok(quote! {
         impl float_eq::AssertFloatEq for #struct_name {
             type DebugAbsDiff = Self;
-            type DebugEpsilon = Self;
+            type DebugTol = Self;
 
             #[inline]
             fn debug_abs_diff(&self, other: &Self) -> Self {
@@ -346,42 +350,42 @@ fn expand_assert_float_eq(input: DeriveInput) -> Result<TokenStream, syn::Error>
             }
 
             #[inline]
-            fn debug_abs_epsilon(&self, other: &Self, max_diff: &Self) -> Self {
+            fn debug_abs_tol(&self, other: &Self, tol: &Self) -> Self {
                 Self {
                     #(#abs_eps_fields,)*
                 }
             }
 
             #[inline]
-            fn debug_rmax_epsilon(&self, other: &Self, max_diff: &Self) -> Self {
+            fn debug_rmax_tol(&self, other: &Self, tol: &Self) -> Self {
                 Self {
                     #(#rmax_eps_fields,)*
                 }
             }
 
             #[inline]
-            fn debug_rmin_epsilon(&self, other: &Self, max_diff: &Self) -> Self {
+            fn debug_rmin_tol(&self, other: &Self, tol: &Self) -> Self {
                 Self {
                     #(#rmin_eps_fields,)*
                 }
             }
 
             #[inline]
-            fn debug_r1st_epsilon(&self, other: &Self, max_diff: &Self) -> Self {
+            fn debug_r1st_tol(&self, other: &Self, tol: &Self) -> Self {
                 Self {
                     #(#r1st_eps_fields,)*
                 }
             }
 
             #[inline]
-            fn debug_r2nd_epsilon(&self, other: &Self, max_diff: &Self) -> Self {
+            fn debug_r2nd_tol(&self, other: &Self, tol: &Self) -> Self {
                 Self {
                     #(#r2nd_eps_fields,)*
                 }
             }
 
             #[inline]
-            fn debug_ulps_epsilon(&self, other: &Self, max_diff: &#ulps_name) -> #ulps_name {
+            fn debug_ulps_tol(&self, other: &Self, tol: &#ulps_name) -> #ulps_name {
                 #ulps_name {
                     #(#ulps_eps_fields,)*
                 }
@@ -403,13 +407,13 @@ fn expand_float_eq_all(input: DeriveInput) -> Result<TokenStream, syn::Error> {
     let struct_name = &input.ident;
     let fields = read::all_fields_info("FloatEqAll", &input)?;
     let params = read::float_eq_attr(&input)?;
-    let all_epsilon = params.all_epsilon_type()?;
+    let all_tol = params.all_tol_type()?;
 
     let expand_exprs = |method| {
         let mut expanded = fields.expand(|field| {
             let name = &field.name;
             let method = Ident::new(method, Span::call_site());
-            quote! { self.#name.#method(&other.#name, max_diff) }
+            quote! { self.#name.#method(&other.#name, tol) }
         });
         if expanded.is_empty() {
             expanded.push(quote! { true });
@@ -426,35 +430,35 @@ fn expand_float_eq_all(input: DeriveInput) -> Result<TokenStream, syn::Error> {
 
     Ok(quote! {
         impl float_eq::FloatEqAll for #struct_name {
-            type AllEpsilon = #all_epsilon;
+            type AllTol = #all_tol;
 
             #[inline]
-            fn eq_abs_all(&self, other: &Self, max_diff: &#all_epsilon) -> bool {
+            fn eq_abs_all(&self, other: &Self, tol: &#all_tol) -> bool {
                 #(#eq_abs)&&*
             }
 
             #[inline]
-            fn eq_rmax_all(&self, other: &Self, max_diff: &#all_epsilon) -> bool {
+            fn eq_rmax_all(&self, other: &Self, tol: &#all_tol) -> bool {
                 #(#eq_rmax)&&*
             }
 
             #[inline]
-            fn eq_rmin_all(&self, other: &Self, max_diff: &#all_epsilon) -> bool {
+            fn eq_rmin_all(&self, other: &Self, tol: &#all_tol) -> bool {
                 #(#eq_rmin)&&*
             }
 
             #[inline]
-            fn eq_r1st_all(&self, other: &Self, max_diff: &#all_epsilon) -> bool {
+            fn eq_r1st_all(&self, other: &Self, tol: &#all_tol) -> bool {
                 #(#eq_r1st)&&*
             }
 
             #[inline]
-            fn eq_r2nd_all(&self, other: &Self, max_diff: &#all_epsilon) -> bool {
+            fn eq_r2nd_all(&self, other: &Self, tol: &#all_tol) -> bool {
                 #(#eq_r2nd)&&*
             }
 
             #[inline]
-            fn eq_ulps_all(&self, other: &Self, max_diff: &::float_eq::UlpsEpsilon<Self::AllEpsilon>) -> bool {
+            fn eq_ulps_all(&self, other: &Self, tol: &::float_eq::UlpsTol<Self::AllTol>) -> bool {
                 #(#eq_ulps)&&*
             }
         }
@@ -474,69 +478,69 @@ fn expand_assert_float_eq_all(input: DeriveInput) -> Result<TokenStream, syn::Er
     let struct_name = &input.ident;
     let fields = read::all_fields_info("AssertFloatEqAll", &input)?;
     let params = read::float_eq_attr(&input)?;
-    let all_epsilon = params.all_epsilon_type()?;
+    let all_tol = params.all_tol_type()?;
 
     let expand_fields = |method| {
         fields.expand(|field| {
             let name = &field.name;
             let method = Ident::new(method, Span::call_site());
-            quote! { #name: self.#name.#method(&other.#name, max_diff) }
+            quote! { #name: self.#name.#method(&other.#name, tol) }
         })
     };
 
-    let abs_eps_fields = expand_fields("debug_abs_all_epsilon");
-    let rmax_eps_fields = expand_fields("debug_rmax_all_epsilon");
-    let rmin_eps_fields = expand_fields("debug_rmin_all_epsilon");
-    let r1st_eps_fields = expand_fields("debug_r1st_all_epsilon");
-    let r2nd_eps_fields = expand_fields("debug_r2nd_all_epsilon");
-    let ulps_eps_fields = expand_fields("debug_ulps_all_epsilon");
+    let abs_eps_fields = expand_fields("debug_abs_all_tol");
+    let rmax_eps_fields = expand_fields("debug_rmax_all_tol");
+    let rmin_eps_fields = expand_fields("debug_rmin_all_tol");
+    let r1st_eps_fields = expand_fields("debug_r1st_all_tol");
+    let r2nd_eps_fields = expand_fields("debug_r2nd_all_tol");
+    let ulps_eps_fields = expand_fields("debug_ulps_all_tol");
 
     Ok(quote! {
         impl float_eq::AssertFloatEqAll for #struct_name {
-            type AllDebugEpsilon = Self;
+            type AllDebugTol = Self;
 
             #[inline]
-            fn debug_abs_all_epsilon(&self, other: &Self, max_diff: &#all_epsilon) -> Self {
+            fn debug_abs_all_tol(&self, other: &Self, tol: &#all_tol) -> Self {
                 Self {
                     #(#abs_eps_fields,)*
                 }
             }
 
             #[inline]
-            fn debug_rmax_all_epsilon(&self, other: &Self, max_diff: &#all_epsilon) -> Self {
+            fn debug_rmax_all_tol(&self, other: &Self, tol: &#all_tol) -> Self {
                 Self {
                     #(#rmax_eps_fields,)*
                 }
             }
 
             #[inline]
-            fn debug_rmin_all_epsilon(&self, other: &Self, max_diff: &#all_epsilon) -> Self {
+            fn debug_rmin_all_tol(&self, other: &Self, tol: &#all_tol) -> Self {
                 Self {
                     #(#rmin_eps_fields,)*
                 }
             }
 
             #[inline]
-            fn debug_r1st_all_epsilon(&self, other: &Self, max_diff: &#all_epsilon) -> Self {
+            fn debug_r1st_all_tol(&self, other: &Self, tol: &#all_tol) -> Self {
                 Self {
                     #(#r1st_eps_fields,)*
                 }
             }
 
             #[inline]
-            fn debug_r2nd_all_epsilon(&self, other: &Self, max_diff: &#all_epsilon) -> Self {
+            fn debug_r2nd_all_tol(&self, other: &Self, tol: &#all_tol) -> Self {
                 Self {
                     #(#r2nd_eps_fields,)*
                 }
             }
 
             #[inline]
-            fn debug_ulps_all_epsilon(
+            fn debug_ulps_all_tol(
                 &self,
                 other: &Self,
-                max_diff: &::float_eq::UlpsEpsilon<Self::AllEpsilon>
-            ) -> ::float_eq::UlpsEpsilon<Self::AllDebugEpsilon> {
-                ::float_eq::UlpsEpsilon::<Self::AllDebugEpsilon> {
+                tol: &::float_eq::UlpsTol<Self::AllTol>
+            ) -> ::float_eq::UlpsTol<Self::AllDebugTol> {
+                ::float_eq::UlpsTol::<Self::AllDebugTol> {
                     #(#ulps_eps_fields,)*
                 }
             }

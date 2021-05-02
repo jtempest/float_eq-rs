@@ -1,5 +1,0 @@
-error: Expected only one Epsilon type name, previously saw `all_epsilon = "Epsilon1"`.
- --> $DIR/float_eq_all_duplicate_epsilon.rs:7:19
-  |
-7 |     all_epsilon = "Epsilon2"
-  |                   ^^^^^^^^^^

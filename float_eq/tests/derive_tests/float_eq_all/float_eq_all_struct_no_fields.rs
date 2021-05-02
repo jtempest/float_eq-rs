@@ -1,7 +1,7 @@
-use float_eq::{FloatEq, FloatEqAll, FloatEqUlpsEpsilon};
+use float_eq::{FloatEq, FloatEqAll, FloatEqUlpsTol};
 
-#[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsEpsilon, FloatEq, FloatEqAll)]
-#[float_eq(ulps_epsilon = "MyNoFieldsTypeUlps", all_epsilon = "f64")]
+#[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsTol, FloatEq, FloatEqAll)]
+#[float_eq(ulps_tol = "MyNoFieldsTypeUlps", all_tol = "f64")]
 struct MyNoFieldsType;
 
 fn main() {

@@ -91,18 +91,18 @@ fn unnamed_field_info((n, field): (usize, &syn::Field)) -> FieldInfo {
 #[derive(Default)]
 pub struct FloatEqAttr {
     struct_name: String,
-    ulps_epsilon_type_name: Option<Ident>,
+    ulps_tol_type_name: Option<Ident>,
     debug_ulps_diff_type_name: Option<Ident>,
-    all_epsilon_type_name: Option<Ident>,
+    all_tol_type_name: Option<Ident>,
 }
 
 impl FloatEqAttr {
-    pub fn ulps_epsilon_type(&self) -> Result<&Ident, syn::Error> {
-        self.ulps_epsilon_type_name.as_ref().ok_or({
+    pub fn ulps_tol_type(&self) -> Result<&Ident, syn::Error> {
+        self.ulps_tol_type_name.as_ref().ok_or({
             let msg = format!(
-                r#"Missing epsilon ULPs type name required to derive trait.
+                r#"Missing ULPs tolerance type name required to derive trait.
 
-help: try adding `#[float_eq(ulps_epsilon = "{}Ulps")]` to your type."#,
+help: try adding `#[float_eq(ulps_tol = "{}Ulps")]` to your type."#,
                 self.struct_name
             );
             syn::Error::new(Span::call_site(), msg)
@@ -121,12 +121,11 @@ help: try adding `#[float_eq(debug_ulps_diff = "{}DebugUlpsDiff")]` to your type
         })
     }
 
-    pub fn all_epsilon_type(&self) -> Result<&Ident, syn::Error> {
-        self.all_epsilon_type_name.as_ref().ok_or({
-            let msg = 
-                r#"Missing Epsilon type name required to derive trait.
+    pub fn all_tol_type(&self) -> Result<&Ident, syn::Error> {
+        self.all_tol_type_name.as_ref().ok_or({
+            let msg = r#"Missing Tol type name required to derive trait.
 
-help: try adding `#[float_eq(all_epsilon = "T")]` to your type, where T is commonly `f32` or `f64`."#;
+help: try adding `#[float_eq(all_tol = "T")]` to your type, where T is commonly `f32` or `f64`."#;
             syn::Error::new(Span::call_site(), msg)
         })
     }
@@ -146,13 +145,13 @@ pub fn float_eq_attr(input: &DeriveInput) -> Result<FloatEqAttr, syn::Error> {
     };
     for nv in nv_pair_lists.into_iter().flatten() {
         let name = nv.name.to_string();
-        if name == "ulps_epsilon" {
-            if attr_values.ulps_epsilon_type_name.is_none() {
-                attr_values.ulps_epsilon_type_name = Some(nv.value);
+        if name == "ulps_tol" {
+            if attr_values.ulps_tol_type_name.is_none() {
+                attr_values.ulps_tol_type_name = Some(nv.value);
             } else {
                 let msg = format!(
-                    r#"Expected only one epsilon ULPs type name, previously saw `ulps_epsilon = "{}"`."#,
-                    attr_values.ulps_epsilon_type_name.unwrap().to_string()
+                    r#"Expected only one ULPs tolerance type name, previously saw `ulps_tol = "{}"`."#,
+                    attr_values.ulps_tol_type_name.unwrap().to_string()
                 );
                 return Err(syn::Error::new(nv.value.span(), msg));
             }
@@ -166,13 +165,13 @@ pub fn float_eq_attr(input: &DeriveInput) -> Result<FloatEqAttr, syn::Error> {
                 );
                 return Err(syn::Error::new(nv.value.span(), msg));
             }
-        } else if name == "all_epsilon" {
-            if attr_values.all_epsilon_type_name.is_none() {
-                attr_values.all_epsilon_type_name = Some(nv.value);
+        } else if name == "all_tol" {
+            if attr_values.all_tol_type_name.is_none() {
+                attr_values.all_tol_type_name = Some(nv.value);
             } else {
                 let msg = format!(
-                    r#"Expected only one Epsilon type name, previously saw `all_epsilon = "{}"`."#,
-                    attr_values.all_epsilon_type_name.unwrap().to_string()
+                    r#"Expected only one Tol type name, previously saw `all_tol = "{}"`."#,
+                    attr_values.all_tol_type_name.unwrap().to_string()
                 );
                 return Err(syn::Error::new(nv.value.span(), msg));
             }
@@ -193,7 +192,7 @@ fn name_type_pair_list(
         list.nested.iter().map(name_type_pair).collect()
     } else {
         let msg = format!(
-            r#"float_eq attribute must be a list of options, for example `#[float_eq(ulps_epsilon = "{}Ulps")]`"#,
+            r#"float_eq attribute must be a list of options, for example `#[float_eq(ulps_tol = "{}Ulps")]`"#,
             struct_name.to_string()
         );
         Err(syn::Error::new(attr.path.span(), msg))

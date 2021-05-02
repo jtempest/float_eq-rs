@@ -1,4 +1,4 @@
-use float_eq::{AssertFloatEq, FloatEq, FloatEqDebugUlpsDiff, FloatEqUlpsEpsilon};
+use float_eq::{AssertFloatEq, FloatEq, FloatEqDebugUlpsDiff, FloatEqUlpsTol};
 
 #[derive(
     Clone,
@@ -6,7 +6,7 @@ use float_eq::{AssertFloatEq, FloatEq, FloatEqDebugUlpsDiff, FloatEqUlpsEpsilon}
     Debug,
     PartialEq,
     PartialOrd,
-    FloatEqUlpsEpsilon,
+    FloatEqUlpsTol,
     FloatEq,
     FloatEqDebugUlpsDiff,
     AssertFloatEq,

@@ -150,32 +150,32 @@ macro_rules! wrapper_tests {
         }
 
         #[test]
-        fn debug_epsilon() {
+        fn debug_tol() {
             let a = $t::new([2.0f32, 4.25]);
             let b = $t::new([2.5f32, 4.0]);
             let eps = [0.1, 0.2];
 
-            assert_eq!(a.debug_abs_epsilon(&b, &eps), [0.1, 0.2]);
-            assert_eq!(a.debug_rel_epsilon(&b, &eps), [0.25, 0.85]);
-            assert_eq!(a.debug_rmax_epsilon(&b, &eps), [0.25, 0.85]);
-            assert_eq!(a.debug_rmin_epsilon(&b, &eps), [0.2, 0.8]);
-            assert_eq!(a.debug_r1st_epsilon(&b, &eps), [0.2, 0.85]);
-            assert_eq!(a.debug_r2nd_epsilon(&b, &eps), [0.25, 0.8]);
-            assert_eq!(a.debug_ulps_epsilon(&b, &[1, 2]), [1, 2]);
+            assert_eq!(a.debug_abs_tol(&b, &eps), [0.1, 0.2]);
+            assert_eq!(a.debug_rel_tol(&b, &eps), [0.25, 0.85]);
+            assert_eq!(a.debug_rmax_tol(&b, &eps), [0.25, 0.85]);
+            assert_eq!(a.debug_rmin_tol(&b, &eps), [0.2, 0.8]);
+            assert_eq!(a.debug_r1st_tol(&b, &eps), [0.2, 0.85]);
+            assert_eq!(a.debug_r2nd_tol(&b, &eps), [0.25, 0.8]);
+            assert_eq!(a.debug_ulps_tol(&b, &[1, 2]), [1, 2]);
         }
 
         #[test]
-        fn debug_all_epsilon() {
+        fn debug_all_tol() {
             let a = $t::new([2.0f32, 4.25]);
             let b = $t::new([2.5f32, 4.0]);
 
-            assert_eq!(a.debug_abs_all_epsilon(&b, &0.2), [0.2, 0.2]);
-            assert_eq!(a.debug_rel_all_epsilon(&b, &0.2), [0.5, 0.85]);
-            assert_eq!(a.debug_rmax_all_epsilon(&b, &0.2), [0.5, 0.85]);
-            assert_eq!(a.debug_rmin_all_epsilon(&b, &0.2), [0.4, 0.8]);
-            assert_eq!(a.debug_r1st_all_epsilon(&b, &0.2), [0.4, 0.85]);
-            assert_eq!(a.debug_r2nd_all_epsilon(&b, &0.2), [0.5, 0.8]);
-            assert_eq!(a.debug_ulps_all_epsilon(&b, &2), [2, 2]);
+            assert_eq!(a.debug_abs_all_tol(&b, &0.2), [0.2, 0.2]);
+            assert_eq!(a.debug_rel_all_tol(&b, &0.2), [0.5, 0.85]);
+            assert_eq!(a.debug_rmax_all_tol(&b, &0.2), [0.5, 0.85]);
+            assert_eq!(a.debug_rmin_all_tol(&b, &0.2), [0.4, 0.8]);
+            assert_eq!(a.debug_r1st_all_tol(&b, &0.2), [0.4, 0.85]);
+            assert_eq!(a.debug_r2nd_all_tol(&b, &0.2), [0.5, 0.8]);
+            assert_eq!(a.debug_ulps_all_tol(&b, &2), [2, 2]);
         }
     };
 }

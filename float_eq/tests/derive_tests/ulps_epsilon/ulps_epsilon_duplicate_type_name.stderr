@@ -1,5 +1,0 @@
-error: Expected only one epsilon ULPs type name, previously saw `ulps_epsilon = "Name1"`.
- --> $DIR/ulps_epsilon_duplicate_type_name.rs:4:51
-  |
-4 | #[float_eq(ulps_epsilon = "Name1", ulps_epsilon = "Name2")]
-  |                                                   ^^^^^^^

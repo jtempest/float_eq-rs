@@ -41,7 +41,7 @@ error: This trait does not yet support derive for generic types.
 error: This trait does not yet support derive for generic types.
   --> $DIR/assert_float_eq_all_generic.rs:10:5
    |
-10 |     FloatEqUlpsEpsilon,
-   |     ^^^^^^^^^^^^^^^^^^
+10 |     FloatEqUlpsTol,
+   |     ^^^^^^^^^^^^^^
    |
    = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)

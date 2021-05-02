@@ -1,6 +1,6 @@
 use crate::{
     AssertFloatEq, AssertFloatEqAll, DebugUlpsDiff, FloatEq, FloatEqAll, FloatEqDebugUlpsDiff,
-    FloatEqUlpsEpsilon, UlpsEpsilon,
+    FloatEqUlpsTol, UlpsTol,
 };
 use std::boxed::Box;
 use std::collections::{BTreeMap, HashMap, LinkedList, VecDeque};
@@ -14,44 +14,44 @@ use std::sync::Arc;
 //------------------------------------------------------------------------------
 macro_rules! impl_traits_for_wrapper {
     ($t:ident) => {
-        impl<T: ?Sized + FloatEqUlpsEpsilon> FloatEqUlpsEpsilon for $t<T> {
-            type UlpsEpsilon = $t<UlpsEpsilon<T>>;
+        impl<T: ?Sized + FloatEqUlpsTol> FloatEqUlpsTol for $t<T> {
+            type UlpsTol = $t<UlpsTol<T>>;
         }
 
         impl<A: ?Sized, B: ?Sized> FloatEq<$t<B>> for $t<A>
         where
             A: FloatEq<B>,
         {
-            type Epsilon = A::Epsilon;
+            type Tol = A::Tol;
 
             #[inline]
-            fn eq_abs(&self, other: &$t<B>, max_diff: &Self::Epsilon) -> bool {
-                FloatEq::eq_abs(&**self, &**other, max_diff)
+            fn eq_abs(&self, other: &$t<B>, tol: &Self::Tol) -> bool {
+                FloatEq::eq_abs(&**self, &**other, tol)
             }
 
             #[inline]
-            fn eq_rmax(&self, other: &$t<B>, max_diff: &Self::Epsilon) -> bool {
-                FloatEq::eq_rmax(&**self, &**other, max_diff)
+            fn eq_rmax(&self, other: &$t<B>, tol: &Self::Tol) -> bool {
+                FloatEq::eq_rmax(&**self, &**other, tol)
             }
 
             #[inline]
-            fn eq_rmin(&self, other: &$t<B>, max_diff: &Self::Epsilon) -> bool {
-                FloatEq::eq_rmin(&**self, &**other, max_diff)
+            fn eq_rmin(&self, other: &$t<B>, tol: &Self::Tol) -> bool {
+                FloatEq::eq_rmin(&**self, &**other, tol)
             }
 
             #[inline]
-            fn eq_r1st(&self, other: &$t<B>, max_diff: &Self::Epsilon) -> bool {
-                FloatEq::eq_r1st(&**self, &**other, max_diff)
+            fn eq_r1st(&self, other: &$t<B>, tol: &Self::Tol) -> bool {
+                FloatEq::eq_r1st(&**self, &**other, tol)
             }
 
             #[inline]
-            fn eq_r2nd(&self, other: &$t<B>, max_diff: &Self::Epsilon) -> bool {
-                FloatEq::eq_r2nd(&**self, &**other, max_diff)
+            fn eq_r2nd(&self, other: &$t<B>, tol: &Self::Tol) -> bool {
+                FloatEq::eq_r2nd(&**self, &**other, tol)
             }
 
             #[inline]
-            fn eq_ulps(&self, other: &$t<B>, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
-                FloatEq::eq_ulps(&**self, &**other, max_diff)
+            fn eq_ulps(&self, other: &$t<B>, tol: &UlpsTol<Self::Tol>) -> bool {
+                FloatEq::eq_ulps(&**self, &**other, tol)
             }
         }
 
@@ -59,36 +59,36 @@ macro_rules! impl_traits_for_wrapper {
         where
             A: FloatEqAll<B>,
         {
-            type AllEpsilon = A::AllEpsilon;
+            type AllTol = A::AllTol;
 
             #[inline]
-            fn eq_abs_all(&self, other: &$t<B>, max_diff: &Self::AllEpsilon) -> bool {
-                FloatEqAll::eq_abs_all(&**self, &**other, max_diff)
+            fn eq_abs_all(&self, other: &$t<B>, tol: &Self::AllTol) -> bool {
+                FloatEqAll::eq_abs_all(&**self, &**other, tol)
             }
 
             #[inline]
-            fn eq_rmax_all(&self, other: &$t<B>, max_diff: &Self::AllEpsilon) -> bool {
-                FloatEqAll::eq_rmax_all(&**self, &**other, max_diff)
+            fn eq_rmax_all(&self, other: &$t<B>, tol: &Self::AllTol) -> bool {
+                FloatEqAll::eq_rmax_all(&**self, &**other, tol)
             }
 
             #[inline]
-            fn eq_rmin_all(&self, other: &$t<B>, max_diff: &Self::AllEpsilon) -> bool {
-                FloatEqAll::eq_rmin_all(&**self, &**other, max_diff)
+            fn eq_rmin_all(&self, other: &$t<B>, tol: &Self::AllTol) -> bool {
+                FloatEqAll::eq_rmin_all(&**self, &**other, tol)
             }
 
             #[inline]
-            fn eq_r1st_all(&self, other: &$t<B>, max_diff: &Self::AllEpsilon) -> bool {
-                FloatEqAll::eq_r1st_all(&**self, &**other, max_diff)
+            fn eq_r1st_all(&self, other: &$t<B>, tol: &Self::AllTol) -> bool {
+                FloatEqAll::eq_r1st_all(&**self, &**other, tol)
             }
 
             #[inline]
-            fn eq_r2nd_all(&self, other: &$t<B>, max_diff: &Self::AllEpsilon) -> bool {
-                FloatEqAll::eq_r2nd_all(&**self, &**other, max_diff)
+            fn eq_r2nd_all(&self, other: &$t<B>, tol: &Self::AllTol) -> bool {
+                FloatEqAll::eq_r2nd_all(&**self, &**other, tol)
             }
 
             #[inline]
-            fn eq_ulps_all(&self, other: &$t<B>, max_diff: &UlpsEpsilon<Self::AllEpsilon>) -> bool {
-                FloatEqAll::eq_ulps_all(&**self, &**other, max_diff)
+            fn eq_ulps_all(&self, other: &$t<B>, tol: &UlpsTol<Self::AllTol>) -> bool {
+                FloatEqAll::eq_ulps_all(&**self, &**other, tol)
             }
         }
 
@@ -98,7 +98,7 @@ macro_rules! impl_traits_for_wrapper {
             B: Copy,
         {
             type DebugAbsDiff = A::DebugAbsDiff;
-            type DebugEpsilon = A::DebugEpsilon;
+            type DebugTol = A::DebugTol;
 
             #[inline]
             fn debug_abs_diff(&self, other: &$t<B>) -> Self::DebugAbsDiff {
@@ -111,60 +111,40 @@ macro_rules! impl_traits_for_wrapper {
             }
 
             #[inline]
-            fn debug_abs_epsilon(
-                &self,
-                other: &$t<B>,
-                max_diff: &Self::Epsilon,
-            ) -> Self::DebugEpsilon {
-                AssertFloatEq::debug_abs_epsilon(&**self, &**other, max_diff)
+            fn debug_abs_tol(&self, other: &$t<B>, tol: &Self::Tol) -> Self::DebugTol {
+                AssertFloatEq::debug_abs_tol(&**self, &**other, tol)
             }
 
             #[inline]
-            fn debug_rmax_epsilon(
-                &self,
-                other: &$t<B>,
-                max_diff: &Self::Epsilon,
-            ) -> Self::DebugEpsilon {
-                AssertFloatEq::debug_rmax_epsilon(&**self, &**other, max_diff)
+            fn debug_rmax_tol(&self, other: &$t<B>, tol: &Self::Tol) -> Self::DebugTol {
+                AssertFloatEq::debug_rmax_tol(&**self, &**other, tol)
             }
 
             #[inline]
-            fn debug_rmin_epsilon(
-                &self,
-                other: &$t<B>,
-                max_diff: &Self::Epsilon,
-            ) -> Self::DebugEpsilon {
-                AssertFloatEq::debug_rmin_epsilon(&**self, &**other, max_diff)
+            fn debug_rmin_tol(&self, other: &$t<B>, tol: &Self::Tol) -> Self::DebugTol {
+                AssertFloatEq::debug_rmin_tol(&**self, &**other, tol)
             }
 
             #[inline]
-            fn debug_r1st_epsilon(
-                &self,
-                other: &$t<B>,
-                max_diff: &Self::Epsilon,
-            ) -> Self::DebugEpsilon {
-                AssertFloatEq::debug_r1st_epsilon(&**self, &**other, max_diff)
+            fn debug_r1st_tol(&self, other: &$t<B>, tol: &Self::Tol) -> Self::DebugTol {
+                AssertFloatEq::debug_r1st_tol(&**self, &**other, tol)
             }
 
             #[inline]
-            fn debug_r2nd_epsilon(
-                &self,
-                other: &$t<B>,
-                max_diff: &Self::Epsilon,
-            ) -> Self::DebugEpsilon {
-                AssertFloatEq::debug_r2nd_epsilon(&**self, &**other, max_diff)
+            fn debug_r2nd_tol(&self, other: &$t<B>, tol: &Self::Tol) -> Self::DebugTol {
+                AssertFloatEq::debug_r2nd_tol(&**self, &**other, tol)
             }
 
             #[inline]
-            fn debug_ulps_epsilon(
+            fn debug_ulps_tol(
                 &self,
                 other: &$t<B>,
-                max_diff: &UlpsEpsilon<Self::Epsilon>,
-            ) -> UlpsEpsilon<Self::DebugEpsilon>
+                tol: &UlpsTol<Self::Tol>,
+            ) -> UlpsTol<Self::DebugTol>
             where
-                UlpsEpsilon<Self::DebugEpsilon>: Sized,
+                UlpsTol<Self::DebugTol>: Sized,
             {
-                AssertFloatEq::debug_ulps_epsilon(&**self, &**other, max_diff)
+                AssertFloatEq::debug_ulps_tol(&**self, &**other, tol)
             }
         }
 
@@ -173,63 +153,63 @@ macro_rules! impl_traits_for_wrapper {
             A: AssertFloatEqAll<B> + Copy,
             B: Copy,
         {
-            type AllDebugEpsilon = A::AllDebugEpsilon;
+            type AllDebugTol = A::AllDebugTol;
 
             #[inline]
-            fn debug_abs_all_epsilon(
+            fn debug_abs_all_tol(
                 &self,
                 other: &$t<B>,
-                max_diff: &Self::AllEpsilon,
-            ) -> Self::AllDebugEpsilon {
-                AssertFloatEqAll::debug_abs_all_epsilon(&**self, &**other, max_diff)
+                tol: &Self::AllTol,
+            ) -> Self::AllDebugTol {
+                AssertFloatEqAll::debug_abs_all_tol(&**self, &**other, tol)
             }
 
             #[inline]
-            fn debug_rmax_all_epsilon(
+            fn debug_rmax_all_tol(
                 &self,
                 other: &$t<B>,
-                max_diff: &Self::AllEpsilon,
-            ) -> Self::AllDebugEpsilon {
-                AssertFloatEqAll::debug_rmax_all_epsilon(&**self, &**other, max_diff)
+                tol: &Self::AllTol,
+            ) -> Self::AllDebugTol {
+                AssertFloatEqAll::debug_rmax_all_tol(&**self, &**other, tol)
             }
 
             #[inline]
-            fn debug_rmin_all_epsilon(
+            fn debug_rmin_all_tol(
                 &self,
                 other: &$t<B>,
-                max_diff: &Self::AllEpsilon,
-            ) -> Self::AllDebugEpsilon {
-                AssertFloatEqAll::debug_rmin_all_epsilon(&**self, &**other, max_diff)
+                tol: &Self::AllTol,
+            ) -> Self::AllDebugTol {
+                AssertFloatEqAll::debug_rmin_all_tol(&**self, &**other, tol)
             }
 
             #[inline]
-            fn debug_r1st_all_epsilon(
+            fn debug_r1st_all_tol(
                 &self,
                 other: &$t<B>,
-                max_diff: &Self::AllEpsilon,
-            ) -> Self::AllDebugEpsilon {
-                AssertFloatEqAll::debug_r1st_all_epsilon(&**self, &**other, max_diff)
+                tol: &Self::AllTol,
+            ) -> Self::AllDebugTol {
+                AssertFloatEqAll::debug_r1st_all_tol(&**self, &**other, tol)
             }
 
             #[inline]
-            fn debug_r2nd_all_epsilon(
+            fn debug_r2nd_all_tol(
                 &self,
                 other: &$t<B>,
-                max_diff: &Self::AllEpsilon,
-            ) -> Self::AllDebugEpsilon {
-                AssertFloatEqAll::debug_r2nd_all_epsilon(&**self, &**other, max_diff)
+                tol: &Self::AllTol,
+            ) -> Self::AllDebugTol {
+                AssertFloatEqAll::debug_r2nd_all_tol(&**self, &**other, tol)
             }
 
             #[inline]
-            fn debug_ulps_all_epsilon(
+            fn debug_ulps_all_tol(
                 &self,
                 other: &$t<B>,
-                max_diff: &UlpsEpsilon<Self::AllEpsilon>,
-            ) -> UlpsEpsilon<Self::AllDebugEpsilon>
+                tol: &UlpsTol<Self::AllTol>,
+            ) -> UlpsTol<Self::AllDebugTol>
             where
-                UlpsEpsilon<Self::AllDebugEpsilon>: Sized,
+                UlpsTol<Self::AllDebugTol>: Sized,
             {
-                AssertFloatEqAll::debug_ulps_all_epsilon(&**self, &**other, max_diff)
+                AssertFloatEqAll::debug_ulps_all_tol(&**self, &**other, tol)
             }
         }
     };
@@ -245,13 +225,13 @@ impl_traits_for_wrapper!(Rc);
 impl<A, B> AssertFloatEq<[B]> for [A]
 where
     A: AssertFloatEq<B>,
-    A::Epsilon: Sized,
-    A::DebugEpsilon: Sized,
-    UlpsEpsilon<A::Epsilon>: Sized,
-    UlpsEpsilon<A::DebugEpsilon>: Sized,
+    A::Tol: Sized,
+    A::DebugTol: Sized,
+    UlpsTol<A::Tol>: Sized,
+    UlpsTol<A::DebugTol>: Sized,
 {
     type DebugAbsDiff = Option<Vec<A::DebugAbsDiff>>;
-    type DebugEpsilon = Option<Vec<A::DebugEpsilon>>;
+    type DebugTol = Option<Vec<A::DebugTol>>;
 
     #[inline]
     fn debug_abs_diff(&self, other: &[B]) -> Self::DebugAbsDiff {
@@ -282,13 +262,13 @@ where
     }
 
     #[inline]
-    fn debug_abs_epsilon(&self, other: &[B], max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        if self.len() == other.len() && self.len() == max_diff.len() {
+    fn debug_abs_tol(&self, other: &[B], tol: &Self::Tol) -> Self::DebugTol {
+        if self.len() == other.len() && self.len() == tol.len() {
             Some(
                 self.iter()
                     .zip(other.iter())
-                    .zip(max_diff)
-                    .map(|((a, b), eps)| AssertFloatEq::debug_abs_epsilon(a, b, eps))
+                    .zip(tol)
+                    .map(|((a, b), eps)| AssertFloatEq::debug_abs_tol(a, b, eps))
                     .collect(),
             )
         } else {
@@ -297,13 +277,13 @@ where
     }
 
     #[inline]
-    fn debug_rmax_epsilon(&self, other: &[B], max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        if self.len() == other.len() && self.len() == max_diff.len() {
+    fn debug_rmax_tol(&self, other: &[B], tol: &Self::Tol) -> Self::DebugTol {
+        if self.len() == other.len() && self.len() == tol.len() {
             Some(
                 self.iter()
                     .zip(other.iter())
-                    .zip(max_diff)
-                    .map(|((a, b), eps)| AssertFloatEq::debug_rmax_epsilon(a, b, eps))
+                    .zip(tol)
+                    .map(|((a, b), eps)| AssertFloatEq::debug_rmax_tol(a, b, eps))
                     .collect(),
             )
         } else {
@@ -312,13 +292,13 @@ where
     }
 
     #[inline]
-    fn debug_rmin_epsilon(&self, other: &[B], max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        if self.len() == other.len() && self.len() == max_diff.len() {
+    fn debug_rmin_tol(&self, other: &[B], tol: &Self::Tol) -> Self::DebugTol {
+        if self.len() == other.len() && self.len() == tol.len() {
             Some(
                 self.iter()
                     .zip(other.iter())
-                    .zip(max_diff)
-                    .map(|((a, b), eps)| AssertFloatEq::debug_rmin_epsilon(a, b, eps))
+                    .zip(tol)
+                    .map(|((a, b), eps)| AssertFloatEq::debug_rmin_tol(a, b, eps))
                     .collect(),
             )
         } else {
@@ -327,13 +307,13 @@ where
     }
 
     #[inline]
-    fn debug_r1st_epsilon(&self, other: &[B], max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        if self.len() == other.len() && self.len() == max_diff.len() {
+    fn debug_r1st_tol(&self, other: &[B], tol: &Self::Tol) -> Self::DebugTol {
+        if self.len() == other.len() && self.len() == tol.len() {
             Some(
                 self.iter()
                     .zip(other.iter())
-                    .zip(max_diff)
-                    .map(|((a, b), eps)| AssertFloatEq::debug_r1st_epsilon(a, b, eps))
+                    .zip(tol)
+                    .map(|((a, b), eps)| AssertFloatEq::debug_r1st_tol(a, b, eps))
                     .collect(),
             )
         } else {
@@ -342,13 +322,13 @@ where
     }
 
     #[inline]
-    fn debug_r2nd_epsilon(&self, other: &[B], max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        if self.len() == other.len() && self.len() == max_diff.len() {
+    fn debug_r2nd_tol(&self, other: &[B], tol: &Self::Tol) -> Self::DebugTol {
+        if self.len() == other.len() && self.len() == tol.len() {
             Some(
                 self.iter()
                     .zip(other.iter())
-                    .zip(max_diff)
-                    .map(|((a, b), eps)| AssertFloatEq::debug_r2nd_epsilon(a, b, eps))
+                    .zip(tol)
+                    .map(|((a, b), eps)| AssertFloatEq::debug_r2nd_tol(a, b, eps))
                     .collect(),
             )
         } else {
@@ -357,17 +337,17 @@ where
     }
 
     #[inline]
-    fn debug_ulps_epsilon(
+    fn debug_ulps_tol(
         &self,
         other: &[B],
-        max_diff: &UlpsEpsilon<Self::Epsilon>,
-    ) -> UlpsEpsilon<Self::DebugEpsilon> {
-        if self.len() == other.len() && self.len() == max_diff.len() {
+        tol: &UlpsTol<Self::Tol>,
+    ) -> UlpsTol<Self::DebugTol> {
+        if self.len() == other.len() && self.len() == tol.len() {
             Some(
                 self.iter()
                     .zip(other.iter())
-                    .zip(max_diff)
-                    .map(|((a, b), eps)| AssertFloatEq::debug_ulps_epsilon(a, b, eps))
+                    .zip(tol)
+                    .map(|((a, b), eps)| AssertFloatEq::debug_ulps_tol(a, b, eps))
                     .collect(),
             )
         } else {
@@ -379,22 +359,18 @@ where
 impl<A, B> AssertFloatEqAll<[B]> for [A]
 where
     A: AssertFloatEqAll<B>,
-    A::AllDebugEpsilon: Sized,
-    UlpsEpsilon<A::AllDebugEpsilon>: Sized,
+    A::AllDebugTol: Sized,
+    UlpsTol<A::AllDebugTol>: Sized,
 {
-    type AllDebugEpsilon = Option<Vec<A::AllDebugEpsilon>>;
+    type AllDebugTol = Option<Vec<A::AllDebugTol>>;
 
     #[inline]
-    fn debug_abs_all_epsilon(
-        &self,
-        other: &[B],
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
+    fn debug_abs_all_tol(&self, other: &[B], tol: &Self::AllTol) -> Self::AllDebugTol {
         if self.len() == other.len() {
             Some(
                 self.iter()
                     .zip(other.iter())
-                    .map(|(a, b)| a.debug_abs_all_epsilon(b, max_diff))
+                    .map(|(a, b)| a.debug_abs_all_tol(b, tol))
                     .collect(),
             )
         } else {
@@ -403,16 +379,12 @@ where
     }
 
     #[inline]
-    fn debug_rmax_all_epsilon(
-        &self,
-        other: &[B],
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
+    fn debug_rmax_all_tol(&self, other: &[B], tol: &Self::AllTol) -> Self::AllDebugTol {
         if self.len() == other.len() {
             Some(
                 self.iter()
                     .zip(other.iter())
-                    .map(|(a, b)| a.debug_rmax_all_epsilon(b, max_diff))
+                    .map(|(a, b)| a.debug_rmax_all_tol(b, tol))
                     .collect(),
             )
         } else {
@@ -421,16 +393,12 @@ where
     }
 
     #[inline]
-    fn debug_rmin_all_epsilon(
-        &self,
-        other: &[B],
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
+    fn debug_rmin_all_tol(&self, other: &[B], tol: &Self::AllTol) -> Self::AllDebugTol {
         if self.len() == other.len() {
             Some(
                 self.iter()
                     .zip(other.iter())
-                    .map(|(a, b)| a.debug_rmin_all_epsilon(b, max_diff))
+                    .map(|(a, b)| a.debug_rmin_all_tol(b, tol))
                     .collect(),
             )
         } else {
@@ -439,16 +407,12 @@ where
     }
 
     #[inline]
-    fn debug_r1st_all_epsilon(
-        &self,
-        other: &[B],
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
+    fn debug_r1st_all_tol(&self, other: &[B], tol: &Self::AllTol) -> Self::AllDebugTol {
         if self.len() == other.len() {
             Some(
                 self.iter()
                     .zip(other.iter())
-                    .map(|(a, b)| a.debug_r1st_all_epsilon(b, max_diff))
+                    .map(|(a, b)| a.debug_r1st_all_tol(b, tol))
                     .collect(),
             )
         } else {
@@ -457,16 +421,12 @@ where
     }
 
     #[inline]
-    fn debug_r2nd_all_epsilon(
-        &self,
-        other: &[B],
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
+    fn debug_r2nd_all_tol(&self, other: &[B], tol: &Self::AllTol) -> Self::AllDebugTol {
         if self.len() == other.len() {
             Some(
                 self.iter()
                     .zip(other.iter())
-                    .map(|(a, b)| a.debug_r2nd_all_epsilon(b, max_diff))
+                    .map(|(a, b)| a.debug_r2nd_all_tol(b, tol))
                     .collect(),
             )
         } else {
@@ -475,19 +435,19 @@ where
     }
 
     #[inline]
-    fn debug_ulps_all_epsilon(
+    fn debug_ulps_all_tol(
         &self,
         other: &[B],
-        max_diff: &UlpsEpsilon<Self::AllEpsilon>,
-    ) -> UlpsEpsilon<Self::AllDebugEpsilon>
+        tol: &UlpsTol<Self::AllTol>,
+    ) -> UlpsTol<Self::AllDebugTol>
     where
-        UlpsEpsilon<Self::AllDebugEpsilon>: Sized,
+        UlpsTol<Self::AllDebugTol>: Sized,
     {
         if self.len() == other.len() {
             Some(
                 self.iter()
                     .zip(other.iter())
-                    .map(|(a, b)| a.debug_ulps_all_epsilon(b, max_diff))
+                    .map(|(a, b)| a.debug_ulps_all_tol(b, tol))
                     .collect(),
             )
         } else {
@@ -501,11 +461,11 @@ where
 //------------------------------------------------------------------------------
 macro_rules! impl_traits_for_linear_collection {
     ($t:ident) => {
-        impl<T: FloatEqUlpsEpsilon> FloatEqUlpsEpsilon for $t<T>
+        impl<T: FloatEqUlpsTol> FloatEqUlpsTol for $t<T>
         where
-            UlpsEpsilon<T>: Sized,
+            UlpsTol<T>: Sized,
         {
-            type UlpsEpsilon = $t<UlpsEpsilon<T>>;
+            type UlpsTol = $t<UlpsTol<T>>;
         }
 
         impl<T: FloatEqDebugUlpsDiff> FloatEqDebugUlpsDiff for $t<T> {
@@ -515,74 +475,74 @@ macro_rules! impl_traits_for_linear_collection {
         impl<A, B> FloatEq<$t<B>> for $t<A>
         where
             A: FloatEq<B>,
-            A::Epsilon: Sized,
-            UlpsEpsilon<A::Epsilon>: Sized,
+            A::Tol: Sized,
+            UlpsTol<A::Tol>: Sized,
         {
-            type Epsilon = $t<A::Epsilon>;
+            type Tol = $t<A::Tol>;
 
             #[inline]
-            fn eq_abs(&self, other: &$t<B>, max_diff: &Self::Epsilon) -> bool {
+            fn eq_abs(&self, other: &$t<B>, tol: &Self::Tol) -> bool {
                 self.len() == other.len()
-                    && self.len() == max_diff.len()
+                    && self.len() == tol.len()
                     && self
                         .iter()
                         .zip(other.iter())
-                        .zip(max_diff)
+                        .zip(tol)
                         .all(|((a, b), eps)| FloatEq::eq_abs(a, b, eps))
             }
 
             #[inline]
-            fn eq_rmax(&self, other: &$t<B>, max_diff: &Self::Epsilon) -> bool {
+            fn eq_rmax(&self, other: &$t<B>, tol: &Self::Tol) -> bool {
                 self.len() == other.len()
-                    && self.len() == max_diff.len()
+                    && self.len() == tol.len()
                     && self
                         .iter()
                         .zip(other.iter())
-                        .zip(max_diff)
+                        .zip(tol)
                         .all(|((a, b), eps)| FloatEq::eq_rmax(a, b, eps))
             }
 
             #[inline]
-            fn eq_rmin(&self, other: &$t<B>, max_diff: &Self::Epsilon) -> bool {
+            fn eq_rmin(&self, other: &$t<B>, tol: &Self::Tol) -> bool {
                 self.len() == other.len()
-                    && self.len() == max_diff.len()
+                    && self.len() == tol.len()
                     && self
                         .iter()
                         .zip(other.iter())
-                        .zip(max_diff)
+                        .zip(tol)
                         .all(|((a, b), eps)| FloatEq::eq_rmin(a, b, eps))
             }
 
             #[inline]
-            fn eq_r1st(&self, other: &$t<B>, max_diff: &Self::Epsilon) -> bool {
+            fn eq_r1st(&self, other: &$t<B>, tol: &Self::Tol) -> bool {
                 self.len() == other.len()
-                    && self.len() == max_diff.len()
+                    && self.len() == tol.len()
                     && self
                         .iter()
                         .zip(other.iter())
-                        .zip(max_diff)
+                        .zip(tol)
                         .all(|((a, b), eps)| FloatEq::eq_r1st(a, b, eps))
             }
 
             #[inline]
-            fn eq_r2nd(&self, other: &$t<B>, max_diff: &Self::Epsilon) -> bool {
+            fn eq_r2nd(&self, other: &$t<B>, tol: &Self::Tol) -> bool {
                 self.len() == other.len()
-                    && self.len() == max_diff.len()
+                    && self.len() == tol.len()
                     && self
                         .iter()
                         .zip(other.iter())
-                        .zip(max_diff)
+                        .zip(tol)
                         .all(|((a, b), eps)| FloatEq::eq_r2nd(a, b, eps))
             }
 
             #[inline]
-            fn eq_ulps(&self, other: &$t<B>, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
+            fn eq_ulps(&self, other: &$t<B>, tol: &UlpsTol<Self::Tol>) -> bool {
                 self.len() == other.len()
-                    && self.len() == max_diff.len()
+                    && self.len() == tol.len()
                     && self
                         .iter()
                         .zip(other.iter())
-                        .zip(max_diff)
+                        .zip(tol)
                         .all(|((a, b), eps)| FloatEq::eq_ulps(a, b, eps))
             }
         }
@@ -591,60 +551,60 @@ macro_rules! impl_traits_for_linear_collection {
         where
             A: FloatEqAll<B>,
         {
-            type AllEpsilon = A::AllEpsilon;
+            type AllTol = A::AllTol;
 
             #[inline]
-            fn eq_abs_all(&self, other: &$t<B>, max_diff: &Self::AllEpsilon) -> bool {
+            fn eq_abs_all(&self, other: &$t<B>, tol: &Self::AllTol) -> bool {
                 self.len() == other.len()
                     && self
                         .iter()
                         .zip(other.iter())
-                        .all(|(a, b)| FloatEqAll::eq_abs_all(a, b, max_diff))
+                        .all(|(a, b)| FloatEqAll::eq_abs_all(a, b, tol))
             }
 
             #[inline]
-            fn eq_rmax_all(&self, other: &$t<B>, max_diff: &Self::AllEpsilon) -> bool {
+            fn eq_rmax_all(&self, other: &$t<B>, tol: &Self::AllTol) -> bool {
                 self.len() == other.len()
                     && self
                         .iter()
                         .zip(other.iter())
-                        .all(|(a, b)| FloatEqAll::eq_rmax_all(a, b, max_diff))
+                        .all(|(a, b)| FloatEqAll::eq_rmax_all(a, b, tol))
             }
 
             #[inline]
-            fn eq_rmin_all(&self, other: &$t<B>, max_diff: &Self::AllEpsilon) -> bool {
+            fn eq_rmin_all(&self, other: &$t<B>, tol: &Self::AllTol) -> bool {
                 self.len() == other.len()
                     && self
                         .iter()
                         .zip(other.iter())
-                        .all(|(a, b)| FloatEqAll::eq_rmin_all(a, b, max_diff))
+                        .all(|(a, b)| FloatEqAll::eq_rmin_all(a, b, tol))
             }
 
             #[inline]
-            fn eq_r1st_all(&self, other: &$t<B>, max_diff: &Self::AllEpsilon) -> bool {
+            fn eq_r1st_all(&self, other: &$t<B>, tol: &Self::AllTol) -> bool {
                 self.len() == other.len()
                     && self
                         .iter()
                         .zip(other.iter())
-                        .all(|(a, b)| FloatEqAll::eq_r1st_all(a, b, max_diff))
+                        .all(|(a, b)| FloatEqAll::eq_r1st_all(a, b, tol))
             }
 
             #[inline]
-            fn eq_r2nd_all(&self, other: &$t<B>, max_diff: &Self::AllEpsilon) -> bool {
+            fn eq_r2nd_all(&self, other: &$t<B>, tol: &Self::AllTol) -> bool {
                 self.len() == other.len()
                     && self
                         .iter()
                         .zip(other.iter())
-                        .all(|(a, b)| FloatEqAll::eq_r2nd_all(a, b, max_diff))
+                        .all(|(a, b)| FloatEqAll::eq_r2nd_all(a, b, tol))
             }
 
             #[inline]
-            fn eq_ulps_all(&self, other: &$t<B>, max_diff: &UlpsEpsilon<Self::AllEpsilon>) -> bool {
+            fn eq_ulps_all(&self, other: &$t<B>, tol: &UlpsTol<Self::AllTol>) -> bool {
                 self.len() == other.len()
                     && self
                         .iter()
                         .zip(other.iter())
-                        .all(|(a, b)| FloatEqAll::eq_ulps_all(a, b, max_diff))
+                        .all(|(a, b)| FloatEqAll::eq_ulps_all(a, b, tol))
             }
         }
 
@@ -652,13 +612,13 @@ macro_rules! impl_traits_for_linear_collection {
         where
             A: AssertFloatEq<B> + Copy,
             B: Copy,
-            A::Epsilon: Sized,
-            A::DebugEpsilon: Sized,
-            UlpsEpsilon<A::Epsilon>: Sized,
-            UlpsEpsilon<A::DebugEpsilon>: Sized,
+            A::Tol: Sized,
+            A::DebugTol: Sized,
+            UlpsTol<A::Tol>: Sized,
+            UlpsTol<A::DebugTol>: Sized,
         {
             type DebugAbsDiff = Option<$t<A::DebugAbsDiff>>;
-            type DebugEpsilon = Option<$t<A::DebugEpsilon>>;
+            type DebugTol = Option<$t<A::DebugTol>>;
 
             #[inline]
             fn debug_abs_diff(&self, other: &$t<B>) -> Self::DebugAbsDiff {
@@ -689,17 +649,13 @@ macro_rules! impl_traits_for_linear_collection {
             }
 
             #[inline]
-            fn debug_abs_epsilon(
-                &self,
-                other: &$t<B>,
-                max_diff: &Self::Epsilon,
-            ) -> Self::DebugEpsilon {
-                if self.len() == other.len() && self.len() == max_diff.len() {
+            fn debug_abs_tol(&self, other: &$t<B>, tol: &Self::Tol) -> Self::DebugTol {
+                if self.len() == other.len() && self.len() == tol.len() {
                     Some(
                         self.iter()
                             .zip(other.iter())
-                            .zip(max_diff)
-                            .map(|((a, b), eps)| AssertFloatEq::debug_abs_epsilon(a, b, eps))
+                            .zip(tol)
+                            .map(|((a, b), eps)| AssertFloatEq::debug_abs_tol(a, b, eps))
                             .collect(),
                     )
                 } else {
@@ -708,17 +664,13 @@ macro_rules! impl_traits_for_linear_collection {
             }
 
             #[inline]
-            fn debug_rmax_epsilon(
-                &self,
-                other: &$t<B>,
-                max_diff: &Self::Epsilon,
-            ) -> Self::DebugEpsilon {
-                if self.len() == other.len() && self.len() == max_diff.len() {
+            fn debug_rmax_tol(&self, other: &$t<B>, tol: &Self::Tol) -> Self::DebugTol {
+                if self.len() == other.len() && self.len() == tol.len() {
                     Some(
                         self.iter()
                             .zip(other.iter())
-                            .zip(max_diff)
-                            .map(|((a, b), eps)| AssertFloatEq::debug_rmax_epsilon(a, b, eps))
+                            .zip(tol)
+                            .map(|((a, b), eps)| AssertFloatEq::debug_rmax_tol(a, b, eps))
                             .collect(),
                     )
                 } else {
@@ -727,17 +679,13 @@ macro_rules! impl_traits_for_linear_collection {
             }
 
             #[inline]
-            fn debug_rmin_epsilon(
-                &self,
-                other: &$t<B>,
-                max_diff: &Self::Epsilon,
-            ) -> Self::DebugEpsilon {
-                if self.len() == other.len() && self.len() == max_diff.len() {
+            fn debug_rmin_tol(&self, other: &$t<B>, tol: &Self::Tol) -> Self::DebugTol {
+                if self.len() == other.len() && self.len() == tol.len() {
                     Some(
                         self.iter()
                             .zip(other.iter())
-                            .zip(max_diff)
-                            .map(|((a, b), eps)| AssertFloatEq::debug_rmin_epsilon(a, b, eps))
+                            .zip(tol)
+                            .map(|((a, b), eps)| AssertFloatEq::debug_rmin_tol(a, b, eps))
                             .collect(),
                     )
                 } else {
@@ -746,17 +694,13 @@ macro_rules! impl_traits_for_linear_collection {
             }
 
             #[inline]
-            fn debug_r1st_epsilon(
-                &self,
-                other: &$t<B>,
-                max_diff: &Self::Epsilon,
-            ) -> Self::DebugEpsilon {
-                if self.len() == other.len() && self.len() == max_diff.len() {
+            fn debug_r1st_tol(&self, other: &$t<B>, tol: &Self::Tol) -> Self::DebugTol {
+                if self.len() == other.len() && self.len() == tol.len() {
                     Some(
                         self.iter()
                             .zip(other.iter())
-                            .zip(max_diff)
-                            .map(|((a, b), eps)| AssertFloatEq::debug_r1st_epsilon(a, b, eps))
+                            .zip(tol)
+                            .map(|((a, b), eps)| AssertFloatEq::debug_r1st_tol(a, b, eps))
                             .collect(),
                     )
                 } else {
@@ -765,17 +709,13 @@ macro_rules! impl_traits_for_linear_collection {
             }
 
             #[inline]
-            fn debug_r2nd_epsilon(
-                &self,
-                other: &$t<B>,
-                max_diff: &Self::Epsilon,
-            ) -> Self::DebugEpsilon {
-                if self.len() == other.len() && self.len() == max_diff.len() {
+            fn debug_r2nd_tol(&self, other: &$t<B>, tol: &Self::Tol) -> Self::DebugTol {
+                if self.len() == other.len() && self.len() == tol.len() {
                     Some(
                         self.iter()
                             .zip(other.iter())
-                            .zip(max_diff)
-                            .map(|((a, b), eps)| AssertFloatEq::debug_r2nd_epsilon(a, b, eps))
+                            .zip(tol)
+                            .map(|((a, b), eps)| AssertFloatEq::debug_r2nd_tol(a, b, eps))
                             .collect(),
                     )
                 } else {
@@ -784,17 +724,17 @@ macro_rules! impl_traits_for_linear_collection {
             }
 
             #[inline]
-            fn debug_ulps_epsilon(
+            fn debug_ulps_tol(
                 &self,
                 other: &$t<B>,
-                max_diff: &UlpsEpsilon<Self::Epsilon>,
-            ) -> UlpsEpsilon<Self::DebugEpsilon> {
-                if self.len() == other.len() && self.len() == max_diff.len() {
+                tol: &UlpsTol<Self::Tol>,
+            ) -> UlpsTol<Self::DebugTol> {
+                if self.len() == other.len() && self.len() == tol.len() {
                     Some(
                         self.iter()
                             .zip(other.iter())
-                            .zip(max_diff)
-                            .map(|((a, b), eps)| AssertFloatEq::debug_ulps_epsilon(a, b, eps))
+                            .zip(tol)
+                            .map(|((a, b), eps)| AssertFloatEq::debug_ulps_tol(a, b, eps))
                             .collect(),
                     )
                 } else {
@@ -807,22 +747,22 @@ macro_rules! impl_traits_for_linear_collection {
         where
             A: AssertFloatEqAll<B> + Copy,
             B: Copy,
-            A::AllDebugEpsilon: Sized,
-            UlpsEpsilon<A::AllDebugEpsilon>: Sized,
+            A::AllDebugTol: Sized,
+            UlpsTol<A::AllDebugTol>: Sized,
         {
-            type AllDebugEpsilon = Option<$t<A::AllDebugEpsilon>>;
+            type AllDebugTol = Option<$t<A::AllDebugTol>>;
 
             #[inline]
-            fn debug_abs_all_epsilon(
+            fn debug_abs_all_tol(
                 &self,
                 other: &$t<B>,
-                max_diff: &Self::AllEpsilon,
-            ) -> Self::AllDebugEpsilon {
+                tol: &Self::AllTol,
+            ) -> Self::AllDebugTol {
                 if self.len() == other.len() {
                     Some(
                         self.iter()
                             .zip(other.iter())
-                            .map(|(a, b)| AssertFloatEqAll::debug_abs_all_epsilon(a, b, max_diff))
+                            .map(|(a, b)| AssertFloatEqAll::debug_abs_all_tol(a, b, tol))
                             .collect(),
                     )
                 } else {
@@ -831,16 +771,16 @@ macro_rules! impl_traits_for_linear_collection {
             }
 
             #[inline]
-            fn debug_rmax_all_epsilon(
+            fn debug_rmax_all_tol(
                 &self,
                 other: &$t<B>,
-                max_diff: &Self::AllEpsilon,
-            ) -> Self::AllDebugEpsilon {
+                tol: &Self::AllTol,
+            ) -> Self::AllDebugTol {
                 if self.len() == other.len() {
                     Some(
                         self.iter()
                             .zip(other.iter())
-                            .map(|(a, b)| AssertFloatEqAll::debug_rmax_all_epsilon(a, b, max_diff))
+                            .map(|(a, b)| AssertFloatEqAll::debug_rmax_all_tol(a, b, tol))
                             .collect(),
                     )
                 } else {
@@ -849,16 +789,16 @@ macro_rules! impl_traits_for_linear_collection {
             }
 
             #[inline]
-            fn debug_rmin_all_epsilon(
+            fn debug_rmin_all_tol(
                 &self,
                 other: &$t<B>,
-                max_diff: &Self::AllEpsilon,
-            ) -> Self::AllDebugEpsilon {
+                tol: &Self::AllTol,
+            ) -> Self::AllDebugTol {
                 if self.len() == other.len() {
                     Some(
                         self.iter()
                             .zip(other.iter())
-                            .map(|(a, b)| AssertFloatEqAll::debug_rmin_all_epsilon(a, b, max_diff))
+                            .map(|(a, b)| AssertFloatEqAll::debug_rmin_all_tol(a, b, tol))
                             .collect(),
                     )
                 } else {
@@ -867,16 +807,16 @@ macro_rules! impl_traits_for_linear_collection {
             }
 
             #[inline]
-            fn debug_r1st_all_epsilon(
+            fn debug_r1st_all_tol(
                 &self,
                 other: &$t<B>,
-                max_diff: &Self::AllEpsilon,
-            ) -> Self::AllDebugEpsilon {
+                tol: &Self::AllTol,
+            ) -> Self::AllDebugTol {
                 if self.len() == other.len() {
                     Some(
                         self.iter()
                             .zip(other.iter())
-                            .map(|(a, b)| AssertFloatEqAll::debug_r1st_all_epsilon(a, b, max_diff))
+                            .map(|(a, b)| AssertFloatEqAll::debug_r1st_all_tol(a, b, tol))
                             .collect(),
                     )
                 } else {
@@ -885,16 +825,16 @@ macro_rules! impl_traits_for_linear_collection {
             }
 
             #[inline]
-            fn debug_r2nd_all_epsilon(
+            fn debug_r2nd_all_tol(
                 &self,
                 other: &$t<B>,
-                max_diff: &Self::AllEpsilon,
-            ) -> Self::AllDebugEpsilon {
+                tol: &Self::AllTol,
+            ) -> Self::AllDebugTol {
                 if self.len() == other.len() {
                     Some(
                         self.iter()
                             .zip(other.iter())
-                            .map(|(a, b)| AssertFloatEqAll::debug_r2nd_all_epsilon(a, b, max_diff))
+                            .map(|(a, b)| AssertFloatEqAll::debug_r2nd_all_tol(a, b, tol))
                             .collect(),
                     )
                 } else {
@@ -903,19 +843,19 @@ macro_rules! impl_traits_for_linear_collection {
             }
 
             #[inline]
-            fn debug_ulps_all_epsilon(
+            fn debug_ulps_all_tol(
                 &self,
                 other: &$t<B>,
-                max_diff: &UlpsEpsilon<Self::AllEpsilon>,
-            ) -> UlpsEpsilon<Self::AllDebugEpsilon>
+                tol: &UlpsTol<Self::AllTol>,
+            ) -> UlpsTol<Self::AllDebugTol>
             where
-                UlpsEpsilon<Self::AllDebugEpsilon>: Sized,
+                UlpsTol<Self::AllDebugTol>: Sized,
             {
                 if self.len() == other.len() {
                     Some(
                         self.iter()
                             .zip(other.iter())
-                            .map(|(a, b)| AssertFloatEqAll::debug_ulps_all_epsilon(a, b, max_diff))
+                            .map(|(a, b)| AssertFloatEqAll::debug_ulps_all_tol(a, b, tol))
                             .collect(),
                     )
                 } else {
@@ -933,12 +873,12 @@ impl_traits_for_linear_collection!(LinkedList);
 //------------------------------------------------------------------------------
 // HashMap
 //------------------------------------------------------------------------------
-impl<K, V, S> FloatEqUlpsEpsilon for HashMap<K, V, S>
+impl<K, V, S> FloatEqUlpsTol for HashMap<K, V, S>
 where
-    V: FloatEqUlpsEpsilon,
-    UlpsEpsilon<V>: Sized,
+    V: FloatEqUlpsTol,
+    UlpsTol<V>: Sized,
 {
-    type UlpsEpsilon = HashMap<K, UlpsEpsilon<V>, S>;
+    type UlpsTol = HashMap<K, UlpsTol<V>, S>;
 }
 
 impl<K, V, S> FloatEqDebugUlpsDiff for HashMap<K, V, S>
@@ -953,18 +893,18 @@ where
     K: Eq + Hash,
     S: BuildHasher,
     VA: FloatEq<VB>,
-    VA::Epsilon: Sized,
-    UlpsEpsilon<VA::Epsilon>: Sized,
+    VA::Tol: Sized,
+    UlpsTol<VA::Tol>: Sized,
 {
-    type Epsilon = HashMap<K, VA::Epsilon, S>;
+    type Tol = HashMap<K, VA::Tol, S>;
 
     #[inline]
-    fn eq_abs(&self, other: &HashMap<K, VB, S>, max_diff: &Self::Epsilon) -> bool {
+    fn eq_abs(&self, other: &HashMap<K, VB, S>, tol: &Self::Tol) -> bool {
         self.len() == other.len()
-            && self.len() == max_diff.len()
+            && self.len() == tol.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    if let Some(eps) = max_diff.get(k) {
+                    if let Some(eps) = tol.get(k) {
                         FloatEq::eq_abs(a, b, eps)
                     } else {
                         false
@@ -976,12 +916,12 @@ where
     }
 
     #[inline]
-    fn eq_rmax(&self, other: &HashMap<K, VB, S>, max_diff: &Self::Epsilon) -> bool {
+    fn eq_rmax(&self, other: &HashMap<K, VB, S>, tol: &Self::Tol) -> bool {
         self.len() == other.len()
-            && self.len() == max_diff.len()
+            && self.len() == tol.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    if let Some(eps) = max_diff.get(k) {
+                    if let Some(eps) = tol.get(k) {
                         FloatEq::eq_rmax(a, b, eps)
                     } else {
                         false
@@ -993,12 +933,12 @@ where
     }
 
     #[inline]
-    fn eq_rmin(&self, other: &HashMap<K, VB, S>, max_diff: &Self::Epsilon) -> bool {
+    fn eq_rmin(&self, other: &HashMap<K, VB, S>, tol: &Self::Tol) -> bool {
         self.len() == other.len()
-            && self.len() == max_diff.len()
+            && self.len() == tol.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    if let Some(eps) = max_diff.get(k) {
+                    if let Some(eps) = tol.get(k) {
                         FloatEq::eq_rmin(a, b, eps)
                     } else {
                         false
@@ -1010,12 +950,12 @@ where
     }
 
     #[inline]
-    fn eq_r1st(&self, other: &HashMap<K, VB, S>, max_diff: &Self::Epsilon) -> bool {
+    fn eq_r1st(&self, other: &HashMap<K, VB, S>, tol: &Self::Tol) -> bool {
         self.len() == other.len()
-            && self.len() == max_diff.len()
+            && self.len() == tol.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    if let Some(eps) = max_diff.get(k) {
+                    if let Some(eps) = tol.get(k) {
                         FloatEq::eq_r1st(a, b, eps)
                     } else {
                         false
@@ -1027,12 +967,12 @@ where
     }
 
     #[inline]
-    fn eq_r2nd(&self, other: &HashMap<K, VB, S>, max_diff: &Self::Epsilon) -> bool {
+    fn eq_r2nd(&self, other: &HashMap<K, VB, S>, tol: &Self::Tol) -> bool {
         self.len() == other.len()
-            && self.len() == max_diff.len()
+            && self.len() == tol.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    if let Some(eps) = max_diff.get(k) {
+                    if let Some(eps) = tol.get(k) {
                         FloatEq::eq_r2nd(a, b, eps)
                     } else {
                         false
@@ -1044,12 +984,12 @@ where
     }
 
     #[inline]
-    fn eq_ulps(&self, other: &HashMap<K, VB, S>, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
+    fn eq_ulps(&self, other: &HashMap<K, VB, S>, tol: &UlpsTol<Self::Tol>) -> bool {
         self.len() == other.len()
-            && self.len() == max_diff.len()
+            && self.len() == tol.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    if let Some(eps) = max_diff.get(k) {
+                    if let Some(eps) = tol.get(k) {
                         FloatEq::eq_ulps(a, b, eps)
                     } else {
                         false
@@ -1067,14 +1007,14 @@ where
     S: BuildHasher,
     VA: FloatEqAll<VB>,
 {
-    type AllEpsilon = VA::AllEpsilon;
+    type AllTol = VA::AllTol;
 
     #[inline]
-    fn eq_abs_all(&self, other: &HashMap<K, VB, S>, max_diff: &Self::AllEpsilon) -> bool {
+    fn eq_abs_all(&self, other: &HashMap<K, VB, S>, tol: &Self::AllTol) -> bool {
         self.len() == other.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    FloatEqAll::eq_abs_all(a, b, max_diff)
+                    FloatEqAll::eq_abs_all(a, b, tol)
                 } else {
                     false
                 }
@@ -1082,11 +1022,11 @@ where
     }
 
     #[inline]
-    fn eq_rmax_all(&self, other: &HashMap<K, VB, S>, max_diff: &Self::AllEpsilon) -> bool {
+    fn eq_rmax_all(&self, other: &HashMap<K, VB, S>, tol: &Self::AllTol) -> bool {
         self.len() == other.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    FloatEqAll::eq_rmax_all(a, b, max_diff)
+                    FloatEqAll::eq_rmax_all(a, b, tol)
                 } else {
                     false
                 }
@@ -1094,11 +1034,11 @@ where
     }
 
     #[inline]
-    fn eq_rmin_all(&self, other: &HashMap<K, VB, S>, max_diff: &Self::AllEpsilon) -> bool {
+    fn eq_rmin_all(&self, other: &HashMap<K, VB, S>, tol: &Self::AllTol) -> bool {
         self.len() == other.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    FloatEqAll::eq_rmin_all(a, b, max_diff)
+                    FloatEqAll::eq_rmin_all(a, b, tol)
                 } else {
                     false
                 }
@@ -1106,11 +1046,11 @@ where
     }
 
     #[inline]
-    fn eq_r1st_all(&self, other: &HashMap<K, VB, S>, max_diff: &Self::AllEpsilon) -> bool {
+    fn eq_r1st_all(&self, other: &HashMap<K, VB, S>, tol: &Self::AllTol) -> bool {
         self.len() == other.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    FloatEqAll::eq_r1st_all(a, b, max_diff)
+                    FloatEqAll::eq_r1st_all(a, b, tol)
                 } else {
                     false
                 }
@@ -1118,11 +1058,11 @@ where
     }
 
     #[inline]
-    fn eq_r2nd_all(&self, other: &HashMap<K, VB, S>, max_diff: &Self::AllEpsilon) -> bool {
+    fn eq_r2nd_all(&self, other: &HashMap<K, VB, S>, tol: &Self::AllTol) -> bool {
         self.len() == other.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    FloatEqAll::eq_r2nd_all(a, b, max_diff)
+                    FloatEqAll::eq_r2nd_all(a, b, tol)
                 } else {
                     false
                 }
@@ -1130,15 +1070,11 @@ where
     }
 
     #[inline]
-    fn eq_ulps_all(
-        &self,
-        other: &HashMap<K, VB, S>,
-        max_diff: &UlpsEpsilon<Self::AllEpsilon>,
-    ) -> bool {
+    fn eq_ulps_all(&self, other: &HashMap<K, VB, S>, tol: &UlpsTol<Self::AllTol>) -> bool {
         self.len() == other.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    FloatEqAll::eq_ulps_all(a, b, max_diff)
+                    FloatEqAll::eq_ulps_all(a, b, tol)
                 } else {
                     false
                 }
@@ -1151,13 +1087,13 @@ where
     K: Eq + Hash + Clone + fmt::Debug,
     S: BuildHasher + Clone,
     VA: AssertFloatEq<VB>,
-    VA::Epsilon: Sized,
-    UlpsEpsilon<VA::Epsilon>: Sized,
-    VA::DebugEpsilon: Sized,
-    UlpsEpsilon<VA::DebugEpsilon>: Sized,
+    VA::Tol: Sized,
+    UlpsTol<VA::Tol>: Sized,
+    VA::DebugTol: Sized,
+    UlpsTol<VA::DebugTol>: Sized,
 {
     type DebugAbsDiff = Option<HashMap<K, VA::DebugAbsDiff, S>>;
-    type DebugEpsilon = Option<HashMap<K, VA::DebugEpsilon, S>>;
+    type DebugTol = Option<HashMap<K, VA::DebugTol, S>>;
 
     #[inline]
     fn debug_abs_diff(&self, other: &HashMap<K, VB, S>) -> Self::DebugAbsDiff {
@@ -1186,17 +1122,13 @@ where
     }
 
     #[inline]
-    fn debug_abs_epsilon(
-        &self,
-        other: &HashMap<K, VB, S>,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
-        if self.len() == other.len() && self.len() == max_diff.len() {
+    fn debug_abs_tol(&self, other: &HashMap<K, VB, S>, tol: &Self::Tol) -> Self::DebugTol {
+        if self.len() == other.len() && self.len() == tol.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
                 result.insert(
                     k.clone(),
-                    v.debug_abs_epsilon(other.get(k)?, max_diff.get(k)?),
+                    v.debug_abs_tol(other.get(k)?, tol.get(k)?),
                 );
             }
             Some(result)
@@ -1206,17 +1138,17 @@ where
     }
 
     #[inline]
-    fn debug_rmax_epsilon(
+    fn debug_rmax_tol(
         &self,
         other: &HashMap<K, VB, S>,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
-        if self.len() == other.len() && self.len() == max_diff.len() {
+        tol: &Self::Tol,
+    ) -> Self::DebugTol {
+        if self.len() == other.len() && self.len() == tol.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
                 result.insert(
                     k.clone(),
-                    v.debug_rmax_epsilon(other.get(k)?, max_diff.get(k)?),
+                    v.debug_rmax_tol(other.get(k)?, tol.get(k)?),
                 );
             }
             Some(result)
@@ -1226,17 +1158,17 @@ where
     }
 
     #[inline]
-    fn debug_rmin_epsilon(
+    fn debug_rmin_tol(
         &self,
         other: &HashMap<K, VB, S>,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
-        if self.len() == other.len() && self.len() == max_diff.len() {
+        tol: &Self::Tol,
+    ) -> Self::DebugTol {
+        if self.len() == other.len() && self.len() == tol.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
                 result.insert(
                     k.clone(),
-                    v.debug_rmin_epsilon(other.get(k)?, max_diff.get(k)?),
+                    v.debug_rmin_tol(other.get(k)?, tol.get(k)?),
                 );
             }
             Some(result)
@@ -1246,17 +1178,17 @@ where
     }
 
     #[inline]
-    fn debug_r1st_epsilon(
+    fn debug_r1st_tol(
         &self,
         other: &HashMap<K, VB, S>,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
-        if self.len() == other.len() && self.len() == max_diff.len() {
+        tol: &Self::Tol,
+    ) -> Self::DebugTol {
+        if self.len() == other.len() && self.len() == tol.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
                 result.insert(
                     k.clone(),
-                    v.debug_r1st_epsilon(other.get(k)?, max_diff.get(k)?),
+                    v.debug_r1st_tol(other.get(k)?, tol.get(k)?),
                 );
             }
             Some(result)
@@ -1266,17 +1198,17 @@ where
     }
 
     #[inline]
-    fn debug_r2nd_epsilon(
+    fn debug_r2nd_tol(
         &self,
         other: &HashMap<K, VB, S>,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
-        if self.len() == other.len() && self.len() == max_diff.len() {
+        tol: &Self::Tol,
+    ) -> Self::DebugTol {
+        if self.len() == other.len() && self.len() == tol.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
                 result.insert(
                     k.clone(),
-                    v.debug_r2nd_epsilon(other.get(k)?, max_diff.get(k)?),
+                    v.debug_r2nd_tol(other.get(k)?, tol.get(k)?),
                 );
             }
             Some(result)
@@ -1286,17 +1218,17 @@ where
     }
 
     #[inline]
-    fn debug_ulps_epsilon(
+    fn debug_ulps_tol(
         &self,
         other: &HashMap<K, VB, S>,
-        max_diff: &UlpsEpsilon<Self::Epsilon>,
-    ) -> UlpsEpsilon<Self::DebugEpsilon> {
-        if self.len() == other.len() && self.len() == max_diff.len() {
+        tol: &UlpsTol<Self::Tol>,
+    ) -> UlpsTol<Self::DebugTol> {
+        if self.len() == other.len() && self.len() == tol.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
                 result.insert(
                     k.clone(),
-                    v.debug_ulps_epsilon(other.get(k)?, max_diff.get(k)?),
+                    v.debug_ulps_tol(other.get(k)?, tol.get(k)?),
                 );
             }
             Some(result)
@@ -1311,21 +1243,21 @@ where
     K: Eq + Hash + Clone + fmt::Debug,
     S: BuildHasher + Clone,
     VA: AssertFloatEqAll<VB>,
-    VA::AllDebugEpsilon: Sized,
-    UlpsEpsilon<VA::AllDebugEpsilon>: Sized,
+    VA::AllDebugTol: Sized,
+    UlpsTol<VA::AllDebugTol>: Sized,
 {
-    type AllDebugEpsilon = Option<HashMap<K, VA::AllDebugEpsilon, S>>;
+    type AllDebugTol = Option<HashMap<K, VA::AllDebugTol, S>>;
 
     #[inline]
-    fn debug_abs_all_epsilon(
+    fn debug_abs_all_tol(
         &self,
         other: &HashMap<K, VB, S>,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
+        tol: &Self::AllTol,
+    ) -> Self::AllDebugTol {
         if self.len() == other.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
-                result.insert(k.clone(), v.debug_abs_all_epsilon(other.get(k)?, max_diff));
+                result.insert(k.clone(), v.debug_abs_all_tol(other.get(k)?, tol));
             }
             Some(result)
         } else {
@@ -1334,15 +1266,15 @@ where
     }
 
     #[inline]
-    fn debug_rmax_all_epsilon(
+    fn debug_rmax_all_tol(
         &self,
         other: &HashMap<K, VB, S>,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
+        tol: &Self::AllTol,
+    ) -> Self::AllDebugTol {
         if self.len() == other.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
-                result.insert(k.clone(), v.debug_rmax_all_epsilon(other.get(k)?, max_diff));
+                result.insert(k.clone(), v.debug_rmax_all_tol(other.get(k)?, tol));
             }
             Some(result)
         } else {
@@ -1351,15 +1283,15 @@ where
     }
 
     #[inline]
-    fn debug_rmin_all_epsilon(
+    fn debug_rmin_all_tol(
         &self,
         other: &HashMap<K, VB, S>,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
+        tol: &Self::AllTol,
+    ) -> Self::AllDebugTol {
         if self.len() == other.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
-                result.insert(k.clone(), v.debug_rmin_all_epsilon(other.get(k)?, max_diff));
+                result.insert(k.clone(), v.debug_rmin_all_tol(other.get(k)?, tol));
             }
             Some(result)
         } else {
@@ -1368,15 +1300,15 @@ where
     }
 
     #[inline]
-    fn debug_r1st_all_epsilon(
+    fn debug_r1st_all_tol(
         &self,
         other: &HashMap<K, VB, S>,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
+        tol: &Self::AllTol,
+    ) -> Self::AllDebugTol {
         if self.len() == other.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
-                result.insert(k.clone(), v.debug_r1st_all_epsilon(other.get(k)?, max_diff));
+                result.insert(k.clone(), v.debug_r1st_all_tol(other.get(k)?, tol));
             }
             Some(result)
         } else {
@@ -1385,15 +1317,15 @@ where
     }
 
     #[inline]
-    fn debug_r2nd_all_epsilon(
+    fn debug_r2nd_all_tol(
         &self,
         other: &HashMap<K, VB, S>,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
+        tol: &Self::AllTol,
+    ) -> Self::AllDebugTol {
         if self.len() == other.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
-                result.insert(k.clone(), v.debug_r2nd_all_epsilon(other.get(k)?, max_diff));
+                result.insert(k.clone(), v.debug_r2nd_all_tol(other.get(k)?, tol));
             }
             Some(result)
         } else {
@@ -1402,18 +1334,18 @@ where
     }
 
     #[inline]
-    fn debug_ulps_all_epsilon(
+    fn debug_ulps_all_tol(
         &self,
         other: &HashMap<K, VB, S>,
-        max_diff: &UlpsEpsilon<Self::AllEpsilon>,
-    ) -> UlpsEpsilon<Self::AllDebugEpsilon>
+        tol: &UlpsTol<Self::AllTol>,
+    ) -> UlpsTol<Self::AllDebugTol>
     where
-        UlpsEpsilon<Self::AllDebugEpsilon>: Sized,
+        UlpsTol<Self::AllDebugTol>: Sized,
     {
         if self.len() == other.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
-                result.insert(k.clone(), v.debug_ulps_all_epsilon(other.get(k)?, max_diff));
+                result.insert(k.clone(), v.debug_ulps_all_tol(other.get(k)?, tol));
             }
             Some(result)
         } else {
@@ -1425,12 +1357,12 @@ where
 //------------------------------------------------------------------------------
 // BTreeMap
 //------------------------------------------------------------------------------
-impl<K, V> FloatEqUlpsEpsilon for BTreeMap<K, V>
+impl<K, V> FloatEqUlpsTol for BTreeMap<K, V>
 where
-    V: FloatEqUlpsEpsilon,
-    UlpsEpsilon<V>: Sized,
+    V: FloatEqUlpsTol,
+    UlpsTol<V>: Sized,
 {
-    type UlpsEpsilon = BTreeMap<K, UlpsEpsilon<V>>;
+    type UlpsTol = BTreeMap<K, UlpsTol<V>>;
 }
 
 impl<K, V> FloatEqDebugUlpsDiff for BTreeMap<K, V>
@@ -1444,18 +1376,18 @@ impl<K, VA, VB> FloatEq<BTreeMap<K, VB>> for BTreeMap<K, VA>
 where
     K: Eq + Ord,
     VA: FloatEq<VB>,
-    VA::Epsilon: Sized,
-    UlpsEpsilon<VA::Epsilon>: Sized,
+    VA::Tol: Sized,
+    UlpsTol<VA::Tol>: Sized,
 {
-    type Epsilon = BTreeMap<K, VA::Epsilon>;
+    type Tol = BTreeMap<K, VA::Tol>;
 
     #[inline]
-    fn eq_abs(&self, other: &BTreeMap<K, VB>, max_diff: &Self::Epsilon) -> bool {
+    fn eq_abs(&self, other: &BTreeMap<K, VB>, tol: &Self::Tol) -> bool {
         self.len() == other.len()
-            && self.len() == max_diff.len()
+            && self.len() == tol.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    if let Some(eps) = max_diff.get(k) {
+                    if let Some(eps) = tol.get(k) {
                         FloatEq::eq_abs(a, b, eps)
                     } else {
                         false
@@ -1467,12 +1399,12 @@ where
     }
 
     #[inline]
-    fn eq_rmax(&self, other: &BTreeMap<K, VB>, max_diff: &Self::Epsilon) -> bool {
+    fn eq_rmax(&self, other: &BTreeMap<K, VB>, tol: &Self::Tol) -> bool {
         self.len() == other.len()
-            && self.len() == max_diff.len()
+            && self.len() == tol.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    if let Some(eps) = max_diff.get(k) {
+                    if let Some(eps) = tol.get(k) {
                         FloatEq::eq_rmax(a, b, eps)
                     } else {
                         false
@@ -1484,12 +1416,12 @@ where
     }
 
     #[inline]
-    fn eq_rmin(&self, other: &BTreeMap<K, VB>, max_diff: &Self::Epsilon) -> bool {
+    fn eq_rmin(&self, other: &BTreeMap<K, VB>, tol: &Self::Tol) -> bool {
         self.len() == other.len()
-            && self.len() == max_diff.len()
+            && self.len() == tol.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    if let Some(eps) = max_diff.get(k) {
+                    if let Some(eps) = tol.get(k) {
                         FloatEq::eq_rmin(a, b, eps)
                     } else {
                         false
@@ -1501,12 +1433,12 @@ where
     }
 
     #[inline]
-    fn eq_r1st(&self, other: &BTreeMap<K, VB>, max_diff: &Self::Epsilon) -> bool {
+    fn eq_r1st(&self, other: &BTreeMap<K, VB>, tol: &Self::Tol) -> bool {
         self.len() == other.len()
-            && self.len() == max_diff.len()
+            && self.len() == tol.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    if let Some(eps) = max_diff.get(k) {
+                    if let Some(eps) = tol.get(k) {
                         FloatEq::eq_r1st(a, b, eps)
                     } else {
                         false
@@ -1518,12 +1450,12 @@ where
     }
 
     #[inline]
-    fn eq_r2nd(&self, other: &BTreeMap<K, VB>, max_diff: &Self::Epsilon) -> bool {
+    fn eq_r2nd(&self, other: &BTreeMap<K, VB>, tol: &Self::Tol) -> bool {
         self.len() == other.len()
-            && self.len() == max_diff.len()
+            && self.len() == tol.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    if let Some(eps) = max_diff.get(k) {
+                    if let Some(eps) = tol.get(k) {
                         FloatEq::eq_r2nd(a, b, eps)
                     } else {
                         false
@@ -1535,12 +1467,12 @@ where
     }
 
     #[inline]
-    fn eq_ulps(&self, other: &BTreeMap<K, VB>, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
+    fn eq_ulps(&self, other: &BTreeMap<K, VB>, tol: &UlpsTol<Self::Tol>) -> bool {
         self.len() == other.len()
-            && self.len() == max_diff.len()
+            && self.len() == tol.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    if let Some(eps) = max_diff.get(k) {
+                    if let Some(eps) = tol.get(k) {
                         FloatEq::eq_ulps(a, b, eps)
                     } else {
                         false
@@ -1557,14 +1489,14 @@ where
     K: Eq + Ord,
     VA: FloatEqAll<VB>,
 {
-    type AllEpsilon = VA::AllEpsilon;
+    type AllTol = VA::AllTol;
 
     #[inline]
-    fn eq_abs_all(&self, other: &BTreeMap<K, VB>, max_diff: &Self::AllEpsilon) -> bool {
+    fn eq_abs_all(&self, other: &BTreeMap<K, VB>, tol: &Self::AllTol) -> bool {
         self.len() == other.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    FloatEqAll::eq_abs_all(a, b, max_diff)
+                    FloatEqAll::eq_abs_all(a, b, tol)
                 } else {
                     false
                 }
@@ -1572,11 +1504,11 @@ where
     }
 
     #[inline]
-    fn eq_rmax_all(&self, other: &BTreeMap<K, VB>, max_diff: &Self::AllEpsilon) -> bool {
+    fn eq_rmax_all(&self, other: &BTreeMap<K, VB>, tol: &Self::AllTol) -> bool {
         self.len() == other.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    FloatEqAll::eq_rmax_all(a, b, max_diff)
+                    FloatEqAll::eq_rmax_all(a, b, tol)
                 } else {
                     false
                 }
@@ -1584,11 +1516,11 @@ where
     }
 
     #[inline]
-    fn eq_rmin_all(&self, other: &BTreeMap<K, VB>, max_diff: &Self::AllEpsilon) -> bool {
+    fn eq_rmin_all(&self, other: &BTreeMap<K, VB>, tol: &Self::AllTol) -> bool {
         self.len() == other.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    FloatEqAll::eq_rmin_all(a, b, max_diff)
+                    FloatEqAll::eq_rmin_all(a, b, tol)
                 } else {
                     false
                 }
@@ -1596,11 +1528,11 @@ where
     }
 
     #[inline]
-    fn eq_r1st_all(&self, other: &BTreeMap<K, VB>, max_diff: &Self::AllEpsilon) -> bool {
+    fn eq_r1st_all(&self, other: &BTreeMap<K, VB>, tol: &Self::AllTol) -> bool {
         self.len() == other.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    FloatEqAll::eq_r1st_all(a, b, max_diff)
+                    FloatEqAll::eq_r1st_all(a, b, tol)
                 } else {
                     false
                 }
@@ -1608,11 +1540,11 @@ where
     }
 
     #[inline]
-    fn eq_r2nd_all(&self, other: &BTreeMap<K, VB>, max_diff: &Self::AllEpsilon) -> bool {
+    fn eq_r2nd_all(&self, other: &BTreeMap<K, VB>, tol: &Self::AllTol) -> bool {
         self.len() == other.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    FloatEqAll::eq_r2nd_all(a, b, max_diff)
+                    FloatEqAll::eq_r2nd_all(a, b, tol)
                 } else {
                     false
                 }
@@ -1620,15 +1552,11 @@ where
     }
 
     #[inline]
-    fn eq_ulps_all(
-        &self,
-        other: &BTreeMap<K, VB>,
-        max_diff: &UlpsEpsilon<Self::AllEpsilon>,
-    ) -> bool {
+    fn eq_ulps_all(&self, other: &BTreeMap<K, VB>, tol: &UlpsTol<Self::AllTol>) -> bool {
         self.len() == other.len()
             && self.iter().all(|(k, a)| {
                 if let Some(b) = other.get(k) {
-                    FloatEqAll::eq_ulps_all(a, b, max_diff)
+                    FloatEqAll::eq_ulps_all(a, b, tol)
                 } else {
                     false
                 }
@@ -1640,13 +1568,13 @@ impl<K, VA, VB> AssertFloatEq<BTreeMap<K, VB>> for BTreeMap<K, VA>
 where
     K: Eq + Ord + Clone + fmt::Debug,
     VA: AssertFloatEq<VB>,
-    VA::Epsilon: Sized,
-    VA::DebugEpsilon: Sized,
-    UlpsEpsilon<VA::Epsilon>: Sized,
-    UlpsEpsilon<VA::DebugEpsilon>: Sized,
+    VA::Tol: Sized,
+    VA::DebugTol: Sized,
+    UlpsTol<VA::Tol>: Sized,
+    UlpsTol<VA::DebugTol>: Sized,
 {
     type DebugAbsDiff = Option<BTreeMap<K, VA::DebugAbsDiff>>;
-    type DebugEpsilon = Option<BTreeMap<K, VA::DebugEpsilon>>;
+    type DebugTol = Option<BTreeMap<K, VA::DebugTol>>;
 
     #[inline]
     fn debug_abs_diff(&self, other: &BTreeMap<K, VB>) -> Self::DebugAbsDiff {
@@ -1675,17 +1603,13 @@ where
     }
 
     #[inline]
-    fn debug_abs_epsilon(
-        &self,
-        other: &BTreeMap<K, VB>,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
-        if self.len() == other.len() && self.len() == max_diff.len() {
+    fn debug_abs_tol(&self, other: &BTreeMap<K, VB>, tol: &Self::Tol) -> Self::DebugTol {
+        if self.len() == other.len() && self.len() == tol.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
                 result.insert(
                     k.clone(),
-                    v.debug_abs_epsilon(other.get(k)?, max_diff.get(k)?),
+                    v.debug_abs_tol(other.get(k)?, tol.get(k)?),
                 );
             }
             Some(result)
@@ -1695,17 +1619,13 @@ where
     }
 
     #[inline]
-    fn debug_rmax_epsilon(
-        &self,
-        other: &BTreeMap<K, VB>,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
-        if self.len() == other.len() && self.len() == max_diff.len() {
+    fn debug_rmax_tol(&self, other: &BTreeMap<K, VB>, tol: &Self::Tol) -> Self::DebugTol {
+        if self.len() == other.len() && self.len() == tol.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
                 result.insert(
                     k.clone(),
-                    v.debug_rmax_epsilon(other.get(k)?, max_diff.get(k)?),
+                    v.debug_rmax_tol(other.get(k)?, tol.get(k)?),
                 );
             }
             Some(result)
@@ -1715,17 +1635,13 @@ where
     }
 
     #[inline]
-    fn debug_rmin_epsilon(
-        &self,
-        other: &BTreeMap<K, VB>,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
-        if self.len() == other.len() && self.len() == max_diff.len() {
+    fn debug_rmin_tol(&self, other: &BTreeMap<K, VB>, tol: &Self::Tol) -> Self::DebugTol {
+        if self.len() == other.len() && self.len() == tol.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
                 result.insert(
                     k.clone(),
-                    v.debug_rmin_epsilon(other.get(k)?, max_diff.get(k)?),
+                    v.debug_rmin_tol(other.get(k)?, tol.get(k)?),
                 );
             }
             Some(result)
@@ -1735,17 +1651,13 @@ where
     }
 
     #[inline]
-    fn debug_r1st_epsilon(
-        &self,
-        other: &BTreeMap<K, VB>,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
-        if self.len() == other.len() && self.len() == max_diff.len() {
+    fn debug_r1st_tol(&self, other: &BTreeMap<K, VB>, tol: &Self::Tol) -> Self::DebugTol {
+        if self.len() == other.len() && self.len() == tol.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
                 result.insert(
                     k.clone(),
-                    v.debug_r1st_epsilon(other.get(k)?, max_diff.get(k)?),
+                    v.debug_r1st_tol(other.get(k)?, tol.get(k)?),
                 );
             }
             Some(result)
@@ -1755,17 +1667,13 @@ where
     }
 
     #[inline]
-    fn debug_r2nd_epsilon(
-        &self,
-        other: &BTreeMap<K, VB>,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
-        if self.len() == other.len() && self.len() == max_diff.len() {
+    fn debug_r2nd_tol(&self, other: &BTreeMap<K, VB>, tol: &Self::Tol) -> Self::DebugTol {
+        if self.len() == other.len() && self.len() == tol.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
                 result.insert(
                     k.clone(),
-                    v.debug_r2nd_epsilon(other.get(k)?, max_diff.get(k)?),
+                    v.debug_r2nd_tol(other.get(k)?, tol.get(k)?),
                 );
             }
             Some(result)
@@ -1775,20 +1683,20 @@ where
     }
 
     #[inline]
-    fn debug_ulps_epsilon(
+    fn debug_ulps_tol(
         &self,
         other: &BTreeMap<K, VB>,
-        max_diff: &UlpsEpsilon<Self::Epsilon>,
-    ) -> UlpsEpsilon<Self::DebugEpsilon>
+        tol: &UlpsTol<Self::Tol>,
+    ) -> UlpsTol<Self::DebugTol>
     where
-        UlpsEpsilon<Self::DebugEpsilon>: Sized,
+        UlpsTol<Self::DebugTol>: Sized,
     {
-        if self.len() == other.len() && self.len() == max_diff.len() {
+        if self.len() == other.len() && self.len() == tol.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
                 result.insert(
                     k.clone(),
-                    v.debug_ulps_epsilon(other.get(k)?, max_diff.get(k)?),
+                    v.debug_ulps_tol(other.get(k)?, tol.get(k)?),
                 );
             }
             Some(result)
@@ -1802,21 +1710,21 @@ impl<K, VA, VB> AssertFloatEqAll<BTreeMap<K, VB>> for BTreeMap<K, VA>
 where
     K: Eq + Ord + Clone + fmt::Debug,
     VA: AssertFloatEqAll<VB>,
-    VA::AllDebugEpsilon: Sized,
-    UlpsEpsilon<VA::AllDebugEpsilon>: Sized,
+    VA::AllDebugTol: Sized,
+    UlpsTol<VA::AllDebugTol>: Sized,
 {
-    type AllDebugEpsilon = Option<BTreeMap<K, VA::AllDebugEpsilon>>;
+    type AllDebugTol = Option<BTreeMap<K, VA::AllDebugTol>>;
 
     #[inline]
-    fn debug_abs_all_epsilon(
+    fn debug_abs_all_tol(
         &self,
         other: &BTreeMap<K, VB>,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
+        tol: &Self::AllTol,
+    ) -> Self::AllDebugTol {
         if self.len() == other.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
-                result.insert(k.clone(), v.debug_abs_all_epsilon(other.get(k)?, max_diff));
+                result.insert(k.clone(), v.debug_abs_all_tol(other.get(k)?, tol));
             }
             Some(result)
         } else {
@@ -1825,15 +1733,15 @@ where
     }
 
     #[inline]
-    fn debug_rmax_all_epsilon(
+    fn debug_rmax_all_tol(
         &self,
         other: &BTreeMap<K, VB>,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
+        tol: &Self::AllTol,
+    ) -> Self::AllDebugTol {
         if self.len() == other.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
-                result.insert(k.clone(), v.debug_rmax_all_epsilon(other.get(k)?, max_diff));
+                result.insert(k.clone(), v.debug_rmax_all_tol(other.get(k)?, tol));
             }
             Some(result)
         } else {
@@ -1842,15 +1750,15 @@ where
     }
 
     #[inline]
-    fn debug_rmin_all_epsilon(
+    fn debug_rmin_all_tol(
         &self,
         other: &BTreeMap<K, VB>,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
+        tol: &Self::AllTol,
+    ) -> Self::AllDebugTol {
         if self.len() == other.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
-                result.insert(k.clone(), v.debug_rmin_all_epsilon(other.get(k)?, max_diff));
+                result.insert(k.clone(), v.debug_rmin_all_tol(other.get(k)?, tol));
             }
             Some(result)
         } else {
@@ -1859,15 +1767,15 @@ where
     }
 
     #[inline]
-    fn debug_r1st_all_epsilon(
+    fn debug_r1st_all_tol(
         &self,
         other: &BTreeMap<K, VB>,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
+        tol: &Self::AllTol,
+    ) -> Self::AllDebugTol {
         if self.len() == other.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
-                result.insert(k.clone(), v.debug_r1st_all_epsilon(other.get(k)?, max_diff));
+                result.insert(k.clone(), v.debug_r1st_all_tol(other.get(k)?, tol));
             }
             Some(result)
         } else {
@@ -1876,15 +1784,15 @@ where
     }
 
     #[inline]
-    fn debug_r2nd_all_epsilon(
+    fn debug_r2nd_all_tol(
         &self,
         other: &BTreeMap<K, VB>,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
+        tol: &Self::AllTol,
+    ) -> Self::AllDebugTol {
         if self.len() == other.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
-                result.insert(k.clone(), v.debug_r2nd_all_epsilon(other.get(k)?, max_diff));
+                result.insert(k.clone(), v.debug_r2nd_all_tol(other.get(k)?, tol));
             }
             Some(result)
         } else {
@@ -1893,18 +1801,18 @@ where
     }
 
     #[inline]
-    fn debug_ulps_all_epsilon(
+    fn debug_ulps_all_tol(
         &self,
         other: &BTreeMap<K, VB>,
-        max_diff: &UlpsEpsilon<Self::AllEpsilon>,
-    ) -> UlpsEpsilon<Self::AllDebugEpsilon>
+        tol: &UlpsTol<Self::AllTol>,
+    ) -> UlpsTol<Self::AllDebugTol>
     where
-        UlpsEpsilon<Self::AllDebugEpsilon>: Sized,
+        UlpsTol<Self::AllDebugTol>: Sized,
     {
         if self.len() == other.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
-                result.insert(k.clone(), v.debug_ulps_all_epsilon(other.get(k)?, max_diff));
+                result.insert(k.clone(), v.debug_ulps_all_tol(other.get(k)?, tol));
             }
             Some(result)
         } else {

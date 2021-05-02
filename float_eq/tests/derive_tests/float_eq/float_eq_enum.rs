@@ -1,6 +1,6 @@
-use float_eq::{FloatEq, FloatEqUlpsEpsilon};
+use float_eq::{FloatEq, FloatEqUlpsTol};
 
-#[derive(Clone, Copy, Debug, PartialEq, PartialOrd, FloatEqUlpsEpsilon, FloatEq)]
+#[derive(Clone, Copy, Debug, PartialEq, PartialOrd, FloatEqUlpsTol, FloatEq)]
 enum SomeEnum {
     Float(f32),
     Double(f64),

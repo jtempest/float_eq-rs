@@ -1,4 +1,4 @@
-error: float_eq attribute must be a list of options, for example `#[float_eq(ulps_epsilon = "MyComplex32Ulps")]`
+error: float_eq attribute must be a list of options, for example `#[float_eq(ulps_tol = "MyComplex32Ulps")]`
  --> $DIR/float_eq_no_params_list.rs:4:3
   |
 4 | #[float_eq]

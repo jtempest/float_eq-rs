@@ -201,20 +201,20 @@ macro_rules! impl_tests {
                 assert_float_eq!(a, b, abs_all <= 4.);
             }
 
-            macro_rules! check_debug_epsilon {
+            macro_rules! check_debug_tol {
                 ($n:literal) => {{
                     let mut a: [$float; $n] = [0.; $n];
                     for i in 0..$n {
                         a[i] = (i as $float + 1.);
                     }
 
-                    assert_eq!(a.debug_abs_epsilon(&a, &[0.0; $n]), [0.0; $n]);
-                    assert_eq!(a.debug_rel_epsilon(&a, &[0.0; $n]), [0.0; $n]);
-                    assert_eq!(a.debug_rmax_epsilon(&a, &[0.0; $n]), [0.0; $n]);
-                    assert_eq!(a.debug_rmin_epsilon(&a, &[0.0; $n]), [0.0; $n]);
-                    assert_eq!(a.debug_r1st_epsilon(&a, &[0.0; $n]), [0.0; $n]);
-                    assert_eq!(a.debug_r2nd_epsilon(&a, &[0.0; $n]), [0.0; $n]);
-                    assert_eq!(a.debug_ulps_epsilon(&a, &[0; $n]), [0; $n]);
+                    assert_eq!(a.debug_abs_tol(&a, &[0.0; $n]), [0.0; $n]);
+                    assert_eq!(a.debug_rel_tol(&a, &[0.0; $n]), [0.0; $n]);
+                    assert_eq!(a.debug_rmax_tol(&a, &[0.0; $n]), [0.0; $n]);
+                    assert_eq!(a.debug_rmin_tol(&a, &[0.0; $n]), [0.0; $n]);
+                    assert_eq!(a.debug_r1st_tol(&a, &[0.0; $n]), [0.0; $n]);
+                    assert_eq!(a.debug_r2nd_tol(&a, &[0.0; $n]), [0.0; $n]);
+                    assert_eq!(a.debug_ulps_tol(&a, &[0; $n]), [0; $n]);
 
                     for i in 0..$n {
                         let mut b = a;
@@ -222,7 +222,7 @@ macro_rules! impl_tests {
 
                         let mut eps = [0.0; $n];
                         eps[i] = 0.5;
-                        assert_eq!(a.debug_abs_epsilon(&b, &eps), eps);
+                        assert_eq!(a.debug_abs_tol(&b, &eps), eps);
 
                         let mut b = a;
                         b[i] = $float::from_bits(a[i].to_bits() + 1);
@@ -230,70 +230,70 @@ macro_rules! impl_tests {
                         let mut eps = [0.0; $n];
                         eps[i] = EPSILON;
                         let mut expected = [0.0; $n];
-                        expected[i] = a[i].debug_rel_epsilon(&b[i], &eps[i]);
-                        assert_eq!(a.debug_rel_epsilon(&b, &eps), expected);
+                        expected[i] = a[i].debug_rel_tol(&b[i], &eps[i]);
+                        assert_eq!(a.debug_rel_tol(&b, &eps), expected);
 
                         let mut eps = [0.0; $n];
                         eps[i] = EPSILON;
                         let mut expected = [0.0; $n];
-                        expected[i] = a[i].debug_rmax_epsilon(&b[i], &eps[i]);
-                        assert_eq!(a.debug_rmax_epsilon(&b, &eps), expected);
+                        expected[i] = a[i].debug_rmax_tol(&b[i], &eps[i]);
+                        assert_eq!(a.debug_rmax_tol(&b, &eps), expected);
 
                         let mut eps = [0.0; $n];
                         eps[i] = EPSILON;
                         let mut expected = [0.0; $n];
-                        expected[i] = a[i].debug_rmin_epsilon(&b[i], &eps[i]);
-                        assert_eq!(a.debug_rmin_epsilon(&b, &eps), expected);
+                        expected[i] = a[i].debug_rmin_tol(&b[i], &eps[i]);
+                        assert_eq!(a.debug_rmin_tol(&b, &eps), expected);
 
                         let mut eps = [0.0; $n];
                         eps[i] = EPSILON;
                         let mut expected = [0.0; $n];
-                        expected[i] = a[i].debug_r1st_epsilon(&b[i], &eps[i]);
-                        assert_eq!(a.debug_r1st_epsilon(&b, &eps), expected);
+                        expected[i] = a[i].debug_r1st_tol(&b[i], &eps[i]);
+                        assert_eq!(a.debug_r1st_tol(&b, &eps), expected);
 
                         let mut eps = [0.0; $n];
                         eps[i] = EPSILON;
                         let mut expected = [0.0; $n];
-                        expected[i] = a[i].debug_r2nd_epsilon(&b[i], &eps[i]);
-                        assert_eq!(a.debug_r2nd_epsilon(&b, &eps), expected);
+                        expected[i] = a[i].debug_r2nd_tol(&b[i], &eps[i]);
+                        assert_eq!(a.debug_r2nd_tol(&b, &eps), expected);
 
                         let mut eps = [0; $n];
                         eps[i] = 1;
-                        assert_eq!(a.debug_ulps_epsilon(&b, &eps), eps);
+                        assert_eq!(a.debug_ulps_tol(&b, &eps), eps);
                     }
                 }};
             }
 
             #[test]
-            fn debug_epsilon() {
-                check_debug_epsilon!(0);
-                check_debug_epsilon!(1);
-                check_debug_epsilon!(2);
+            fn debug_tol() {
+                check_debug_tol!(0);
+                check_debug_tol!(1);
+                check_debug_tol!(2);
                 //we can infer the checks in between work
-                check_debug_epsilon!(32);
+                check_debug_tol!(32);
             }
 
-            macro_rules! check_debug_all_epsilon {
+            macro_rules! check_debug_all_tol {
                 ($n:literal) => {{
                     let mut a: [$float; $n] = [0.; $n];
                     for i in 0..$n {
                         a[i] = (i as $float + 1.);
                     }
 
-                    assert_eq!(a.debug_abs_all_epsilon(&a, &0.0), [0.0; $n]);
-                    assert_eq!(a.debug_rel_all_epsilon(&a, &0.0), [0.0; $n]);
-                    assert_eq!(a.debug_rmax_all_epsilon(&a, &0.0), [0.0; $n]);
-                    assert_eq!(a.debug_rmin_all_epsilon(&a, &0.0), [0.0; $n]);
-                    assert_eq!(a.debug_r1st_all_epsilon(&a, &0.0), [0.0; $n]);
-                    assert_eq!(a.debug_r2nd_all_epsilon(&a, &0.0), [0.0; $n]);
-                    assert_eq!(a.debug_ulps_all_epsilon(&a, &0), [0; $n]);
+                    assert_eq!(a.debug_abs_all_tol(&a, &0.0), [0.0; $n]);
+                    assert_eq!(a.debug_rel_all_tol(&a, &0.0), [0.0; $n]);
+                    assert_eq!(a.debug_rmax_all_tol(&a, &0.0), [0.0; $n]);
+                    assert_eq!(a.debug_rmin_all_tol(&a, &0.0), [0.0; $n]);
+                    assert_eq!(a.debug_r1st_all_tol(&a, &0.0), [0.0; $n]);
+                    assert_eq!(a.debug_r2nd_all_tol(&a, &0.0), [0.0; $n]);
+                    assert_eq!(a.debug_ulps_all_tol(&a, &0), [0; $n]);
 
                     for i in 0..$n {
                         let mut b = a;
                         b[i] = a[i] + 0.5;
 
                         let eps = 0.5;
-                        assert_eq!(a.debug_abs_all_epsilon(&b, &eps), [eps; $n]);
+                        assert_eq!(a.debug_abs_all_tol(&b, &eps), [eps; $n]);
 
                         let mut b = a;
                         b[i] = $float::from_bits(a[i].to_bits() + 1);
@@ -301,52 +301,52 @@ macro_rules! impl_tests {
                         let eps = EPSILON;
                         let mut expected = [0.0; $n];
                         for j in 0..$n {
-                            expected[j] = a[j].debug_rel_all_epsilon(&b[j], &eps);
+                            expected[j] = a[j].debug_rel_all_tol(&b[j], &eps);
                         }
-                        assert_eq!(a.debug_rel_all_epsilon(&b, &eps), expected);
+                        assert_eq!(a.debug_rel_all_tol(&b, &eps), expected);
 
                         let eps = EPSILON;
                         let mut expected = [0.0; $n];
                         for j in 0..$n {
-                            expected[j] = a[j].debug_rmax_all_epsilon(&b[j], &eps);
+                            expected[j] = a[j].debug_rmax_all_tol(&b[j], &eps);
                         }
-                        assert_eq!(a.debug_rmax_all_epsilon(&b, &eps), expected);
+                        assert_eq!(a.debug_rmax_all_tol(&b, &eps), expected);
 
                         let eps = EPSILON;
                         let mut expected = [0.0; $n];
                         for j in 0..$n {
-                            expected[j] = a[j].debug_rmin_all_epsilon(&b[j], &eps);
+                            expected[j] = a[j].debug_rmin_all_tol(&b[j], &eps);
                         }
-                        assert_eq!(a.debug_rmin_all_epsilon(&b, &eps), expected);
+                        assert_eq!(a.debug_rmin_all_tol(&b, &eps), expected);
 
                         let eps = EPSILON;
                         let mut expected = [0.0; $n];
                         for j in 0..$n {
-                            expected[j] = a[j].debug_r1st_all_epsilon(&b[j], &eps);
+                            expected[j] = a[j].debug_r1st_all_tol(&b[j], &eps);
                         }
-                        assert_eq!(a.debug_r1st_all_epsilon(&b, &eps), expected);
+                        assert_eq!(a.debug_r1st_all_tol(&b, &eps), expected);
 
                         let eps = EPSILON;
                         let mut expected = [0.0; $n];
                         for j in 0..$n {
-                            expected[j] = a[j].debug_r2nd_all_epsilon(&b[j], &eps);
+                            expected[j] = a[j].debug_r2nd_all_tol(&b[j], &eps);
                         }
-                        assert_eq!(a.debug_r2nd_all_epsilon(&b, &eps), expected);
+                        assert_eq!(a.debug_r2nd_all_tol(&b, &eps), expected);
 
                         let eps = 1;
-                        assert_eq!(a.debug_ulps_all_epsilon(&b, &eps), [eps; $n]);
+                        assert_eq!(a.debug_ulps_all_tol(&b, &eps), [eps; $n]);
                     }
                 }};
             }
 
             #[test]
 
-            fn debug_all_epsilon() {
-                check_debug_all_epsilon!(0);
-                check_debug_all_epsilon!(1);
-                check_debug_all_epsilon!(2);
+            fn debug_all_tol() {
+                check_debug_all_tol!(0);
+                check_debug_all_tol!(1);
+                check_debug_all_tol!(2);
                 //we can infer the checks in between work
-                check_debug_all_epsilon!(32);
+                check_debug_all_tol!(32);
             }
         }
     };

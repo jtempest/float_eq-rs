@@ -9,169 +9,169 @@ macro_rules! impl_tests {
                 assert_float_eq, assert_float_ne, float_eq, float_ne, FloatEq, FloatEqAll,
             };
 
-            fn check_eq_rmax(a: $float, b: $float, max_diff: $float) {
-                assert_float_eq!(a, b, rmax <= max_diff);
-                assert_float_eq!(a, b, rmax_all <= max_diff);
+            fn check_eq_rmax(a: $float, b: $float, tol: $float) {
+                assert_float_eq!(a, b, rmax <= tol);
+                assert_float_eq!(a, b, rmax_all <= tol);
 
-                assert!(float_eq!(a, b, rmax <= max_diff));
-                assert!(float_eq!(a, b, rmax_all <= max_diff));
-                assert!(!float_ne!(a, b, rmax <= max_diff));
-                assert!(!float_ne!(a, b, rmax_all <= max_diff));
+                assert!(float_eq!(a, b, rmax <= tol));
+                assert!(float_eq!(a, b, rmax_all <= tol));
+                assert!(!float_ne!(a, b, rmax <= tol));
+                assert!(!float_ne!(a, b, rmax_all <= tol));
 
-                assert!(a.eq_rmax(&b, &max_diff));
-                assert!(a.eq_rmax_all(&b, &max_diff));
-                assert!(!a.ne_rmax(&b, &max_diff));
-                assert!(!a.ne_rmax_all(&b, &max_diff));
-
-                // rel is an alias
-                assert_float_eq!(a, b, rel <= max_diff);
-                assert_float_eq!(a, b, rel_all <= max_diff);
-
-                assert!(float_eq!(a, b, rel <= max_diff));
-                assert!(float_eq!(a, b, rel_all <= max_diff));
-                assert!(!float_ne!(a, b, rel <= max_diff));
-                assert!(!float_ne!(a, b, rel_all <= max_diff));
-
-                assert!(a.eq_rel(&b, &max_diff));
-                assert!(a.eq_rel_all(&b, &max_diff));
-                assert!(!a.ne_rel(&b, &max_diff));
-                assert!(!a.ne_rel_all(&b, &max_diff));
-            }
-
-            fn check_ne_rmax(a: $float, b: $float, max_diff: $float) {
-                assert_float_ne!(a, b, rmax <= max_diff);
-                assert_float_ne!(a, b, rmax_all <= max_diff);
-
-                assert!(!float_eq!(a, b, rmax <= max_diff));
-                assert!(!float_eq!(a, b, rmax_all <= max_diff));
-                assert!(float_ne!(a, b, rmax <= max_diff));
-                assert!(float_ne!(a, b, rmax_all <= max_diff));
-
-                assert!(!a.eq_rmax(&b, &max_diff));
-                assert!(!a.eq_rmax_all(&b, &max_diff));
-                assert!(a.ne_rmax(&b, &max_diff));
-                assert!(a.ne_rmax_all(&b, &max_diff));
+                assert!(a.eq_rmax(&b, &tol));
+                assert!(a.eq_rmax_all(&b, &tol));
+                assert!(!a.ne_rmax(&b, &tol));
+                assert!(!a.ne_rmax_all(&b, &tol));
 
                 // rel is an alias
-                assert_float_ne!(a, b, rel <= max_diff);
-                assert_float_ne!(a, b, rel_all <= max_diff);
+                assert_float_eq!(a, b, rel <= tol);
+                assert_float_eq!(a, b, rel_all <= tol);
 
-                assert!(!float_eq!(a, b, rel <= max_diff));
-                assert!(!float_eq!(a, b, rel_all <= max_diff));
-                assert!(float_ne!(a, b, rel <= max_diff));
-                assert!(float_ne!(a, b, rel_all <= max_diff));
+                assert!(float_eq!(a, b, rel <= tol));
+                assert!(float_eq!(a, b, rel_all <= tol));
+                assert!(!float_ne!(a, b, rel <= tol));
+                assert!(!float_ne!(a, b, rel_all <= tol));
 
-                assert!(!a.eq_rel(&b, &max_diff));
-                assert!(!a.eq_rel_all(&b, &max_diff));
-                assert!(a.ne_rel(&b, &max_diff));
-                assert!(a.ne_rel_all(&b, &max_diff));
+                assert!(a.eq_rel(&b, &tol));
+                assert!(a.eq_rel_all(&b, &tol));
+                assert!(!a.ne_rel(&b, &tol));
+                assert!(!a.ne_rel_all(&b, &tol));
             }
 
-            fn check_eq_r1st(a: $float, b: $float, max_diff: $float) {
-                assert_float_eq!(a, b, r1st <= max_diff);
-                assert_float_eq!(a, b, r1st_all <= max_diff);
+            fn check_ne_rmax(a: $float, b: $float, tol: $float) {
+                assert_float_ne!(a, b, rmax <= tol);
+                assert_float_ne!(a, b, rmax_all <= tol);
 
-                assert!(float_eq!(a, b, r1st <= max_diff));
-                assert!(float_eq!(a, b, r1st_all <= max_diff));
-                assert!(!float_ne!(a, b, r1st <= max_diff));
-                assert!(!float_ne!(a, b, r1st_all <= max_diff));
+                assert!(!float_eq!(a, b, rmax <= tol));
+                assert!(!float_eq!(a, b, rmax_all <= tol));
+                assert!(float_ne!(a, b, rmax <= tol));
+                assert!(float_ne!(a, b, rmax_all <= tol));
 
-                assert!(a.eq_r1st(&b, &max_diff));
-                assert!(a.eq_r1st_all(&b, &max_diff));
-                assert!(!a.ne_r1st(&b, &max_diff));
-                assert!(!a.ne_r1st_all(&b, &max_diff));
+                assert!(!a.eq_rmax(&b, &tol));
+                assert!(!a.eq_rmax_all(&b, &tol));
+                assert!(a.ne_rmax(&b, &tol));
+                assert!(a.ne_rmax_all(&b, &tol));
+
+                // rel is an alias
+                assert_float_ne!(a, b, rel <= tol);
+                assert_float_ne!(a, b, rel_all <= tol);
+
+                assert!(!float_eq!(a, b, rel <= tol));
+                assert!(!float_eq!(a, b, rel_all <= tol));
+                assert!(float_ne!(a, b, rel <= tol));
+                assert!(float_ne!(a, b, rel_all <= tol));
+
+                assert!(!a.eq_rel(&b, &tol));
+                assert!(!a.eq_rel_all(&b, &tol));
+                assert!(a.ne_rel(&b, &tol));
+                assert!(a.ne_rel_all(&b, &tol));
             }
 
-            fn check_ne_r1st(a: $float, b: $float, max_diff: $float) {
-                assert_float_ne!(a, b, r1st <= max_diff);
-                assert_float_ne!(a, b, r1st_all <= max_diff);
+            fn check_eq_r1st(a: $float, b: $float, tol: $float) {
+                assert_float_eq!(a, b, r1st <= tol);
+                assert_float_eq!(a, b, r1st_all <= tol);
 
-                assert!(!float_eq!(a, b, r1st <= max_diff));
-                assert!(!float_eq!(a, b, r1st_all <= max_diff));
-                assert!(float_ne!(a, b, r1st <= max_diff));
-                assert!(float_ne!(a, b, r1st_all <= max_diff));
+                assert!(float_eq!(a, b, r1st <= tol));
+                assert!(float_eq!(a, b, r1st_all <= tol));
+                assert!(!float_ne!(a, b, r1st <= tol));
+                assert!(!float_ne!(a, b, r1st_all <= tol));
 
-                assert!(!a.eq_r1st(&b, &max_diff));
-                assert!(!a.eq_r1st_all(&b, &max_diff));
-                assert!(a.ne_r1st(&b, &max_diff));
-                assert!(a.ne_r1st_all(&b, &max_diff));
+                assert!(a.eq_r1st(&b, &tol));
+                assert!(a.eq_r1st_all(&b, &tol));
+                assert!(!a.ne_r1st(&b, &tol));
+                assert!(!a.ne_r1st_all(&b, &tol));
             }
 
-            fn check_eq_r2nd(a: $float, b: $float, max_diff: $float) {
-                assert_float_eq!(a, b, r2nd <= max_diff);
-                assert_float_eq!(a, b, r2nd_all <= max_diff);
+            fn check_ne_r1st(a: $float, b: $float, tol: $float) {
+                assert_float_ne!(a, b, r1st <= tol);
+                assert_float_ne!(a, b, r1st_all <= tol);
 
-                assert!(float_eq!(a, b, r2nd <= max_diff));
-                assert!(float_eq!(a, b, r2nd_all <= max_diff));
-                assert!(!float_ne!(a, b, r2nd <= max_diff));
-                assert!(!float_ne!(a, b, r2nd_all <= max_diff));
+                assert!(!float_eq!(a, b, r1st <= tol));
+                assert!(!float_eq!(a, b, r1st_all <= tol));
+                assert!(float_ne!(a, b, r1st <= tol));
+                assert!(float_ne!(a, b, r1st_all <= tol));
 
-                assert!(a.eq_r2nd(&b, &max_diff));
-                assert!(a.eq_r2nd_all(&b, &max_diff));
-                assert!(!a.ne_r2nd(&b, &max_diff));
-                assert!(!a.ne_r2nd_all(&b, &max_diff));
+                assert!(!a.eq_r1st(&b, &tol));
+                assert!(!a.eq_r1st_all(&b, &tol));
+                assert!(a.ne_r1st(&b, &tol));
+                assert!(a.ne_r1st_all(&b, &tol));
             }
 
-            fn check_ne_r2nd(a: $float, b: $float, max_diff: $float) {
-                assert_float_ne!(a, b, r2nd <= max_diff);
-                assert_float_ne!(a, b, r2nd_all <= max_diff);
+            fn check_eq_r2nd(a: $float, b: $float, tol: $float) {
+                assert_float_eq!(a, b, r2nd <= tol);
+                assert_float_eq!(a, b, r2nd_all <= tol);
 
-                assert!(!float_eq!(a, b, r2nd <= max_diff));
-                assert!(!float_eq!(a, b, r2nd_all <= max_diff));
-                assert!(float_ne!(a, b, r2nd <= max_diff));
-                assert!(float_ne!(a, b, r2nd_all <= max_diff));
+                assert!(float_eq!(a, b, r2nd <= tol));
+                assert!(float_eq!(a, b, r2nd_all <= tol));
+                assert!(!float_ne!(a, b, r2nd <= tol));
+                assert!(!float_ne!(a, b, r2nd_all <= tol));
 
-                assert!(!a.eq_r2nd(&b, &max_diff));
-                assert!(!a.eq_r2nd_all(&b, &max_diff));
-                assert!(a.ne_r2nd(&b, &max_diff));
-                assert!(a.ne_r2nd_all(&b, &max_diff));
+                assert!(a.eq_r2nd(&b, &tol));
+                assert!(a.eq_r2nd_all(&b, &tol));
+                assert!(!a.ne_r2nd(&b, &tol));
+                assert!(!a.ne_r2nd_all(&b, &tol));
+            }
+
+            fn check_ne_r2nd(a: $float, b: $float, tol: $float) {
+                assert_float_ne!(a, b, r2nd <= tol);
+                assert_float_ne!(a, b, r2nd_all <= tol);
+
+                assert!(!float_eq!(a, b, r2nd <= tol));
+                assert!(!float_eq!(a, b, r2nd_all <= tol));
+                assert!(float_ne!(a, b, r2nd <= tol));
+                assert!(float_ne!(a, b, r2nd_all <= tol));
+
+                assert!(!a.eq_r2nd(&b, &tol));
+                assert!(!a.eq_r2nd_all(&b, &tol));
+                assert!(a.ne_r2nd(&b, &tol));
+                assert!(a.ne_r2nd_all(&b, &tol));
             }
 
             // also covers commutativity and negative values
-            fn check_eq(a: $float, b: $float, max_diff: $float) {
-                check_eq_rmax(a, b, max_diff);
-                check_eq_rmax(b, a, max_diff);
-                check_eq_rmax(-a, -b, max_diff);
-                check_eq_rmax(-b, -a, max_diff);
+            fn check_eq(a: $float, b: $float, tol: $float) {
+                check_eq_rmax(a, b, tol);
+                check_eq_rmax(b, a, tol);
+                check_eq_rmax(-a, -b, tol);
+                check_eq_rmax(-b, -a, tol);
 
                 if $float::abs(a) >= $float::abs(b) {
-                    check_eq_r1st(a, b, max_diff);
-                    check_eq_r2nd(b, a, max_diff);
+                    check_eq_r1st(a, b, tol);
+                    check_eq_r2nd(b, a, tol);
                 } else {
-                    check_eq_r1st(b, a, max_diff);
-                    check_eq_r2nd(a, b, max_diff);
+                    check_eq_r1st(b, a, tol);
+                    check_eq_r2nd(a, b, tol);
                 }
 
                 if $float::abs(-a) >= $float::abs(-b) {
-                    check_eq_r1st(-a, -b, max_diff);
-                    check_eq_r2nd(-b, -a, max_diff);
+                    check_eq_r1st(-a, -b, tol);
+                    check_eq_r2nd(-b, -a, tol);
                 } else {
-                    check_eq_r1st(-b, -a, max_diff);
-                    check_eq_r2nd(-a, -b, max_diff);
+                    check_eq_r1st(-b, -a, tol);
+                    check_eq_r2nd(-a, -b, tol);
                 }
             }
 
             // also covers commutativity and negative values
-            fn check_ne(a: $float, b: $float, max_diff: $float) {
-                check_ne_rmax(a, b, max_diff);
-                check_ne_rmax(b, a, max_diff);
-                check_ne_rmax(-a, -b, max_diff);
-                check_ne_rmax(-b, -a, max_diff);
+            fn check_ne(a: $float, b: $float, tol: $float) {
+                check_ne_rmax(a, b, tol);
+                check_ne_rmax(b, a, tol);
+                check_ne_rmax(-a, -b, tol);
+                check_ne_rmax(-b, -a, tol);
 
                 if $float::abs(a) >= $float::abs(b) {
-                    check_ne_r1st(a, b, max_diff);
-                    check_ne_r2nd(b, a, max_diff);
+                    check_ne_r1st(a, b, tol);
+                    check_ne_r2nd(b, a, tol);
                 } else {
-                    check_ne_r1st(b, a, max_diff);
-                    check_ne_r2nd(a, b, max_diff);
+                    check_ne_r1st(b, a, tol);
+                    check_ne_r2nd(a, b, tol);
                 }
 
                 if $float::abs(-a) >= $float::abs(-b) {
-                    check_ne_r1st(-a, -b, max_diff);
-                    check_ne_r2nd(-b, -a, max_diff);
+                    check_ne_r1st(-a, -b, tol);
+                    check_ne_r2nd(-b, -a, tol);
                 } else {
-                    check_ne_r1st(-b, -a, max_diff);
-                    check_ne_r2nd(-a, -b, max_diff);
+                    check_ne_r1st(-b, -a, tol);
+                    check_ne_r2nd(-a, -b, tol);
                 }
             }
 
@@ -210,11 +210,11 @@ macro_rules! impl_tests {
                 check_eq_zero(min_subnormal);
                 check_eq_zero(max_subnormal);
 
-                check_ne(max_subnormal, MIN_NORMAL, 0.5 * EPSILON); // due to lack of precision in epsilon calculation
+                check_ne(max_subnormal, MIN_NORMAL, 0.5 * EPSILON); // due to lack of precision in tolerance calculation
                 check_eq(max_subnormal, MIN_NORMAL, EPSILON);
 
                 // ranges of -f to f
-                check_ne(min_subnormal, -min_subnormal, prev(1.5)); // due to lack of precision in epsilon calculation
+                check_ne(min_subnormal, -min_subnormal, prev(1.5)); // due to lack of precision in tolerance calculation
                 check_eq(min_subnormal, -min_subnormal, 2.0);
                 check_ne(max_subnormal, -max_subnormal, prev(2.0));
                 check_eq(max_subnormal, -max_subnormal, 2.0);

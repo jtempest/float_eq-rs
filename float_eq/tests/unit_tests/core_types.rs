@@ -127,7 +127,7 @@ mod refs {
     }
 
     #[test]
-    fn debug_epsilon() {
+    fn debug_tol() {
         use AssertFloatEq as AFE;
 
         let a = &1.0f32;
@@ -135,44 +135,44 @@ mod refs {
         let mut ma = &mut 1.0f32;
         let mut mb = &mut 2.0f32;
 
-        assert_eq!(AFE::debug_abs_epsilon(&a, &b, &0.5), 0.5);
-        assert_eq!(AFE::debug_abs_epsilon(&mut ma, &b, &0.5), 0.5);
-        assert_eq!(AFE::debug_abs_epsilon(&a, &mut mb, &0.5), 0.5);
-        assert_eq!(AFE::debug_abs_epsilon(&mut ma, &mut mb, &0.5), 0.5);
+        assert_eq!(AFE::debug_abs_tol(&a, &b, &0.5), 0.5);
+        assert_eq!(AFE::debug_abs_tol(&mut ma, &b, &0.5), 0.5);
+        assert_eq!(AFE::debug_abs_tol(&a, &mut mb, &0.5), 0.5);
+        assert_eq!(AFE::debug_abs_tol(&mut ma, &mut mb, &0.5), 0.5);
 
-        assert_eq!(AFE::debug_rel_epsilon(&a, &b, &0.1), 0.2);
-        assert_eq!(AFE::debug_rel_epsilon(&mut ma, &b, &0.1), 0.2);
-        assert_eq!(AFE::debug_rel_epsilon(&a, &mut mb, &0.1), 0.2);
-        assert_eq!(AFE::debug_rel_epsilon(&mut ma, &mut mb, &0.1), 0.2);
+        assert_eq!(AFE::debug_rel_tol(&a, &b, &0.1), 0.2);
+        assert_eq!(AFE::debug_rel_tol(&mut ma, &b, &0.1), 0.2);
+        assert_eq!(AFE::debug_rel_tol(&a, &mut mb, &0.1), 0.2);
+        assert_eq!(AFE::debug_rel_tol(&mut ma, &mut mb, &0.1), 0.2);
 
-        assert_eq!(AFE::debug_rmax_epsilon(&a, &b, &0.1), 0.2);
-        assert_eq!(AFE::debug_rmax_epsilon(&mut ma, &b, &0.1), 0.2);
-        assert_eq!(AFE::debug_rmax_epsilon(&a, &mut mb, &0.1), 0.2);
-        assert_eq!(AFE::debug_rmax_epsilon(&mut ma, &mut mb, &0.1), 0.2);
+        assert_eq!(AFE::debug_rmax_tol(&a, &b, &0.1), 0.2);
+        assert_eq!(AFE::debug_rmax_tol(&mut ma, &b, &0.1), 0.2);
+        assert_eq!(AFE::debug_rmax_tol(&a, &mut mb, &0.1), 0.2);
+        assert_eq!(AFE::debug_rmax_tol(&mut ma, &mut mb, &0.1), 0.2);
 
-        assert_eq!(AFE::debug_rmin_epsilon(&a, &b, &0.1), 0.1);
-        assert_eq!(AFE::debug_rmin_epsilon(&mut ma, &b, &0.1), 0.1);
-        assert_eq!(AFE::debug_rmin_epsilon(&a, &mut mb, &0.1), 0.1);
-        assert_eq!(AFE::debug_rmin_epsilon(&mut ma, &mut mb, &0.1), 0.1);
+        assert_eq!(AFE::debug_rmin_tol(&a, &b, &0.1), 0.1);
+        assert_eq!(AFE::debug_rmin_tol(&mut ma, &b, &0.1), 0.1);
+        assert_eq!(AFE::debug_rmin_tol(&a, &mut mb, &0.1), 0.1);
+        assert_eq!(AFE::debug_rmin_tol(&mut ma, &mut mb, &0.1), 0.1);
 
-        assert_eq!(AFE::debug_r1st_epsilon(&a, &b, &0.1), 0.1);
-        assert_eq!(AFE::debug_r1st_epsilon(&mut ma, &b, &0.1), 0.1);
-        assert_eq!(AFE::debug_r1st_epsilon(&a, &mut mb, &0.1), 0.1);
-        assert_eq!(AFE::debug_r1st_epsilon(&mut ma, &mut mb, &0.1), 0.1);
+        assert_eq!(AFE::debug_r1st_tol(&a, &b, &0.1), 0.1);
+        assert_eq!(AFE::debug_r1st_tol(&mut ma, &b, &0.1), 0.1);
+        assert_eq!(AFE::debug_r1st_tol(&a, &mut mb, &0.1), 0.1);
+        assert_eq!(AFE::debug_r1st_tol(&mut ma, &mut mb, &0.1), 0.1);
 
-        assert_eq!(AFE::debug_r2nd_epsilon(&a, &b, &0.1), 0.2);
-        assert_eq!(AFE::debug_r2nd_epsilon(&mut ma, &b, &0.1), 0.2);
-        assert_eq!(AFE::debug_r2nd_epsilon(&a, &mut mb, &0.1), 0.2);
-        assert_eq!(AFE::debug_r2nd_epsilon(&mut ma, &mut mb, &0.1), 0.2);
+        assert_eq!(AFE::debug_r2nd_tol(&a, &b, &0.1), 0.2);
+        assert_eq!(AFE::debug_r2nd_tol(&mut ma, &b, &0.1), 0.2);
+        assert_eq!(AFE::debug_r2nd_tol(&a, &mut mb, &0.1), 0.2);
+        assert_eq!(AFE::debug_r2nd_tol(&mut ma, &mut mb, &0.1), 0.2);
 
-        assert_eq!(AFE::debug_ulps_epsilon(&a, &b, &1), 1);
-        assert_eq!(AFE::debug_ulps_epsilon(&mut ma, &b, &1), 1);
-        assert_eq!(AFE::debug_ulps_epsilon(&a, &mut mb, &1), 1);
-        assert_eq!(AFE::debug_ulps_epsilon(&mut ma, &mut mb, &1), 1);
+        assert_eq!(AFE::debug_ulps_tol(&a, &b, &1), 1);
+        assert_eq!(AFE::debug_ulps_tol(&mut ma, &b, &1), 1);
+        assert_eq!(AFE::debug_ulps_tol(&a, &mut mb, &1), 1);
+        assert_eq!(AFE::debug_ulps_tol(&mut ma, &mut mb, &1), 1);
     }
 
     #[test]
-    fn debug_all_epsilon() {
+    fn debug_all_tol() {
         use AssertFloatEqAll as AFEA;
 
         let a = &1.0f32;
@@ -180,40 +180,40 @@ mod refs {
         let mut ma = &mut 1.0f32;
         let mut mb = &mut 2.0f32;
 
-        assert_eq!(AFEA::debug_abs_all_epsilon(&a, &b, &0.5), 0.5);
-        assert_eq!(AFEA::debug_abs_all_epsilon(&mut ma, &b, &0.5), 0.5);
-        assert_eq!(AFEA::debug_abs_all_epsilon(&a, &mut mb, &0.5), 0.5);
-        assert_eq!(AFEA::debug_abs_all_epsilon(&mut ma, &mut mb, &0.5), 0.5);
+        assert_eq!(AFEA::debug_abs_all_tol(&a, &b, &0.5), 0.5);
+        assert_eq!(AFEA::debug_abs_all_tol(&mut ma, &b, &0.5), 0.5);
+        assert_eq!(AFEA::debug_abs_all_tol(&a, &mut mb, &0.5), 0.5);
+        assert_eq!(AFEA::debug_abs_all_tol(&mut ma, &mut mb, &0.5), 0.5);
 
-        assert_eq!(AFEA::debug_rel_all_epsilon(&a, &b, &0.1), 0.2);
-        assert_eq!(AFEA::debug_rel_all_epsilon(&mut ma, &b, &0.1), 0.2);
-        assert_eq!(AFEA::debug_rel_all_epsilon(&a, &mut mb, &0.1), 0.2);
-        assert_eq!(AFEA::debug_rel_all_epsilon(&mut ma, &mut mb, &0.1), 0.2);
+        assert_eq!(AFEA::debug_rel_all_tol(&a, &b, &0.1), 0.2);
+        assert_eq!(AFEA::debug_rel_all_tol(&mut ma, &b, &0.1), 0.2);
+        assert_eq!(AFEA::debug_rel_all_tol(&a, &mut mb, &0.1), 0.2);
+        assert_eq!(AFEA::debug_rel_all_tol(&mut ma, &mut mb, &0.1), 0.2);
 
-        assert_eq!(AFEA::debug_rmax_all_epsilon(&a, &b, &0.1), 0.2);
-        assert_eq!(AFEA::debug_rmax_all_epsilon(&mut ma, &b, &0.1), 0.2);
-        assert_eq!(AFEA::debug_rmax_all_epsilon(&a, &mut mb, &0.1), 0.2);
-        assert_eq!(AFEA::debug_rmax_all_epsilon(&mut ma, &mut mb, &0.1), 0.2);
+        assert_eq!(AFEA::debug_rmax_all_tol(&a, &b, &0.1), 0.2);
+        assert_eq!(AFEA::debug_rmax_all_tol(&mut ma, &b, &0.1), 0.2);
+        assert_eq!(AFEA::debug_rmax_all_tol(&a, &mut mb, &0.1), 0.2);
+        assert_eq!(AFEA::debug_rmax_all_tol(&mut ma, &mut mb, &0.1), 0.2);
 
-        assert_eq!(AFEA::debug_rmin_all_epsilon(&a, &b, &0.1), 0.1);
-        assert_eq!(AFEA::debug_rmin_all_epsilon(&mut ma, &b, &0.1), 0.1);
-        assert_eq!(AFEA::debug_rmin_all_epsilon(&a, &mut mb, &0.1), 0.1);
-        assert_eq!(AFEA::debug_rmin_all_epsilon(&mut ma, &mut mb, &0.1), 0.1);
+        assert_eq!(AFEA::debug_rmin_all_tol(&a, &b, &0.1), 0.1);
+        assert_eq!(AFEA::debug_rmin_all_tol(&mut ma, &b, &0.1), 0.1);
+        assert_eq!(AFEA::debug_rmin_all_tol(&a, &mut mb, &0.1), 0.1);
+        assert_eq!(AFEA::debug_rmin_all_tol(&mut ma, &mut mb, &0.1), 0.1);
 
-        assert_eq!(AFEA::debug_r1st_all_epsilon(&a, &b, &0.1), 0.1);
-        assert_eq!(AFEA::debug_r1st_all_epsilon(&mut ma, &b, &0.1), 0.1);
-        assert_eq!(AFEA::debug_r1st_all_epsilon(&a, &mut mb, &0.1), 0.1);
-        assert_eq!(AFEA::debug_r1st_all_epsilon(&mut ma, &mut mb, &0.1), 0.1);
+        assert_eq!(AFEA::debug_r1st_all_tol(&a, &b, &0.1), 0.1);
+        assert_eq!(AFEA::debug_r1st_all_tol(&mut ma, &b, &0.1), 0.1);
+        assert_eq!(AFEA::debug_r1st_all_tol(&a, &mut mb, &0.1), 0.1);
+        assert_eq!(AFEA::debug_r1st_all_tol(&mut ma, &mut mb, &0.1), 0.1);
 
-        assert_eq!(AFEA::debug_r2nd_all_epsilon(&a, &b, &0.1), 0.2);
-        assert_eq!(AFEA::debug_r2nd_all_epsilon(&mut ma, &b, &0.1), 0.2);
-        assert_eq!(AFEA::debug_r2nd_all_epsilon(&a, &mut mb, &0.1), 0.2);
-        assert_eq!(AFEA::debug_r2nd_all_epsilon(&mut ma, &mut mb, &0.1), 0.2);
+        assert_eq!(AFEA::debug_r2nd_all_tol(&a, &b, &0.1), 0.2);
+        assert_eq!(AFEA::debug_r2nd_all_tol(&mut ma, &b, &0.1), 0.2);
+        assert_eq!(AFEA::debug_r2nd_all_tol(&a, &mut mb, &0.1), 0.2);
+        assert_eq!(AFEA::debug_r2nd_all_tol(&mut ma, &mut mb, &0.1), 0.2);
 
-        assert_eq!(AFEA::debug_ulps_all_epsilon(&a, &b, &1), 1);
-        assert_eq!(AFEA::debug_ulps_all_epsilon(&mut ma, &b, &1), 1);
-        assert_eq!(AFEA::debug_ulps_all_epsilon(&a, &mut mb, &1), 1);
-        assert_eq!(AFEA::debug_ulps_all_epsilon(&mut ma, &mut mb, &1), 1);
+        assert_eq!(AFEA::debug_ulps_all_tol(&a, &b, &1), 1);
+        assert_eq!(AFEA::debug_ulps_all_tol(&mut ma, &b, &1), 1);
+        assert_eq!(AFEA::debug_ulps_all_tol(&a, &mut mb, &1), 1);
+        assert_eq!(AFEA::debug_ulps_all_tol(&mut ma, &mut mb, &1), 1);
     }
 }
 
@@ -226,7 +226,7 @@ mod option {
         let b = Some([1.0f32, 3.999_999_5]);
         let eps = f32::EPSILON;
 
-        // Same shape Some(a/b/epsilon)
+        // Same shape Some(a/b/tol)
         assert_float_eq!(a, b, abs <= Some([1.0 * eps, 4.0 * eps]));
         assert_float_ne!(a, b, abs <= Some([0.5 * eps, 4.0 * eps]));
         assert_float_ne!(a, b, abs <= Some([1.0 * eps, 2.0 * eps]));
@@ -282,7 +282,7 @@ mod option {
         assert_float_ne!(None, a, r2nd <= Some([f32::INFINITY; 2]));
         assert_float_ne!(None, a, ulps <= Some([u32::MAX; 2]));
 
-        // Differing epsilon shape
+        // Differing tol shape
         assert_float_ne!(a, a, abs <= None);
         assert_float_ne!(a, a, rel <= None);
         assert_float_ne!(a, a, rmax <= None);
@@ -298,7 +298,7 @@ mod option {
         let b = Some([1.0f32, 3.999_999_5]);
         let eps = f32::EPSILON;
 
-        // Same shape Some(a/b/epsilon)
+        // Same shape Some(a/b/tol)
         assert_float_eq!(a, b, abs_all <= Some(4.0 * eps));
         assert_float_ne!(a, b, abs_all <= Some(2.0 * eps));
 
@@ -347,7 +347,7 @@ mod option {
         assert_float_ne!(None, a, r2nd_all <= Some(f32::INFINITY));
         assert_float_ne!(None, a, ulps_all <= Some(u32::MAX));
 
-        // Differing epsilon shape
+        // Differing tol shape
         assert_float_ne!(a, a, abs_all <= None);
         assert_float_ne!(a, a, rel_all <= None);
         assert_float_ne!(a, a, rmax_all <= None);
@@ -363,7 +363,7 @@ mod option {
         let b = Some([1.5f32, 2.25]);
         let ulps = Some([Some(4_194_304), Some(1_048_576)]);
 
-        // Same shape Some(a/b/epsilon)
+        // Same shape Some(a/b/tol)
         assert_eq!(a.debug_abs_diff(&a), Some([0.0; 2]));
         assert_eq!(a.debug_ulps_diff(&a), Some([Some(0); 2]));
 
@@ -387,106 +387,106 @@ mod option {
     }
 
     #[test]
-    fn debug_epsilon() {
+    fn debug_tol() {
         let a = Some([2.0f32, 4.25]);
         let b = Some([2.5f32, 4.0]);
         let eps = Some([0.1, 0.2]);
 
-        // Same shape Some(a/b/epsilon)
-        assert_eq!(a.debug_abs_epsilon(&b, &eps), Some([0.1, 0.2]));
-        assert_eq!(a.debug_rel_epsilon(&b, &eps), Some([0.25, 0.85]));
-        assert_eq!(a.debug_rmax_epsilon(&b, &eps), Some([0.25, 0.85]));
-        assert_eq!(a.debug_rmin_epsilon(&b, &eps), Some([0.2, 0.8]));
-        assert_eq!(a.debug_r1st_epsilon(&b, &eps), Some([0.2, 0.85]));
-        assert_eq!(a.debug_r2nd_epsilon(&b, &eps), Some([0.25, 0.8]));
-        assert_eq!(a.debug_ulps_epsilon(&b, &Some([1, 2])), Some([1, 2]));
+        // Same shape Some(a/b/tol)
+        assert_eq!(a.debug_abs_tol(&b, &eps), Some([0.1, 0.2]));
+        assert_eq!(a.debug_rel_tol(&b, &eps), Some([0.25, 0.85]));
+        assert_eq!(a.debug_rmax_tol(&b, &eps), Some([0.25, 0.85]));
+        assert_eq!(a.debug_rmin_tol(&b, &eps), Some([0.2, 0.8]));
+        assert_eq!(a.debug_r1st_tol(&b, &eps), Some([0.2, 0.85]));
+        assert_eq!(a.debug_r2nd_tol(&b, &eps), Some([0.25, 0.8]));
+        assert_eq!(a.debug_ulps_tol(&b, &Some([1, 2])), Some([1, 2]));
 
         // Same shape None
         let none = Option::<[f32; 2]>::None;
-        assert_eq!(none.debug_abs_epsilon(&a, &None), None);
-        assert_eq!(none.debug_rel_epsilon(&a, &None), None);
-        assert_eq!(none.debug_rmax_epsilon(&a, &None), None);
-        assert_eq!(none.debug_rmin_epsilon(&a, &None), None);
-        assert_eq!(none.debug_r1st_epsilon(&a, &None), None);
-        assert_eq!(none.debug_r2nd_epsilon(&a, &None), None);
-        assert_eq!(none.debug_ulps_epsilon(&a, &None), None);
+        assert_eq!(none.debug_abs_tol(&a, &None), None);
+        assert_eq!(none.debug_rel_tol(&a, &None), None);
+        assert_eq!(none.debug_rmax_tol(&a, &None), None);
+        assert_eq!(none.debug_rmin_tol(&a, &None), None);
+        assert_eq!(none.debug_r1st_tol(&a, &None), None);
+        assert_eq!(none.debug_r2nd_tol(&a, &None), None);
+        assert_eq!(none.debug_ulps_tol(&a, &None), None);
 
         // Different shape a/b
-        assert_eq!(a.debug_abs_epsilon(&None, &eps), None);
-        assert_eq!(a.debug_rel_epsilon(&None, &eps), None);
-        assert_eq!(a.debug_rmax_epsilon(&None, &eps), None);
-        assert_eq!(a.debug_rmin_epsilon(&None, &eps), None);
-        assert_eq!(a.debug_r1st_epsilon(&None, &eps), None);
-        assert_eq!(a.debug_r2nd_epsilon(&None, &eps), None);
-        assert_eq!(a.debug_ulps_epsilon(&None, &Some([1, 2])), None);
+        assert_eq!(a.debug_abs_tol(&None, &eps), None);
+        assert_eq!(a.debug_rel_tol(&None, &eps), None);
+        assert_eq!(a.debug_rmax_tol(&None, &eps), None);
+        assert_eq!(a.debug_rmin_tol(&None, &eps), None);
+        assert_eq!(a.debug_r1st_tol(&None, &eps), None);
+        assert_eq!(a.debug_r2nd_tol(&None, &eps), None);
+        assert_eq!(a.debug_ulps_tol(&None, &Some([1, 2])), None);
 
-        assert_eq!(none.debug_abs_epsilon(&a, &eps), None);
-        assert_eq!(none.debug_rel_epsilon(&a, &eps), None);
-        assert_eq!(none.debug_rmax_epsilon(&a, &eps), None);
-        assert_eq!(none.debug_rmin_epsilon(&a, &eps), None);
-        assert_eq!(none.debug_r1st_epsilon(&a, &eps), None);
-        assert_eq!(none.debug_r2nd_epsilon(&a, &eps), None);
-        assert_eq!(none.debug_ulps_epsilon(&a, &Some([1, 2])), None);
+        assert_eq!(none.debug_abs_tol(&a, &eps), None);
+        assert_eq!(none.debug_rel_tol(&a, &eps), None);
+        assert_eq!(none.debug_rmax_tol(&a, &eps), None);
+        assert_eq!(none.debug_rmin_tol(&a, &eps), None);
+        assert_eq!(none.debug_r1st_tol(&a, &eps), None);
+        assert_eq!(none.debug_r2nd_tol(&a, &eps), None);
+        assert_eq!(none.debug_ulps_tol(&a, &Some([1, 2])), None);
 
-        // Different shape epsilon
-        assert_eq!(a.debug_abs_epsilon(&b, &None), None);
-        assert_eq!(a.debug_rel_epsilon(&b, &None), None);
-        assert_eq!(a.debug_rmax_epsilon(&b, &None), None);
-        assert_eq!(a.debug_rmin_epsilon(&b, &None), None);
-        assert_eq!(a.debug_r1st_epsilon(&b, &None), None);
-        assert_eq!(a.debug_r2nd_epsilon(&b, &None), None);
-        assert_eq!(a.debug_ulps_epsilon(&b, &None), None);
+        // Different shape tol
+        assert_eq!(a.debug_abs_tol(&b, &None), None);
+        assert_eq!(a.debug_rel_tol(&b, &None), None);
+        assert_eq!(a.debug_rmax_tol(&b, &None), None);
+        assert_eq!(a.debug_rmin_tol(&b, &None), None);
+        assert_eq!(a.debug_r1st_tol(&b, &None), None);
+        assert_eq!(a.debug_r2nd_tol(&b, &None), None);
+        assert_eq!(a.debug_ulps_tol(&b, &None), None);
     }
 
     #[test]
-    fn debug_all_epsilon() {
+    fn debug_all_tol() {
         let a = Some([2.0f32, 4.25]);
         let b = Some([2.5f32, 4.0]);
 
-        // Same shape Some(a/b/epsilon)
-        assert_eq!(a.debug_abs_all_epsilon(&b, &Some(0.2)), Some([0.2, 0.2]));
-        assert_eq!(a.debug_rel_all_epsilon(&b, &Some(0.2)), Some([0.5, 0.85]));
-        assert_eq!(a.debug_rmax_all_epsilon(&b, &Some(0.2)), Some([0.5, 0.85]));
-        assert_eq!(a.debug_rmin_all_epsilon(&b, &Some(0.2)), Some([0.4, 0.8]));
-        assert_eq!(a.debug_r1st_all_epsilon(&b, &Some(0.2)), Some([0.4, 0.85]));
-        assert_eq!(a.debug_r2nd_all_epsilon(&b, &Some(0.2)), Some([0.5, 0.8]));
-        assert_eq!(a.debug_ulps_all_epsilon(&b, &Some(2)), Some([2, 2]));
+        // Same shape Some(a/b/tol)
+        assert_eq!(a.debug_abs_all_tol(&b, &Some(0.2)), Some([0.2, 0.2]));
+        assert_eq!(a.debug_rel_all_tol(&b, &Some(0.2)), Some([0.5, 0.85]));
+        assert_eq!(a.debug_rmax_all_tol(&b, &Some(0.2)), Some([0.5, 0.85]));
+        assert_eq!(a.debug_rmin_all_tol(&b, &Some(0.2)), Some([0.4, 0.8]));
+        assert_eq!(a.debug_r1st_all_tol(&b, &Some(0.2)), Some([0.4, 0.85]));
+        assert_eq!(a.debug_r2nd_all_tol(&b, &Some(0.2)), Some([0.5, 0.8]));
+        assert_eq!(a.debug_ulps_all_tol(&b, &Some(2)), Some([2, 2]));
 
         // Same shape None
         let none = Option::<[f32; 2]>::None;
-        assert_eq!(none.debug_abs_all_epsilon(&a, &None), None);
-        assert_eq!(none.debug_rel_all_epsilon(&a, &None), None);
-        assert_eq!(none.debug_rmax_all_epsilon(&a, &None), None);
-        assert_eq!(none.debug_rmin_all_epsilon(&a, &None), None);
-        assert_eq!(none.debug_r1st_all_epsilon(&a, &None), None);
-        assert_eq!(none.debug_r2nd_all_epsilon(&a, &None), None);
-        assert_eq!(none.debug_ulps_all_epsilon(&a, &None), None);
+        assert_eq!(none.debug_abs_all_tol(&a, &None), None);
+        assert_eq!(none.debug_rel_all_tol(&a, &None), None);
+        assert_eq!(none.debug_rmax_all_tol(&a, &None), None);
+        assert_eq!(none.debug_rmin_all_tol(&a, &None), None);
+        assert_eq!(none.debug_r1st_all_tol(&a, &None), None);
+        assert_eq!(none.debug_r2nd_all_tol(&a, &None), None);
+        assert_eq!(none.debug_ulps_all_tol(&a, &None), None);
 
         // Different shape a/b
-        assert_eq!(a.debug_abs_all_epsilon(&None, &Some(0.2)), None);
-        assert_eq!(a.debug_rel_all_epsilon(&None, &Some(0.2)), None);
-        assert_eq!(a.debug_rmax_all_epsilon(&None, &Some(0.2)), None);
-        assert_eq!(a.debug_rmin_all_epsilon(&None, &Some(0.2)), None);
-        assert_eq!(a.debug_r1st_all_epsilon(&None, &Some(0.2)), None);
-        assert_eq!(a.debug_r2nd_all_epsilon(&None, &Some(0.2)), None);
-        assert_eq!(a.debug_ulps_all_epsilon(&None, &Some(2)), None);
+        assert_eq!(a.debug_abs_all_tol(&None, &Some(0.2)), None);
+        assert_eq!(a.debug_rel_all_tol(&None, &Some(0.2)), None);
+        assert_eq!(a.debug_rmax_all_tol(&None, &Some(0.2)), None);
+        assert_eq!(a.debug_rmin_all_tol(&None, &Some(0.2)), None);
+        assert_eq!(a.debug_r1st_all_tol(&None, &Some(0.2)), None);
+        assert_eq!(a.debug_r2nd_all_tol(&None, &Some(0.2)), None);
+        assert_eq!(a.debug_ulps_all_tol(&None, &Some(2)), None);
 
-        assert_eq!(none.debug_abs_all_epsilon(&a, &Some(0.2)), None);
-        assert_eq!(none.debug_rel_all_epsilon(&a, &Some(0.2)), None);
-        assert_eq!(none.debug_rmax_all_epsilon(&a, &Some(0.2)), None);
-        assert_eq!(none.debug_rmin_all_epsilon(&a, &Some(0.2)), None);
-        assert_eq!(none.debug_r1st_all_epsilon(&a, &Some(0.2)), None);
-        assert_eq!(none.debug_r2nd_all_epsilon(&a, &Some(0.2)), None);
-        assert_eq!(none.debug_ulps_all_epsilon(&a, &Some(2)), None);
+        assert_eq!(none.debug_abs_all_tol(&a, &Some(0.2)), None);
+        assert_eq!(none.debug_rel_all_tol(&a, &Some(0.2)), None);
+        assert_eq!(none.debug_rmax_all_tol(&a, &Some(0.2)), None);
+        assert_eq!(none.debug_rmin_all_tol(&a, &Some(0.2)), None);
+        assert_eq!(none.debug_r1st_all_tol(&a, &Some(0.2)), None);
+        assert_eq!(none.debug_r2nd_all_tol(&a, &Some(0.2)), None);
+        assert_eq!(none.debug_ulps_all_tol(&a, &Some(2)), None);
 
-        // Different shape epsilon
-        assert_eq!(a.debug_abs_all_epsilon(&b, &None), None);
-        assert_eq!(a.debug_rel_all_epsilon(&b, &None), None);
-        assert_eq!(a.debug_rmax_all_epsilon(&b, &None), None);
-        assert_eq!(a.debug_rmin_all_epsilon(&b, &None), None);
-        assert_eq!(a.debug_r1st_all_epsilon(&b, &None), None);
-        assert_eq!(a.debug_r2nd_all_epsilon(&b, &None), None);
-        assert_eq!(a.debug_ulps_all_epsilon(&b, &None), None);
+        // Different shape tol
+        assert_eq!(a.debug_abs_all_tol(&b, &None), None);
+        assert_eq!(a.debug_rel_all_tol(&b, &None), None);
+        assert_eq!(a.debug_rmax_all_tol(&b, &None), None);
+        assert_eq!(a.debug_rmin_all_tol(&b, &None), None);
+        assert_eq!(a.debug_r1st_all_tol(&b, &None), None);
+        assert_eq!(a.debug_r2nd_all_tol(&b, &None), None);
+        assert_eq!(a.debug_ulps_all_tol(&b, &None), None);
     }
 }
 
@@ -511,7 +511,7 @@ mod slice {
         let b = [1.0f32, 3.999_999_5];
         let eps = f32::EPSILON;
 
-        // Same shape a/b/epsilon
+        // Same shape a/b/tol
         assert!(float_eq!(a[..], b[..], abs <= [1.0 * eps, 4.0 * eps]));
         assert!(float_ne!(a[..], b[..], abs <= [0.5 * eps, 4.0 * eps]));
         assert!(float_ne!(a[..], b[..], abs <= [1.0 * eps, 2.0 * eps]));
@@ -557,7 +557,7 @@ mod slice {
         assert!(float_ne!(a[..], b[..1], r2nd <= [f32::INFINITY; 2]));
         assert!(float_ne!(a[..], b[..1], ulps <= [u32::MAX; 2]));
 
-        // Different shape epsilon
+        // Different shape tol
         assert!(float_ne!(a[..], b[..], abs <= [f32::INFINITY]));
         assert!(float_ne!(a[..], b[..], rel <= [f32::INFINITY]));
         assert!(float_ne!(a[..], b[..], rmax <= [f32::INFINITY]));
@@ -581,7 +581,7 @@ mod slice {
         let b = [1.0f32, 3.999_999_5];
         let eps = f32::EPSILON;
 
-        // Same shape a/b/epsilon
+        // Same shape a/b/tol
         assert!(float_eq!(a[..], b[..], abs_all <= 4.0 * eps));
         assert!(float_ne!(a[..], b[..], abs_all <= 2.0 * eps));
 

@@ -51,118 +51,94 @@ mod slice {
     }
 
     #[test]
-    fn debug_epsilon() {
+    fn debug_tol() {
         let a = [2.0f32, 4.25];
         let b = [2.5f32, 4.0];
         let eps = [0.1, 0.2];
 
-        // Same shape a/b/epsilon
-        assert_eq!(a[..].debug_abs_epsilon(&b[..], &eps), Some(vec![0.1, 0.2]));
-        assert_eq!(
-            a[..].debug_rel_epsilon(&b[..], &eps),
-            Some(vec![0.25, 0.85])
-        );
-        assert_eq!(
-            a[..].debug_rmax_epsilon(&b[..], &eps),
-            Some(vec![0.25, 0.85])
-        );
-        assert_eq!(a[..].debug_rmin_epsilon(&b[..], &eps), Some(vec![0.2, 0.8]));
-        assert_eq!(
-            a[..].debug_r1st_epsilon(&b[..], &eps),
-            Some(vec![0.2, 0.85])
-        );
-        assert_eq!(
-            a[..].debug_r2nd_epsilon(&b[..], &eps),
-            Some(vec![0.25, 0.8])
-        );
-        assert_eq!(a[..].debug_ulps_epsilon(&b[..], &[1, 2]), Some(vec![1, 2]));
+        // Same shape a/b/tol
+        assert_eq!(a[..].debug_abs_tol(&b[..], &eps), Some(vec![0.1, 0.2]));
+        assert_eq!(a[..].debug_rel_tol(&b[..], &eps), Some(vec![0.25, 0.85]));
+        assert_eq!(a[..].debug_rmax_tol(&b[..], &eps), Some(vec![0.25, 0.85]));
+        assert_eq!(a[..].debug_rmin_tol(&b[..], &eps), Some(vec![0.2, 0.8]));
+        assert_eq!(a[..].debug_r1st_tol(&b[..], &eps), Some(vec![0.2, 0.85]));
+        assert_eq!(a[..].debug_r2nd_tol(&b[..], &eps), Some(vec![0.25, 0.8]));
+        assert_eq!(a[..].debug_ulps_tol(&b[..], &[1, 2]), Some(vec![1, 2]));
 
         // Different shape a/b
-        assert_eq!(a[1..].debug_abs_epsilon(&a[..], &eps), None);
-        assert_eq!(a[1..].debug_rel_epsilon(&a[..], &eps), None);
-        assert_eq!(a[1..].debug_rmax_epsilon(&a[..], &eps), None);
-        assert_eq!(a[1..].debug_rmin_epsilon(&a[..], &eps), None);
-        assert_eq!(a[1..].debug_r1st_epsilon(&a[..], &eps), None);
-        assert_eq!(a[1..].debug_r2nd_epsilon(&a[..], &eps), None);
-        assert_eq!(a[1..].debug_ulps_epsilon(&a[..], &[u32::MAX; 2]), None);
+        assert_eq!(a[1..].debug_abs_tol(&a[..], &eps), None);
+        assert_eq!(a[1..].debug_rel_tol(&a[..], &eps), None);
+        assert_eq!(a[1..].debug_rmax_tol(&a[..], &eps), None);
+        assert_eq!(a[1..].debug_rmin_tol(&a[..], &eps), None);
+        assert_eq!(a[1..].debug_r1st_tol(&a[..], &eps), None);
+        assert_eq!(a[1..].debug_r2nd_tol(&a[..], &eps), None);
+        assert_eq!(a[1..].debug_ulps_tol(&a[..], &[u32::MAX; 2]), None);
 
-        assert_eq!(a[..].debug_abs_epsilon(&a[..1], &eps), None);
-        assert_eq!(a[..].debug_rel_epsilon(&a[..1], &eps), None);
-        assert_eq!(a[..].debug_rmax_epsilon(&a[..1], &eps), None);
-        assert_eq!(a[..].debug_rmin_epsilon(&a[..1], &eps), None);
-        assert_eq!(a[..].debug_r1st_epsilon(&a[..1], &eps), None);
-        assert_eq!(a[..].debug_r2nd_epsilon(&a[..1], &eps), None);
-        assert_eq!(a[..].debug_ulps_epsilon(&a[..1], &[u32::MAX; 2]), None);
+        assert_eq!(a[..].debug_abs_tol(&a[..1], &eps), None);
+        assert_eq!(a[..].debug_rel_tol(&a[..1], &eps), None);
+        assert_eq!(a[..].debug_rmax_tol(&a[..1], &eps), None);
+        assert_eq!(a[..].debug_rmin_tol(&a[..1], &eps), None);
+        assert_eq!(a[..].debug_r1st_tol(&a[..1], &eps), None);
+        assert_eq!(a[..].debug_r2nd_tol(&a[..1], &eps), None);
+        assert_eq!(a[..].debug_ulps_tol(&a[..1], &[u32::MAX; 2]), None);
 
-        // Different shape epsilon
-        assert_eq!(a[..].debug_abs_epsilon(&a[..], &[f32::INFINITY]), None);
-        assert_eq!(a[..].debug_rel_epsilon(&a[..], &[f32::INFINITY]), None);
-        assert_eq!(a[..].debug_rmax_epsilon(&a[..], &[f32::INFINITY]), None);
-        assert_eq!(a[..].debug_rmin_epsilon(&a[..], &[f32::INFINITY]), None);
-        assert_eq!(a[..].debug_r1st_epsilon(&a[..], &[f32::INFINITY]), None);
-        assert_eq!(a[..].debug_r2nd_epsilon(&a[..], &[f32::INFINITY]), None);
-        assert_eq!(a[..].debug_ulps_epsilon(&a[..], &[u32::MAX]), None);
+        // Different shape tol
+        assert_eq!(a[..].debug_abs_tol(&a[..], &[f32::INFINITY]), None);
+        assert_eq!(a[..].debug_rel_tol(&a[..], &[f32::INFINITY]), None);
+        assert_eq!(a[..].debug_rmax_tol(&a[..], &[f32::INFINITY]), None);
+        assert_eq!(a[..].debug_rmin_tol(&a[..], &[f32::INFINITY]), None);
+        assert_eq!(a[..].debug_r1st_tol(&a[..], &[f32::INFINITY]), None);
+        assert_eq!(a[..].debug_r2nd_tol(&a[..], &[f32::INFINITY]), None);
+        assert_eq!(a[..].debug_ulps_tol(&a[..], &[u32::MAX]), None);
 
-        assert_eq!(a[..].debug_abs_epsilon(&a[..], &[f32::INFINITY; 3]), None);
-        assert_eq!(a[..].debug_rel_epsilon(&a[..], &[f32::INFINITY; 3]), None);
-        assert_eq!(a[..].debug_rmax_epsilon(&a[..], &[f32::INFINITY; 3]), None);
-        assert_eq!(a[..].debug_rmin_epsilon(&a[..], &[f32::INFINITY; 3]), None);
-        assert_eq!(a[..].debug_r1st_epsilon(&a[..], &[f32::INFINITY; 3]), None);
-        assert_eq!(a[..].debug_r2nd_epsilon(&a[..], &[f32::INFINITY; 3]), None);
-        assert_eq!(a[..].debug_ulps_epsilon(&a[..], &[u32::MAX; 3]), None);
+        assert_eq!(a[..].debug_abs_tol(&a[..], &[f32::INFINITY; 3]), None);
+        assert_eq!(a[..].debug_rel_tol(&a[..], &[f32::INFINITY; 3]), None);
+        assert_eq!(a[..].debug_rmax_tol(&a[..], &[f32::INFINITY; 3]), None);
+        assert_eq!(a[..].debug_rmin_tol(&a[..], &[f32::INFINITY; 3]), None);
+        assert_eq!(a[..].debug_r1st_tol(&a[..], &[f32::INFINITY; 3]), None);
+        assert_eq!(a[..].debug_r2nd_tol(&a[..], &[f32::INFINITY; 3]), None);
+        assert_eq!(a[..].debug_ulps_tol(&a[..], &[u32::MAX; 3]), None);
     }
 
     #[test]
-    fn debug_all_epsilon() {
+    fn debug_all_tol() {
         let a = [2.0f32, 4.25];
         let b = [2.5f32, 4.0];
 
         // Same shape
+        assert_eq!(a[..].debug_abs_all_tol(&b[..], &0.2), Some(vec![0.2, 0.2]));
+        assert_eq!(a[..].debug_rel_all_tol(&b[..], &0.2), Some(vec![0.5, 0.85]));
         assert_eq!(
-            a[..].debug_abs_all_epsilon(&b[..], &0.2),
-            Some(vec![0.2, 0.2])
-        );
-        assert_eq!(
-            a[..].debug_rel_all_epsilon(&b[..], &0.2),
+            a[..].debug_rmax_all_tol(&b[..], &0.2),
             Some(vec![0.5, 0.85])
         );
+        assert_eq!(a[..].debug_rmin_all_tol(&b[..], &0.2), Some(vec![0.4, 0.8]));
         assert_eq!(
-            a[..].debug_rmax_all_epsilon(&b[..], &0.2),
-            Some(vec![0.5, 0.85])
-        );
-        assert_eq!(
-            a[..].debug_rmin_all_epsilon(&b[..], &0.2),
-            Some(vec![0.4, 0.8])
-        );
-        assert_eq!(
-            a[..].debug_r1st_all_epsilon(&b[..], &0.2),
+            a[..].debug_r1st_all_tol(&b[..], &0.2),
             Some(vec![0.4, 0.85])
         );
-        assert_eq!(
-            a[..].debug_r2nd_all_epsilon(&b[..], &0.2),
-            Some(vec![0.5, 0.8])
-        );
-        assert_eq!(a[..].debug_ulps_all_epsilon(&b[..], &2), Some(vec![2, 2]));
+        assert_eq!(a[..].debug_r2nd_all_tol(&b[..], &0.2), Some(vec![0.5, 0.8]));
+        assert_eq!(a[..].debug_ulps_all_tol(&b[..], &2), Some(vec![2, 2]));
 
         // Different shape
         let inf = f32::INFINITY;
         let max = u32::MAX;
 
-        assert_eq!(a[1..].debug_abs_all_epsilon(&a[..], &inf), None);
-        assert_eq!(a[1..].debug_rel_all_epsilon(&a[..], &inf), None);
-        assert_eq!(a[1..].debug_rmax_all_epsilon(&a[..], &inf), None);
-        assert_eq!(a[1..].debug_rmin_all_epsilon(&a[..], &inf), None);
-        assert_eq!(a[1..].debug_r1st_all_epsilon(&a[..], &inf), None);
-        assert_eq!(a[1..].debug_r2nd_all_epsilon(&a[..], &inf), None);
-        assert_eq!(a[1..].debug_ulps_all_epsilon(&a[..], &max), None);
+        assert_eq!(a[1..].debug_abs_all_tol(&a[..], &inf), None);
+        assert_eq!(a[1..].debug_rel_all_tol(&a[..], &inf), None);
+        assert_eq!(a[1..].debug_rmax_all_tol(&a[..], &inf), None);
+        assert_eq!(a[1..].debug_rmin_all_tol(&a[..], &inf), None);
+        assert_eq!(a[1..].debug_r1st_all_tol(&a[..], &inf), None);
+        assert_eq!(a[1..].debug_r2nd_all_tol(&a[..], &inf), None);
+        assert_eq!(a[1..].debug_ulps_all_tol(&a[..], &max), None);
 
-        assert_eq!(a[..].debug_abs_all_epsilon(&a[..1], &inf), None);
-        assert_eq!(a[..].debug_rel_all_epsilon(&a[..1], &inf), None);
-        assert_eq!(a[..].debug_rmax_all_epsilon(&a[..1], &inf), None);
-        assert_eq!(a[..].debug_rmin_all_epsilon(&a[..1], &inf), None);
-        assert_eq!(a[..].debug_r1st_all_epsilon(&a[..1], &inf), None);
-        assert_eq!(a[..].debug_r2nd_all_epsilon(&a[..1], &inf), None);
-        assert_eq!(a[..].debug_ulps_all_epsilon(&a[..1], &max), None);
+        assert_eq!(a[..].debug_abs_all_tol(&a[..1], &inf), None);
+        assert_eq!(a[..].debug_rel_all_tol(&a[..1], &inf), None);
+        assert_eq!(a[..].debug_rmax_all_tol(&a[..1], &inf), None);
+        assert_eq!(a[..].debug_rmin_all_tol(&a[..1], &inf), None);
+        assert_eq!(a[..].debug_r1st_all_tol(&a[..1], &inf), None);
+        assert_eq!(a[..].debug_r2nd_all_tol(&a[..1], &inf), None);
+        assert_eq!(a[..].debug_ulps_all_tol(&a[..1], &max), None);
     }
 }
 
@@ -178,7 +154,7 @@ macro_rules! impl_linear_collection_tests {
                 let c = $c![1.0f32];
                 let eps = f32::EPSILON;
 
-                // Same shape a/b/epsilon
+                // Same shape a/b/tol
                 assert_float_eq!(a, b, abs <= $c![1.0 * eps, 4.0 * eps]);
                 assert_float_ne!(a, b, abs <= $c![0.5 * eps, 4.0 * eps]);
                 assert_float_ne!(a, b, abs <= $c![1.0 * eps, 2.0 * eps]);
@@ -224,7 +200,7 @@ macro_rules! impl_linear_collection_tests {
                 assert_float_ne!(c, b, r2nd <= $c![f32::INFINITY; 2]);
                 assert_float_ne!(c, b, ulps <= $c![u32::MAX; 2]);
 
-                // Different shape epsilon
+                // Different shape tol
                 assert_float_ne!(a, b, abs <= $c![f32::INFINITY]);
                 assert_float_ne!(a, b, rel <= $c![f32::INFINITY]);
                 assert_float_ne!(a, b, rmax <= $c![f32::INFINITY]);
@@ -249,7 +225,7 @@ macro_rules! impl_linear_collection_tests {
                 let c = $c![1.0f32];
                 let eps = f32::EPSILON;
 
-                // Same shape a/b/epsilon
+                // Same shape a/b/tol
                 assert_float_eq!(a, b, abs_all <= 4.0 * eps);
                 assert_float_ne!(a, b, abs_all <= 2.0 * eps);
 
@@ -315,90 +291,90 @@ macro_rules! impl_linear_collection_tests {
             }
 
             #[test]
-            fn debug_epsilon() {
+            fn debug_tol() {
                 let a = $c![2.0f32, 4.25];
                 let b = $c![2.5f32, 4.0];
                 let c = $c![1.0f32];
                 let eps = $c![0.1, 0.2];
 
-                // Same shape a/b/epsilon
-                assert_eq!(a.debug_abs_epsilon(&b, &eps), Some($c![0.1, 0.2]));
-                assert_eq!(a.debug_rel_epsilon(&b, &eps), Some($c![0.25, 0.85]));
-                assert_eq!(a.debug_rmax_epsilon(&b, &eps), Some($c![0.25, 0.85]));
-                assert_eq!(a.debug_rmin_epsilon(&b, &eps), Some($c![0.2, 0.8]));
-                assert_eq!(a.debug_r1st_epsilon(&b, &eps), Some($c![0.2, 0.85]));
-                assert_eq!(a.debug_r2nd_epsilon(&b, &eps), Some($c![0.25, 0.8]));
-                assert_eq!(a.debug_ulps_epsilon(&b, &$c![1, 2]), Some($c![1, 2]));
+                // Same shape a/b/tol
+                assert_eq!(a.debug_abs_tol(&b, &eps), Some($c![0.1, 0.2]));
+                assert_eq!(a.debug_rel_tol(&b, &eps), Some($c![0.25, 0.85]));
+                assert_eq!(a.debug_rmax_tol(&b, &eps), Some($c![0.25, 0.85]));
+                assert_eq!(a.debug_rmin_tol(&b, &eps), Some($c![0.2, 0.8]));
+                assert_eq!(a.debug_r1st_tol(&b, &eps), Some($c![0.2, 0.85]));
+                assert_eq!(a.debug_r2nd_tol(&b, &eps), Some($c![0.25, 0.8]));
+                assert_eq!(a.debug_ulps_tol(&b, &$c![1, 2]), Some($c![1, 2]));
 
                 // Different shape a/b
-                assert_eq!(a.debug_abs_epsilon(&c, &eps), None);
-                assert_eq!(a.debug_rel_epsilon(&c, &eps), None);
-                assert_eq!(a.debug_rmax_epsilon(&c, &eps), None);
-                assert_eq!(a.debug_rmin_epsilon(&c, &eps), None);
-                assert_eq!(a.debug_r1st_epsilon(&c, &eps), None);
-                assert_eq!(a.debug_r2nd_epsilon(&c, &eps), None);
-                assert_eq!(a.debug_ulps_epsilon(&c, &$c![u32::MAX; 2]), None);
+                assert_eq!(a.debug_abs_tol(&c, &eps), None);
+                assert_eq!(a.debug_rel_tol(&c, &eps), None);
+                assert_eq!(a.debug_rmax_tol(&c, &eps), None);
+                assert_eq!(a.debug_rmin_tol(&c, &eps), None);
+                assert_eq!(a.debug_r1st_tol(&c, &eps), None);
+                assert_eq!(a.debug_r2nd_tol(&c, &eps), None);
+                assert_eq!(a.debug_ulps_tol(&c, &$c![u32::MAX; 2]), None);
 
-                assert_eq!(c.debug_abs_epsilon(&a, &eps), None);
-                assert_eq!(c.debug_rel_epsilon(&a, &eps), None);
-                assert_eq!(c.debug_rmax_epsilon(&a, &eps), None);
-                assert_eq!(c.debug_rmin_epsilon(&a, &eps), None);
-                assert_eq!(c.debug_r1st_epsilon(&a, &eps), None);
-                assert_eq!(c.debug_r2nd_epsilon(&a, &eps), None);
-                assert_eq!(c.debug_ulps_epsilon(&a, &$c![u32::MAX; 2]), None);
+                assert_eq!(c.debug_abs_tol(&a, &eps), None);
+                assert_eq!(c.debug_rel_tol(&a, &eps), None);
+                assert_eq!(c.debug_rmax_tol(&a, &eps), None);
+                assert_eq!(c.debug_rmin_tol(&a, &eps), None);
+                assert_eq!(c.debug_r1st_tol(&a, &eps), None);
+                assert_eq!(c.debug_r2nd_tol(&a, &eps), None);
+                assert_eq!(c.debug_ulps_tol(&a, &$c![u32::MAX; 2]), None);
 
-                // Different shape epsilon
-                assert_eq!(a.debug_abs_epsilon(&a, &$c![f32::INFINITY]), None);
-                assert_eq!(a.debug_rel_epsilon(&a, &$c![f32::INFINITY]), None);
-                assert_eq!(a.debug_rmax_epsilon(&a, &$c![f32::INFINITY]), None);
-                assert_eq!(a.debug_rmin_epsilon(&a, &$c![f32::INFINITY]), None);
-                assert_eq!(a.debug_r1st_epsilon(&a, &$c![f32::INFINITY]), None);
-                assert_eq!(a.debug_r2nd_epsilon(&a, &$c![f32::INFINITY]), None);
-                assert_eq!(a.debug_ulps_epsilon(&a, &$c![u32::MAX]), None);
+                // Different shape tol
+                assert_eq!(a.debug_abs_tol(&a, &$c![f32::INFINITY]), None);
+                assert_eq!(a.debug_rel_tol(&a, &$c![f32::INFINITY]), None);
+                assert_eq!(a.debug_rmax_tol(&a, &$c![f32::INFINITY]), None);
+                assert_eq!(a.debug_rmin_tol(&a, &$c![f32::INFINITY]), None);
+                assert_eq!(a.debug_r1st_tol(&a, &$c![f32::INFINITY]), None);
+                assert_eq!(a.debug_r2nd_tol(&a, &$c![f32::INFINITY]), None);
+                assert_eq!(a.debug_ulps_tol(&a, &$c![u32::MAX]), None);
 
-                assert_eq!(a.debug_abs_epsilon(&a, &$c![f32::INFINITY; 3]), None);
-                assert_eq!(a.debug_rel_epsilon(&a, &$c![f32::INFINITY; 3]), None);
-                assert_eq!(a.debug_rmax_epsilon(&a, &$c![f32::INFINITY; 3]), None);
-                assert_eq!(a.debug_rmin_epsilon(&a, &$c![f32::INFINITY; 3]), None);
-                assert_eq!(a.debug_r1st_epsilon(&a, &$c![f32::INFINITY; 3]), None);
-                assert_eq!(a.debug_r2nd_epsilon(&a, &$c![f32::INFINITY; 3]), None);
-                assert_eq!(a.debug_ulps_epsilon(&a, &$c![u32::MAX; 3]), None);
+                assert_eq!(a.debug_abs_tol(&a, &$c![f32::INFINITY; 3]), None);
+                assert_eq!(a.debug_rel_tol(&a, &$c![f32::INFINITY; 3]), None);
+                assert_eq!(a.debug_rmax_tol(&a, &$c![f32::INFINITY; 3]), None);
+                assert_eq!(a.debug_rmin_tol(&a, &$c![f32::INFINITY; 3]), None);
+                assert_eq!(a.debug_r1st_tol(&a, &$c![f32::INFINITY; 3]), None);
+                assert_eq!(a.debug_r2nd_tol(&a, &$c![f32::INFINITY; 3]), None);
+                assert_eq!(a.debug_ulps_tol(&a, &$c![u32::MAX; 3]), None);
             }
 
             #[test]
-            fn debug_all_epsilon() {
+            fn debug_all_tol() {
                 let a = $c![2.0f32, 4.25];
                 let b = $c![2.5f32, 4.0];
                 let c = $c![1.0f32];
 
                 // Same shape
-                assert_eq!(a.debug_abs_all_epsilon(&b, &0.2), Some($c![0.2, 0.2]));
-                assert_eq!(a.debug_rel_all_epsilon(&b, &0.2), Some($c![0.5, 0.85]));
-                assert_eq!(a.debug_rmax_all_epsilon(&b, &0.2), Some($c![0.5, 0.85]));
-                assert_eq!(a.debug_rmin_all_epsilon(&b, &0.2), Some($c![0.4, 0.8]));
-                assert_eq!(a.debug_r1st_all_epsilon(&b, &0.2), Some($c![0.4, 0.85]));
-                assert_eq!(a.debug_r2nd_all_epsilon(&b, &0.2), Some($c![0.5, 0.8]));
-                assert_eq!(a.debug_ulps_all_epsilon(&b, &2), Some($c![2, 2]));
+                assert_eq!(a.debug_abs_all_tol(&b, &0.2), Some($c![0.2, 0.2]));
+                assert_eq!(a.debug_rel_all_tol(&b, &0.2), Some($c![0.5, 0.85]));
+                assert_eq!(a.debug_rmax_all_tol(&b, &0.2), Some($c![0.5, 0.85]));
+                assert_eq!(a.debug_rmin_all_tol(&b, &0.2), Some($c![0.4, 0.8]));
+                assert_eq!(a.debug_r1st_all_tol(&b, &0.2), Some($c![0.4, 0.85]));
+                assert_eq!(a.debug_r2nd_all_tol(&b, &0.2), Some($c![0.5, 0.8]));
+                assert_eq!(a.debug_ulps_all_tol(&b, &2), Some($c![2, 2]));
 
                 // Different shape
                 let inf = f32::INFINITY;
                 let max = u32::MAX;
 
-                assert_eq!(a.debug_abs_all_epsilon(&c, &inf), None);
-                assert_eq!(a.debug_rel_all_epsilon(&c, &inf), None);
-                assert_eq!(a.debug_rmax_all_epsilon(&c, &inf), None);
-                assert_eq!(a.debug_rmin_all_epsilon(&c, &inf), None);
-                assert_eq!(a.debug_r1st_all_epsilon(&c, &inf), None);
-                assert_eq!(a.debug_r2nd_all_epsilon(&c, &inf), None);
-                assert_eq!(a.debug_ulps_all_epsilon(&c, &max), None);
+                assert_eq!(a.debug_abs_all_tol(&c, &inf), None);
+                assert_eq!(a.debug_rel_all_tol(&c, &inf), None);
+                assert_eq!(a.debug_rmax_all_tol(&c, &inf), None);
+                assert_eq!(a.debug_rmin_all_tol(&c, &inf), None);
+                assert_eq!(a.debug_r1st_all_tol(&c, &inf), None);
+                assert_eq!(a.debug_r2nd_all_tol(&c, &inf), None);
+                assert_eq!(a.debug_ulps_all_tol(&c, &max), None);
 
-                assert_eq!(c.debug_abs_all_epsilon(&a, &inf), None);
-                assert_eq!(c.debug_rel_all_epsilon(&a, &inf), None);
-                assert_eq!(c.debug_rmax_all_epsilon(&a, &inf), None);
-                assert_eq!(c.debug_rmin_all_epsilon(&a, &inf), None);
-                assert_eq!(c.debug_r1st_all_epsilon(&a, &inf), None);
-                assert_eq!(c.debug_r2nd_all_epsilon(&a, &inf), None);
-                assert_eq!(c.debug_ulps_all_epsilon(&a, &max), None);
+                assert_eq!(c.debug_abs_all_tol(&a, &inf), None);
+                assert_eq!(c.debug_rel_all_tol(&a, &inf), None);
+                assert_eq!(c.debug_rmax_all_tol(&a, &inf), None);
+                assert_eq!(c.debug_rmin_all_tol(&a, &inf), None);
+                assert_eq!(c.debug_r1st_all_tol(&a, &inf), None);
+                assert_eq!(c.debug_r2nd_all_tol(&a, &inf), None);
+                assert_eq!(c.debug_ulps_all_tol(&a, &max), None);
             }
         }
     };
@@ -452,7 +428,7 @@ macro_rules! impl_map_tests {
                 let eps = f32::EPSILON;
                 let inf = f32::INFINITY;
 
-                // Same shape a/b/epsilon
+                // Same shape a/b/tol
                 assert_float_eq!(a, b, abs <= map12(1.0 * eps, 4.0 * eps));
                 assert_float_ne!(a, b, abs <= map12(0.5 * eps, 4.0 * eps));
                 assert_float_ne!(a, b, abs <= map12(1.0 * eps, 2.0 * eps));
@@ -515,7 +491,7 @@ macro_rules! impl_map_tests {
                 assert_float_ne!(d, b, r2nd <= map12(inf, inf));
                 assert_float_ne!(d, b, ulps <= map12(u32::MAX, u32::MAX));
 
-                // Different shape epsilon
+                // Different shape tol
                 assert_float_ne!(a, b, abs <= map1(inf));
                 assert_float_ne!(a, b, rel <= map1(inf));
                 assert_float_ne!(a, b, rmax <= map1(inf));
@@ -541,7 +517,7 @@ macro_rules! impl_map_tests {
                 let d = map123(1.0f32, 3.999_999_5, 1337.0);
                 let eps = f32::EPSILON;
 
-                // Same shape a/b/epsilon
+                // Same shape a/b/tol
                 assert_float_eq!(a, b, abs_all <= 4.0 * eps);
                 assert_float_ne!(a, b, abs_all <= 2.0 * eps);
 
@@ -632,7 +608,7 @@ macro_rules! impl_map_tests {
             }
 
             #[test]
-            fn debug_epsilon() {
+            fn debug_tol() {
                 let a = map12(2.0f32, 4.25);
                 let b = map12(2.5f32, 4.0);
                 let c = map1(1.0f32);
@@ -640,72 +616,72 @@ macro_rules! impl_map_tests {
                 let inf = f32::INFINITY;
                 let eps = map12(0.1, 0.2);
 
-                // Same shape a/b/epsilon
-                assert_eq!(a.debug_abs_epsilon(&b, &eps), Some(map12(0.1, 0.2)));
-                assert_eq!(a.debug_rel_epsilon(&b, &eps), Some(map12(0.25, 0.85)));
-                assert_eq!(a.debug_rmax_epsilon(&b, &eps), Some(map12(0.25, 0.85)));
-                assert_eq!(a.debug_rmin_epsilon(&b, &eps), Some(map12(0.2, 0.8)));
-                assert_eq!(a.debug_r1st_epsilon(&b, &eps), Some(map12(0.2, 0.85)));
-                assert_eq!(a.debug_r2nd_epsilon(&b, &eps), Some(map12(0.25, 0.8)));
-                assert_eq!(a.debug_ulps_epsilon(&b, &map12(1, 2)), Some(map12(1, 2)));
+                // Same shape a/b/tol
+                assert_eq!(a.debug_abs_tol(&b, &eps), Some(map12(0.1, 0.2)));
+                assert_eq!(a.debug_rel_tol(&b, &eps), Some(map12(0.25, 0.85)));
+                assert_eq!(a.debug_rmax_tol(&b, &eps), Some(map12(0.25, 0.85)));
+                assert_eq!(a.debug_rmin_tol(&b, &eps), Some(map12(0.2, 0.8)));
+                assert_eq!(a.debug_r1st_tol(&b, &eps), Some(map12(0.2, 0.85)));
+                assert_eq!(a.debug_r2nd_tol(&b, &eps), Some(map12(0.25, 0.8)));
+                assert_eq!(a.debug_ulps_tol(&b, &map12(1, 2)), Some(map12(1, 2)));
 
                 // Different shape a/b: item missing
-                assert_eq!(a.debug_abs_epsilon(&c, &eps), None);
-                assert_eq!(a.debug_rel_epsilon(&c, &eps), None);
-                assert_eq!(a.debug_rmax_epsilon(&c, &eps), None);
-                assert_eq!(a.debug_rmin_epsilon(&c, &eps), None);
-                assert_eq!(a.debug_r1st_epsilon(&c, &eps), None);
-                assert_eq!(a.debug_r2nd_epsilon(&c, &eps), None);
-                assert_eq!(a.debug_ulps_epsilon(&c, &map12(1, 2)), None);
+                assert_eq!(a.debug_abs_tol(&c, &eps), None);
+                assert_eq!(a.debug_rel_tol(&c, &eps), None);
+                assert_eq!(a.debug_rmax_tol(&c, &eps), None);
+                assert_eq!(a.debug_rmin_tol(&c, &eps), None);
+                assert_eq!(a.debug_r1st_tol(&c, &eps), None);
+                assert_eq!(a.debug_r2nd_tol(&c, &eps), None);
+                assert_eq!(a.debug_ulps_tol(&c, &map12(1, 2)), None);
 
-                assert_eq!(c.debug_abs_epsilon(&a, &eps), None);
-                assert_eq!(c.debug_rel_epsilon(&a, &eps), None);
-                assert_eq!(c.debug_rmax_epsilon(&a, &eps), None);
-                assert_eq!(c.debug_rmin_epsilon(&a, &eps), None);
-                assert_eq!(c.debug_r1st_epsilon(&a, &eps), None);
-                assert_eq!(c.debug_r2nd_epsilon(&a, &eps), None);
-                assert_eq!(c.debug_ulps_epsilon(&a, &map12(1, 2)), None);
+                assert_eq!(c.debug_abs_tol(&a, &eps), None);
+                assert_eq!(c.debug_rel_tol(&a, &eps), None);
+                assert_eq!(c.debug_rmax_tol(&a, &eps), None);
+                assert_eq!(c.debug_rmin_tol(&a, &eps), None);
+                assert_eq!(c.debug_r1st_tol(&a, &eps), None);
+                assert_eq!(c.debug_r2nd_tol(&a, &eps), None);
+                assert_eq!(c.debug_ulps_tol(&a, &map12(1, 2)), None);
 
                 // Different shape a/b: item extra
-                assert_eq!(a.debug_abs_epsilon(&d, &eps), None);
-                assert_eq!(a.debug_rel_epsilon(&d, &eps), None);
-                assert_eq!(a.debug_rmax_epsilon(&d, &eps), None);
-                assert_eq!(a.debug_rmin_epsilon(&d, &eps), None);
-                assert_eq!(a.debug_r1st_epsilon(&d, &eps), None);
-                assert_eq!(a.debug_r2nd_epsilon(&d, &eps), None);
-                assert_eq!(a.debug_ulps_epsilon(&d, &map12(u32::MAX, u32::MAX)), None);
+                assert_eq!(a.debug_abs_tol(&d, &eps), None);
+                assert_eq!(a.debug_rel_tol(&d, &eps), None);
+                assert_eq!(a.debug_rmax_tol(&d, &eps), None);
+                assert_eq!(a.debug_rmin_tol(&d, &eps), None);
+                assert_eq!(a.debug_r1st_tol(&d, &eps), None);
+                assert_eq!(a.debug_r2nd_tol(&d, &eps), None);
+                assert_eq!(a.debug_ulps_tol(&d, &map12(u32::MAX, u32::MAX)), None);
 
-                assert_eq!(d.debug_abs_epsilon(&a, &eps), None);
-                assert_eq!(d.debug_rel_epsilon(&a, &eps), None);
-                assert_eq!(d.debug_rmax_epsilon(&a, &eps), None);
-                assert_eq!(d.debug_rmin_epsilon(&a, &eps), None);
-                assert_eq!(d.debug_r1st_epsilon(&a, &eps), None);
-                assert_eq!(d.debug_r2nd_epsilon(&a, &eps), None);
-                assert_eq!(d.debug_ulps_epsilon(&a, &map12(u32::MAX, u32::MAX)), None);
+                assert_eq!(d.debug_abs_tol(&a, &eps), None);
+                assert_eq!(d.debug_rel_tol(&a, &eps), None);
+                assert_eq!(d.debug_rmax_tol(&a, &eps), None);
+                assert_eq!(d.debug_rmin_tol(&a, &eps), None);
+                assert_eq!(d.debug_r1st_tol(&a, &eps), None);
+                assert_eq!(d.debug_r2nd_tol(&a, &eps), None);
+                assert_eq!(d.debug_ulps_tol(&a, &map12(u32::MAX, u32::MAX)), None);
 
-                // Different shape epsilon
-                assert_eq!(a.debug_abs_epsilon(&a, &map1(inf)), None);
-                assert_eq!(a.debug_rel_epsilon(&a, &map1(inf)), None);
-                assert_eq!(a.debug_rmax_epsilon(&a, &map1(inf)), None);
-                assert_eq!(a.debug_rmin_epsilon(&a, &map1(inf)), None);
-                assert_eq!(a.debug_r1st_epsilon(&a, &map1(inf)), None);
-                assert_eq!(a.debug_r2nd_epsilon(&a, &map1(inf)), None);
-                assert_eq!(a.debug_ulps_epsilon(&a, &map1(u32::MAX)), None);
+                // Different shape tol
+                assert_eq!(a.debug_abs_tol(&a, &map1(inf)), None);
+                assert_eq!(a.debug_rel_tol(&a, &map1(inf)), None);
+                assert_eq!(a.debug_rmax_tol(&a, &map1(inf)), None);
+                assert_eq!(a.debug_rmin_tol(&a, &map1(inf)), None);
+                assert_eq!(a.debug_r1st_tol(&a, &map1(inf)), None);
+                assert_eq!(a.debug_r2nd_tol(&a, &map1(inf)), None);
+                assert_eq!(a.debug_ulps_tol(&a, &map1(u32::MAX)), None);
 
-                assert_eq!(a.debug_abs_epsilon(&a, &map123(inf, inf, inf)), None);
-                assert_eq!(a.debug_rel_epsilon(&a, &map123(inf, inf, inf)), None);
-                assert_eq!(a.debug_rmax_epsilon(&a, &map123(inf, inf, inf)), None);
-                assert_eq!(a.debug_rmin_epsilon(&a, &map123(inf, inf, inf)), None);
-                assert_eq!(a.debug_r1st_epsilon(&a, &map123(inf, inf, inf)), None);
-                assert_eq!(a.debug_r2nd_epsilon(&a, &map123(inf, inf, inf)), None);
+                assert_eq!(a.debug_abs_tol(&a, &map123(inf, inf, inf)), None);
+                assert_eq!(a.debug_rel_tol(&a, &map123(inf, inf, inf)), None);
+                assert_eq!(a.debug_rmax_tol(&a, &map123(inf, inf, inf)), None);
+                assert_eq!(a.debug_rmin_tol(&a, &map123(inf, inf, inf)), None);
+                assert_eq!(a.debug_r1st_tol(&a, &map123(inf, inf, inf)), None);
+                assert_eq!(a.debug_r2nd_tol(&a, &map123(inf, inf, inf)), None);
                 assert_eq!(
-                    a.debug_ulps_epsilon(&a, &map123(u32::MAX, u32::MAX, u32::MAX)),
+                    a.debug_ulps_tol(&a, &map123(u32::MAX, u32::MAX, u32::MAX)),
                     None
                 );
             }
 
             #[test]
-            fn debug_all_epsilon() {
+            fn debug_all_tol() {
                 let a = map12(2.0f32, 4.25);
                 let b = map12(2.5f32, 4.0);
                 let c = map1(1.0f32);
@@ -714,47 +690,47 @@ macro_rules! impl_map_tests {
                 let max = u32::MAX;
 
                 // Same shape
-                assert_eq!(a.debug_abs_all_epsilon(&b, &0.2), Some(map12(0.2, 0.2)));
-                assert_eq!(a.debug_rel_all_epsilon(&b, &0.2), Some(map12(0.5, 0.85)));
-                assert_eq!(a.debug_rmax_all_epsilon(&b, &0.2), Some(map12(0.5, 0.85)));
-                assert_eq!(a.debug_rmin_all_epsilon(&b, &0.2), Some(map12(0.4, 0.8)));
-                assert_eq!(a.debug_r1st_all_epsilon(&b, &0.2), Some(map12(0.4, 0.85)));
-                assert_eq!(a.debug_r2nd_all_epsilon(&b, &0.2), Some(map12(0.5, 0.8)));
-                assert_eq!(a.debug_ulps_all_epsilon(&b, &2), Some(map12(2, 2)));
+                assert_eq!(a.debug_abs_all_tol(&b, &0.2), Some(map12(0.2, 0.2)));
+                assert_eq!(a.debug_rel_all_tol(&b, &0.2), Some(map12(0.5, 0.85)));
+                assert_eq!(a.debug_rmax_all_tol(&b, &0.2), Some(map12(0.5, 0.85)));
+                assert_eq!(a.debug_rmin_all_tol(&b, &0.2), Some(map12(0.4, 0.8)));
+                assert_eq!(a.debug_r1st_all_tol(&b, &0.2), Some(map12(0.4, 0.85)));
+                assert_eq!(a.debug_r2nd_all_tol(&b, &0.2), Some(map12(0.5, 0.8)));
+                assert_eq!(a.debug_ulps_all_tol(&b, &2), Some(map12(2, 2)));
 
                 // Different shape - item missing
-                assert_eq!(a.debug_abs_all_epsilon(&c, &inf), None);
-                assert_eq!(a.debug_rel_all_epsilon(&c, &inf), None);
-                assert_eq!(a.debug_rmax_all_epsilon(&c, &inf), None);
-                assert_eq!(a.debug_rmin_all_epsilon(&c, &inf), None);
-                assert_eq!(a.debug_r1st_all_epsilon(&c, &inf), None);
-                assert_eq!(a.debug_r2nd_all_epsilon(&c, &inf), None);
-                assert_eq!(a.debug_ulps_all_epsilon(&c, &max), None);
+                assert_eq!(a.debug_abs_all_tol(&c, &inf), None);
+                assert_eq!(a.debug_rel_all_tol(&c, &inf), None);
+                assert_eq!(a.debug_rmax_all_tol(&c, &inf), None);
+                assert_eq!(a.debug_rmin_all_tol(&c, &inf), None);
+                assert_eq!(a.debug_r1st_all_tol(&c, &inf), None);
+                assert_eq!(a.debug_r2nd_all_tol(&c, &inf), None);
+                assert_eq!(a.debug_ulps_all_tol(&c, &max), None);
 
-                assert_eq!(c.debug_abs_all_epsilon(&a, &inf), None);
-                assert_eq!(c.debug_rel_all_epsilon(&a, &inf), None);
-                assert_eq!(c.debug_rmax_all_epsilon(&a, &inf), None);
-                assert_eq!(c.debug_rmin_all_epsilon(&a, &inf), None);
-                assert_eq!(c.debug_r1st_all_epsilon(&a, &inf), None);
-                assert_eq!(c.debug_r2nd_all_epsilon(&a, &inf), None);
-                assert_eq!(c.debug_ulps_all_epsilon(&a, &max), None);
+                assert_eq!(c.debug_abs_all_tol(&a, &inf), None);
+                assert_eq!(c.debug_rel_all_tol(&a, &inf), None);
+                assert_eq!(c.debug_rmax_all_tol(&a, &inf), None);
+                assert_eq!(c.debug_rmin_all_tol(&a, &inf), None);
+                assert_eq!(c.debug_r1st_all_tol(&a, &inf), None);
+                assert_eq!(c.debug_r2nd_all_tol(&a, &inf), None);
+                assert_eq!(c.debug_ulps_all_tol(&a, &max), None);
 
                 // Different shape - item extra
-                assert_eq!(a.debug_abs_all_epsilon(&d, &inf), None);
-                assert_eq!(a.debug_rel_all_epsilon(&d, &inf), None);
-                assert_eq!(a.debug_rmax_all_epsilon(&d, &inf), None);
-                assert_eq!(a.debug_rmin_all_epsilon(&d, &inf), None);
-                assert_eq!(a.debug_r1st_all_epsilon(&d, &inf), None);
-                assert_eq!(a.debug_r2nd_all_epsilon(&d, &inf), None);
-                assert_eq!(a.debug_ulps_all_epsilon(&d, &max), None);
+                assert_eq!(a.debug_abs_all_tol(&d, &inf), None);
+                assert_eq!(a.debug_rel_all_tol(&d, &inf), None);
+                assert_eq!(a.debug_rmax_all_tol(&d, &inf), None);
+                assert_eq!(a.debug_rmin_all_tol(&d, &inf), None);
+                assert_eq!(a.debug_r1st_all_tol(&d, &inf), None);
+                assert_eq!(a.debug_r2nd_all_tol(&d, &inf), None);
+                assert_eq!(a.debug_ulps_all_tol(&d, &max), None);
 
-                assert_eq!(d.debug_abs_all_epsilon(&a, &inf), None);
-                assert_eq!(d.debug_rel_all_epsilon(&a, &inf), None);
-                assert_eq!(d.debug_rmax_all_epsilon(&a, &inf), None);
-                assert_eq!(d.debug_rmin_all_epsilon(&a, &inf), None);
-                assert_eq!(d.debug_r1st_all_epsilon(&a, &inf), None);
-                assert_eq!(d.debug_r2nd_all_epsilon(&a, &inf), None);
-                assert_eq!(d.debug_ulps_all_epsilon(&a, &max), None);
+                assert_eq!(d.debug_abs_all_tol(&a, &inf), None);
+                assert_eq!(d.debug_rel_all_tol(&a, &inf), None);
+                assert_eq!(d.debug_rmax_all_tol(&a, &inf), None);
+                assert_eq!(d.debug_rmin_all_tol(&a, &inf), None);
+                assert_eq!(d.debug_r1st_all_tol(&a, &inf), None);
+                assert_eq!(d.debug_r2nd_all_tol(&a, &inf), None);
+                assert_eq!(d.debug_ulps_all_tol(&a, &max), None);
             }
         }
     };

@@ -5,8 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+Bumped up the version number since this release includes breaking API changes.
 
 ### Changed
+- Renamed many ambiguous uses of epsilon/eps/max_diff to tolerance/tol, which is
+  the mathematical term of art.
 - Implementation of traits for arrays of any size using const generics.
 - Updated `num-complex` dependency to 0.4.
 - Reworked the documentation, added a tutorial.
@@ -90,7 +93,7 @@ Bumped up the version number since this release includes breaking API changes.
 - `FloatDiff` is much more rigorously defined, in particular `ulps_diff` now
   returns `Option<T>`, see the API documentation for details.
 - `FloatEq`'s `DiffEpsilon` is now `Epsilon`, and `UlpsDiffEpsilon` is now
-  `UlpsEpsilon`. This reduces visual noise around the usage and harmonizes the
+  `UlpsTol`. This reduces visual noise around the usage and harmonizes the
   naming with `FloatEqDebug`'s associated types.
 - Directed docs.rs to build documentation for all features.
 

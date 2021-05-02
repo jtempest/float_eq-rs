@@ -1,16 +1,16 @@
 use crate::{
     AssertFloatEq, AssertFloatEqAll, DebugUlpsDiff, FloatEq, FloatEqAll, FloatEqDebugUlpsDiff,
-    FloatEqUlpsEpsilon, UlpsEpsilon,
+    FloatEqUlpsTol, UlpsTol,
 };
 use num_complex::Complex;
 
-/// The absolute difference between two floating point [`Complex<T>`] instances
+/// The absolute difference between two floating point [`num::Complex<T>`] instances
 /// in ULPs.
 ///
-/// The `T` in [`Complex<T>`] is constrained by `Clone` and `PartialEq`, so this
+/// The `T` in [`num::Complex<T>`] is constrained by `Clone` and `PartialEq`, so this
 /// implements those too.
 ///
-/// [`Complex<T>`]: https://docs.rs/num/0.3.0/num/struct.Complex.html
+/// [`num::Complex<T>`]: https://docs.rs/num/0.3.0/num/struct.Complex.html
 #[derive(Clone, Debug, PartialEq)]
 pub struct ComplexUlps<T> {
     /// Real portion of the complex number in ULPs.
@@ -26,109 +26,109 @@ impl<T> ComplexUlps<T> {
     }
 }
 
-impl<T: FloatEqUlpsEpsilon> FloatEqUlpsEpsilon for Complex<T>
+impl<T: FloatEqUlpsTol> FloatEqUlpsTol for Complex<T>
 where
-    UlpsEpsilon<T>: Sized,
+    UlpsTol<T>: Sized,
 {
-    type UlpsEpsilon = ComplexUlps<UlpsEpsilon<T>>;
+    type UlpsTol = ComplexUlps<UlpsTol<T>>;
 }
 
 impl<T: FloatEqDebugUlpsDiff> FloatEqDebugUlpsDiff for Complex<T> {
     type DebugUlpsDiff = ComplexUlps<DebugUlpsDiff<T>>;
 }
 
-/// [`ComplexUlps<T>`] type matching [`Complex32`].
+/// [`ComplexUlps<T>`] type matching [`num::Complex32`].
 ///
-/// [`Complex32`]: https://docs.rs/num-complex/0.3/num_complex/type.Complex32.html
-pub type ComplexUlps32 = UlpsEpsilon<Complex<f32>>;
+/// [`num::Complex32`]: https://docs.rs/num-complex/0.3/num_complex/type.Complex32.html
+pub type ComplexUlps32 = UlpsTol<Complex<f32>>;
 
-/// [`ComplexUlps<T>`] type matching [`Complex64`].
+/// [`ComplexUlps<T>`] type matching [`num::Complex64`].
 ///
-/// [`Complex64`]: https://docs.rs/num-complex/0.3/num_complex/type.Complex64.html
-pub type ComplexUlps64 = UlpsEpsilon<Complex<f64>>;
+/// [`num::Complex64`]: https://docs.rs/num-complex/0.3/num_complex/type.Complex64.html
+pub type ComplexUlps64 = UlpsTol<Complex<f64>>;
 
 impl<T: FloatEq> FloatEq for Complex<T>
 where
-    T::Epsilon: Sized,
-    UlpsEpsilon<T::Epsilon>: Sized,
+    T::Tol: Sized,
+    UlpsTol<T::Tol>: Sized,
 {
-    type Epsilon = Complex<T::Epsilon>;
+    type Tol = Complex<T::Tol>;
 
     #[inline]
-    fn eq_abs(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
-        self.re.eq_abs(&other.re, &max_diff.re) && self.im.eq_abs(&other.im, &max_diff.im)
+    fn eq_abs(&self, other: &Self, tol: &Self::Tol) -> bool {
+        self.re.eq_abs(&other.re, &tol.re) && self.im.eq_abs(&other.im, &tol.im)
     }
 
     #[inline]
-    fn eq_rmax(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
-        self.re.eq_rmax(&other.re, &max_diff.re) && self.im.eq_rmax(&other.im, &max_diff.im)
+    fn eq_rmax(&self, other: &Self, tol: &Self::Tol) -> bool {
+        self.re.eq_rmax(&other.re, &tol.re) && self.im.eq_rmax(&other.im, &tol.im)
     }
 
     #[inline]
-    fn eq_rmin(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
-        self.re.eq_rmin(&other.re, &max_diff.re) && self.im.eq_rmin(&other.im, &max_diff.im)
+    fn eq_rmin(&self, other: &Self, tol: &Self::Tol) -> bool {
+        self.re.eq_rmin(&other.re, &tol.re) && self.im.eq_rmin(&other.im, &tol.im)
     }
 
     #[inline]
-    fn eq_r1st(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
-        self.re.eq_r1st(&other.re, &max_diff.re) && self.im.eq_r1st(&other.im, &max_diff.im)
+    fn eq_r1st(&self, other: &Self, tol: &Self::Tol) -> bool {
+        self.re.eq_r1st(&other.re, &tol.re) && self.im.eq_r1st(&other.im, &tol.im)
     }
 
     #[inline]
-    fn eq_r2nd(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
-        self.re.eq_r2nd(&other.re, &max_diff.re) && self.im.eq_r2nd(&other.im, &max_diff.im)
+    fn eq_r2nd(&self, other: &Self, tol: &Self::Tol) -> bool {
+        self.re.eq_r2nd(&other.re, &tol.re) && self.im.eq_r2nd(&other.im, &tol.im)
     }
 
     #[inline]
-    fn eq_ulps(&self, other: &Self, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
-        self.re.eq_ulps(&other.re, &max_diff.re) && self.im.eq_ulps(&other.im, &max_diff.im)
+    fn eq_ulps(&self, other: &Self, tol: &UlpsTol<Self::Tol>) -> bool {
+        self.re.eq_ulps(&other.re, &tol.re) && self.im.eq_ulps(&other.im, &tol.im)
     }
 }
 
 impl<T: FloatEqAll> FloatEqAll for Complex<T> {
-    type AllEpsilon = T::AllEpsilon;
+    type AllTol = T::AllTol;
 
     #[inline]
-    fn eq_abs_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
-        self.re.eq_abs_all(&other.re, max_diff) && self.im.eq_abs_all(&other.im, max_diff)
+    fn eq_abs_all(&self, other: &Self, tol: &Self::AllTol) -> bool {
+        self.re.eq_abs_all(&other.re, tol) && self.im.eq_abs_all(&other.im, tol)
     }
 
     #[inline]
-    fn eq_rmax_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
-        self.re.eq_rmax_all(&other.re, max_diff) && self.im.eq_rmax_all(&other.im, max_diff)
+    fn eq_rmax_all(&self, other: &Self, tol: &Self::AllTol) -> bool {
+        self.re.eq_rmax_all(&other.re, tol) && self.im.eq_rmax_all(&other.im, tol)
     }
 
     #[inline]
-    fn eq_rmin_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
-        self.re.eq_rmin_all(&other.re, max_diff) && self.im.eq_rmin_all(&other.im, max_diff)
+    fn eq_rmin_all(&self, other: &Self, tol: &Self::AllTol) -> bool {
+        self.re.eq_rmin_all(&other.re, tol) && self.im.eq_rmin_all(&other.im, tol)
     }
 
     #[inline]
-    fn eq_r1st_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
-        self.re.eq_r1st_all(&other.re, max_diff) && self.im.eq_r1st_all(&other.im, max_diff)
+    fn eq_r1st_all(&self, other: &Self, tol: &Self::AllTol) -> bool {
+        self.re.eq_r1st_all(&other.re, tol) && self.im.eq_r1st_all(&other.im, tol)
     }
 
     #[inline]
-    fn eq_r2nd_all(&self, other: &Self, max_diff: &Self::AllEpsilon) -> bool {
-        self.re.eq_r2nd_all(&other.re, max_diff) && self.im.eq_r2nd_all(&other.im, max_diff)
+    fn eq_r2nd_all(&self, other: &Self, tol: &Self::AllTol) -> bool {
+        self.re.eq_r2nd_all(&other.re, tol) && self.im.eq_r2nd_all(&other.im, tol)
     }
 
     #[inline]
-    fn eq_ulps_all(&self, other: &Self, max_diff: &UlpsEpsilon<Self::AllEpsilon>) -> bool {
-        self.re.eq_ulps_all(&other.re, max_diff) && self.im.eq_ulps_all(&other.im, max_diff)
+    fn eq_ulps_all(&self, other: &Self, tol: &UlpsTol<Self::AllTol>) -> bool {
+        self.re.eq_ulps_all(&other.re, tol) && self.im.eq_ulps_all(&other.im, tol)
     }
 }
 
 impl<T> AssertFloatEq for Complex<T>
 where
     T: AssertFloatEq,
-    T::Epsilon: Sized,
-    T::DebugEpsilon: Sized,
-    UlpsEpsilon<T::Epsilon>: Sized,
-    UlpsEpsilon<T::DebugEpsilon>: Sized,
+    T::Tol: Sized,
+    T::DebugTol: Sized,
+    UlpsTol<T::Tol>: Sized,
+    UlpsTol<T::DebugTol>: Sized,
 {
     type DebugAbsDiff = Complex<T::DebugAbsDiff>;
-    type DebugEpsilon = Complex<T::DebugEpsilon>;
+    type DebugTol = Complex<T::DebugTol>;
 
     #[inline]
     fn debug_abs_diff(&self, other: &Self) -> Self::DebugAbsDiff {
@@ -147,57 +147,53 @@ where
     }
 
     #[inline]
-    fn debug_abs_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        Self::DebugEpsilon {
-            re: self.re.debug_abs_epsilon(&other.re, &max_diff.re),
-            im: self.im.debug_abs_epsilon(&other.im, &max_diff.im),
+    fn debug_abs_tol(&self, other: &Self, tol: &Self::Tol) -> Self::DebugTol {
+        Self::DebugTol {
+            re: self.re.debug_abs_tol(&other.re, &tol.re),
+            im: self.im.debug_abs_tol(&other.im, &tol.im),
         }
     }
 
     #[inline]
-    fn debug_rmax_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        Self::DebugEpsilon {
-            re: self.re.debug_rmax_epsilon(&other.re, &max_diff.re),
-            im: self.im.debug_rmax_epsilon(&other.im, &max_diff.im),
+    fn debug_rmax_tol(&self, other: &Self, tol: &Self::Tol) -> Self::DebugTol {
+        Self::DebugTol {
+            re: self.re.debug_rmax_tol(&other.re, &tol.re),
+            im: self.im.debug_rmax_tol(&other.im, &tol.im),
         }
     }
 
     #[inline]
-    fn debug_rmin_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        Self::DebugEpsilon {
-            re: self.re.debug_rmin_epsilon(&other.re, &max_diff.re),
-            im: self.im.debug_rmin_epsilon(&other.im, &max_diff.im),
+    fn debug_rmin_tol(&self, other: &Self, tol: &Self::Tol) -> Self::DebugTol {
+        Self::DebugTol {
+            re: self.re.debug_rmin_tol(&other.re, &tol.re),
+            im: self.im.debug_rmin_tol(&other.im, &tol.im),
         }
     }
 
     #[inline]
-    fn debug_r1st_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        Self::DebugEpsilon {
-            re: self.re.debug_r1st_epsilon(&other.re, &max_diff.re),
-            im: self.im.debug_r1st_epsilon(&other.im, &max_diff.im),
+    fn debug_r1st_tol(&self, other: &Self, tol: &Self::Tol) -> Self::DebugTol {
+        Self::DebugTol {
+            re: self.re.debug_r1st_tol(&other.re, &tol.re),
+            im: self.im.debug_r1st_tol(&other.im, &tol.im),
         }
     }
 
     #[inline]
-    fn debug_r2nd_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        Self::DebugEpsilon {
-            re: self.re.debug_r2nd_epsilon(&other.re, &max_diff.re),
-            im: self.im.debug_r2nd_epsilon(&other.im, &max_diff.im),
+    fn debug_r2nd_tol(&self, other: &Self, tol: &Self::Tol) -> Self::DebugTol {
+        Self::DebugTol {
+            re: self.re.debug_r2nd_tol(&other.re, &tol.re),
+            im: self.im.debug_r2nd_tol(&other.im, &tol.im),
         }
     }
 
     #[inline]
-    fn debug_ulps_epsilon(
-        &self,
-        other: &Self,
-        max_diff: &UlpsEpsilon<Self::Epsilon>,
-    ) -> UlpsEpsilon<Self::DebugEpsilon>
+    fn debug_ulps_tol(&self, other: &Self, tol: &UlpsTol<Self::Tol>) -> UlpsTol<Self::DebugTol>
     where
-        UlpsEpsilon<Self::DebugEpsilon>: Sized,
+        UlpsTol<Self::DebugTol>: Sized,
     {
-        UlpsEpsilon::<Self::DebugEpsilon> {
-            re: self.re.debug_ulps_epsilon(&other.re, &max_diff.re),
-            im: self.im.debug_ulps_epsilon(&other.im, &max_diff.im),
+        UlpsTol::<Self::DebugTol> {
+            re: self.re.debug_ulps_tol(&other.re, &tol.re),
+            im: self.im.debug_ulps_tol(&other.im, &tol.im),
         }
     }
 }
@@ -205,83 +201,63 @@ where
 impl<T> AssertFloatEqAll for Complex<T>
 where
     T: AssertFloatEqAll,
-    T::AllDebugEpsilon: Sized,
-    UlpsEpsilon<T::AllDebugEpsilon>: Sized,
+    T::AllDebugTol: Sized,
+    UlpsTol<T::AllDebugTol>: Sized,
 {
-    type AllDebugEpsilon = Complex<T::AllDebugEpsilon>;
+    type AllDebugTol = Complex<T::AllDebugTol>;
 
     #[inline]
-    fn debug_abs_all_epsilon(
-        &self,
-        other: &Self,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
-        Self::AllDebugEpsilon {
-            re: self.re.debug_abs_all_epsilon(&other.re, max_diff),
-            im: self.im.debug_abs_all_epsilon(&other.im, max_diff),
+    fn debug_abs_all_tol(&self, other: &Self, tol: &Self::AllTol) -> Self::AllDebugTol {
+        Self::AllDebugTol {
+            re: self.re.debug_abs_all_tol(&other.re, tol),
+            im: self.im.debug_abs_all_tol(&other.im, tol),
         }
     }
 
     #[inline]
-    fn debug_rmax_all_epsilon(
-        &self,
-        other: &Self,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
-        Self::AllDebugEpsilon {
-            re: self.re.debug_rmax_all_epsilon(&other.re, max_diff),
-            im: self.im.debug_rmax_all_epsilon(&other.im, max_diff),
+    fn debug_rmax_all_tol(&self, other: &Self, tol: &Self::AllTol) -> Self::AllDebugTol {
+        Self::AllDebugTol {
+            re: self.re.debug_rmax_all_tol(&other.re, tol),
+            im: self.im.debug_rmax_all_tol(&other.im, tol),
         }
     }
 
     #[inline]
-    fn debug_rmin_all_epsilon(
-        &self,
-        other: &Self,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
-        Self::AllDebugEpsilon {
-            re: self.re.debug_rmin_all_epsilon(&other.re, max_diff),
-            im: self.im.debug_rmin_all_epsilon(&other.im, max_diff),
+    fn debug_rmin_all_tol(&self, other: &Self, tol: &Self::AllTol) -> Self::AllDebugTol {
+        Self::AllDebugTol {
+            re: self.re.debug_rmin_all_tol(&other.re, tol),
+            im: self.im.debug_rmin_all_tol(&other.im, tol),
         }
     }
 
     #[inline]
-    fn debug_r1st_all_epsilon(
-        &self,
-        other: &Self,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
-        Self::AllDebugEpsilon {
-            re: self.re.debug_r1st_all_epsilon(&other.re, max_diff),
-            im: self.im.debug_r1st_all_epsilon(&other.im, max_diff),
+    fn debug_r1st_all_tol(&self, other: &Self, tol: &Self::AllTol) -> Self::AllDebugTol {
+        Self::AllDebugTol {
+            re: self.re.debug_r1st_all_tol(&other.re, tol),
+            im: self.im.debug_r1st_all_tol(&other.im, tol),
         }
     }
 
     #[inline]
-    fn debug_r2nd_all_epsilon(
-        &self,
-        other: &Self,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
-        Self::AllDebugEpsilon {
-            re: self.re.debug_r2nd_all_epsilon(&other.re, max_diff),
-            im: self.im.debug_r2nd_all_epsilon(&other.im, max_diff),
+    fn debug_r2nd_all_tol(&self, other: &Self, tol: &Self::AllTol) -> Self::AllDebugTol {
+        Self::AllDebugTol {
+            re: self.re.debug_r2nd_all_tol(&other.re, tol),
+            im: self.im.debug_r2nd_all_tol(&other.im, tol),
         }
     }
 
     #[inline]
-    fn debug_ulps_all_epsilon(
+    fn debug_ulps_all_tol(
         &self,
         other: &Self,
-        max_diff: &UlpsEpsilon<Self::AllEpsilon>,
-    ) -> UlpsEpsilon<Self::AllDebugEpsilon>
+        tol: &UlpsTol<Self::AllTol>,
+    ) -> UlpsTol<Self::AllDebugTol>
     where
-        UlpsEpsilon<Self::AllDebugEpsilon>: Sized,
+        UlpsTol<Self::AllDebugTol>: Sized,
     {
-        UlpsEpsilon::<Self::AllDebugEpsilon> {
-            re: self.re.debug_ulps_all_epsilon(&other.re, max_diff),
-            im: self.im.debug_ulps_all_epsilon(&other.im, max_diff),
+        UlpsTol::<Self::AllDebugTol> {
+            re: self.re.debug_ulps_all_tol(&other.re, tol),
+            im: self.im.debug_ulps_all_tol(&other.im, tol),
         }
     }
 }

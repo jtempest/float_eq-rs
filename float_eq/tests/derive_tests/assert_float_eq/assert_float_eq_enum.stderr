@@ -16,7 +16,7 @@ error: FloatEq may only be derived for structs.
 14 | enum SomeEnum {
    |      ^^^^^^^^
 
-error: FloatEqUlpsEpsilon may only be derived for structs.
+error: FloatEqUlpsTol may only be derived for structs.
   --> $DIR/assert_float_eq_enum.rs:14:6
    |
 14 | enum SomeEnum {

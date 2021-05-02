@@ -1,10 +1,10 @@
-use float_eq::{AssertFloatEq, FloatEq, FloatEqDebugUlpsDiff, FloatEqUlpsEpsilon};
+use float_eq::{AssertFloatEq, FloatEq, FloatEqDebugUlpsDiff, FloatEqUlpsTol};
 
 #[derive(
-    Debug, Clone, Copy, PartialEq, FloatEqUlpsEpsilon, FloatEq, FloatEqDebugUlpsDiff, AssertFloatEq,
+    Debug, Clone, Copy, PartialEq, FloatEqUlpsTol, FloatEq, FloatEqDebugUlpsDiff, AssertFloatEq,
 )]
 #[float_eq(
-    ulps_epsilon = "MyTupleTypeUlps",
+    ulps_tol = "MyTupleTypeUlps",
     debug_ulps_diff = "MyTupleTypeDebugUlpsDiff"
 )]
 struct MyTupleType(f32, f64);
@@ -37,25 +37,25 @@ fn debug_diff() {
     );
 }
 
-fn debug_epsilon() {
+fn debug_tol() {
     let a = MyTupleType(1.0, 200.0);
     let b = MyTupleType(50.0, 1.0);
 
     assert_eq!(
-        a.debug_abs_epsilon(&b, &MyTupleType(0.1, 0.2)),
+        a.debug_abs_tol(&b, &MyTupleType(0.1, 0.2)),
         MyTupleType(0.1, 0.2)
     );
     assert_eq!(
-        a.debug_rel_epsilon(&b, &MyTupleType(0.1, 0.2)),
+        a.debug_rel_tol(&b, &MyTupleType(0.1, 0.2)),
         MyTupleType(5.0, 40.0)
     );
     assert_eq!(
-        a.debug_ulps_epsilon(&b, &MyTupleTypeUlps(1, 2)),
+        a.debug_ulps_tol(&b, &MyTupleTypeUlps(1, 2)),
         MyTupleTypeUlps(1, 2)
     );
 }
 
 fn main() {
     debug_diff();
-    debug_epsilon();
+    debug_tol();
 }

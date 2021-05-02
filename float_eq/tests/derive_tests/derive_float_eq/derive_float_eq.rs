@@ -1,7 +1,7 @@
-use float_eq::{assert_float_eq, assert_float_ne, derive_float_eq, UlpsEpsilon};
+use float_eq::{assert_float_eq, assert_float_ne, derive_float_eq, UlpsTol};
 
 #[derive_float_eq(
-    ulps_epsilon = "MyComplex32Ulps",
+    ulps_tol = "MyComplex32Ulps",
     debug_ulps_diff = "MyComplex32UlpsDiff"
 )]
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -17,7 +17,7 @@ impl MyComplex32 {
 }
 
 impl MyComplex32Ulps {
-    fn new(re: UlpsEpsilon<f32>, im: UlpsEpsilon<f32>) -> MyComplex32Ulps {
+    fn new(re: UlpsTol<f32>, im: UlpsTol<f32>) -> MyComplex32Ulps {
         MyComplex32Ulps { re, im }
     }
 }

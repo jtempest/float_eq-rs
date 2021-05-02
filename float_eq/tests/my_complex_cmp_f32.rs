@@ -4,7 +4,7 @@
 
 use float_eq::{
     assert_float_eq, assert_float_ne, float_eq, float_ne, AssertFloatEq, DebugUlpsDiff, FloatEq,
-    FloatEqDebugUlpsDiff, FloatEqUlpsEpsilon, UlpsEpsilon,
+    FloatEqDebugUlpsDiff, FloatEqUlpsTol, UlpsTol,
 };
 
 //------------------------------------------------------------------------------
@@ -27,18 +27,18 @@ impl MyComplex32 {
 //------------------------------------------------------------------------------
 #[derive(Debug, PartialEq)]
 struct MyComplex32Ulps {
-    re: UlpsEpsilon<f32>,
-    im: UlpsEpsilon<f32>,
+    re: UlpsTol<f32>,
+    im: UlpsTol<f32>,
 }
 
 impl MyComplex32Ulps {
-    fn new(re: UlpsEpsilon<f32>, im: UlpsEpsilon<f32>) -> MyComplex32Ulps {
+    fn new(re: UlpsTol<f32>, im: UlpsTol<f32>) -> MyComplex32Ulps {
         MyComplex32Ulps { re, im }
     }
 }
 
-impl FloatEqUlpsEpsilon for MyComplex32 {
-    type UlpsEpsilon = MyComplex32Ulps;
+impl FloatEqUlpsTol for MyComplex32 {
+    type UlpsTol = MyComplex32Ulps;
 }
 
 //------------------------------------------------------------------------------
@@ -64,58 +64,58 @@ impl FloatEqDebugUlpsDiff for MyComplex32 {
 // FloatEq
 //------------------------------------------------------------------------------
 impl FloatEq<f32> for MyComplex32 {
-    type Epsilon = f32;
+    type Tol = f32;
 
-    fn eq_abs(&self, other: &f32, max_diff: &Self::Epsilon) -> bool {
-        self.re.eq_abs(other, max_diff) && self.im.eq_abs(&0.0, max_diff)
+    fn eq_abs(&self, other: &f32, tol: &Self::Tol) -> bool {
+        self.re.eq_abs(other, tol) && self.im.eq_abs(&0.0, tol)
     }
 
-    fn eq_rmax(&self, other: &f32, max_diff: &Self::Epsilon) -> bool {
-        self.re.eq_rmax(other, max_diff) && self.im.eq_rmax(&0.0, max_diff)
+    fn eq_rmax(&self, other: &f32, tol: &Self::Tol) -> bool {
+        self.re.eq_rmax(other, tol) && self.im.eq_rmax(&0.0, tol)
     }
 
-    fn eq_rmin(&self, other: &f32, max_diff: &Self::Epsilon) -> bool {
-        self.re.eq_rmin(other, max_diff) && self.im.eq_rmin(&0.0, max_diff)
+    fn eq_rmin(&self, other: &f32, tol: &Self::Tol) -> bool {
+        self.re.eq_rmin(other, tol) && self.im.eq_rmin(&0.0, tol)
     }
 
-    fn eq_r1st(&self, other: &f32, max_diff: &Self::Epsilon) -> bool {
-        self.re.eq_r1st(other, max_diff) && self.im.eq_r1st(&0.0, max_diff)
+    fn eq_r1st(&self, other: &f32, tol: &Self::Tol) -> bool {
+        self.re.eq_r1st(other, tol) && self.im.eq_r1st(&0.0, tol)
     }
 
-    fn eq_r2nd(&self, other: &f32, max_diff: &Self::Epsilon) -> bool {
-        self.re.eq_r2nd(other, max_diff) && self.im.eq_r2nd(&0.0, max_diff)
+    fn eq_r2nd(&self, other: &f32, tol: &Self::Tol) -> bool {
+        self.re.eq_r2nd(other, tol) && self.im.eq_r2nd(&0.0, tol)
     }
 
-    fn eq_ulps(&self, other: &f32, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
-        self.re.eq_ulps(other, max_diff) && self.im.eq_ulps(&0.0, max_diff)
+    fn eq_ulps(&self, other: &f32, tol: &UlpsTol<Self::Tol>) -> bool {
+        self.re.eq_ulps(other, tol) && self.im.eq_ulps(&0.0, tol)
     }
 }
 
 impl FloatEq<MyComplex32> for f32 {
-    type Epsilon = <MyComplex32 as FloatEq<f32>>::Epsilon;
+    type Tol = <MyComplex32 as FloatEq<f32>>::Tol;
 
-    fn eq_abs(&self, other: &MyComplex32, max_diff: &Self::Epsilon) -> bool {
-        other.eq_abs(self, max_diff)
+    fn eq_abs(&self, other: &MyComplex32, tol: &Self::Tol) -> bool {
+        other.eq_abs(self, tol)
     }
 
-    fn eq_rmax(&self, other: &MyComplex32, max_diff: &Self::Epsilon) -> bool {
-        other.eq_rmax(self, max_diff)
+    fn eq_rmax(&self, other: &MyComplex32, tol: &Self::Tol) -> bool {
+        other.eq_rmax(self, tol)
     }
 
-    fn eq_rmin(&self, other: &MyComplex32, max_diff: &Self::Epsilon) -> bool {
-        other.eq_rmin(self, max_diff)
+    fn eq_rmin(&self, other: &MyComplex32, tol: &Self::Tol) -> bool {
+        other.eq_rmin(self, tol)
     }
 
-    fn eq_r1st(&self, other: &MyComplex32, max_diff: &Self::Epsilon) -> bool {
-        other.eq_r1st(self, max_diff)
+    fn eq_r1st(&self, other: &MyComplex32, tol: &Self::Tol) -> bool {
+        other.eq_r1st(self, tol)
     }
 
-    fn eq_r2nd(&self, other: &MyComplex32, max_diff: &Self::Epsilon) -> bool {
-        other.eq_r2nd(self, max_diff)
+    fn eq_r2nd(&self, other: &MyComplex32, tol: &Self::Tol) -> bool {
+        other.eq_r2nd(self, tol)
     }
 
-    fn eq_ulps(&self, other: &MyComplex32, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
-        other.eq_ulps(self, max_diff)
+    fn eq_ulps(&self, other: &MyComplex32, tol: &UlpsTol<Self::Tol>) -> bool {
+        other.eq_ulps(self, tol)
     }
 }
 
@@ -220,7 +220,7 @@ fn float_eq_macro_f32() {
 //------------------------------------------------------------------------------
 impl AssertFloatEq<f32> for MyComplex32 {
     type DebugAbsDiff = MyComplex32;
-    type DebugEpsilon = MyComplex32;
+    type DebugTol = MyComplex32;
 
     fn debug_abs_diff(&self, other: &f32) -> Self::DebugAbsDiff {
         MyComplex32 {
@@ -236,56 +236,56 @@ impl AssertFloatEq<f32> for MyComplex32 {
         }
     }
 
-    fn debug_abs_epsilon(&self, other: &f32, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+    fn debug_abs_tol(&self, other: &f32, tol: &Self::Tol) -> Self::DebugTol {
         MyComplex32 {
-            re: self.re.debug_abs_epsilon(other, max_diff),
-            im: self.im.debug_abs_epsilon(&0.0, max_diff),
+            re: self.re.debug_abs_tol(other, tol),
+            im: self.im.debug_abs_tol(&0.0, tol),
         }
     }
 
-    fn debug_rmax_epsilon(&self, other: &f32, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+    fn debug_rmax_tol(&self, other: &f32, tol: &Self::Tol) -> Self::DebugTol {
         MyComplex32 {
-            re: self.re.debug_rmax_epsilon(other, max_diff),
-            im: self.im.debug_rmax_epsilon(&0.0, max_diff),
+            re: self.re.debug_rmax_tol(other, tol),
+            im: self.im.debug_rmax_tol(&0.0, tol),
         }
     }
 
-    fn debug_rmin_epsilon(&self, other: &f32, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+    fn debug_rmin_tol(&self, other: &f32, tol: &Self::Tol) -> Self::DebugTol {
         MyComplex32 {
-            re: self.re.debug_rmin_epsilon(other, max_diff),
-            im: self.im.debug_rmin_epsilon(&0.0, max_diff),
+            re: self.re.debug_rmin_tol(other, tol),
+            im: self.im.debug_rmin_tol(&0.0, tol),
         }
     }
 
-    fn debug_r1st_epsilon(&self, other: &f32, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+    fn debug_r1st_tol(&self, other: &f32, tol: &Self::Tol) -> Self::DebugTol {
         MyComplex32 {
-            re: self.re.debug_r1st_epsilon(other, max_diff),
-            im: self.im.debug_r1st_epsilon(&0.0, max_diff),
+            re: self.re.debug_r1st_tol(other, tol),
+            im: self.im.debug_r1st_tol(&0.0, tol),
         }
     }
 
-    fn debug_r2nd_epsilon(&self, other: &f32, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
+    fn debug_r2nd_tol(&self, other: &f32, tol: &Self::Tol) -> Self::DebugTol {
         MyComplex32 {
-            re: self.re.debug_r2nd_epsilon(other, max_diff),
-            im: self.im.debug_r2nd_epsilon(&0.0, max_diff),
+            re: self.re.debug_r2nd_tol(other, tol),
+            im: self.im.debug_r2nd_tol(&0.0, tol),
         }
     }
 
-    fn debug_ulps_epsilon(
+    fn debug_ulps_tol(
         &self,
         other: &f32,
-        max_diff: &UlpsEpsilon<Self::Epsilon>,
-    ) -> UlpsEpsilon<Self::DebugEpsilon> {
-        UlpsEpsilon::<Self::DebugEpsilon> {
-            re: self.re.debug_ulps_epsilon(other, max_diff),
-            im: self.im.debug_ulps_epsilon(&0.0, max_diff),
+        tol: &UlpsTol<Self::Tol>,
+    ) -> UlpsTol<Self::DebugTol> {
+        UlpsTol::<Self::DebugTol> {
+            re: self.re.debug_ulps_tol(other, tol),
+            im: self.im.debug_ulps_tol(&0.0, tol),
         }
     }
 }
 
 impl AssertFloatEq<MyComplex32> for f32 {
     type DebugAbsDiff = <MyComplex32 as AssertFloatEq<f32>>::DebugAbsDiff;
-    type DebugEpsilon = <MyComplex32 as AssertFloatEq<f32>>::DebugEpsilon;
+    type DebugTol = <MyComplex32 as AssertFloatEq<f32>>::DebugTol;
 
     fn debug_abs_diff(&self, other: &MyComplex32) -> Self::DebugAbsDiff {
         other.debug_abs_diff(self)
@@ -295,52 +295,52 @@ impl AssertFloatEq<MyComplex32> for f32 {
         other.debug_ulps_diff(self)
     }
 
-    fn debug_abs_epsilon(
+    fn debug_abs_tol(
         &self,
         other: &MyComplex32,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
-        other.debug_abs_epsilon(self, max_diff)
+        tol: &Self::Tol,
+    ) -> Self::DebugTol {
+        other.debug_abs_tol(self, tol)
     }
 
-    fn debug_rmax_epsilon(
+    fn debug_rmax_tol(
         &self,
         other: &MyComplex32,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
-        other.debug_rmax_epsilon(self, max_diff)
+        tol: &Self::Tol,
+    ) -> Self::DebugTol {
+        other.debug_rmax_tol(self, tol)
     }
 
-    fn debug_rmin_epsilon(
+    fn debug_rmin_tol(
         &self,
         other: &MyComplex32,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
-        other.debug_rmin_epsilon(self, max_diff)
+        tol: &Self::Tol,
+    ) -> Self::DebugTol {
+        other.debug_rmin_tol(self, tol)
     }
 
-    fn debug_r1st_epsilon(
+    fn debug_r1st_tol(
         &self,
         other: &MyComplex32,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
-        other.debug_r1st_epsilon(self, max_diff)
+        tol: &Self::Tol,
+    ) -> Self::DebugTol {
+        other.debug_r1st_tol(self, tol)
     }
 
-    fn debug_r2nd_epsilon(
+    fn debug_r2nd_tol(
         &self,
         other: &MyComplex32,
-        max_diff: &Self::Epsilon,
-    ) -> Self::DebugEpsilon {
-        other.debug_r2nd_epsilon(self, max_diff)
+        tol: &Self::Tol,
+    ) -> Self::DebugTol {
+        other.debug_r2nd_tol(self, tol)
     }
 
-    fn debug_ulps_epsilon(
+    fn debug_ulps_tol(
         &self,
         other: &MyComplex32,
-        max_diff: &UlpsEpsilon<Self::Epsilon>,
-    ) -> UlpsEpsilon<Self::DebugEpsilon> {
-        other.debug_ulps_epsilon(self, max_diff)
+        tol: &UlpsTol<Self::Tol>,
+    ) -> UlpsTol<Self::DebugTol> {
+        other.debug_ulps_tol(self, tol)
     }
 }
 
@@ -384,46 +384,46 @@ fn float_eq_debug_f32() {
     //todo: rmax, rmin, r1st, r2nd
 
     assert_eq!(
-        a.debug_abs_epsilon(&b, &0.1),
+        a.debug_abs_tol(&b, &0.1),
         MyComplex32 { re: 0.1, im: 0.1 }
     );
     assert_eq!(
-        b.debug_abs_epsilon(&a, &0.1),
+        b.debug_abs_tol(&a, &0.1),
         MyComplex32 { re: 0.1, im: 0.1 }
     );
 
     assert_eq!(
-        a.debug_rel_epsilon(&b, &0.1),
+        a.debug_rel_tol(&b, &0.1),
         MyComplex32 { re: 15.0, im: 20.0 }
     );
     assert_eq!(
-        b.debug_rel_epsilon(&a, &0.1),
+        b.debug_rel_tol(&a, &0.1),
         MyComplex32 { re: 15.0, im: 20.0 }
     );
 
-    assert_eq!(a.debug_ulps_epsilon(&b, &42), MyComplex32Ulps::new(42, 42));
-    assert_eq!(b.debug_ulps_epsilon(&a, &42), MyComplex32Ulps::new(42, 42));
+    assert_eq!(a.debug_ulps_tol(&b, &42), MyComplex32Ulps::new(42, 42));
+    assert_eq!(b.debug_ulps_tol(&a, &42), MyComplex32Ulps::new(42, 42));
 
     let c = 9000.0_f32;
 
     assert_eq!(
-        a.debug_abs_epsilon(&c, &0.1),
+        a.debug_abs_tol(&c, &0.1),
         MyComplex32 { re: 0.1, im: 0.1 }
     );
     assert_eq!(
-        c.debug_abs_epsilon(&a, &0.1),
+        c.debug_abs_tol(&a, &0.1),
         MyComplex32 { re: 0.1, im: 0.1 }
     );
 
     assert_eq!(
-        a.debug_rel_epsilon(&c, &0.1),
+        a.debug_rel_tol(&c, &0.1),
         MyComplex32 {
             re: 900.0,
             im: 20.0
         }
     );
     assert_eq!(
-        c.debug_rel_epsilon(&a, &0.1),
+        c.debug_rel_tol(&a, &0.1),
         MyComplex32 {
             re: 900.0,
             im: 20.0
@@ -433,11 +433,11 @@ fn float_eq_debug_f32() {
     //todo: rmax, rmin, r1st, r2nd
 
     assert_eq!(
-        a.debug_ulps_epsilon(&c, &42),
+        a.debug_ulps_tol(&c, &42),
         MyComplex32Ulps { re: 42, im: 42 }
     );
     assert_eq!(
-        c.debug_ulps_epsilon(&a, &42),
+        c.debug_ulps_tol(&a, &42),
         MyComplex32Ulps { re: 42, im: 42 }
     );
 }

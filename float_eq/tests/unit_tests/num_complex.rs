@@ -98,41 +98,41 @@ fn debug_diff() {
 }
 
 #[test]
-fn debug_epsilon() {
+fn debug_tol() {
     let a = Complex32::new(2.0f32, 4.25);
     let b = Complex32::new(2.5f32, 4.0);
     let eps = Complex32::new(0.1, 0.2);
 
-    assert_eq!(a.debug_abs_epsilon(&b, &eps), Complex32::new(0.1, 0.2));
-    assert_eq!(a.debug_rel_epsilon(&b, &eps), Complex32::new(0.25, 0.85));
-    assert_eq!(a.debug_rmax_epsilon(&b, &eps), Complex32::new(0.25, 0.85));
-    assert_eq!(a.debug_rmin_epsilon(&b, &eps), Complex32::new(0.2, 0.8));
-    assert_eq!(a.debug_r1st_epsilon(&b, &eps), Complex32::new(0.2, 0.85));
-    assert_eq!(a.debug_r2nd_epsilon(&b, &eps), Complex32::new(0.25, 0.8));
+    assert_eq!(a.debug_abs_tol(&b, &eps), Complex32::new(0.1, 0.2));
+    assert_eq!(a.debug_rel_tol(&b, &eps), Complex32::new(0.25, 0.85));
+    assert_eq!(a.debug_rmax_tol(&b, &eps), Complex32::new(0.25, 0.85));
+    assert_eq!(a.debug_rmin_tol(&b, &eps), Complex32::new(0.2, 0.8));
+    assert_eq!(a.debug_r1st_tol(&b, &eps), Complex32::new(0.2, 0.85));
+    assert_eq!(a.debug_r2nd_tol(&b, &eps), Complex32::new(0.25, 0.8));
     assert_eq!(
-        a.debug_ulps_epsilon(&b, &ComplexUlps32::new(1, 2)),
+        a.debug_ulps_tol(&b, &ComplexUlps32::new(1, 2)),
         ComplexUlps32::new(1, 2)
     );
 }
 
 #[test]
-fn debug_all_epsilon() {
+fn debug_all_tol() {
     let a = Complex32::new(2.0f32, 4.25);
     let b = Complex32::new(2.5f32, 4.0);
 
-    assert_eq!(a.debug_abs_all_epsilon(&b, &0.2), Complex32::new(0.2, 0.2));
-    assert_eq!(a.debug_rel_all_epsilon(&b, &0.2), Complex32::new(0.5, 0.85));
+    assert_eq!(a.debug_abs_all_tol(&b, &0.2), Complex32::new(0.2, 0.2));
+    assert_eq!(a.debug_rel_all_tol(&b, &0.2), Complex32::new(0.5, 0.85));
     assert_eq!(
-        a.debug_rmax_all_epsilon(&b, &0.2),
+        a.debug_rmax_all_tol(&b, &0.2),
         Complex32::new(0.5, 0.85)
     );
-    assert_eq!(a.debug_rmin_all_epsilon(&b, &0.2), Complex32::new(0.4, 0.8));
+    assert_eq!(a.debug_rmin_all_tol(&b, &0.2), Complex32::new(0.4, 0.8));
     assert_eq!(
-        a.debug_r1st_all_epsilon(&b, &0.2),
+        a.debug_r1st_all_tol(&b, &0.2),
         Complex32::new(0.4, 0.85)
     );
-    assert_eq!(a.debug_r2nd_all_epsilon(&b, &0.2), Complex32::new(0.5, 0.8));
-    assert_eq!(a.debug_ulps_all_epsilon(&b, &2), ComplexUlps32::new(2, 2));
+    assert_eq!(a.debug_r2nd_all_tol(&b, &0.2), Complex32::new(0.5, 0.8));
+    assert_eq!(a.debug_ulps_all_tol(&b, &2), ComplexUlps32::new(2, 2));
 }
 
 #[test]

@@ -13,7 +13,7 @@
 Compare IEEE floating point primitives, structs and collections for equality.
 
 This crate provides an API with a focus on making the choices of comparison 
-algorithm(s) and margins intuitive to implementers and maintainers, and of
+algorithm(s) and tolerances intuitive to implementers and maintainers, and of
 providing clear output for debugging and development iteration.
 
 This readme is a quick tour of the crate. For introductory material, guides and
@@ -25,7 +25,7 @@ Add this to your cargo.toml:
 
 ```
 [dependencies]
-float_eq = "0.5"
+float_eq = "0.6"
 ```
 
 and, if you're using the 2015 edition, this to your crate root:
@@ -116,9 +116,9 @@ The extension traits may be easily derived in most cases:
 
 ```rust
 #[derive_float_eq(
-    ulps_epsilon = "PointUlps",
+    ulps_tol = "PointUlps",
     debug_ulps_diff = "PointUlpsDebugUlpsDiff",
-    all_epsilon = "f64"
+    all_tol = "f64"
 )]
 #[derive(Debug, PartialEq, Clone, Copy)]
 struct Point {
@@ -164,7 +164,7 @@ the default `std` feature. Use this in `Cargo.toml`:
 
 ```
 [dependencies.float_eq]
-version = "0.5"
+version = "0.6"
 default-features = false
 ```
 

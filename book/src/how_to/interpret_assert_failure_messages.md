@@ -24,7 +24,7 @@ Where:
 - **right** - the value of the second operand.
 - **abs_diff** - the absolute difference between `left` and `right`.
 - **ulps_diff** - the difference between `left` and `right` in ULPs. If it is
-None, that is because they have different signs.
+None, that is because they have different signs or at least one is `NaN`.
 - **[rmax] t** - the tolerance used in the comparison against the relevant
 difference, here `abs_diff`, *after* it has been scaled relative to an operand,
 in this case `max(left, right)` since it is `rmax`.

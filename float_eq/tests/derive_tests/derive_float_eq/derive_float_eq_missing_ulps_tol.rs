@@ -1,7 +1,7 @@
 use float_eq::derive_float_eq;
 
 #[derive_float_eq(
-    //ulps_epsilon = "MyComplex32Ulps",
+    //ulps_tol = "MyComplex32Ulps",
     debug_ulps_diff = "MyComplex32UlpsDiff"
 )]
 #[derive(Debug, Clone, Copy, PartialEq)]

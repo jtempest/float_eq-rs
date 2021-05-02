@@ -1,7 +1,7 @@
-use float_eq::{FloatEq, FloatEqUlpsEpsilon};
+use float_eq::{FloatEq, FloatEqUlpsTol};
 
-#[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsEpsilon, FloatEq)]
-#[float_eq(ulps_epsilon = "MyUnitTypeUlps")]
+#[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsTol, FloatEq)]
+#[float_eq(ulps_tol = "MyUnitTypeUlps")]
 struct MyUnitType();
 
 fn main() {

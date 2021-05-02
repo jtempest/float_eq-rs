@@ -211,89 +211,89 @@ fn debug_diff() {
 }
 
 #[test]
-fn debug_epsilon() {
+fn debug_tol() {
     // ()
-    assert_eq!(().debug_abs_epsilon(&(), &()), ());
-    assert_eq!(().debug_rel_epsilon(&(), &()), ());
-    assert_eq!(().debug_rmax_epsilon(&(), &()), ());
-    assert_eq!(().debug_rmin_epsilon(&(), &()), ());
-    assert_eq!(().debug_r1st_epsilon(&(), &()), ());
-    assert_eq!(().debug_r2nd_epsilon(&(), &()), ());
-    assert_eq!(().debug_ulps_epsilon(&(), &()), ());
+    assert_eq!(().debug_abs_tol(&(), &()), ());
+    assert_eq!(().debug_rel_tol(&(), &()), ());
+    assert_eq!(().debug_rmax_tol(&(), &()), ());
+    assert_eq!(().debug_rmin_tol(&(), &()), ());
+    assert_eq!(().debug_r1st_tol(&(), &()), ());
+    assert_eq!(().debug_r2nd_tol(&(), &()), ());
+    assert_eq!(().debug_ulps_tol(&(), &()), ());
 
     // (A,)
-    assert_eq!((1.0f32,).debug_abs_epsilon(&(1.0,), &(0.1,)), (0.1,));
+    assert_eq!((1.0f32,).debug_abs_tol(&(1.0,), &(0.1,)), (0.1,));
 
-    assert_eq!((1.0f32,).debug_rel_epsilon(&(2.0,), &(0.1,)), (0.2,));
-    assert_eq!((2.0f32,).debug_rel_epsilon(&(1.0,), &(0.1,)), (0.2,));
+    assert_eq!((1.0f32,).debug_rel_tol(&(2.0,), &(0.1,)), (0.2,));
+    assert_eq!((2.0f32,).debug_rel_tol(&(1.0,), &(0.1,)), (0.2,));
 
-    assert_eq!((1.0f32,).debug_rmax_epsilon(&(2.0,), &(0.1,)), (0.2,));
-    assert_eq!((2.0f32,).debug_rmax_epsilon(&(1.0,), &(0.1,)), (0.2,));
+    assert_eq!((1.0f32,).debug_rmax_tol(&(2.0,), &(0.1,)), (0.2,));
+    assert_eq!((2.0f32,).debug_rmax_tol(&(1.0,), &(0.1,)), (0.2,));
 
-    assert_eq!((1.0f32,).debug_rmin_epsilon(&(2.0,), &(0.1,)), (0.1,));
-    assert_eq!((2.0f32,).debug_rmin_epsilon(&(1.0,), &(0.1,)), (0.1,));
+    assert_eq!((1.0f32,).debug_rmin_tol(&(2.0,), &(0.1,)), (0.1,));
+    assert_eq!((2.0f32,).debug_rmin_tol(&(1.0,), &(0.1,)), (0.1,));
 
-    assert_eq!((1.0f32,).debug_r1st_epsilon(&(2.0,), &(0.1,)), (0.1,));
-    assert_eq!((2.0f32,).debug_r1st_epsilon(&(1.0,), &(0.1,)), (0.2,));
+    assert_eq!((1.0f32,).debug_r1st_tol(&(2.0,), &(0.1,)), (0.1,));
+    assert_eq!((2.0f32,).debug_r1st_tol(&(1.0,), &(0.1,)), (0.2,));
 
-    assert_eq!((1.0f32,).debug_r2nd_epsilon(&(2.0,), &(0.1,)), (0.2,));
-    assert_eq!((2.0f32,).debug_r2nd_epsilon(&(1.0,), &(0.1,)), (0.1,));
+    assert_eq!((1.0f32,).debug_r2nd_tol(&(2.0,), &(0.1,)), (0.2,));
+    assert_eq!((2.0f32,).debug_r2nd_tol(&(1.0,), &(0.1,)), (0.1,));
 
-    assert_eq!((1.0f32,).debug_ulps_epsilon(&(1.0f32,), &(1,)), (1,));
+    assert_eq!((1.0f32,).debug_ulps_tol(&(1.0f32,), &(1,)), (1,));
 
     // (A, B)
     assert_eq!(
-        (1.0f32, -2.0f64).debug_abs_epsilon(&(1.0, -2.0f64), &(0.1, 0.2)),
+        (1.0f32, -2.0f64).debug_abs_tol(&(1.0, -2.0f64), &(0.1, 0.2)),
         (0.1, 0.2)
     );
 
     assert_eq!(
-        (1.0f32, -4.0f64).debug_rel_epsilon(&(2.0, -2.0f64), &(0.1, 0.2)),
+        (1.0f32, -4.0f64).debug_rel_tol(&(2.0, -2.0f64), &(0.1, 0.2)),
         (0.2, 0.8)
     );
     assert_eq!(
-        (2.0f32, -2.0f64).debug_rel_epsilon(&(1.0, -4.0f64), &(0.1, 0.2)),
-        (0.2, 0.8)
-    );
-
-    assert_eq!(
-        (1.0f32, -4.0f64).debug_rmax_epsilon(&(2.0, -2.0f64), &(0.1, 0.2)),
-        (0.2, 0.8)
-    );
-    assert_eq!(
-        (2.0f32, -2.0f64).debug_rmax_epsilon(&(1.0, -4.0f64), &(0.1, 0.2)),
+        (2.0f32, -2.0f64).debug_rel_tol(&(1.0, -4.0f64), &(0.1, 0.2)),
         (0.2, 0.8)
     );
 
     assert_eq!(
-        (1.0f32, -4.0f64).debug_rmin_epsilon(&(2.0, -2.0f64), &(0.1, 0.2)),
+        (1.0f32, -4.0f64).debug_rmax_tol(&(2.0, -2.0f64), &(0.1, 0.2)),
+        (0.2, 0.8)
+    );
+    assert_eq!(
+        (2.0f32, -2.0f64).debug_rmax_tol(&(1.0, -4.0f64), &(0.1, 0.2)),
+        (0.2, 0.8)
+    );
+
+    assert_eq!(
+        (1.0f32, -4.0f64).debug_rmin_tol(&(2.0, -2.0f64), &(0.1, 0.2)),
         (0.1, 0.4)
     );
     assert_eq!(
-        (2.0f32, -2.0f64).debug_rmin_epsilon(&(1.0, -4.0f64), &(0.1, 0.2)),
+        (2.0f32, -2.0f64).debug_rmin_tol(&(1.0, -4.0f64), &(0.1, 0.2)),
         (0.1, 0.4)
     );
 
     assert_eq!(
-        (1.0f32, -4.0f64).debug_r1st_epsilon(&(2.0, -2.0f64), &(0.1, 0.2)),
+        (1.0f32, -4.0f64).debug_r1st_tol(&(2.0, -2.0f64), &(0.1, 0.2)),
         (0.1, 0.8)
     );
     assert_eq!(
-        (2.0f32, -2.0f64).debug_r1st_epsilon(&(1.0, -4.0f64), &(0.1, 0.2)),
+        (2.0f32, -2.0f64).debug_r1st_tol(&(1.0, -4.0f64), &(0.1, 0.2)),
         (0.2, 0.4)
     );
 
     assert_eq!(
-        (1.0f32, -4.0f64).debug_r2nd_epsilon(&(2.0, -2.0f64), &(0.1, 0.2)),
+        (1.0f32, -4.0f64).debug_r2nd_tol(&(2.0, -2.0f64), &(0.1, 0.2)),
         (0.2, 0.4)
     );
     assert_eq!(
-        (2.0f32, -2.0f64).debug_r2nd_epsilon(&(1.0, -4.0f64), &(0.1, 0.2)),
+        (2.0f32, -2.0f64).debug_r2nd_tol(&(1.0, -4.0f64), &(0.1, 0.2)),
         (0.1, 0.8)
     );
 
     assert_eq!(
-        (2.0f32, -2.0f64).debug_ulps_epsilon(&(1.0, -4.0f64), &(1, 2)),
+        (2.0f32, -2.0f64).debug_ulps_tol(&(1.0, -4.0f64), &(1, 2)),
         (1, 2)
     );
 
@@ -309,14 +309,14 @@ fn debug_epsilon() {
         22.0f32, 24.0f64,
     );
     assert_eq!(
-        a.debug_abs_epsilon(
+        a.debug_abs_tol(
             &b,
             &(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2)
         ),
         (0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2)
     );
     assert_eq!(
-        a.debug_rel_epsilon(
+        a.debug_rel_tol(
             &b,
             &(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2)
         ),
@@ -339,7 +339,7 @@ fn debug_epsilon() {
     //TODO: rmax, rmin, r1st, r2nd
 
     assert_eq!(
-        a.debug_ulps_epsilon(&b, &(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)),
+        a.debug_ulps_tol(&b, &(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)),
         (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
     );
 }

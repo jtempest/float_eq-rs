@@ -26,15 +26,15 @@
 //! ```
 //!
 //! Each of which invokes a specific comparison algorithm with an explictly
-//! provided margin. In these examples:
+//! provided toelrance. In these examples:
 //!
-//! - `abs <= 0.000_1` is an absolute tolerance comparison with a margin of `0.000_1`.
-//! - `r2nd <= TOL` is a relative tolerance comparison with a margin of `TOL`,
+//! - `abs <= 0.000_1` is an absolute tolerance comparison with a tolerance of `0.000_1`.
+//! - `r2nd <= TOL` is a relative tolerance comparison with a tolerance of `TOL`,
 //!   scaled to the precision of the second operand.
 //!
 //! # Comparison algorithms
 //!
-//! These are always of the form `CHECK <= margin`, where `CHECK` is one of:
+//! These are always of the form `CHECK <= tol`, where `CHECK` is one of:
 //!
 //! - `abs`: an [absolute tolerance comparison].
 //! - `rmax`: a [relative tolerance comparison], scaled to the precision of the larger operand/field.
@@ -44,7 +44,7 @@
 //! - `ulps`: an [ULPs comparison].
 //!
 //! When comparing homogeneous composite types that implement [`FloatEqAll`],
-//! variants that use a uniform `margin` value across all fields are also available:
+//! variants that use a uniform `tol` across all fields are also available:
 //!
 //! - `abs_all`: an [absolute tolerance comparison].
 //! - `rmax_all`: a [relative tolerance comparison], scaled to the precision of the larger field.

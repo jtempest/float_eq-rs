@@ -5,24 +5,24 @@ use core::fmt;
 /// This trait establishes a one-to-one relation between an IEEE floating point
 /// type and a type whose fields are expected to be structurally identical but
 /// specified in [ULPs]. It is used by ULPs equality checks to specify per-field
-/// tolerances. The [`UlpsEpsilon`] type alias exists to simplify usage, for
-/// example `UlpsEpsilon<f32>` is `u32`. Usually, this type is named `FooUlps`
+/// tolerances. The [`UlpsTol`] type alias exists to simplify usage, for
+/// example `UlpsTol<f32>` is `u32`. Usually, this type is named `FooUlps`
 /// for a given type `Foo`.
 ///
 /// To implement this trait over a new type, see [How to compare custom types].
 ///
 /// [How to compare custom types]: https://jtempest.github.io/float_eq-rs/book/how_to/compare_custom_types.html
 /// [ULPs]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#units-in-the-last-place-ulps-comparison
-pub trait FloatEqUlpsEpsilon {
+pub trait FloatEqUlpsTol {
     /// A structurally identical type to `Self`, with fields recursively wrapped
-    /// by `UlpsEpsilon`.
-    type UlpsEpsilon: ?Sized;
+    /// by `UlpsTol`.
+    type UlpsTol: ?Sized;
 }
 
 /// Per-field tolerances for [ULPs comparisons].
 ///
 /// [ULPs comparisons]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#units-in-the-last-place-ulps-comparison
-pub type UlpsEpsilon<T> = <T as FloatEqUlpsEpsilon>::UlpsEpsilon;
+pub type UlpsTol<T> = <T as FloatEqUlpsTol>::UlpsTol;
 
 /// Per-field results of [ULPs](https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#units-in-the-last-place-ulps-comparison)
 /// based diff calculations.
@@ -76,7 +76,7 @@ pub type DebugUlpsDiff<T> = <T as FloatEqDebugUlpsDiff>::DebugUlpsDiff;
 pub trait FloatEq<Rhs: ?Sized = Self> {
     /// Type of the maximum allowed difference between two values for them to be
     /// considered equal.
-    type Epsilon: ?Sized + FloatEqUlpsEpsilon;
+    type Tol: ?Sized + FloatEqUlpsTol;
 
     /// Check whether `self` is equal to `other`, using an [absolute tolerance
     /// comparison].
@@ -84,51 +84,51 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// Implementations should be the equivalent of:
     ///
     /// ```
-    /// # trait TestFloatEq { fn eq_abs(&self, other: &Self, max_diff: &Self) -> bool; }
+    /// # trait TestFloatEq { fn eq_abs(&self, other: &Self, tol: &Self) -> bool; }
     /// # impl TestFloatEq for f32 {
-    /// # fn eq_abs(&self, other: &Self, max_diff: &Self) -> bool {
+    /// # fn eq_abs(&self, other: &Self, tol: &Self) -> bool {
     /// // the PartialEq check covers equality of infinities
-    /// self == other || (self - other).abs().le(max_diff)
+    /// self == other || (self - other).abs().le(tol)
     /// # }}
     /// ```
     ///
     /// [absolute tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#absolute-tolerance-comparison
-    fn eq_abs(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool;
+    fn eq_abs(&self, other: &Rhs, tol: &Self::Tol) -> bool;
 
     /// Check whether `self` is not equal to `other`, using an [absolute tolerance
     /// comparison].
     ///
-    /// Equal to `!self.eq_abs(other, max_diff)`, there is no need to reimplement
+    /// Equal to `!self.eq_abs(other, tol)`, there is no need to reimplement
     /// this for your own types.
     ///
     /// [absolute tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#absolute-tolerance-comparison
     #[inline]
-    fn ne_abs(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
-        !self.eq_abs(other, max_diff)
+    fn ne_abs(&self, other: &Rhs, tol: &Self::Tol) -> bool {
+        !self.eq_abs(other, tol)
     }
 
     /// Check whether `self` is equal to `other`, using a [relative tolerance
     /// comparison].
     ///
-    /// Equal to `self.eq_rmax(other, max_diff)`, there is no need to reimplement
+    /// Equal to `self.eq_rmax(other, tol)`, there is no need to reimplement
     /// this for your own types.
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
     #[inline]
-    fn eq_rel(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
-        self.eq_rmax(other, max_diff)
+    fn eq_rel(&self, other: &Rhs, tol: &Self::Tol) -> bool {
+        self.eq_rmax(other, tol)
     }
 
     /// Check whether `self` is not equal to `other`, using a [relative tolerance
     /// comparison].
     ///
-    /// Equal to `!self.eq_rel(other, max_diff)`, there is no need to reimplement
+    /// Equal to `!self.eq_rel(other, tol)`, there is no need to reimplement
     /// this for your own types.
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
     #[inline]
-    fn ne_rel(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
-        !self.eq_rel(other, max_diff)
+    fn ne_rel(&self, other: &Rhs, tol: &Self::Tol) -> bool {
+        !self.eq_rel(other, tol)
     }
 
     /// Check whether `self` is equal to `other`, using a [relative tolerance
@@ -138,31 +138,31 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// The implementation should be the equivalent of:
     ///
     /// ```
-    /// # trait TestFloatEq { fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool; }
+    /// # trait TestFloatEq { fn eq_rel(&self, other: &Self, tol: &Self) -> bool; }
     /// # impl TestFloatEq for f32 {
-    /// # fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool {
+    /// # fn eq_rel(&self, other: &Self, tol: &Self) -> bool {
     /// // the PartialEq check covers equality of infinities
     /// self == other || {
     ///     let largest = self.abs().max(other.abs());
-    ///     let tolerance = largest * max_diff;
+    ///     let tolerance = largest * tol;
     ///     (self - other).abs() <= tolerance
     /// }
     /// # }}
     /// ```
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
-    fn eq_rmax(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool;
+    fn eq_rmax(&self, other: &Rhs, tol: &Self::Tol) -> bool;
 
     /// Check whether `self` is not equal to `other`, using a [relative tolerance
     /// comparison].
     ///
-    /// Equal to `!self.eq_rmax(other, max_diff)`, there is no need to reimplement
+    /// Equal to `!self.eq_rmax(other, tol)`, there is no need to reimplement
     /// this for your own types.
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
     #[inline]
-    fn ne_rmax(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
-        !self.eq_rmax(other, max_diff)
+    fn ne_rmax(&self, other: &Rhs, tol: &Self::Tol) -> bool {
+        !self.eq_rmax(other, tol)
     }
 
     /// Check whether `self` is equal to `other`, using a [relative tolerance
@@ -172,31 +172,31 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// The implementation should be the equivalent of:
     ///
     /// ```
-    /// # trait TestFloatEq { fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool; }
+    /// # trait TestFloatEq { fn eq_rel(&self, other: &Self, tol: &Self) -> bool; }
     /// # impl TestFloatEq for f32 {
-    /// # fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool {
+    /// # fn eq_rel(&self, other: &Self, tol: &Self) -> bool {
     /// // the PartialEq check covers equality of infinities
     /// self == other || {
     ///     let smallest = self.abs().min(other.abs());
-    ///     let tolerance = smallest * max_diff;
+    ///     let tolerance = smallest * tol;
     ///     (self - other).abs() <= tolerance
     /// }
     /// # }}
     /// ```
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
-    fn eq_rmin(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool;
+    fn eq_rmin(&self, other: &Rhs, tol: &Self::Tol) -> bool;
 
     /// Check whether `self` is not equal to `other`, using a [relative tolerance
     /// comparison].
     ///
-    /// Equal to `!self.eq_rmin(other, max_diff)`, there is no need to reimplement
+    /// Equal to `!self.eq_rmin(other, tol)`, there is no need to reimplement
     /// this for your own types.
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
     #[inline]
-    fn ne_rmin(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
-        !self.eq_rmin(other, max_diff)
+    fn ne_rmin(&self, other: &Rhs, tol: &Self::Tol) -> bool {
+        !self.eq_rmin(other, tol)
     }
 
     /// Check whether `self` is equal to `other`, using a [relative tolerance
@@ -205,63 +205,62 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// The implementation should be the equivalent of:
     ///
     /// ```
-    /// # trait TestFloatEq { fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool; }
+    /// # trait TestFloatEq { fn eq_rel(&self, other: &Self, tol: &Self) -> bool; }
     /// # impl TestFloatEq for f32 {
-    /// # fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool {
+    /// # fn eq_rel(&self, other: &Self, tol: &Self) -> bool {
     /// // the PartialEq check covers equality of infinities
     /// self == other || {
-    ///     let tolerance = self.abs() * max_diff;
+    ///     let tolerance = self.abs() * tol;
     ///     (self - other).abs() <= tolerance
     /// }
     /// # }}
     /// ```
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
-    fn eq_r1st(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool;
+    fn eq_r1st(&self, other: &Rhs, tol: &Self::Tol) -> bool;
 
     /// Check whether `self` is not equal to `other`, using a [relative tolerance
     /// comparison].
     ///
-    /// Equal to `!self.eq_r1st(other, max_diff)`, there is no need to reimplement
+    /// Equal to `!self.eq_r1st(other, tol)`, there is no need to reimplement
     /// this for your own types.
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
     #[inline]
-    fn ne_r1st(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
-        !self.eq_r1st(other, max_diff)
+    fn ne_r1st(&self, other: &Rhs, tol: &Self::Tol) -> bool {
+        !self.eq_r1st(other, tol)
     }
 
     /// Check whether `self` is equal to `other`, using a [relative tolerance
-    /// comparison], scaled to the granularity of the input with the largest
-    /// magnitude.
+    /// comparison], scaled to the granularity of the second input.
     ///
     /// The implementation should be the equivalent of:
     ///
     /// ```
-    /// # trait TestFloatEq { fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool; }
+    /// # trait TestFloatEq { fn eq_rel(&self, other: &Self, tol: &Self) -> bool; }
     /// # impl TestFloatEq for f32 {
-    /// # fn eq_rel(&self, other: &Self, max_diff: &Self) -> bool {
+    /// # fn eq_rel(&self, other: &Self, tol: &Self) -> bool {
     /// // the PartialEq check covers equality of infinities
     /// self == other || {
-    ///     let tolerance = other.abs() * max_diff;
+    ///     let tolerance = other.abs() * tol;
     ///     (self - other).abs() <= tolerance
     /// }
     /// # }}
     /// ```
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
-    fn eq_r2nd(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool;
+    fn eq_r2nd(&self, other: &Rhs, tol: &Self::Tol) -> bool;
 
     /// Check whether `self` is not equal to `other`, using a [relative tolerance
     /// comparison].
     ///
-    /// Equal to `!self.eq_r2nd(other, max_diff)`, there is no need to reimplement
+    /// Equal to `!self.eq_r2nd(other, tol)`, there is no need to reimplement
     /// this for your own types.
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
     #[inline]
-    fn ne_r2nd(&self, other: &Rhs, max_diff: &Self::Epsilon) -> bool {
-        !self.eq_r2nd(other, max_diff)
+    fn ne_r2nd(&self, other: &Rhs, tol: &Self::Tol) -> bool {
+        !self.eq_r2nd(other, tol)
     }
 
     /// Check whether `self` is equal to `other`, using an [ULPs comparison](https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#units-in-the-last-place-ulps-comparison).
@@ -269,9 +268,9 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     /// The implementation should be the equivalent of:
     ///
     /// ```
-    /// # trait TestFloatEq { fn eq_ulps(&self, other: &Self, max_diff: &u32) -> bool; }
+    /// # trait TestFloatEq { fn eq_ulps(&self, other: &Self, tol: &u32) -> bool; }
     /// # impl TestFloatEq for f32 {
-    /// # fn eq_ulps(&self, other: &Self, max_diff: &u32) -> bool {
+    /// # fn eq_ulps(&self, other: &Self, tol: &u32) -> bool {
     /// if self.is_nan() || other.is_nan() {
     ///     false // NaNs are never equal
     /// }
@@ -282,23 +281,23 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
     ///     let b = other.to_bits();
     ///     let max = a.max(b);
     ///     let min = a.min(b);
-    ///     (max - min).le(max_diff)
+    ///     (max - min).le(tol)
     /// }
     /// # }}
     /// ```
     ///
     /// [ULPs comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#units-in-the-last-place-ulps-comparison
-    fn eq_ulps(&self, other: &Rhs, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool;
+    fn eq_ulps(&self, other: &Rhs, tol: &UlpsTol<Self::Tol>) -> bool;
 
     /// Check whether `self` is not equal to `other`, using an [ULPs comparison].
     ///
-    /// Equal to `!self.eq_ulps(other, max_diff)`, there is no need to reimplement
+    /// Equal to `!self.eq_ulps(other, tol)`, there is no need to reimplement
     /// this for your own types.
     ///
     /// [ULPs comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#units-in-the-last-place-ulps-comparison
     #[inline]
-    fn ne_ulps(&self, other: &Rhs, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
-        !self.eq_ulps(other, max_diff)
+    fn ne_ulps(&self, other: &Rhs, tol: &UlpsTol<Self::Tol>) -> bool {
+        !self.eq_ulps(other, tol)
     }
 }
 
@@ -329,11 +328,11 @@ pub trait FloatEq<Rhs: ?Sized = Self> {
 ///
 /// [How to compare custom types]: https://jtempest.github.io/float_eq-rs/book/how_to/compare_custom_types.html
 /// [ULPs]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#units-in-the-last-place-ulps-comparison
-/// [`AllEpsilon`]: trait.FloatEqAll.html#associatedtype.AllEpsilon
+/// [`AllTol`]: trait.FloatEqAll.html#associatedtype.AllTol
 pub trait FloatEqAll<Rhs: ?Sized = Self> {
     /// Type of the maximum allowed difference between each of two values' fields
     /// for them to be considered equal.
-    type AllEpsilon: ?Sized + FloatEqUlpsEpsilon;
+    type AllTol: ?Sized + FloatEqUlpsTol;
 
     /// Check whether `self` is equal to `other`, using an [absolute tolerance
     /// comparison].
@@ -341,42 +340,42 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     /// This must use the same algorithm as [`FloatEq::eq_abs`].
     ///
     /// [absolute tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#absolute-tolerance-comparison
-    fn eq_abs_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool;
+    fn eq_abs_all(&self, other: &Rhs, tol: &Self::AllTol) -> bool;
 
     /// Check whether `self` is not equal to `other`, using an [absolute tolerance
     /// comparison].
     ///
-    /// Equal to `!self.eq_abs_all(other, max_diff)`, there is no need to reimplement
+    /// Equal to `!self.eq_abs_all(other, tol)`, there is no need to reimplement
     /// this for your own types.
     ///
     /// [absolute tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#absolute-tolerance-comparison
     #[inline]
-    fn ne_abs_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool {
-        !self.eq_abs_all(other, max_diff)
+    fn ne_abs_all(&self, other: &Rhs, tol: &Self::AllTol) -> bool {
+        !self.eq_abs_all(other, tol)
     }
 
     /// Check whether `self` is equal to `other`, using a [relative tolerance
     /// comparison].
     ///
-    /// Equal to `self.eq_rmax_all(other, max_diff)`, there is no need to reimplement
+    /// Equal to `self.eq_rmax_all(other, tol)`, there is no need to reimplement
     /// this for your own types.
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
     #[inline]
-    fn eq_rel_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool {
-        self.eq_rmax_all(other, max_diff)
+    fn eq_rel_all(&self, other: &Rhs, tol: &Self::AllTol) -> bool {
+        self.eq_rmax_all(other, tol)
     }
 
     /// Check whether `self` is not equal to `other`, using a [relative tolerance
     /// comparison].
     ///
-    /// Equal to `!self.eq_rel_all(other, max_diff)`, there is no need to reimplement
+    /// Equal to `!self.eq_rel_all(other, tol)`, there is no need to reimplement
     /// this for your own types.
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
     #[inline]
-    fn ne_rel_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool {
-        !self.eq_rel_all(other, max_diff)
+    fn ne_rel_all(&self, other: &Rhs, tol: &Self::AllTol) -> bool {
+        !self.eq_rel_all(other, tol)
     }
 
     /// Check whether `self` is equal to `other`, using a [relative tolerance
@@ -385,18 +384,18 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     /// This must use the same algorithm as [`FloatEq::eq_rmax`].
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
-    fn eq_rmax_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool;
+    fn eq_rmax_all(&self, other: &Rhs, tol: &Self::AllTol) -> bool;
 
     /// Check whether `self` is not equal to `other`, using a [relative tolerance
     /// comparison].
     ///
-    /// Equal to `!self.eq_rmax_all(other, max_diff)`, there is no need to reimplement
+    /// Equal to `!self.eq_rmax_all(other, tol)`, there is no need to reimplement
     /// this for your own types.
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
     #[inline]
-    fn ne_rmax_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool {
-        !self.eq_rmax_all(other, max_diff)
+    fn ne_rmax_all(&self, other: &Rhs, tol: &Self::AllTol) -> bool {
+        !self.eq_rmax_all(other, tol)
     }
 
     /// Check whether `self` is equal to `other`, using a [relative tolerance
@@ -405,18 +404,18 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     /// This must use the same algorithm as [`FloatEq::eq_rmin`].
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
-    fn eq_rmin_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool;
+    fn eq_rmin_all(&self, other: &Rhs, tol: &Self::AllTol) -> bool;
 
     /// Check whether `self` is not equal to `other`, using a [relative tolerance
     /// comparison].
     ///
-    /// Equal to `!self.eq_rmin_all(other, max_diff)`, there is no need to reimplement
+    /// Equal to `!self.eq_rmin_all(other, tol)`, there is no need to reimplement
     /// this for your own types.
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
     #[inline]
-    fn ne_rmin_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool {
-        !self.eq_rmin_all(other, max_diff)
+    fn ne_rmin_all(&self, other: &Rhs, tol: &Self::AllTol) -> bool {
+        !self.eq_rmin_all(other, tol)
     }
 
     /// Check whether `self` is equal to `other`, using a [relative tolerance
@@ -425,18 +424,18 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     /// This must use the same algorithm as [`FloatEq::eq_r1st`].
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
-    fn eq_r1st_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool;
+    fn eq_r1st_all(&self, other: &Rhs, tol: &Self::AllTol) -> bool;
 
     /// Check whether `self` is not equal to `other`, using a [relative tolerance
     /// comparison].
     ///
-    /// Equal to `!self.eq_r1st_all(other, max_diff)`, there is no need to reimplement
+    /// Equal to `!self.eq_r1st_all(other, tol)`, there is no need to reimplement
     /// this for your own types.
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
     #[inline]
-    fn ne_r1st_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool {
-        !self.eq_r1st_all(other, max_diff)
+    fn ne_r1st_all(&self, other: &Rhs, tol: &Self::AllTol) -> bool {
+        !self.eq_r1st_all(other, tol)
     }
 
     /// Check whether `self` is equal to `other`, using a [relative tolerance
@@ -445,18 +444,18 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     /// This must use the same algorithm as [`FloatEq::eq_r2nd`].
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
-    fn eq_r2nd_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool;
+    fn eq_r2nd_all(&self, other: &Rhs, tol: &Self::AllTol) -> bool;
 
     /// Check whether `self` is not equal to `other`, using a [relative tolerance
     /// comparison].
     ///
-    /// Equal to `!self.eq_r2nd_all(other, max_diff)`, there is no need to reimplement
+    /// Equal to `!self.eq_r2nd_all(other, tol)`, there is no need to reimplement
     /// this for your own types.
     ///
     /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
     #[inline]
-    fn ne_r2nd_all(&self, other: &Rhs, max_diff: &Self::AllEpsilon) -> bool {
-        !self.eq_r2nd_all(other, max_diff)
+    fn ne_r2nd_all(&self, other: &Rhs, tol: &Self::AllTol) -> bool {
+        !self.eq_r2nd_all(other, tol)
     }
 
     /// Check whether `self` is equal to `other`, using an [ULPs comparison].
@@ -464,23 +463,23 @@ pub trait FloatEqAll<Rhs: ?Sized = Self> {
     /// This must use the same algorithm as [`FloatEq::eq_ulps`].
     ///
     /// [ULPs comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#units-in-the-last-place-ulps-comparison
-    fn eq_ulps_all(&self, other: &Rhs, max_diff: &UlpsEpsilon<Self::AllEpsilon>) -> bool;
+    fn eq_ulps_all(&self, other: &Rhs, tol: &UlpsTol<Self::AllTol>) -> bool;
 
     /// Check whether `self` is not equal to `other`, using an [ULPs comparison].
     ///
-    /// Equal to `!self.eq_ulps_all(other, max_diff)`, there is no need to reimplement
+    /// Equal to `!self.eq_ulps_all(other, tol)`, there is no need to reimplement
     /// this for your own types.
     ///
     /// [ULPs comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#units-in-the-last-place-ulps-comparison
     #[inline]
-    fn ne_ulps_all(&self, other: &Rhs, max_diff: &UlpsEpsilon<Self::AllEpsilon>) -> bool {
-        !self.eq_ulps_all(other, max_diff)
+    fn ne_ulps_all(&self, other: &Rhs, tol: &UlpsTol<Self::AllTol>) -> bool {
+        !self.eq_ulps_all(other, tol)
     }
 }
 
 /// Debug context for when an assert fails.
 ///
-/// This is used internally by the [`assert_float_eq!`] family of macros.
+/// This trait is used by [`assert_float_eq!`] and [`assert_float_ne!`].
 ///
 /// To implement this trait over a new type, see [How to compare custom types].
 ///
@@ -493,13 +492,13 @@ pub trait AssertFloatEq<Rhs: ?Sized = Self>: FloatEq<Rhs> {
     /// This is usually the wider of `Self` and `Rhs`.
     type DebugAbsDiff: fmt::Debug + Sized + FloatEqDebugUlpsDiff;
 
-    /// The per-field epsilon value used for comparison between two values,
+    /// The per-field tolerance value used for comparison between two values,
     /// displayed to the user via `fmt::Debug` when an assert fails.
     ///
-    /// This should match [`Self::Epsilon`].
+    /// This should match [`Self::Tol`].
     ///
-    /// [`Self::Epsilon`]: trait.FloatEq.html#associatedtype.Epsilon
-    type DebugEpsilon: fmt::Debug + FloatEqUlpsEpsilon;
+    /// [`Self::Tol`]: trait.FloatEq.html#associatedtype.Tol
+    type DebugTol: fmt::Debug + FloatEqUlpsTol;
 
     /// Always positive absolute difference between two values.
     ///
@@ -517,7 +516,7 @@ pub trait AssertFloatEq<Rhs: ?Sized = Self>: FloatEq<Rhs> {
     /// Always positive absolute difference between two values in terms of [ULPs].
     ///
     /// For primitive values, this should be a partial function that returns:
-    /// - `Some(0)` if either argument is `0.0` or `-0.0`
+    /// - `Some(0)` if both arguments are either `0.0` or `-0.0`
     /// - `None` if either argument is `NaN`
     /// - `None` if the arguments have differing signs
     /// - `Some(bitwise-difference)` otherwise
@@ -551,76 +550,61 @@ pub trait AssertFloatEq<Rhs: ?Sized = Self>: FloatEq<Rhs> {
     /// [ULPs]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#units-in-the-last-place-ulps-comparison
     fn debug_ulps_diff(&self, other: &Rhs) -> DebugUlpsDiff<Self::DebugAbsDiff>;
 
-    /// The epsilon used by an `abs` [absolute tolerance comparison], displayed when
-    /// an assert fails.
+    /// The tolerance used by an `abs` [comparison], displayed when an assert fails.
     ///
-    /// [absolute tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#absolute-tolerance-comparison
-    fn debug_abs_epsilon(&self, other: &Rhs, max_diff: &Self::Epsilon) -> Self::DebugEpsilon;
+    /// [comparison]: index.html#comparison-algorithms
+    fn debug_abs_tol(&self, other: &Rhs, tol: &Self::Tol) -> Self::DebugTol;
 
-    /// The epsilon used by a `rel` [relative tolerance comparison], displayed when
-    /// an assert fails.
+    /// The tolerance used by a `rel` [comparison], displayed when an assert fails.
     ///
-    /// Equivalent to `self.debug_rmax_epsilon(self, other, max_diff)`, there is
+    /// Equivalent to `self.debug_rmax_tol(self, other, tol)`, there is
     /// no need to reimplement this for your own types.
     ///
-    /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
+    /// [comparison]: index.html#comparison-algorithms
     #[inline]
-    fn debug_rel_epsilon(&self, other: &Rhs, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-        self.debug_rmax_epsilon(other, max_diff)
+    fn debug_rel_tol(&self, other: &Rhs, tol: &Self::Tol) -> Self::DebugTol {
+        self.debug_rmax_tol(other, tol)
     }
 
-    /// The epsilon used by an `rmax` [relative tolerance comparison], displayed when
-    /// an assert fails.
+    /// The tolerance used by an `rmax` [comparison], displayed when an assert fails.
     ///
-    /// This should take into account the fact that the epsilon values are scaled
-    /// based on the size of their inputs.
+    /// Returns `tol` scaled by the magnitude of the larger operand.
     ///
-    /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
-    fn debug_rmax_epsilon(&self, other: &Rhs, max_diff: &Self::Epsilon) -> Self::DebugEpsilon;
+    /// [comparison]: index.html#comparison-algorithms
+    fn debug_rmax_tol(&self, other: &Rhs, tol: &Self::Tol) -> Self::DebugTol;
 
-    /// The epsilon used by an `rmin` [relative tolerance comparison], displayed when
-    /// an assert fails.
+    /// The tolerance used by an `rmin` [comparison], displayed when an assert fails.
     ///
-    /// This should take into account the fact that the epsilon values are scaled
-    /// based on the size of their inputs.
+    /// Returns `tol` scaled by the magnitude of the smaller operand.
     ///
-    /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
-    fn debug_rmin_epsilon(&self, other: &Rhs, max_diff: &Self::Epsilon) -> Self::DebugEpsilon;
+    /// [comparison]: index.html#comparison-algorithms
+    fn debug_rmin_tol(&self, other: &Rhs, tol: &Self::Tol) -> Self::DebugTol;
 
-    /// The epsilon used by an `r1st` [relative tolerance comparison], displayed when
-    /// an assert fails.
+    /// The tolerance used by an `r1st` [comparison], displayed when an assert fails.
     ///
-    /// This should take into account the fact that the epsilon values are scaled
-    /// based on the size of their inputs.
+    /// Returns `tol` scaled by the magnitude of the first operand.
     ///
-    /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
-    fn debug_r1st_epsilon(&self, other: &Rhs, max_diff: &Self::Epsilon) -> Self::DebugEpsilon;
+    /// [comparison]: index.html#comparison-algorithms
+    fn debug_r1st_tol(&self, other: &Rhs, tol: &Self::Tol) -> Self::DebugTol;
 
-    /// The epsilon used by an `r2nd` [relative tolerance comparison], displayed when
-    /// an assert fails.
+    /// The tolerance used by an `r2nd` [comparison], displayed when an assert fails.
     ///
-    /// This should take into account the fact that the epsilon values are scaled
-    /// based on the size of their inputs.
+    /// Returns `tol` scaled by the magnitude of the second operand.
     ///
-    /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
-    fn debug_r2nd_epsilon(&self, other: &Rhs, max_diff: &Self::Epsilon) -> Self::DebugEpsilon;
+    /// [comparison]: index.html#comparison-algorithms
+    fn debug_r2nd_tol(&self, other: &Rhs, tol: &Self::Tol) -> Self::DebugTol;
 
-    /// The epsilon used by an `ulps` [ULPs comparison], displayed when an assert
-    /// fails.
+    /// The tolerance used by an `ulps` [comparison], displayed when an assert fails.
     ///
-    /// [ULPs comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#units-in-the-last-place-ulps-comparison
-    fn debug_ulps_epsilon(
-        &self,
-        other: &Rhs,
-        max_diff: &UlpsEpsilon<Self::Epsilon>,
-    ) -> UlpsEpsilon<Self::DebugEpsilon>
+    /// [comparison]: index.html#comparison-algorithms
+    fn debug_ulps_tol(&self, other: &Rhs, tol: &UlpsTol<Self::Tol>) -> UlpsTol<Self::DebugTol>
     where
-        UlpsEpsilon<Self::DebugEpsilon>: Sized;
+        UlpsTol<Self::DebugTol>: Sized;
 }
 
 /// Debug context for when an assert using an `all` check fails.
 ///
-/// This is used internally by the [`assert_float_eq!`] family of macros.
+/// This trait is used by [`assert_float_eq!`] and [`assert_float_ne!`].
 ///
 /// To implement this trait over a new type, see [How to compare custom types].
 ///
@@ -630,95 +614,61 @@ pub trait AssertFloatEqAll<Rhs: ?Sized = Self>: FloatEqAll<Rhs> {
     /// Displayed to the user when an assert fails, using `fmt::Debug`.
     ///
     /// This should match the fields of the the most complex type in the comparison.
-    type AllDebugEpsilon: fmt::Debug + FloatEqUlpsEpsilon;
+    type AllDebugTol: fmt::Debug + FloatEqUlpsTol;
 
-    /// The epsilon used by an `abs_all` [absolute tolerance comparison], displayed
-    /// when an assert fails.
+    /// The tolerance used by an `abs_all` [comparison], displayed when an assert fails.
     ///
-    /// [absolute tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#absolute-tolerance-comparison
-    fn debug_abs_all_epsilon(
-        &self,
-        other: &Rhs,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon;
+    /// [comparison]: index.html#comparison-algorithms
+    fn debug_abs_all_tol(&self, other: &Rhs, tol: &Self::AllTol) -> Self::AllDebugTol;
 
-    /// The epsilon used by a `rel_all` [relative tolerance comparison], displayed
-    /// when an assert fails.
+    /// The tolerance used by a `rel_all` [comparison], displayed when an assert fails.
     ///
-    /// Equivalent to `self.debug_rmax_all_epsilon(self, other, max_diff)`, there
+    /// Equivalent to `self.debug_rmax_all_tol(self, other, tol)`, there
     /// is no need to reimplement this for your own types.
     ///
-    /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
+    /// [comparison]: index.html#comparison-algorithms
     #[inline]
-    fn debug_rel_all_epsilon(
-        &self,
-        other: &Rhs,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon {
-        self.debug_rmax_all_epsilon(other, max_diff)
+    fn debug_rel_all_tol(&self, other: &Rhs, tol: &Self::AllTol) -> Self::AllDebugTol {
+        self.debug_rmax_all_tol(other, tol)
     }
 
-    /// The epsilon used by an `rmax_all` [relative tolerance comparison], displayed
+    /// The tolerance used by an `rmax_all` [comparison], displayed when an assert fails.
+    ///
+    /// Returns `tol` scaled by the magnitude of the larger operand.
+    ///
+    /// [comparison]: index.html#comparison-algorithms
+    fn debug_rmax_all_tol(&self, other: &Rhs, tol: &Self::AllTol) -> Self::AllDebugTol;
+
+    /// The tolerance used by an `rmin_all` [comparison], displayed when an assert fails.
+    ///
+    /// Returns `tol` scaled by the magnitude of the smaller operand.
+    ///
+    /// [comparison]: index.html#comparison-algorithms
+    fn debug_rmin_all_tol(&self, other: &Rhs, tol: &Self::AllTol) -> Self::AllDebugTol;
+
+    /// The tolerance used by an `r1st_all` [comparison], displayed
     /// when an assert fails.
     ///
-    /// This should take into account the fact that the epsilon values are scaled
-    /// based on the size of their inputs.
+    /// Returns `tol` scaled by the magnitude of the first operand.
     ///
-    /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
-    fn debug_rmax_all_epsilon(
-        &self,
-        other: &Rhs,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon;
+    /// [comparison]: index.html#comparison-algorithms
+    fn debug_r1st_all_tol(&self, other: &Rhs, tol: &Self::AllTol) -> Self::AllDebugTol;
 
-    /// The epsilon used by an `rmin_all` [relative tolerance comparison], displayed
-    /// when an assert fails.
+    /// The tolerance used by an `r2nd_all` [comparison], displayed when an assert fails.
     ///
-    /// This should take into account the fact that the epsilon values are scaled
-    /// based on the size of their inputs.
+    /// Returns `tol` scaled by the magnitude of the second operand.
     ///
-    /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
-    fn debug_rmin_all_epsilon(
-        &self,
-        other: &Rhs,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon;
+    /// [comparison]: index.html#comparison-algorithms
+    fn debug_r2nd_all_tol(&self, other: &Rhs, tol: &Self::AllTol) -> Self::AllDebugTol;
 
-    /// The epsilon used by an `r1st_all` [relative tolerance comparison], displayed
-    /// when an assert fails.
+    /// The tolerance used by an `ulps_all` [comparison], displayed when an assert fails.
     ///
-    /// This should take into account the fact that the epsilon values are scaled
-    /// based on the size of their inputs.
-    ///
-    /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
-    fn debug_r1st_all_epsilon(
+    /// [comparison]: index.html#comparison-algorithms
+    fn debug_ulps_all_tol(
         &self,
         other: &Rhs,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon;
-
-    /// The epsilon used by an `r2nd_all` [relative tolerance comparison], displayed
-    /// when an assert fails.
-    ///
-    /// This should take into account the fact that the epsilon values are scaled
-    /// based on the size of their inputs.
-    ///
-    /// [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
-    fn debug_r2nd_all_epsilon(
-        &self,
-        other: &Rhs,
-        max_diff: &Self::AllEpsilon,
-    ) -> Self::AllDebugEpsilon;
-
-    /// The epsilon used by an `ulps_all` [ULPs comparison], displayed when an assert
-    /// fails.
-    ///
-    /// [ULPs comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#units-in-the-last-place-ulps-comparison
-    fn debug_ulps_all_epsilon(
-        &self,
-        other: &Rhs,
-        max_diff: &UlpsEpsilon<Self::AllEpsilon>,
-    ) -> UlpsEpsilon<Self::AllDebugEpsilon>
+        tol: &UlpsTol<Self::AllTol>,
+    ) -> UlpsTol<Self::AllDebugTol>
     where
-        UlpsEpsilon<Self::AllDebugEpsilon>: Sized;
+        UlpsTol<Self::AllDebugTol>: Sized;
 }

@@ -4,15 +4,15 @@
 fn tests() {
     let t = trybuild::TestCases::new();
 
-    // FloatEqUlpsEpsilon
-    t.pass("tests/derive_tests/ulps_epsilon/ulps_epsilon_struct.rs");
-    t.pass("tests/derive_tests/ulps_epsilon/ulps_epsilon_struct_no_fields.rs");
-    t.pass("tests/derive_tests/ulps_epsilon/ulps_epsilon_tuple_struct.rs");
-    t.pass("tests/derive_tests/ulps_epsilon/ulps_epsilon_unit.rs");
-    t.compile_fail("tests/derive_tests/ulps_epsilon/ulps_epsilon_enum.rs");
-    t.compile_fail("tests/derive_tests/ulps_epsilon/ulps_epsilon_generic.rs");
-    t.compile_fail("tests/derive_tests/ulps_epsilon/ulps_epsilon_missing_type_name.rs");
-    t.compile_fail("tests/derive_tests/ulps_epsilon/ulps_epsilon_duplicate_type_name.rs");
+    // FloatEqUlpsTol
+    t.pass("tests/derive_tests/ulps_tol/ulps_tol_struct.rs");
+    t.pass("tests/derive_tests/ulps_tol/ulps_tol_struct_no_fields.rs");
+    t.pass("tests/derive_tests/ulps_tol/ulps_tol_tuple_struct.rs");
+    t.pass("tests/derive_tests/ulps_tol/ulps_tol_unit.rs");
+    t.compile_fail("tests/derive_tests/ulps_tol/ulps_tol_enum.rs");
+    t.compile_fail("tests/derive_tests/ulps_tol/ulps_tol_generic.rs");
+    t.compile_fail("tests/derive_tests/ulps_tol/ulps_tol_missing_type_name.rs");
+    t.compile_fail("tests/derive_tests/ulps_tol/ulps_tol_duplicate_type_name.rs");
 
     // FloatEqDebugUlpsDiff
     t.pass("tests/derive_tests/debug_ulps_diff/debug_ulps_diff_struct.rs");
@@ -39,8 +39,8 @@ fn tests() {
     t.pass("tests/derive_tests/float_eq_all/float_eq_all_unit.rs");
     t.compile_fail("tests/derive_tests/float_eq_all/float_eq_all_enum.rs");
     t.compile_fail("tests/derive_tests/float_eq_all/float_eq_all_generic.rs");
-    t.compile_fail("tests/derive_tests/float_eq_all/float_eq_all_missing_epsilon.rs");
-    t.compile_fail("tests/derive_tests/float_eq_all/float_eq_all_duplicate_epsilon.rs");
+    t.compile_fail("tests/derive_tests/float_eq_all/float_eq_all_missing_tol.rs");
+    t.compile_fail("tests/derive_tests/float_eq_all/float_eq_all_duplicate_tol.rs");
 
     // AssertFloatEq
     t.pass("tests/derive_tests/assert_float_eq/assert_float_eq_struct.rs");
@@ -66,6 +66,6 @@ fn tests() {
     // #[derive_float_eq(...)]
     t.pass("tests/derive_tests/derive_float_eq/derive_float_eq.rs");
     t.pass("tests/derive_tests/derive_float_eq/derive_float_eq_all.rs");
-    t.compile_fail("tests/derive_tests/derive_float_eq/derive_float_eq_missing_ulps_epsilon.rs");
+    t.compile_fail("tests/derive_tests/derive_float_eq/derive_float_eq_missing_ulps_tol.rs");
     t.compile_fail("tests/derive_tests/derive_float_eq/derive_float_eq_missing_debug_ulps_diff.rs");
 }

@@ -1,5 +1,5 @@
 use float_eq::{
-    AssertFloatEq, AssertFloatEqAll, FloatEq, FloatEqAll, FloatEqDebugUlpsDiff, FloatEqUlpsEpsilon,
+    AssertFloatEq, AssertFloatEqAll, FloatEq, FloatEqAll, FloatEqDebugUlpsDiff, FloatEqUlpsTol,
 };
 
 #[derive(
@@ -7,7 +7,7 @@ use float_eq::{
     Clone,
     Copy,
     PartialEq,
-    FloatEqUlpsEpsilon,
+    FloatEqUlpsTol,
     FloatEq,
     FloatEqDebugUlpsDiff,
     AssertFloatEq,
@@ -15,9 +15,9 @@ use float_eq::{
     AssertFloatEqAll,
 )]
 #[float_eq(
-    ulps_epsilon = "MyNoFieldsTypeUlps",
+    ulps_tol = "MyNoFieldsTypeUlps",
     debug_ulps_diff = "MyNoFieldsTypeDebugUlpsDiff",
-    all_epsilon = "f32"
+    all_tol = "f32"
 )]
 struct MyNoFieldsType;
 
@@ -25,7 +25,7 @@ fn main() {
     let a = MyNoFieldsType {};
     let b = MyNoFieldsType {};
 
-    assert_eq!(a.debug_abs_all_epsilon(&b, &0.0), MyNoFieldsType {});
-    assert_eq!(a.debug_rel_all_epsilon(&b, &0.0), MyNoFieldsType {});
-    assert_eq!(a.debug_ulps_all_epsilon(&b, &0), MyNoFieldsTypeUlps {});
+    assert_eq!(a.debug_abs_all_tol(&b, &0.0), MyNoFieldsType {});
+    assert_eq!(a.debug_rel_all_tol(&b, &0.0), MyNoFieldsType {});
+    assert_eq!(a.debug_ulps_all_tol(&b, &0), MyNoFieldsTypeUlps {});
 }

@@ -1,0 +1,9 @@
+error: Missing Tol type name required to derive trait.
+
+help: try adding `#[float_eq(all_tol = "T")]` to your type, where T is commonly `f32` or `f64`.
+ --> $DIR/float_eq_all_missing_tol.rs:3:66
+  |
+3 | #[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsTol, FloatEq, FloatEqAll)]
+  |                                                                  ^^^^^^^^^^
+  |
+  = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)

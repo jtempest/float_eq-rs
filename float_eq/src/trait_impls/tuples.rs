@@ -1,10 +1,8 @@
-use crate::{
-    AssertFloatEq, DebugUlpsDiff, FloatEq, FloatEqDebugUlpsDiff, FloatEqUlpsEpsilon, UlpsEpsilon,
-};
+use crate::{AssertFloatEq, DebugUlpsDiff, FloatEq, FloatEqDebugUlpsDiff, FloatEqUlpsTol, UlpsTol};
 use core::fmt;
 
-impl FloatEqUlpsEpsilon for () {
-    type UlpsEpsilon = ();
+impl FloatEqUlpsTol for () {
+    type UlpsTol = ();
 }
 
 impl FloatEqDebugUlpsDiff for () {
@@ -12,42 +10,42 @@ impl FloatEqDebugUlpsDiff for () {
 }
 
 impl FloatEq for () {
-    type Epsilon = ();
+    type Tol = ();
 
     #[inline]
-    fn eq_abs(&self, _other: &(), _max_diff: &Self::Epsilon) -> bool {
+    fn eq_abs(&self, _other: &(), _tol: &Self::Tol) -> bool {
         true
     }
 
     #[inline]
-    fn eq_rmax(&self, _other: &(), _max_diff: &Self::Epsilon) -> bool {
+    fn eq_rmax(&self, _other: &(), _tol: &Self::Tol) -> bool {
         true
     }
 
     #[inline]
-    fn eq_rmin(&self, _other: &(), _max_diff: &Self::Epsilon) -> bool {
+    fn eq_rmin(&self, _other: &(), _tol: &Self::Tol) -> bool {
         true
     }
 
     #[inline]
-    fn eq_r1st(&self, _other: &(), _max_diff: &Self::Epsilon) -> bool {
+    fn eq_r1st(&self, _other: &(), _tol: &Self::Tol) -> bool {
         true
     }
 
     #[inline]
-    fn eq_r2nd(&self, _other: &(), _max_diff: &Self::Epsilon) -> bool {
+    fn eq_r2nd(&self, _other: &(), _tol: &Self::Tol) -> bool {
         true
     }
 
     #[inline]
-    fn eq_ulps(&self, _other: &(), _max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
+    fn eq_ulps(&self, _other: &(), _tol: &UlpsTol<Self::Tol>) -> bool {
         true
     }
 }
 
 impl AssertFloatEq for () {
     type DebugAbsDiff = ();
-    type DebugEpsilon = ();
+    type DebugTol = ();
 
     #[inline]
     fn debug_abs_diff(&self, _other: &()) -> Self::DebugAbsDiff {}
@@ -56,26 +54,26 @@ impl AssertFloatEq for () {
     fn debug_ulps_diff(&self, _other: &()) -> DebugUlpsDiff<Self::DebugAbsDiff> {}
 
     #[inline]
-    fn debug_abs_epsilon(&self, _other: &(), _max_diff: &Self::Epsilon) -> Self::DebugEpsilon {}
+    fn debug_abs_tol(&self, _other: &(), _tol: &Self::Tol) -> Self::DebugTol {}
 
     #[inline]
-    fn debug_rmax_epsilon(&self, _other: &(), _max_diff: &Self::Epsilon) -> Self::DebugEpsilon {}
+    fn debug_rmax_tol(&self, _other: &(), _tol: &Self::Tol) -> Self::DebugTol {}
 
     #[inline]
-    fn debug_rmin_epsilon(&self, _other: &(), _max_diff: &Self::Epsilon) -> Self::DebugEpsilon {}
+    fn debug_rmin_tol(&self, _other: &(), _tol: &Self::Tol) -> Self::DebugTol {}
 
     #[inline]
-    fn debug_r1st_epsilon(&self, _other: &(), _max_diff: &Self::Epsilon) -> Self::DebugEpsilon {}
+    fn debug_r1st_tol(&self, _other: &(), _tol: &Self::Tol) -> Self::DebugTol {}
 
     #[inline]
-    fn debug_r2nd_epsilon(&self, _other: &(), _max_diff: &Self::Epsilon) -> Self::DebugEpsilon {}
+    fn debug_r2nd_tol(&self, _other: &(), _tol: &Self::Tol) -> Self::DebugTol {}
 
     #[inline]
-    fn debug_ulps_epsilon(
+    fn debug_ulps_tol(
         &self,
         _other: &(),
-        _max_diff: &UlpsEpsilon<Self::Epsilon>,
-    ) -> UlpsEpsilon<Self::DebugEpsilon> {
+        _tol: &UlpsTol<Self::Tol>,
+    ) -> UlpsTol<Self::DebugTol> {
     }
 }
 
@@ -87,12 +85,12 @@ macro_rules! tuple_impls {
         }
     )+) => {
         $(
-            impl<$($T:FloatEqUlpsEpsilon),+> FloatEqUlpsEpsilon for ($($T,)+)
+            impl<$($T:FloatEqUlpsTol),+> FloatEqUlpsTol for ($($T,)+)
             where
                 last_type!($($T,)+): ?Sized,
-                $(UlpsEpsilon<$T>: Sized,)+
+                $(UlpsTol<$T>: Sized,)+
             {
-                type UlpsEpsilon = ($(UlpsEpsilon<$T>,)+);
+                type UlpsTol = ($(UlpsTol<$T>,)+);
             }
 
             impl<$($T:FloatEqDebugUlpsDiff),+> FloatEqDebugUlpsDiff for ($($T,)+)
@@ -103,52 +101,52 @@ macro_rules! tuple_impls {
             impl<$($T:FloatEq),+> FloatEq for ($($T,)+)
             where
                 last_type!($($T,)+): ?Sized,
-                $($T::Epsilon: Sized,)+
-                $(UlpsEpsilon<$T::Epsilon>: Sized,)+
+                $($T::Tol: Sized,)+
+                $(UlpsTol<$T::Tol>: Sized,)+
             {
-                type Epsilon = ($($T::Epsilon,)+);
+                type Tol = ($($T::Tol,)+);
 
                 #[inline]
-                fn eq_abs(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
-                    $(self.$idx.eq_abs(&other.$idx, &max_diff.$idx))&&+
+                fn eq_abs(&self, other: &Self, tol: &Self::Tol) -> bool {
+                    $(self.$idx.eq_abs(&other.$idx, &tol.$idx))&&+
                 }
 
                 #[inline]
-                fn eq_rmax(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
-                    $(self.$idx.eq_rmax(&other.$idx, &max_diff.$idx))&&+
+                fn eq_rmax(&self, other: &Self, tol: &Self::Tol) -> bool {
+                    $(self.$idx.eq_rmax(&other.$idx, &tol.$idx))&&+
                 }
 
                 #[inline]
-                fn eq_rmin(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
-                    $(self.$idx.eq_rmin(&other.$idx, &max_diff.$idx))&&+
+                fn eq_rmin(&self, other: &Self, tol: &Self::Tol) -> bool {
+                    $(self.$idx.eq_rmin(&other.$idx, &tol.$idx))&&+
                 }
 
                 #[inline]
-                fn eq_r1st(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
-                    $(self.$idx.eq_r1st(&other.$idx, &max_diff.$idx))&&+
+                fn eq_r1st(&self, other: &Self, tol: &Self::Tol) -> bool {
+                    $(self.$idx.eq_r1st(&other.$idx, &tol.$idx))&&+
                 }
 
                 #[inline]
-                fn eq_r2nd(&self, other: &Self, max_diff: &Self::Epsilon) -> bool {
-                    $(self.$idx.eq_r2nd(&other.$idx, &max_diff.$idx))&&+
+                fn eq_r2nd(&self, other: &Self, tol: &Self::Tol) -> bool {
+                    $(self.$idx.eq_r2nd(&other.$idx, &tol.$idx))&&+
                 }
 
                 #[inline]
-                fn eq_ulps(&self, other: &Self, max_diff: &UlpsEpsilon<Self::Epsilon>) -> bool {
-                    $(self.$idx.eq_ulps(&other.$idx, &max_diff.$idx))&&+
+                fn eq_ulps(&self, other: &Self, tol: &UlpsTol<Self::Tol>) -> bool {
+                    $(self.$idx.eq_ulps(&other.$idx, &tol.$idx))&&+
                 }
             }
 
             impl<$($T:AssertFloatEq + fmt::Debug),+> AssertFloatEq for ($($T,)+)
             where
                 last_type!($($T,)+): ?Sized,
-                $($T::Epsilon: Sized,)+
-                $($T::DebugEpsilon: Sized,)+
-                $(UlpsEpsilon<$T::Epsilon>: Sized,)+
-                $(UlpsEpsilon<$T::DebugEpsilon>: Sized,)+
+                $($T::Tol: Sized,)+
+                $($T::DebugTol: Sized,)+
+                $(UlpsTol<$T::Tol>: Sized,)+
+                $(UlpsTol<$T::DebugTol>: Sized,)+
             {
                 type DebugAbsDiff = ($($T::DebugAbsDiff,)+);
-                type DebugEpsilon = ($($T::DebugEpsilon,)+);
+                type DebugTol = ($($T::DebugTol,)+);
 
                 #[inline]
                 fn debug_abs_diff(&self, other: &Self) -> Self::DebugAbsDiff {
@@ -161,33 +159,33 @@ macro_rules! tuple_impls {
                 }
 
                 #[inline]
-                fn debug_abs_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-                    ($(self.$idx.debug_abs_epsilon(&other.$idx, &max_diff.$idx),)+)
+                fn debug_abs_tol(&self, other: &Self, tol: &Self::Tol) -> Self::DebugTol {
+                    ($(self.$idx.debug_abs_tol(&other.$idx, &tol.$idx),)+)
                 }
 
                 #[inline]
-                fn debug_rmax_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-                    ($(self.$idx.debug_rmax_epsilon(&other.$idx, &max_diff.$idx),)+)
+                fn debug_rmax_tol(&self, other: &Self, tol: &Self::Tol) -> Self::DebugTol {
+                    ($(self.$idx.debug_rmax_tol(&other.$idx, &tol.$idx),)+)
                 }
 
                 #[inline]
-                fn debug_rmin_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-                    ($(self.$idx.debug_rmin_epsilon(&other.$idx, &max_diff.$idx),)+)
+                fn debug_rmin_tol(&self, other: &Self, tol: &Self::Tol) -> Self::DebugTol {
+                    ($(self.$idx.debug_rmin_tol(&other.$idx, &tol.$idx),)+)
                 }
 
                 #[inline]
-                fn debug_r1st_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-                    ($(self.$idx.debug_r1st_epsilon(&other.$idx, &max_diff.$idx),)+)
+                fn debug_r1st_tol(&self, other: &Self, tol: &Self::Tol) -> Self::DebugTol {
+                    ($(self.$idx.debug_r1st_tol(&other.$idx, &tol.$idx),)+)
                 }
 
                 #[inline]
-                fn debug_r2nd_epsilon(&self, other: &Self, max_diff: &Self::Epsilon) -> Self::DebugEpsilon {
-                    ($(self.$idx.debug_r2nd_epsilon(&other.$idx, &max_diff.$idx),)+)
+                fn debug_r2nd_tol(&self, other: &Self, tol: &Self::Tol) -> Self::DebugTol {
+                    ($(self.$idx.debug_r2nd_tol(&other.$idx, &tol.$idx),)+)
                 }
 
                 #[inline]
-                fn debug_ulps_epsilon(&self, other: &Self, max_diff: &UlpsEpsilon<Self::Epsilon>) -> UlpsEpsilon<Self::DebugEpsilon> {
-                    ($(self.$idx.debug_ulps_epsilon(&other.$idx, &max_diff.$idx),)+)
+                fn debug_ulps_tol(&self, other: &Self, tol: &UlpsTol<Self::Tol>) -> UlpsTol<Self::DebugTol> {
+                    ($(self.$idx.debug_ulps_tol(&other.$idx, &tol.$idx),)+)
                 }
             }
         )+
