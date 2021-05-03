@@ -1,15 +1,15 @@
 # A checklist/sequence of actions to take to package a new build and upload it
 # to crates.io.
 
-- cargo hack test --feature-powerset
+- Ensure all tests pass
+  -`cargo hack test --feature-powerset`
 - Make sure documentation is up to date
-  - `cargo doc` (derive help)
-  - `cargo doc --all-features`
+  - `./docs-build.bat --open`
   - crates-io.md
   - Run generate-readme.bat
 - Make sure CHANGELOG is up to date
   - Change Unreleased -> version
-  - add link to tag
+  - add link to tag (note that this won't work until the tag has been pushed)
   - add release date
 - Update version numbers in:
   - float_eq/Cargo.toml
