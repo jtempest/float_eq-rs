@@ -444,11 +444,7 @@ where
     }
 
     #[inline]
-    fn debug_rmax_tol(
-        &self,
-        other: &Option<T>,
-        tol: &Self::Tol,
-    ) -> Self::DebugTol {
+    fn debug_rmax_tol(&self, other: &Option<T>, tol: &Self::Tol) -> Self::DebugTol {
         Some(AssertFloatEq::debug_rmax_tol(
             &self.as_ref()?,
             &other.as_ref()?,
@@ -457,11 +453,7 @@ where
     }
 
     #[inline]
-    fn debug_rmin_tol(
-        &self,
-        other: &Option<T>,
-        tol: &Self::Tol,
-    ) -> Self::DebugTol {
+    fn debug_rmin_tol(&self, other: &Option<T>, tol: &Self::Tol) -> Self::DebugTol {
         Some(AssertFloatEq::debug_rmin_tol(
             &self.as_ref()?,
             &other.as_ref()?,
@@ -470,11 +462,7 @@ where
     }
 
     #[inline]
-    fn debug_r1st_tol(
-        &self,
-        other: &Option<T>,
-        tol: &Self::Tol,
-    ) -> Self::DebugTol {
+    fn debug_r1st_tol(&self, other: &Option<T>, tol: &Self::Tol) -> Self::DebugTol {
         Some(AssertFloatEq::debug_r1st_tol(
             &self.as_ref()?,
             &other.as_ref()?,
@@ -483,11 +471,7 @@ where
     }
 
     #[inline]
-    fn debug_r2nd_tol(
-        &self,
-        other: &Option<T>,
-        tol: &Self::Tol,
-    ) -> Self::DebugTol {
+    fn debug_r2nd_tol(&self, other: &Option<T>, tol: &Self::Tol) -> Self::DebugTol {
         Some(AssertFloatEq::debug_r2nd_tol(
             &self.as_ref()?,
             &other.as_ref()?,
@@ -518,11 +502,7 @@ where
     type AllDebugTol = Option<T::AllDebugTol>;
 
     #[inline]
-    fn debug_abs_all_tol(
-        &self,
-        other: &Option<T>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_abs_all_tol(&self, other: &Option<T>, tol: &Self::AllTol) -> Self::AllDebugTol {
         Some(AssertFloatEqAll::debug_abs_all_tol(
             &self.as_ref()?,
             &other.as_ref()?,
@@ -531,11 +511,7 @@ where
     }
 
     #[inline]
-    fn debug_rmax_all_tol(
-        &self,
-        other: &Option<T>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_rmax_all_tol(&self, other: &Option<T>, tol: &Self::AllTol) -> Self::AllDebugTol {
         Some(AssertFloatEqAll::debug_rmax_all_tol(
             &self.as_ref()?,
             &other.as_ref()?,
@@ -544,11 +520,7 @@ where
     }
 
     #[inline]
-    fn debug_rmin_all_tol(
-        &self,
-        other: &Option<T>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_rmin_all_tol(&self, other: &Option<T>, tol: &Self::AllTol) -> Self::AllDebugTol {
         Some(AssertFloatEqAll::debug_rmin_all_tol(
             &self.as_ref()?,
             &other.as_ref()?,
@@ -557,11 +529,7 @@ where
     }
 
     #[inline]
-    fn debug_r1st_all_tol(
-        &self,
-        other: &Option<T>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_r1st_all_tol(&self, other: &Option<T>, tol: &Self::AllTol) -> Self::AllDebugTol {
         Some(AssertFloatEqAll::debug_r1st_all_tol(
             &self.as_ref()?,
             &other.as_ref()?,
@@ -570,11 +538,7 @@ where
     }
 
     #[inline]
-    fn debug_r2nd_all_tol(
-        &self,
-        other: &Option<T>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_r2nd_all_tol(&self, other: &Option<T>, tol: &Self::AllTol) -> Self::AllDebugTol {
         Some(AssertFloatEqAll::debug_r2nd_all_tol(
             &self.as_ref()?,
             &other.as_ref()?,
@@ -722,11 +686,7 @@ where
     }
 
     #[inline]
-    fn debug_ulps_tol(
-        &self,
-        other: &Cell<B>,
-        tol: &UlpsTol<Self::Tol>,
-    ) -> UlpsTol<Self::DebugTol>
+    fn debug_ulps_tol(&self, other: &Cell<B>, tol: &UlpsTol<Self::Tol>) -> UlpsTol<Self::DebugTol>
     where
         UlpsTol<Self::DebugTol>: Sized,
     {
@@ -742,47 +702,27 @@ where
     type AllDebugTol = A::AllDebugTol;
 
     #[inline]
-    fn debug_abs_all_tol(
-        &self,
-        other: &Cell<B>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_abs_all_tol(&self, other: &Cell<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
         AssertFloatEqAll::debug_abs_all_tol(&self.get(), &other.get(), tol)
     }
 
     #[inline]
-    fn debug_rmax_all_tol(
-        &self,
-        other: &Cell<B>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_rmax_all_tol(&self, other: &Cell<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
         AssertFloatEqAll::debug_rmax_all_tol(&self.get(), &other.get(), tol)
     }
 
     #[inline]
-    fn debug_rmin_all_tol(
-        &self,
-        other: &Cell<B>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_rmin_all_tol(&self, other: &Cell<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
         AssertFloatEqAll::debug_rmin_all_tol(&self.get(), &other.get(), tol)
     }
 
     #[inline]
-    fn debug_r1st_all_tol(
-        &self,
-        other: &Cell<B>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_r1st_all_tol(&self, other: &Cell<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
         AssertFloatEqAll::debug_r1st_all_tol(&self.get(), &other.get(), tol)
     }
 
     #[inline]
-    fn debug_r2nd_all_tol(
-        &self,
-        other: &Cell<B>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_r2nd_all_tol(&self, other: &Cell<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
         AssertFloatEqAll::debug_r2nd_all_tol(&self.get(), &other.get(), tol)
     }
 
@@ -895,47 +835,27 @@ where
     }
 
     #[inline]
-    fn debug_abs_tol(
-        &self,
-        other: &RefCell<B>,
-        tol: &Self::Tol,
-    ) -> Self::DebugTol {
+    fn debug_abs_tol(&self, other: &RefCell<B>, tol: &Self::Tol) -> Self::DebugTol {
         AssertFloatEq::debug_abs_tol(&*self.borrow(), &*other.borrow(), tol)
     }
 
     #[inline]
-    fn debug_rmax_tol(
-        &self,
-        other: &RefCell<B>,
-        tol: &Self::Tol,
-    ) -> Self::DebugTol {
+    fn debug_rmax_tol(&self, other: &RefCell<B>, tol: &Self::Tol) -> Self::DebugTol {
         AssertFloatEq::debug_rmax_tol(&*self.borrow(), &*other.borrow(), tol)
     }
 
     #[inline]
-    fn debug_rmin_tol(
-        &self,
-        other: &RefCell<B>,
-        tol: &Self::Tol,
-    ) -> Self::DebugTol {
+    fn debug_rmin_tol(&self, other: &RefCell<B>, tol: &Self::Tol) -> Self::DebugTol {
         AssertFloatEq::debug_rmin_tol(&*self.borrow(), &*other.borrow(), tol)
     }
 
     #[inline]
-    fn debug_r1st_tol(
-        &self,
-        other: &RefCell<B>,
-        tol: &Self::Tol,
-    ) -> Self::DebugTol {
+    fn debug_r1st_tol(&self, other: &RefCell<B>, tol: &Self::Tol) -> Self::DebugTol {
         AssertFloatEq::debug_r1st_tol(&*self.borrow(), &*other.borrow(), tol)
     }
 
     #[inline]
-    fn debug_r2nd_tol(
-        &self,
-        other: &RefCell<B>,
-        tol: &Self::Tol,
-    ) -> Self::DebugTol {
+    fn debug_r2nd_tol(&self, other: &RefCell<B>, tol: &Self::Tol) -> Self::DebugTol {
         AssertFloatEq::debug_r2nd_tol(&*self.borrow(), &*other.borrow(), tol)
     }
 
@@ -960,47 +880,27 @@ where
     type AllDebugTol = A::AllDebugTol;
 
     #[inline]
-    fn debug_abs_all_tol(
-        &self,
-        other: &RefCell<B>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_abs_all_tol(&self, other: &RefCell<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
         AssertFloatEqAll::debug_abs_all_tol(&*self.borrow(), &*other.borrow(), tol)
     }
 
     #[inline]
-    fn debug_rmax_all_tol(
-        &self,
-        other: &RefCell<B>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_rmax_all_tol(&self, other: &RefCell<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
         AssertFloatEqAll::debug_rmax_all_tol(&*self.borrow(), &*other.borrow(), tol)
     }
 
     #[inline]
-    fn debug_rmin_all_tol(
-        &self,
-        other: &RefCell<B>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_rmin_all_tol(&self, other: &RefCell<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
         AssertFloatEqAll::debug_rmin_all_tol(&*self.borrow(), &*other.borrow(), tol)
     }
 
     #[inline]
-    fn debug_r1st_all_tol(
-        &self,
-        other: &RefCell<B>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_r1st_all_tol(&self, other: &RefCell<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
         AssertFloatEqAll::debug_r1st_all_tol(&*self.borrow(), &*other.borrow(), tol)
     }
 
     #[inline]
-    fn debug_r2nd_all_tol(
-        &self,
-        other: &RefCell<B>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_r2nd_all_tol(&self, other: &RefCell<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
         AssertFloatEqAll::debug_r2nd_all_tol(&*self.borrow(), &*other.borrow(), tol)
     }
 

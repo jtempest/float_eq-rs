@@ -239,11 +239,7 @@ impl AssertFloatEq for MyComplex32 {
         }
     }
 
-    fn debug_ulps_tol(
-        &self,
-        other: &Self,
-        tol: &UlpsTol<Self::Tol>,
-    ) -> UlpsTol<Self::DebugTol> {
+    fn debug_ulps_tol(&self, other: &Self, tol: &UlpsTol<Self::Tol>) -> UlpsTol<Self::DebugTol> {
         UlpsTol::<Self::DebugTol> {
             re: self.re.debug_ulps_tol(&other.re, &tol.re),
             im: self.im.debug_ulps_tol(&other.im, &tol.im),
@@ -318,55 +314,35 @@ fn float_eq_debug() {
 impl AssertFloatEqAll for MyComplex32 {
     type AllDebugTol = MyComplex32;
 
-    fn debug_abs_all_tol(
-        &self,
-        other: &Self,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_abs_all_tol(&self, other: &Self, tol: &Self::AllTol) -> Self::AllDebugTol {
         MyComplex32 {
             re: self.re.debug_abs_all_tol(&other.re, tol),
             im: self.im.debug_abs_all_tol(&other.im, tol),
         }
     }
 
-    fn debug_rmax_all_tol(
-        &self,
-        other: &Self,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_rmax_all_tol(&self, other: &Self, tol: &Self::AllTol) -> Self::AllDebugTol {
         MyComplex32 {
             re: self.re.debug_rmax_all_tol(&other.re, tol),
             im: self.im.debug_rmax_all_tol(&other.im, tol),
         }
     }
 
-    fn debug_rmin_all_tol(
-        &self,
-        other: &Self,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_rmin_all_tol(&self, other: &Self, tol: &Self::AllTol) -> Self::AllDebugTol {
         MyComplex32 {
             re: self.re.debug_rmin_all_tol(&other.re, tol),
             im: self.im.debug_rmin_all_tol(&other.im, tol),
         }
     }
 
-    fn debug_r1st_all_tol(
-        &self,
-        other: &Self,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_r1st_all_tol(&self, other: &Self, tol: &Self::AllTol) -> Self::AllDebugTol {
         MyComplex32 {
             re: self.re.debug_r1st_all_tol(&other.re, tol),
             im: self.im.debug_r1st_all_tol(&other.im, tol),
         }
     }
 
-    fn debug_r2nd_all_tol(
-        &self,
-        other: &Self,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_r2nd_all_tol(&self, other: &Self, tol: &Self::AllTol) -> Self::AllDebugTol {
         MyComplex32 {
             re: self.re.debug_r2nd_all_tol(&other.re, tol),
             im: self.im.debug_r2nd_all_tol(&other.im, tol),
@@ -390,30 +366,12 @@ fn float_eq_all_debug() {
     let a = MyComplex32 { re: 1.0, im: 200.0 };
     let b = MyComplex32 { re: 50.0, im: 1.0 };
 
-    assert_eq!(
-        a.debug_abs_all_tol(&b, &0.2),
-        MyComplex32::new(0.2, 0.2)
-    );
-    assert_eq!(
-        a.debug_rel_all_tol(&b, &0.2),
-        MyComplex32::new(10.0, 40.0)
-    );
-    assert_eq!(
-        a.debug_rmax_all_tol(&b, &0.2),
-        MyComplex32::new(10.0, 40.0)
-    );
-    assert_eq!(
-        a.debug_rmin_all_tol(&b, &0.2),
-        MyComplex32::new(0.2, 0.2)
-    );
-    assert_eq!(
-        a.debug_r1st_all_tol(&b, &0.2),
-        MyComplex32::new(0.2, 40.0)
-    );
-    assert_eq!(
-        a.debug_r2nd_all_tol(&b, &0.2),
-        MyComplex32::new(10.0, 0.2)
-    );
+    assert_eq!(a.debug_abs_all_tol(&b, &0.2), MyComplex32::new(0.2, 0.2));
+    assert_eq!(a.debug_rel_all_tol(&b, &0.2), MyComplex32::new(10.0, 40.0));
+    assert_eq!(a.debug_rmax_all_tol(&b, &0.2), MyComplex32::new(10.0, 40.0));
+    assert_eq!(a.debug_rmin_all_tol(&b, &0.2), MyComplex32::new(0.2, 0.2));
+    assert_eq!(a.debug_r1st_all_tol(&b, &0.2), MyComplex32::new(0.2, 40.0));
+    assert_eq!(a.debug_r2nd_all_tol(&b, &0.2), MyComplex32::new(10.0, 0.2));
     assert_eq!(a.debug_ulps_all_tol(&b, &2), MyComplex32Ulps::new(2, 2));
 }
 

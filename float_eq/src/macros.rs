@@ -782,11 +782,7 @@ impl FloatCmpOpTol {
     }
 
     #[inline]
-    pub fn ulps<A: ?Sized, B: ?Sized>(
-        a: &A,
-        b: &B,
-        tol: &UlpsTol<A::Tol>,
-    ) -> UlpsTol<A::DebugTol>
+    pub fn ulps<A: ?Sized, B: ?Sized>(a: &A, b: &B, tol: &UlpsTol<A::Tol>) -> UlpsTol<A::DebugTol>
     where
         A: FloatEq<B> + AssertFloatEq<B>,
         UlpsTol<A::DebugTol>: Sized,

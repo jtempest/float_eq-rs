@@ -300,11 +300,7 @@ where
         }
     }
 
-    fn debug_ulps_tol(
-        &self,
-        other: &Self,
-        tol: &UlpsTol<Self::Tol>,
-    ) -> UlpsTol<Self::DebugTol> {
+    fn debug_ulps_tol(&self, other: &Self, tol: &UlpsTol<Self::Tol>) -> UlpsTol<Self::DebugTol> {
         UlpsTol::<Self::DebugTol> {
             re: self.re.debug_ulps_tol(&other.re, &tol.re),
             im: self.im.debug_ulps_tol(&other.im, &tol.im),
@@ -425,10 +421,7 @@ fn float_eq_all_debug() {
     let b = MyComplex::<f32> { re: 50.0, im: 1.0 };
 
     assert_eq!(a.debug_abs_all_tol(&b, &0.2), MyComplex::new(0.2, 0.2));
-    assert_eq!(
-        a.debug_rel_all_tol(&b, &0.2),
-        MyComplex::new(10.0, 40.0)
-    );
+    assert_eq!(a.debug_rel_all_tol(&b, &0.2), MyComplex::new(10.0, 40.0));
     //todo: rmax, rmin, r1st, r2nd
     assert_eq!(a.debug_ulps_all_tol(&b, &2), MyComplexUlps::new(2, 2));
 }

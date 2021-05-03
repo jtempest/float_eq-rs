@@ -220,11 +220,7 @@ where
     }
 
     #[inline]
-    fn debug_ulps_tol(
-        &self,
-        other: &[B; N],
-        tol: &UlpsTol<Self::Tol>,
-    ) -> UlpsTol<Self::DebugTol> {
+    fn debug_ulps_tol(&self, other: &[B; N], tol: &UlpsTol<Self::Tol>) -> UlpsTol<Self::DebugTol> {
         let mut result: [MaybeUninit<UlpsTol<A::DebugTol>>; N] = uninit_array();
         for i in 0..N {
             result[i] = MaybeUninit::new(self[i].debug_ulps_tol(&other[i], &tol[i]));

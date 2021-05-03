@@ -69,12 +69,7 @@ impl AssertFloatEq for () {
     fn debug_r2nd_tol(&self, _other: &(), _tol: &Self::Tol) -> Self::DebugTol {}
 
     #[inline]
-    fn debug_ulps_tol(
-        &self,
-        _other: &(),
-        _tol: &UlpsTol<Self::Tol>,
-    ) -> UlpsTol<Self::DebugTol> {
-    }
+    fn debug_ulps_tol(&self, _other: &(), _tol: &UlpsTol<Self::Tol>) -> UlpsTol<Self::DebugTol> {}
 }
 
 // Non-unit type tuple impls, as for std PartialEq implementation

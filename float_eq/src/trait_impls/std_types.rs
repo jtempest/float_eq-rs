@@ -156,47 +156,27 @@ macro_rules! impl_traits_for_wrapper {
             type AllDebugTol = A::AllDebugTol;
 
             #[inline]
-            fn debug_abs_all_tol(
-                &self,
-                other: &$t<B>,
-                tol: &Self::AllTol,
-            ) -> Self::AllDebugTol {
+            fn debug_abs_all_tol(&self, other: &$t<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
                 AssertFloatEqAll::debug_abs_all_tol(&**self, &**other, tol)
             }
 
             #[inline]
-            fn debug_rmax_all_tol(
-                &self,
-                other: &$t<B>,
-                tol: &Self::AllTol,
-            ) -> Self::AllDebugTol {
+            fn debug_rmax_all_tol(&self, other: &$t<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
                 AssertFloatEqAll::debug_rmax_all_tol(&**self, &**other, tol)
             }
 
             #[inline]
-            fn debug_rmin_all_tol(
-                &self,
-                other: &$t<B>,
-                tol: &Self::AllTol,
-            ) -> Self::AllDebugTol {
+            fn debug_rmin_all_tol(&self, other: &$t<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
                 AssertFloatEqAll::debug_rmin_all_tol(&**self, &**other, tol)
             }
 
             #[inline]
-            fn debug_r1st_all_tol(
-                &self,
-                other: &$t<B>,
-                tol: &Self::AllTol,
-            ) -> Self::AllDebugTol {
+            fn debug_r1st_all_tol(&self, other: &$t<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
                 AssertFloatEqAll::debug_r1st_all_tol(&**self, &**other, tol)
             }
 
             #[inline]
-            fn debug_r2nd_all_tol(
-                &self,
-                other: &$t<B>,
-                tol: &Self::AllTol,
-            ) -> Self::AllDebugTol {
+            fn debug_r2nd_all_tol(&self, other: &$t<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
                 AssertFloatEqAll::debug_r2nd_all_tol(&**self, &**other, tol)
             }
 
@@ -337,11 +317,7 @@ where
     }
 
     #[inline]
-    fn debug_ulps_tol(
-        &self,
-        other: &[B],
-        tol: &UlpsTol<Self::Tol>,
-    ) -> UlpsTol<Self::DebugTol> {
+    fn debug_ulps_tol(&self, other: &[B], tol: &UlpsTol<Self::Tol>) -> UlpsTol<Self::DebugTol> {
         if self.len() == other.len() && self.len() == tol.len() {
             Some(
                 self.iter()
@@ -753,11 +729,7 @@ macro_rules! impl_traits_for_linear_collection {
             type AllDebugTol = Option<$t<A::AllDebugTol>>;
 
             #[inline]
-            fn debug_abs_all_tol(
-                &self,
-                other: &$t<B>,
-                tol: &Self::AllTol,
-            ) -> Self::AllDebugTol {
+            fn debug_abs_all_tol(&self, other: &$t<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
                 if self.len() == other.len() {
                     Some(
                         self.iter()
@@ -771,11 +743,7 @@ macro_rules! impl_traits_for_linear_collection {
             }
 
             #[inline]
-            fn debug_rmax_all_tol(
-                &self,
-                other: &$t<B>,
-                tol: &Self::AllTol,
-            ) -> Self::AllDebugTol {
+            fn debug_rmax_all_tol(&self, other: &$t<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
                 if self.len() == other.len() {
                     Some(
                         self.iter()
@@ -789,11 +757,7 @@ macro_rules! impl_traits_for_linear_collection {
             }
 
             #[inline]
-            fn debug_rmin_all_tol(
-                &self,
-                other: &$t<B>,
-                tol: &Self::AllTol,
-            ) -> Self::AllDebugTol {
+            fn debug_rmin_all_tol(&self, other: &$t<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
                 if self.len() == other.len() {
                     Some(
                         self.iter()
@@ -807,11 +771,7 @@ macro_rules! impl_traits_for_linear_collection {
             }
 
             #[inline]
-            fn debug_r1st_all_tol(
-                &self,
-                other: &$t<B>,
-                tol: &Self::AllTol,
-            ) -> Self::AllDebugTol {
+            fn debug_r1st_all_tol(&self, other: &$t<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
                 if self.len() == other.len() {
                     Some(
                         self.iter()
@@ -825,11 +785,7 @@ macro_rules! impl_traits_for_linear_collection {
             }
 
             #[inline]
-            fn debug_r2nd_all_tol(
-                &self,
-                other: &$t<B>,
-                tol: &Self::AllTol,
-            ) -> Self::AllDebugTol {
+            fn debug_r2nd_all_tol(&self, other: &$t<B>, tol: &Self::AllTol) -> Self::AllDebugTol {
                 if self.len() == other.len() {
                     Some(
                         self.iter()
@@ -1126,10 +1082,7 @@ where
         if self.len() == other.len() && self.len() == tol.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
-                result.insert(
-                    k.clone(),
-                    v.debug_abs_tol(other.get(k)?, tol.get(k)?),
-                );
+                result.insert(k.clone(), v.debug_abs_tol(other.get(k)?, tol.get(k)?));
             }
             Some(result)
         } else {
@@ -1138,18 +1091,11 @@ where
     }
 
     #[inline]
-    fn debug_rmax_tol(
-        &self,
-        other: &HashMap<K, VB, S>,
-        tol: &Self::Tol,
-    ) -> Self::DebugTol {
+    fn debug_rmax_tol(&self, other: &HashMap<K, VB, S>, tol: &Self::Tol) -> Self::DebugTol {
         if self.len() == other.len() && self.len() == tol.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
-                result.insert(
-                    k.clone(),
-                    v.debug_rmax_tol(other.get(k)?, tol.get(k)?),
-                );
+                result.insert(k.clone(), v.debug_rmax_tol(other.get(k)?, tol.get(k)?));
             }
             Some(result)
         } else {
@@ -1158,18 +1104,11 @@ where
     }
 
     #[inline]
-    fn debug_rmin_tol(
-        &self,
-        other: &HashMap<K, VB, S>,
-        tol: &Self::Tol,
-    ) -> Self::DebugTol {
+    fn debug_rmin_tol(&self, other: &HashMap<K, VB, S>, tol: &Self::Tol) -> Self::DebugTol {
         if self.len() == other.len() && self.len() == tol.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
-                result.insert(
-                    k.clone(),
-                    v.debug_rmin_tol(other.get(k)?, tol.get(k)?),
-                );
+                result.insert(k.clone(), v.debug_rmin_tol(other.get(k)?, tol.get(k)?));
             }
             Some(result)
         } else {
@@ -1178,18 +1117,11 @@ where
     }
 
     #[inline]
-    fn debug_r1st_tol(
-        &self,
-        other: &HashMap<K, VB, S>,
-        tol: &Self::Tol,
-    ) -> Self::DebugTol {
+    fn debug_r1st_tol(&self, other: &HashMap<K, VB, S>, tol: &Self::Tol) -> Self::DebugTol {
         if self.len() == other.len() && self.len() == tol.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
-                result.insert(
-                    k.clone(),
-                    v.debug_r1st_tol(other.get(k)?, tol.get(k)?),
-                );
+                result.insert(k.clone(), v.debug_r1st_tol(other.get(k)?, tol.get(k)?));
             }
             Some(result)
         } else {
@@ -1198,18 +1130,11 @@ where
     }
 
     #[inline]
-    fn debug_r2nd_tol(
-        &self,
-        other: &HashMap<K, VB, S>,
-        tol: &Self::Tol,
-    ) -> Self::DebugTol {
+    fn debug_r2nd_tol(&self, other: &HashMap<K, VB, S>, tol: &Self::Tol) -> Self::DebugTol {
         if self.len() == other.len() && self.len() == tol.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
-                result.insert(
-                    k.clone(),
-                    v.debug_r2nd_tol(other.get(k)?, tol.get(k)?),
-                );
+                result.insert(k.clone(), v.debug_r2nd_tol(other.get(k)?, tol.get(k)?));
             }
             Some(result)
         } else {
@@ -1226,10 +1151,7 @@ where
         if self.len() == other.len() && self.len() == tol.len() {
             let mut result = HashMap::with_hasher(self.hasher().clone());
             for (k, v) in self {
-                result.insert(
-                    k.clone(),
-                    v.debug_ulps_tol(other.get(k)?, tol.get(k)?),
-                );
+                result.insert(k.clone(), v.debug_ulps_tol(other.get(k)?, tol.get(k)?));
             }
             Some(result)
         } else {
@@ -1607,10 +1529,7 @@ where
         if self.len() == other.len() && self.len() == tol.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
-                result.insert(
-                    k.clone(),
-                    v.debug_abs_tol(other.get(k)?, tol.get(k)?),
-                );
+                result.insert(k.clone(), v.debug_abs_tol(other.get(k)?, tol.get(k)?));
             }
             Some(result)
         } else {
@@ -1623,10 +1542,7 @@ where
         if self.len() == other.len() && self.len() == tol.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
-                result.insert(
-                    k.clone(),
-                    v.debug_rmax_tol(other.get(k)?, tol.get(k)?),
-                );
+                result.insert(k.clone(), v.debug_rmax_tol(other.get(k)?, tol.get(k)?));
             }
             Some(result)
         } else {
@@ -1639,10 +1555,7 @@ where
         if self.len() == other.len() && self.len() == tol.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
-                result.insert(
-                    k.clone(),
-                    v.debug_rmin_tol(other.get(k)?, tol.get(k)?),
-                );
+                result.insert(k.clone(), v.debug_rmin_tol(other.get(k)?, tol.get(k)?));
             }
             Some(result)
         } else {
@@ -1655,10 +1568,7 @@ where
         if self.len() == other.len() && self.len() == tol.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
-                result.insert(
-                    k.clone(),
-                    v.debug_r1st_tol(other.get(k)?, tol.get(k)?),
-                );
+                result.insert(k.clone(), v.debug_r1st_tol(other.get(k)?, tol.get(k)?));
             }
             Some(result)
         } else {
@@ -1671,10 +1581,7 @@ where
         if self.len() == other.len() && self.len() == tol.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
-                result.insert(
-                    k.clone(),
-                    v.debug_r2nd_tol(other.get(k)?, tol.get(k)?),
-                );
+                result.insert(k.clone(), v.debug_r2nd_tol(other.get(k)?, tol.get(k)?));
             }
             Some(result)
         } else {
@@ -1694,10 +1601,7 @@ where
         if self.len() == other.len() && self.len() == tol.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
-                result.insert(
-                    k.clone(),
-                    v.debug_ulps_tol(other.get(k)?, tol.get(k)?),
-                );
+                result.insert(k.clone(), v.debug_ulps_tol(other.get(k)?, tol.get(k)?));
             }
             Some(result)
         } else {
@@ -1716,11 +1620,7 @@ where
     type AllDebugTol = Option<BTreeMap<K, VA::AllDebugTol>>;
 
     #[inline]
-    fn debug_abs_all_tol(
-        &self,
-        other: &BTreeMap<K, VB>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_abs_all_tol(&self, other: &BTreeMap<K, VB>, tol: &Self::AllTol) -> Self::AllDebugTol {
         if self.len() == other.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
@@ -1733,11 +1633,7 @@ where
     }
 
     #[inline]
-    fn debug_rmax_all_tol(
-        &self,
-        other: &BTreeMap<K, VB>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_rmax_all_tol(&self, other: &BTreeMap<K, VB>, tol: &Self::AllTol) -> Self::AllDebugTol {
         if self.len() == other.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
@@ -1750,11 +1646,7 @@ where
     }
 
     #[inline]
-    fn debug_rmin_all_tol(
-        &self,
-        other: &BTreeMap<K, VB>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_rmin_all_tol(&self, other: &BTreeMap<K, VB>, tol: &Self::AllTol) -> Self::AllDebugTol {
         if self.len() == other.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
@@ -1767,11 +1659,7 @@ where
     }
 
     #[inline]
-    fn debug_r1st_all_tol(
-        &self,
-        other: &BTreeMap<K, VB>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_r1st_all_tol(&self, other: &BTreeMap<K, VB>, tol: &Self::AllTol) -> Self::AllDebugTol {
         if self.len() == other.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
@@ -1784,11 +1672,7 @@ where
     }
 
     #[inline]
-    fn debug_r2nd_all_tol(
-        &self,
-        other: &BTreeMap<K, VB>,
-        tol: &Self::AllTol,
-    ) -> Self::AllDebugTol {
+    fn debug_r2nd_all_tol(&self, other: &BTreeMap<K, VB>, tol: &Self::AllTol) -> Self::AllDebugTol {
         if self.len() == other.len() {
             let mut result = BTreeMap::new();
             for (k, v) in self {
