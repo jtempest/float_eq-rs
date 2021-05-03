@@ -71,27 +71,30 @@ fn float_eq() {
     // (A, B, C, D, E, F, G, H, I, J, K, L)
     let a = (
         1.0f32, -2.0f64, 3.0f32, -4.0f64, 5.0f32, 6.0f64, 7.0f32, 8.0f64, 9.0f32, 10.0f64, 11.0f32,
-        12.0f64,
+        16.0f64,
     );
     let b = (
         2.0f32, 2.0f64, -3.0f32, -4.5f64, 5.125f32, 6.25f64, 7.375f32, 8.5f64, 9.625f32, 10.75f64,
-        11.875f32, 13.0f64,
+        11.875f32, 15.0f64,
     );
     let eps = (
         1.0f32, 4.0f64, 6.0f32, 0.5f64, 0.125f32, 0.25f64, 0.375f32, 0.5f64, 0.625f32, 0.75f64,
         0.875f32, 1.0f64,
     );
+
     assert_float_eq!(a, b, abs <= eps);
+
     let mut eps0 = eps;
     eps0.0 = f32::prev(eps.0);
     assert_float_ne!(a, b, abs <= eps0);
+
     let mut eps11 = eps;
     eps11.11 = f64::prev(eps.11);
     assert_float_ne!(a, b, abs <= eps11);
 
     let c = (
         f32::next_n(1.0f32, 1),
-        f64::next_n(-2.0f64, 2),
+        f64::prev_n(-2.0f64, 4),
         f32::next_n(3.0f32, 3),
         f64::next_n(-4.0f64, 4),
         f32::next_n(5.0f32, 5),
@@ -101,7 +104,7 @@ fn float_eq() {
         f32::next_n(9.0f32, 9),
         f64::next_n(10.0f64, 10),
         f32::next_n(11.0f32, 11),
-        f64::next_n(12.0f64, 12),
+        f64::prev_n(16.0f64, 24),
     );
     let eps = (
         f32::EPSILON,
@@ -117,21 +120,112 @@ fn float_eq() {
         11.0 * f32::EPSILON,
         12.0 * f64::EPSILON,
     );
-    assert_float_eq!(a, c, rel <= eps);
+
+    assert_float_eq!(a, c, rmax <= eps);
+    assert_float_eq!(c, a, rmax <= eps);
+
     let mut eps0 = eps;
     eps0.0 = eps.0 * 0.5;
-    assert_float_ne!(a, c, rel <= eps0);
+    assert_float_ne!(a, c, rmax <= eps0);
+    assert_float_ne!(c, a, rmax <= eps0);
+
     let mut eps11 = eps;
     eps11.11 = eps.11 * 0.5;
-    assert_float_ne!(a, c, rel <= eps11);
+    assert_float_ne!(a, c, rmax <= eps11);
+    assert_float_ne!(c, a, rmax <= eps11);
 
-    //TODO: rmax, rmin, r1st, r2nd
+    let eps = (
+        f32::EPSILON,
+        4.0 * f64::EPSILON,
+        3.0 * f32::EPSILON,
+        4.0 * f64::EPSILON,
+        5.0 * f32::EPSILON,
+        6.0 * f64::EPSILON,
+        7.0 * f32::EPSILON,
+        8.0 * f64::EPSILON,
+        9.0 * f32::EPSILON,
+        10.0 * f64::EPSILON,
+        11.0 * f32::EPSILON,
+        24.0 * f64::EPSILON,
+    );
 
-    let eps = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+    assert_float_eq!(a, c, rmin <= eps);
+    assert_float_eq!(c, a, rmin <= eps);
+
+    let mut eps0 = eps;
+    eps0.0 = eps.0 * 0.5;
+    assert_float_ne!(a, c, rmin <= eps0);
+    assert_float_ne!(c, a, rmin <= eps0);
+
+    let mut eps11 = eps;
+    eps11.11 = eps.11 * 0.5;
+    assert_float_ne!(a, c, rmin <= eps11);
+    assert_float_ne!(c, a, rmin <= eps11);
+
+    let eps_a = (
+        f32::EPSILON,
+        2.0 * f64::EPSILON,
+        3.0 * f32::EPSILON,
+        4.0 * f64::EPSILON,
+        5.0 * f32::EPSILON,
+        6.0 * f64::EPSILON,
+        7.0 * f32::EPSILON,
+        8.0 * f64::EPSILON,
+        9.0 * f32::EPSILON,
+        10.0 * f64::EPSILON,
+        11.0 * f32::EPSILON,
+        12.0 * f64::EPSILON,
+    );
+    let eps_c = (
+        f32::EPSILON,
+        4.0 * f64::EPSILON,
+        3.0 * f32::EPSILON,
+        4.0 * f64::EPSILON,
+        5.0 * f32::EPSILON,
+        6.0 * f64::EPSILON,
+        7.0 * f32::EPSILON,
+        8.0 * f64::EPSILON,
+        9.0 * f32::EPSILON,
+        10.0 * f64::EPSILON,
+        11.0 * f32::EPSILON,
+        24.0 * f64::EPSILON,
+    );
+
+    assert_float_eq!(a, c, r1st <= eps_a);
+    assert_float_eq!(c, a, r1st <= eps_c);
+
+    assert_float_eq!(a, c, r2nd <= eps_c);
+    assert_float_eq!(c, a, r2nd <= eps_a);
+
+    let mut eps_a0 = eps_a;
+    eps_a0.0 = eps_a.0 * 0.5;
+    let mut eps_c0 = eps_c;
+    eps_c0.0 = eps_c.0 * 0.5;
+
+    assert_float_ne!(a, c, r1st <= eps_a0);
+    assert_float_ne!(c, a, r1st <= eps_c0);
+
+    assert_float_ne!(a, c, r2nd <= eps_c0);
+    assert_float_ne!(c, a, r2nd <= eps_a0);
+
+    let mut eps_a11 = eps_a;
+    eps_a11.11 = eps_a.11 * 0.5;
+    let mut eps_c11 = eps_c;
+    eps_c11.11 = eps_c.11 * 0.5;
+
+    assert_float_ne!(a, c, r1st <= eps_a11);
+    assert_float_ne!(c, a, r1st <= eps_c11);
+
+    assert_float_ne!(a, c, r2nd <= eps_c11);
+    assert_float_ne!(c, a, r2nd <= eps_a11);
+
+    let eps = (1, 4, 3, 4, 5, 6, 7, 8, 9, 10, 11, 24);
     assert_float_eq!(a, c, ulps <= eps);
+
     let mut eps0 = eps;
     eps0.0 = eps.0 - 1;
     assert_float_ne!(a, c, ulps <= eps0);
+
     let mut eps11 = eps;
     eps11.11 = eps.11 - 1;
     assert_float_ne!(a, c, ulps <= eps11);
@@ -301,13 +395,14 @@ fn debug_tol() {
 
     // (A, B, C, D, E, F, G, H, I, J, K, L)
     let a = (
-        1.0f32, -2.0f64, 3.0f32, -4.0f64, 5.0f32, 6.0f64, 7.0f32, 8.0f64, 9.0f32, 10.0f64, 11.0f32,
-        12.0f64,
+        1.0f32, -4.0f64, 3.0f32, -4.0f64, 5.0f32, 6.0f64, 7.0f32, 8.0f64, 9.0f32, 10.0f64, 11.0f32,
+        24.0f64,
     );
     let b = (
-        2.0f32, -4.0f64, 6.0f32, -8.0f64, 10.0f32, 12.0f64, 14.0f32, 16.0f64, 18.0f32, 20.0f64,
-        22.0f32, 24.0f64,
+        2.0f32, -2.0f64, 6.0f32, -8.0f64, 10.0f32, 12.0f64, 14.0f32, 16.0f64, 18.0f32, 20.0f64,
+        22.0f32, 12.0f64,
     );
+
     assert_eq!(
         a.debug_abs_tol(
             &b,
@@ -315,8 +410,9 @@ fn debug_tol() {
         ),
         (0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2)
     );
+
     assert_eq!(
-        a.debug_rel_tol(
+        a.debug_rmax_tol(
             &b,
             &(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2)
         ),
@@ -336,7 +432,68 @@ fn debug_tol() {
         )
     );
 
-    //TODO: rmax, rmin, r1st, r2nd
+    assert_eq!(
+        a.debug_rmin_tol(
+            &b,
+            &(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2)
+        ),
+        (
+            0.1,
+            0.4,
+            0.900_000_04,
+            1.6,
+            2.5,
+            3.599_999_999_999_999_6,
+            4.9,
+            6.4,
+            8.099_999,
+            10.0,
+            12.1,
+            14.399_999_999_999_999
+        )
+    );
+
+    assert_eq!(
+        a.debug_r1st_tol(
+            &b,
+            &(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2)
+        ),
+        (
+            0.1,
+            0.8,
+            0.900_000_04,
+            1.6,
+            2.5,
+            3.599_999_999_999_999_6,
+            4.9,
+            6.4,
+            8.099_999,
+            10.0,
+            12.1,
+            28.799_999_999_999_997
+        )
+    );
+
+    assert_eq!(
+        a.debug_r2nd_tol(
+            &b,
+            &(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2)
+        ),
+        (
+            0.2,
+            0.4,
+            1.800_000_1,
+            3.2,
+            5.0,
+            7.199_999_999_999_999,
+            9.8,
+            12.8,
+            16.199_999,
+            20.0,
+            24.2,
+            14.399_999_999_999_999
+        )
+    );
 
     assert_eq!(
         a.debug_ulps_tol(&b, &(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)),
