@@ -34,7 +34,7 @@ jobs:
   fast_finish: true
 
 before_script: |
-  if [[ "$TRAVIS_RUST_VERSION" == stable ]]; then
+  if [ "$TRAVIS_RUST_VERSION" == stable ] && [ CARGO_PARAMS == "--all-features" ]; then
     cargo install cargo-tarpaulin
   fi
 
@@ -45,7 +45,7 @@ script:
 - cargo test $CARGO_PARAMS
 
 after_success: |
-  if [[ "$TRAVIS_RUST_VERSION" == stable ]]; then
+  if [ "$TRAVIS_RUST_VERSION" == stable ] && [ CARGO_PARAMS == "--all-features" ]; then
     # Uncomment the following line for coveralls.io
     cargo tarpaulin $CARGO_PARAMS --ciserver travis-ci --coveralls $TRAVIS_JOB_ID --exclude-files tests/derive_tests/* --exclude-files ../float_eq_derive/*
 
