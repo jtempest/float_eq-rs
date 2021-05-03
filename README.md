@@ -7,8 +7,8 @@
 
 [![crate](https://img.shields.io/crates/v/float_eq.svg)](https://crates.io/crates/float_eq)
 [![documentation](https://docs.rs/float_eq/badge.svg)](https://docs.rs/float_eq)
-[![Travis status](https://travis-ci.com/jtempest/float_eq-rs.svg?branch=master)](https://travis-ci.com/github/jtempest/float_eq-rs)
-[![Coverage Status](https://coveralls.io/repos/github/jtempest/float_eq-rs/badge.svg?branch=master)](https://coveralls.io/github/jtempest/float_eq-rs?branch=master)
+[![Travis status](https://travis-ci.com/jtempest/float_eq-rs.svg?branch=main)](https://travis-ci.com/github/jtempest/float_eq-rs)
+[![Coverage Status](https://coveralls.io/repos/github/jtempest/float_eq-rs/badge.svg?branch=main)](https://coveralls.io/github/jtempest/float_eq-rs?branch=main)
 
 Compare IEEE floating point primitives, structs and collections for equality.
 
