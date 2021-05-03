@@ -415,6 +415,10 @@ macro_rules! impl_map_tests {
                 $c! { "one" => one, "two" => two }
             }
 
+            fn map13<T>(one: T, three: T) -> $t<&'static str, T> {
+                $c! { "one" => one, "three" => three }
+            }
+
             fn map123<T>(one: T, two: T, three: T) -> $t<&'static str, T> {
                 $c! { "one" => one, "two" => two, "three" => three }
             }
@@ -423,8 +427,6 @@ macro_rules! impl_map_tests {
             fn float_eq() {
                 let a = map12(0.999_999_9f32, 4.0);
                 let b = map12(1.0f32, 3.999_999_5);
-                let c = map1(1.0f32);
-                let d = map123(1.0f32, 3.999_999_5, 1337.0);
                 let eps = f32::EPSILON;
                 let inf = f32::INFINITY;
 
@@ -458,6 +460,8 @@ macro_rules! impl_map_tests {
                 assert_float_ne!(a, b, ulps <= map12(2, 1));
 
                 // Different shape a/b: item missing
+                let c = map1(1.0f32);
+
                 assert_float_ne!(a, c, abs <= map12(inf, inf));
                 assert_float_ne!(a, c, rel <= map12(inf, inf));
                 assert_float_ne!(a, c, rmax <= map12(inf, inf));
@@ -475,6 +479,8 @@ macro_rules! impl_map_tests {
                 assert_float_ne!(c, b, ulps <= map12(u32::MAX, u32::MAX));
 
                 // Different shape a/b: item extra
+                let d = map123(1.0f32, 3.999_999_5, 1337.0);
+
                 assert_float_ne!(a, d, abs <= map12(inf, inf));
                 assert_float_ne!(a, d, rel <= map12(inf, inf));
                 assert_float_ne!(a, d, rmax <= map12(inf, inf));
@@ -491,7 +497,26 @@ macro_rules! impl_map_tests {
                 assert_float_ne!(d, b, r2nd <= map12(inf, inf));
                 assert_float_ne!(d, b, ulps <= map12(u32::MAX, u32::MAX));
 
-                // Different shape tol
+                // Different shape a/b: different keys
+                let e = map13(0.999_999_9f32, 4.0);
+
+                assert_float_ne!(a, e, abs <= map12(inf, inf));
+                assert_float_ne!(a, e, rel <= map12(inf, inf));
+                assert_float_ne!(a, e, rmax <= map12(inf, inf));
+                assert_float_ne!(a, e, rmin <= map12(inf, inf));
+                assert_float_ne!(a, e, r1st <= map12(inf, inf));
+                assert_float_ne!(a, e, r2nd <= map12(inf, inf));
+                assert_float_ne!(a, e, ulps <= map12(u32::MAX, u32::MAX));
+
+                assert_float_ne!(e, b, abs <= map12(inf, inf));
+                assert_float_ne!(e, b, rel <= map12(inf, inf));
+                assert_float_ne!(e, b, rmax <= map12(inf, inf));
+                assert_float_ne!(e, b, rmin <= map12(inf, inf));
+                assert_float_ne!(e, b, r1st <= map12(inf, inf));
+                assert_float_ne!(e, b, r2nd <= map12(inf, inf));
+                assert_float_ne!(e, b, ulps <= map12(u32::MAX, u32::MAX));
+
+                // Different shape tol: item missing
                 assert_float_ne!(a, b, abs <= map1(inf));
                 assert_float_ne!(a, b, rel <= map1(inf));
                 assert_float_ne!(a, b, rmax <= map1(inf));
@@ -500,6 +525,7 @@ macro_rules! impl_map_tests {
                 assert_float_ne!(a, b, r2nd <= map1(inf));
                 assert_float_ne!(a, b, ulps <= map1(u32::MAX));
 
+                // Different shape tol: item extra
                 assert_float_ne!(a, b, abs <= map123(inf, inf, inf));
                 assert_float_ne!(a, b, rel <= map123(inf, inf, inf));
                 assert_float_ne!(a, b, rmax <= map123(inf, inf, inf));
@@ -507,14 +533,21 @@ macro_rules! impl_map_tests {
                 assert_float_ne!(a, b, r1st <= map123(inf, inf, inf));
                 assert_float_ne!(a, b, r2nd <= map123(inf, inf, inf));
                 assert_float_ne!(a, b, ulps <= map123(u32::MAX, u32::MAX, u32::MAX));
+
+                // Different shape tol: different keys
+                assert_float_ne!(a, b, abs <= map13(inf, inf));
+                assert_float_ne!(a, b, rel <= map13(inf, inf));
+                assert_float_ne!(a, b, rmax <= map13(inf, inf));
+                assert_float_ne!(a, b, rmin <= map13(inf, inf));
+                assert_float_ne!(a, b, r1st <= map13(inf, inf));
+                assert_float_ne!(a, b, r2nd <= map13(inf, inf));
+                assert_float_ne!(a, b, ulps <= map13(u32::MAX, u32::MAX));
             }
 
             #[test]
             fn float_eq_all() {
                 let a = map12(0.999_999_9f32, 4.0);
                 let b = map12(1.0f32, 3.999_999_5);
-                let c = map1(1.0f32);
-                let d = map123(1.0f32, 3.999_999_5, 1337.0);
                 let eps = f32::EPSILON;
 
                 // Same shape a/b/tol
@@ -540,6 +573,8 @@ macro_rules! impl_map_tests {
                 assert_float_ne!(a, b, ulps_all <= 1);
 
                 // Different shape a/b: item missing
+                let c = map1(1.0f32);
+
                 assert_float_ne!(a, c, abs_all <= f32::INFINITY);
                 assert_float_ne!(a, c, rel_all <= f32::INFINITY);
                 assert_float_ne!(a, c, rmax_all <= f32::INFINITY);
@@ -557,6 +592,8 @@ macro_rules! impl_map_tests {
                 assert_float_ne!(c, b, ulps_all <= u32::MAX);
 
                 // Different shape a/b: item extra
+                let d = map123(1.0f32, 3.999_999_5, 1337.0);
+
                 assert_float_ne!(a, d, abs_all <= f32::INFINITY);
                 assert_float_ne!(a, d, rel_all <= f32::INFINITY);
                 assert_float_ne!(a, d, rmax_all <= f32::INFINITY);
@@ -572,6 +609,25 @@ macro_rules! impl_map_tests {
                 assert_float_ne!(d, b, r1st_all <= f32::INFINITY);
                 assert_float_ne!(d, b, r2nd_all <= f32::INFINITY);
                 assert_float_ne!(d, b, ulps_all <= u32::MAX);
+
+                // Different shape a/b: different keys
+                let e = map13(0.999_999_9f32, 4.0);
+
+                assert_float_ne!(a, e, abs_all <= f32::INFINITY);
+                assert_float_ne!(a, e, rel_all <= f32::INFINITY);
+                assert_float_ne!(a, e, rmax_all <= f32::INFINITY);
+                assert_float_ne!(a, e, rmin_all <= f32::INFINITY);
+                assert_float_ne!(a, e, r1st_all <= f32::INFINITY);
+                assert_float_ne!(a, e, r2nd_all <= f32::INFINITY);
+                assert_float_ne!(a, e, ulps_all <= u32::MAX);
+
+                assert_float_ne!(e, b, abs_all <= f32::INFINITY);
+                assert_float_ne!(e, b, rel_all <= f32::INFINITY);
+                assert_float_ne!(e, b, rmax_all <= f32::INFINITY);
+                assert_float_ne!(e, b, rmin_all <= f32::INFINITY);
+                assert_float_ne!(e, b, r1st_all <= f32::INFINITY);
+                assert_float_ne!(e, b, r2nd_all <= f32::INFINITY);
+                assert_float_ne!(e, b, ulps_all <= u32::MAX);
             }
 
             #[test]
