@@ -167,9 +167,9 @@ can in the same number of bits.
 The trade off is that the granularity of floating point numbers changes with
 their magnitude. As floating point numbers get larger the *absolute* distance
 between adjacent values grows, and as they get smaller it shrinks, whereas the
-*relative* ratio between values remains constant. This is in contrast to integer
+*relative* distance between values remains constant. This is in contrast to integer
 types where, regardless of magnitude, adjacent values are always the same
-*absolute* distance away from each another (one), but their *relative* ratio
+*absolute* distance away from each another (one), but their *relative* distance
 changes.
 
 Let's make this more concrete by comparing `i32` and `f32`. Each can represent
@@ -200,7 +200,7 @@ The positive range of `f32` can represent:
 ```
 
 As mentioned above, the *absolute* distance between every adjacent pair of `i32`
-numbers within its range is always one, but their *relative* ratio changes
+numbers within its range is always one, but their *relative* distance changes
 depending on their magnitude:
 
 ```txt
@@ -225,8 +225,8 @@ act differently but the vast majority of `f32` values are [normal floating point
 numbers] in the range from `f32::MIN_POSITIVE` to `f32::MAX`.
 
 The absolute distance between each pair of adjacent normal `f32` values varies
-depending on their size but their relative ratio is always 1.0000001. We can
-illustrate this with some help from the [ieee754] crate:
+depending on their size but their relative distance is always very close to
+1.0000001. We can illustrate this with some help from the [ieee754] crate:
 
 ```rust
 use ieee754::Ieee754;
