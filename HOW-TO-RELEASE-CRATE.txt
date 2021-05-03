@@ -1,13 +1,13 @@
 # A checklist/sequence of actions to take to package a new build and upload it
 # to crates.io.
 
-- Ensure all tests pass
+- Ensure all tests pass:
   -`cargo hack test --feature-powerset`
-- Make sure documentation is up to date
+- Make sure documentation is up to date:
   - `./docs-build.bat --open`
   - crates-io.md
   - Run generate-readme.bat
-- Make sure CHANGELOG is up to date
+- Make sure CHANGELOG is up to date:
   - Change Unreleased -> version
   - add link to tag (note that this won't work until the tag has been pushed)
   - add release date
@@ -22,6 +22,7 @@
   - git push origin --tags
 - Check CI is building
 - Check links in CHANGELOG and badges work to new release tag
+- Release docs (HOW-TO-RELEASE-DOCS.txt)
 - Check `cargo package` for float_eq_derive
 - `cargo publish` float_eq_derive
 - Check `cargo package` for float_eq
