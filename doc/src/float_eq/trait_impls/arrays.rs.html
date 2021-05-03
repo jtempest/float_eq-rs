@@ -297,10 +297,6 @@
 <span id="294">294</span>
 <span id="295">295</span>
 <span id="296">296</span>
-<span id="297">297</span>
-<span id="298">298</span>
-<span id="299">299</span>
-<span id="300">300</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">AssertFloatEq</span>, <span class="ident">AssertFloatEqAll</span>, <span class="ident">DebugUlpsDiff</span>, <span class="ident">FloatEq</span>, <span class="ident">FloatEqAll</span>, <span class="ident">FloatEqDebugUlpsDiff</span>,
@@ -524,11 +520,7 @@
     }
 
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">debug_ulps_tol</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">other</span>: <span class="kw-2">&amp;</span>[<span class="ident">B</span>; <span class="ident">N</span>],
-        <span class="ident">tol</span>: <span class="kw-2">&amp;</span><span class="ident">UlpsTol</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Tol</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">UlpsTol</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">DebugTol</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">debug_ulps_tol</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span>[<span class="ident">B</span>; <span class="ident">N</span>], <span class="ident">tol</span>: <span class="kw-2">&amp;</span><span class="ident">UlpsTol</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Tol</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">UlpsTol</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">DebugTol</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span>: [<span class="ident">MaybeUninit</span><span class="op">&lt;</span><span class="ident">UlpsTol</span><span class="op">&lt;</span><span class="ident">A</span>::<span class="ident">DebugTol</span><span class="op">&gt;</span><span class="op">&gt;</span>; <span class="ident">N</span>] <span class="op">=</span> <span class="ident">uninit_array</span>();
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
             <span class="ident">result</span>[<span class="ident">i</span>] <span class="op">=</span> <span class="ident">MaybeUninit</span>::<span class="ident">new</span>(<span class="self">self</span>[<span class="ident">i</span>].<span class="ident">debug_ulps_tol</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>[<span class="ident">i</span>], <span class="kw-2">&amp;</span><span class="ident">tol</span>[<span class="ident">i</span>]));

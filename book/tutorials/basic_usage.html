@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Basic usage - Documentation for float_eq 0.6.0-pre</title>
+        <title>Basic usage - Documentation for float_eq 0.6.0</title>
         
         
 
@@ -127,7 +127,7 @@
                         
                     </div>
 
-                    <h1 class="menu-title">Documentation for float_eq 0.6.0-pre</h1>
+                    <h1 class="menu-title">Documentation for float_eq 0.6.0</h1>
 
                     <div class="right-buttons">
                         
@@ -310,9 +310,9 @@ can in the same number of bits.</p>
 <p>The trade off is that the granularity of floating point numbers changes with
 their magnitude. As floating point numbers get larger the <em>absolute</em> distance
 between adjacent values grows, and as they get smaller it shrinks, whereas the
-<em>relative</em> ratio between values remains constant. This is in contrast to integer
+<em>relative</em> distance between values remains constant. This is in contrast to integer
 types where, regardless of magnitude, adjacent values are always the same
-<em>absolute</em> distance away from each another (one), but their <em>relative</em> ratio
+<em>absolute</em> distance away from each another (one), but their <em>relative</em> distance
 changes.</p>
 <p>Let's make this more concrete by comparing <code>i32</code> and <code>f32</code>. Each can represent
 4,294,967,296 different values using their 32 bits, but they make very different
@@ -343,7 +343,7 @@ choices as to what those values are.</p>
 <span class="boring">}
 </span></code></pre></pre>
 <p>As mentioned above, the <em>absolute</em> distance between every adjacent pair of <code>i32</code>
-numbers within its range is always one, but their <em>relative</em> ratio changes
+numbers within its range is always one, but their <em>relative</em> distance changes
 depending on their magnitude:</p>
 <pre><code class="language-txt">0 -&gt; 1:
 absolute: 1 - 0 = 1
@@ -364,8 +364,8 @@ values at the extremes and the tiny range of subnormal values just above zero
 act differently but the vast majority of <code>f32</code> values are <a href="https://en.wikipedia.org/wiki/Normal_number_(computing)">normal floating point
 numbers</a> in the range from <code>f32::MIN_POSITIVE</code> to <code>f32::MAX</code>.</p>
 <p>The absolute distance between each pair of adjacent normal <code>f32</code> values varies
-depending on their size but their relative ratio is always 1.0000001. We can
-illustrate this with some help from the <a href="https://crates.io/crates/ieee754">ieee754</a> crate:</p>
+depending on their size but their relative distance is always very close to
+1.0000001. We can illustrate this with some help from the <a href="https://crates.io/crates/ieee754">ieee754</a> crate:</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {

@@ -299,11 +299,6 @@
 <span id="296">296</span>
 <span id="297">297</span>
 <span id="298">298</span>
-<span id="299">299</span>
-<span id="300">300</span>
-<span id="301">301</span>
-<span id="302">302</span>
-<span id="303">303</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">AssertFloatEq</span>, <span class="ident">DebugUlpsDiff</span>, <span class="ident">FloatEq</span>, <span class="ident">FloatEqDebugUlpsDiff</span>, <span class="ident">FloatEqUlpsTol</span>, <span class="ident">UlpsTol</span>};
 <span class="kw">use</span> <span class="ident">core</span>::<span class="ident">fmt</span>;
@@ -376,12 +371,7 @@
     <span class="kw">fn</span> <span class="ident">debug_r2nd_tol</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_other</span>: <span class="kw-2">&amp;</span>(), <span class="ident">_tol</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">Tol</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">DebugTol</span> {}
 
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">debug_ulps_tol</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">_other</span>: <span class="kw-2">&amp;</span>(),
-        <span class="ident">_tol</span>: <span class="kw-2">&amp;</span><span class="ident">UlpsTol</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Tol</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">UlpsTol</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">DebugTol</span><span class="op">&gt;</span> {
-    }
+    <span class="kw">fn</span> <span class="ident">debug_ulps_tol</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_other</span>: <span class="kw-2">&amp;</span>(), <span class="ident">_tol</span>: <span class="kw-2">&amp;</span><span class="ident">UlpsTol</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Tol</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">UlpsTol</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">DebugTol</span><span class="op">&gt;</span> {}
 }
 
 <span class="comment">// Non-unit type tuple impls, as for std PartialEq implementation</span>
