@@ -5,9 +5,12 @@ use core::fmt;
 /// This trait establishes a one-to-one relation between an IEEE floating point
 /// type and a type whose fields are expected to be structurally identical but
 /// specified in [ULPs]. It is used by ULPs equality checks to specify per-field
-/// tolerances. The [`UlpsTol`] type alias exists to simplify usage, for
-/// example `UlpsTol<f32>` is `u32`. Usually, this type is named `FooUlps`
-/// for a given type `Foo`.
+/// tolerances.
+///
+/// By convention, this type is named `FooUlps` for a given type `Foo`.
+///
+/// The [`UlpsTol`] type alias exists to simplify usage, for example `UlpsTol<f32>`
+/// is `u32`.
 ///
 /// To implement this trait over a new type, see [How to compare custom types].
 ///
@@ -29,12 +32,16 @@ pub type UlpsTol<T> = <T as FloatEqUlpsTol>::UlpsTol;
 ///
 /// This trait establishes a one-to-one relation between an IEEE floating point
 /// type and a type whose fields are expected to be structurally identical but
-/// specified as the result of calculating a diff in [ULPs]. It is used by testing
-/// and debugging tools to show the difference between two values on a per-field
-/// basis and is built for clarity, not runtime efficiency. The [`DebugUlpsDiff`]
-/// type alias exists to simplify usage, for example `DebugUlpsDiff<f32>` is
-/// `Option<u32>`. Usually, this type is named `FooDebugUlpsDiff` for a given
-/// type `Foo`.
+/// specified as the result of calculating a diff in [ULPs]. This is usually
+/// [`UlpsTol`] wrapped in an `Option`, since the ULPs diff between two floats is
+/// a partial function that returns `None` when the signs differ. It is used by
+/// testing and debugging tools to show the difference between two values on a
+/// per-field basis and is built for clarity, not runtime efficiency.
+///
+/// By convention, this type is named `FooDebugUlpsDiff` for a given type `Foo`.
+///
+/// The [`DebugUlpsDiff`] type alias exists to simplify usage, for example
+/// `DebugUlpsDiff<f32>` is `Option<u32>`.
 ///
 /// To implement this trait over a new type, see [How to compare custom types].
 ///
