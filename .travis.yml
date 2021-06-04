@@ -30,6 +30,7 @@ env:
 
 jobs:
   allow_failures:
+    - rust: beta
     - rust: nightly
   fast_finish: true
 
