@@ -258,74 +258,56 @@ where
 
     #[inline]
     fn eq_abs(&self, other: &Option<T>, tol: &Self::Tol) -> bool {
-        self.is_some()
-            && other.is_some()
-            && tol.is_some()
-            && FloatEq::eq_abs(
-                self.as_ref().unwrap(),
-                other.as_ref().unwrap(),
-                tol.as_ref().unwrap(),
-            )
+        if let (Some(s), Some(o), Some(t)) = (self, other, tol) {
+            s.eq_abs(o, t)
+        } else {
+            false
+        }
     }
 
     #[inline]
     fn eq_rmax(&self, other: &Option<T>, tol: &Self::Tol) -> bool {
-        self.is_some()
-            && other.is_some()
-            && tol.is_some()
-            && FloatEq::eq_rmax(
-                self.as_ref().unwrap(),
-                other.as_ref().unwrap(),
-                tol.as_ref().unwrap(),
-            )
+        if let (Some(s), Some(o), Some(t)) = (self, other, tol) {
+            s.eq_rmax(o, t)
+        } else {
+            false
+        }
     }
 
     #[inline]
     fn eq_rmin(&self, other: &Option<T>, tol: &Self::Tol) -> bool {
-        self.is_some()
-            && other.is_some()
-            && tol.is_some()
-            && FloatEq::eq_rmin(
-                self.as_ref().unwrap(),
-                other.as_ref().unwrap(),
-                tol.as_ref().unwrap(),
-            )
+        if let (Some(s), Some(o), Some(t)) = (self, other, tol) {
+            s.eq_rmin(o, t)
+        } else {
+            false
+        }
     }
 
     #[inline]
     fn eq_r1st(&self, other: &Option<T>, tol: &Self::Tol) -> bool {
-        self.is_some()
-            && other.is_some()
-            && tol.is_some()
-            && FloatEq::eq_r1st(
-                self.as_ref().unwrap(),
-                other.as_ref().unwrap(),
-                tol.as_ref().unwrap(),
-            )
+        if let (Some(s), Some(o), Some(t)) = (self, other, tol) {
+            s.eq_r1st(o, t)
+        } else {
+            false
+        }
     }
 
     #[inline]
     fn eq_r2nd(&self, other: &Option<T>, tol: &Self::Tol) -> bool {
-        self.is_some()
-            && other.is_some()
-            && tol.is_some()
-            && FloatEq::eq_r2nd(
-                self.as_ref().unwrap(),
-                other.as_ref().unwrap(),
-                tol.as_ref().unwrap(),
-            )
+        if let (Some(s), Some(o), Some(t)) = (self, other, tol) {
+            s.eq_r2nd(o, t)
+        } else {
+            false
+        }
     }
 
     #[inline]
     fn eq_ulps(&self, other: &Option<T>, tol: &UlpsTol<Self::Tol>) -> bool {
-        self.is_some()
-            && other.is_some()
-            && tol.is_some()
-            && FloatEq::eq_ulps(
-                self.as_ref().unwrap(),
-                other.as_ref().unwrap(),
-                tol.as_ref().unwrap(),
-            )
+        if let (Some(s), Some(o), Some(t)) = (self, other, tol) {
+            s.eq_ulps(o, t)
+        } else {
+            false
+        }
     }
 }
 
@@ -338,74 +320,56 @@ where
 
     #[inline]
     fn eq_abs_all(&self, other: &Option<T>, tol: &Self::AllTol) -> bool {
-        self.is_some()
-            && other.is_some()
-            && tol.is_some()
-            && FloatEqAll::eq_abs_all(
-                self.as_ref().unwrap(),
-                other.as_ref().unwrap(),
-                tol.as_ref().unwrap(),
-            )
+        if let (Some(s), Some(o), Some(t)) = (self, other, tol) {
+            s.eq_abs_all(o, t)
+        } else {
+            false
+        }
     }
 
     #[inline]
     fn eq_rmax_all(&self, other: &Option<T>, tol: &Self::AllTol) -> bool {
-        self.is_some()
-            && other.is_some()
-            && tol.is_some()
-            && FloatEqAll::eq_rmax_all(
-                self.as_ref().unwrap(),
-                other.as_ref().unwrap(),
-                tol.as_ref().unwrap(),
-            )
+        if let (Some(s), Some(o), Some(t)) = (self, other, tol) {
+            s.eq_rmax_all(o, t)
+        } else {
+            false
+        }
     }
 
     #[inline]
     fn eq_rmin_all(&self, other: &Option<T>, tol: &Self::AllTol) -> bool {
-        self.is_some()
-            && other.is_some()
-            && tol.is_some()
-            && FloatEqAll::eq_rmin_all(
-                self.as_ref().unwrap(),
-                other.as_ref().unwrap(),
-                tol.as_ref().unwrap(),
-            )
+        if let (Some(s), Some(o), Some(t)) = (self, other, tol) {
+            s.eq_rmin_all(o, t)
+        } else {
+            false
+        }
     }
 
     #[inline]
     fn eq_r1st_all(&self, other: &Option<T>, tol: &Self::AllTol) -> bool {
-        self.is_some()
-            && other.is_some()
-            && tol.is_some()
-            && FloatEqAll::eq_r1st_all(
-                self.as_ref().unwrap(),
-                other.as_ref().unwrap(),
-                tol.as_ref().unwrap(),
-            )
+        if let (Some(s), Some(o), Some(t)) = (self, other, tol) {
+            s.eq_r1st_all(o, t)
+        } else {
+            false
+        }
     }
 
     #[inline]
     fn eq_r2nd_all(&self, other: &Option<T>, tol: &Self::AllTol) -> bool {
-        self.is_some()
-            && other.is_some()
-            && tol.is_some()
-            && FloatEqAll::eq_r2nd_all(
-                self.as_ref().unwrap(),
-                other.as_ref().unwrap(),
-                tol.as_ref().unwrap(),
-            )
+        if let (Some(s), Some(o), Some(t)) = (self, other, tol) {
+            s.eq_r2nd_all(o, t)
+        } else {
+            false
+        }
     }
 
     #[inline]
     fn eq_ulps_all(&self, other: &Option<T>, tol: &UlpsTol<Self::AllTol>) -> bool {
-        self.is_some()
-            && other.is_some()
-            && tol.is_some()
-            && FloatEqAll::eq_ulps_all(
-                self.as_ref().unwrap(),
-                other.as_ref().unwrap(),
-                tol.as_ref().unwrap(),
-            )
+        if let (Some(s), Some(o), Some(t)) = (self, other, tol) {
+            s.eq_ulps_all(o, t)
+        } else {
+            false
+        }
     }
 }
 
