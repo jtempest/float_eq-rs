@@ -1,0 +1,93 @@
+# Based on https://github.com/actions-rs/meta/blob/master/recipes/matrix.md
+
+on: push
+
+name: Continuous integration
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        rust:
+          - stable
+          #- beta
+          #- nightly
+          #- 1.51.0  # MSRV
+        params: ['',
+                 '--all-features',
+                 '--no-default-features',
+                 '--no-default-features --features derive,num']
+        experimental: [false]
+        include:
+          - rust: beta
+            params: ''
+            experimental: true
+          - rust: beta
+            params: '--all-features'
+            experimental: true
+          - rust: beta
+            params: '--no-default-features'
+            experimental: true
+          - rust: beta
+            params: '--no-default-features --features derive,num'
+            experimental: true
+          - rust: nightly
+            params: ''
+            experimental: true
+          - rust: nightly
+            params: '--all-features'
+            experimental: true
+          - rust: nightly
+            params: '--no-default-features'
+            experimental: true
+          - rust: nightly
+            params: '--no-default-features --features derive,num'
+            experimental: true
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ matrix.rust }}
+          override: true
+          components: clippy
+
+      - uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: ${{ matrix.params }}
+
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: ${{ matrix.params }}
+
+      - uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: ${{ matrix.params }} -- -D warnings
+
+  coverage-codecov:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Run tarpaulin for codecov.io
+        uses: actions-rs/tarpaulin@v0.1
+        with:
+          version: '0.18.0'
+          args: '--ciserver github-ci --all-features --ignore-tests'
+
+      - name: Upload to codecov.io
+        uses: codecov/codecov-action@v2
