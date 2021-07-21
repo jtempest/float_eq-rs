@@ -2,7 +2,7 @@
 
 on: push
 
-name: Continuous integration
+name: Build
 
 jobs:
   tests:
