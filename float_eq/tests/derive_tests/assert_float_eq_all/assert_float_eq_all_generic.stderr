@@ -1,32 +1,8 @@
 error: This trait does not yet support derive for generic types.
-  --> $DIR/assert_float_eq_all_generic.rs:15:5
+  --> $DIR/assert_float_eq_all_generic.rs:10:5
    |
-15 |     AssertFloatEqAll,
-   |     ^^^^^^^^^^^^^^^^
-   |
-   = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error: This trait does not yet support derive for generic types.
-  --> $DIR/assert_float_eq_all_generic.rs:14:5
-   |
-14 |     FloatEqAll,
-   |     ^^^^^^^^^^
-   |
-   = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error: This trait does not yet support derive for generic types.
-  --> $DIR/assert_float_eq_all_generic.rs:13:5
-   |
-13 |     AssertFloatEq,
-   |     ^^^^^^^^^^^^^
-   |
-   = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error: This trait does not yet support derive for generic types.
-  --> $DIR/assert_float_eq_all_generic.rs:12:5
-   |
-12 |     FloatEqDebugUlpsDiff,
-   |     ^^^^^^^^^^^^^^^^^^^^
+10 |     FloatEqUlpsTol,
+   |     ^^^^^^^^^^^^^^
    |
    = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)
 
@@ -39,9 +15,33 @@ error: This trait does not yet support derive for generic types.
    = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error: This trait does not yet support derive for generic types.
-  --> $DIR/assert_float_eq_all_generic.rs:10:5
+  --> $DIR/assert_float_eq_all_generic.rs:12:5
    |
-10 |     FloatEqUlpsTol,
-   |     ^^^^^^^^^^^^^^
+12 |     FloatEqDebugUlpsDiff,
+   |     ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: This trait does not yet support derive for generic types.
+  --> $DIR/assert_float_eq_all_generic.rs:13:5
+   |
+13 |     AssertFloatEq,
+   |     ^^^^^^^^^^^^^
+   |
+   = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: This trait does not yet support derive for generic types.
+  --> $DIR/assert_float_eq_all_generic.rs:14:5
+   |
+14 |     FloatEqAll,
+   |     ^^^^^^^^^^
+   |
+   = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: This trait does not yet support derive for generic types.
+  --> $DIR/assert_float_eq_all_generic.rs:15:5
+   |
+15 |     AssertFloatEqAll,
+   |     ^^^^^^^^^^^^^^^^
    |
    = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)

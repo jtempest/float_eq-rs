@@ -1,10 +1,10 @@
-error: FloatEq may only be derived for structs.
+error: FloatEqUlpsTol may only be derived for structs.
  --> $DIR/float_eq_enum.rs:4:6
   |
 4 | enum SomeEnum {
   |      ^^^^^^^^
 
-error: FloatEqUlpsTol may only be derived for structs.
+error: FloatEq may only be derived for structs.
  --> $DIR/float_eq_enum.rs:4:6
   |
 4 | enum SomeEnum {
