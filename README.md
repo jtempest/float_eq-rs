@@ -1,5 +1,5 @@
 <!--
-    THIS FILE IS GENERATED FROM crates-io.md AND LICENSE.md.
+    THIS FILE IS GENERATED FROM crates-io.md, badges.md AND LICENSE.md.
     DO NOT EDIT IT DIRECTLY.
 -->
 
