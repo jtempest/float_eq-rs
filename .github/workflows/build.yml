@@ -13,7 +13,7 @@ jobs:
       matrix:
         rust:
           - stable
-          #- beta
+          - beta
           #- nightly
           #- 1.51.0  # MSRV
         params: ['',
@@ -22,18 +22,6 @@ jobs:
                  '--no-default-features --features derive,num']
         experimental: [false]
         include:
-          - rust: beta
-            params: ''
-            experimental: true
-          - rust: beta
-            params: '--all-features'
-            experimental: true
-          - rust: beta
-            params: '--no-default-features'
-            experimental: true
-          - rust: beta
-            params: '--no-default-features --features derive,num'
-            experimental: true
           - rust: nightly
             params: ''
             experimental: true

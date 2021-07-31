@@ -9,4 +9,4 @@ help: try specifying `debug_ulps_diff = "MyComplex32DebugUlpsDiff"` in `derive_f
 6 | | )]
   | |__^
   |
-  = note: this error originates in an attribute macro (in Nightly builds, run with -Z macro-backtrace for more info)
+  = note: this error originates in the attribute macro `derive_float_eq` (in Nightly builds, run with -Z macro-backtrace for more info)

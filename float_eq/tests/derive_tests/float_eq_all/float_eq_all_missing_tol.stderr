@@ -6,4 +6,4 @@ help: try adding `#[float_eq(all_tol = "T")]` to your type, where T is commonly 
 3 | #[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsTol, FloatEq, FloatEqAll)]
   |                                                                  ^^^^^^^^^^
   |
-  = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)
+  = note: this error originates in the derive macro `FloatEqAll` (in Nightly builds, run with -Z macro-backtrace for more info)

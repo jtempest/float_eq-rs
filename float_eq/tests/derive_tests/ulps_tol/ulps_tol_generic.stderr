@@ -4,4 +4,4 @@ error: This trait does not yet support derive for generic types.
 3 | #[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsTol)]
   |                                         ^^^^^^^^^^^^^^
   |
-  = note: this error originates in a derive macro (in Nightly builds, run with -Z macro-backtrace for more info)
+  = note: this error originates in the derive macro `FloatEqUlpsTol` (in Nightly builds, run with -Z macro-backtrace for more info)
