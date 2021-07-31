@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Clearer documentation for the `FloatEqDebugUlpsDiff` and `FloatEqUlpsTol`
   traits.
+- Updated derive tests to match current compiler output.
+- Switched to using github actions and codecov.io for continuous integration
+  and coverage.
 
 ## [0.6.0] - 2021-05-03
 Bumped up the version number since this release includes breaking API changes.
