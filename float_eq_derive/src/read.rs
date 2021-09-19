@@ -152,7 +152,7 @@ pub fn float_eq_attr(input: &DeriveInput) -> Result<FloatEqAttr, syn::Error> {
         } else if name == "all_tol" {
             set_float_eq_attr_ident(&mut attr_values.all_tol_type_name, &nv)?;
         } else {
-            let msg = r"Not a valid float_eq derive option.";
+            let msg = format!(r"'{}' is not a valid float_eq derive option.", name);
             return Err(syn::Error::new(nv.name.span(), msg));
         }
     }
