@@ -2,7 +2,7 @@ use proc_macro2::{Ident, Span, TokenStream};
 use quote::ToTokens;
 use syn::{
     spanned::Spanned, Attribute, Data, DeriveInput, Fields, FieldsNamed, FieldsUnnamed, Lit,
-    LitInt, Meta, NestedMeta, Type,
+    LitInt, LitStr, Meta, NestedMeta, Type,
 };
 
 pub enum FieldName<'a> {
@@ -132,11 +132,11 @@ help: try adding `#[float_eq(all_tol = "T")]` to your type, where T is commonly 
 }
 
 pub fn float_eq_attr(input: &DeriveInput) -> Result<FloatEqAttr, syn::Error> {
-    let nv_pair_lists: Vec<Vec<NameTypePair>> = input
+    let nv_pair_lists: Vec<Vec<NameValuePair>> = input
         .attrs
         .iter()
         .filter(|a| a.path.is_ident("float_eq"))
-        .map(|a| name_type_pair_list(&input.ident, a))
+        .map(|a| name_value_pair_list(&input.ident, a))
         .collect::<Result<_, _>>()?;
 
     let mut attr_values = FloatEqAttr {
@@ -146,35 +146,11 @@ pub fn float_eq_attr(input: &DeriveInput) -> Result<FloatEqAttr, syn::Error> {
     for nv in nv_pair_lists.into_iter().flatten() {
         let name = nv.name.to_string();
         if name == "ulps_tol" {
-            if attr_values.ulps_tol_type_name.is_none() {
-                attr_values.ulps_tol_type_name = Some(nv.value);
-            } else {
-                let msg = format!(
-                    r#"Expected only one ULPs tolerance type name, previously saw `ulps_tol = "{}"`."#,
-                    attr_values.ulps_tol_type_name.unwrap().to_string()
-                );
-                return Err(syn::Error::new(nv.value.span(), msg));
-            }
+            set_float_eq_attr_ident(&mut attr_values.ulps_tol_type_name, &nv)?;
         } else if name == "debug_ulps_diff" {
-            if attr_values.debug_ulps_diff_type_name.is_none() {
-                attr_values.debug_ulps_diff_type_name = Some(nv.value);
-            } else {
-                let msg = format!(
-                    r#"Expected only one debug ULPs diff type name, previously saw `debug_ulps_diff = "{}"`."#,
-                    attr_values.debug_ulps_diff_type_name.unwrap().to_string()
-                );
-                return Err(syn::Error::new(nv.value.span(), msg));
-            }
+            set_float_eq_attr_ident(&mut attr_values.debug_ulps_diff_type_name, &nv)?;
         } else if name == "all_tol" {
-            if attr_values.all_tol_type_name.is_none() {
-                attr_values.all_tol_type_name = Some(nv.value);
-            } else {
-                let msg = format!(
-                    r#"Expected only one Tol type name, previously saw `all_tol = "{}"`."#,
-                    attr_values.all_tol_type_name.unwrap().to_string()
-                );
-                return Err(syn::Error::new(nv.value.span(), msg));
-            }
+            set_float_eq_attr_ident(&mut attr_values.all_tol_type_name, &nv)?;
         } else {
             let msg = r"Not a valid float_eq derive option.";
             return Err(syn::Error::new(nv.name.span(), msg));
@@ -184,41 +160,65 @@ pub fn float_eq_attr(input: &DeriveInput) -> Result<FloatEqAttr, syn::Error> {
     Ok(attr_values)
 }
 
-fn name_type_pair_list(
+fn set_float_eq_attr_ident(
+    attr_value: &mut Option<Ident>,
+    name_value_pair: &NameValuePair,
+) -> Result<(), syn::Error> {
+    if attr_value.is_none() {
+        if let Ok(ident) = name_value_pair.value.parse::<Ident>() {
+            *attr_value = Some(ident);
+            Ok(())
+        } else {
+            let msg = format!(
+                r#"Value `{}` for attribute `{}` is not a valid type name."#,
+                name_value_pair.name,
+                name_value_pair.value.value()
+            );
+            Err(syn::Error::new(name_value_pair.value.span(), msg))
+        }
+    } else {
+        let msg = format!(
+            r#"Duplicate argument, previously saw `{} = "{}"`."#,
+            name_value_pair.name,
+            attr_value.as_ref().unwrap()
+        );
+        Err(syn::Error::new(name_value_pair.value.span(), msg))
+    }
+}
+
+fn name_value_pair_list(
     struct_name: &Ident,
     attr: &Attribute,
-) -> Result<Vec<NameTypePair>, syn::Error> {
+) -> Result<Vec<NameValuePair>, syn::Error> {
     if let Meta::List(list) = attr.parse_meta()? {
-        list.nested.iter().map(name_type_pair).collect()
+        list.nested.iter().map(name_value_pair).collect()
     } else {
         let msg = format!(
             r#"float_eq attribute must be a list of options, for example `#[float_eq(ulps_tol = "{}Ulps")]`"#,
-            struct_name.to_string()
+            struct_name
         );
         Err(syn::Error::new(attr.path.span(), msg))
     }
 }
 
-pub struct NameTypePair {
+pub struct NameValuePair {
     pub name: Ident,
-    pub value: Ident,
+    pub value: LitStr,
 }
 
-pub fn name_type_pair(meta: &NestedMeta) -> Result<NameTypePair, syn::Error> {
+pub fn name_value_pair(meta: &NestedMeta) -> Result<NameValuePair, syn::Error> {
     if let NestedMeta::Meta(Meta::NameValue(nv)) = meta {
         if let Some(name) = nv.path.get_ident() {
             if let Lit::Str(value) = &nv.lit {
-                if let Ok(value) = value.parse::<Ident>() {
-                    return Ok(NameTypePair {
-                        name: name.clone(),
-                        value,
-                    });
-                }
+                return Ok(NameValuePair {
+                    name: name.clone(),
+                    value: value.clone(),
+                });
             }
         }
     }
     Err(syn::Error::new(
         meta.span(),
-        "Expected a `name = value` pair.",
+        "Expected a `name = \"value\"` pair.",
     ))
 }

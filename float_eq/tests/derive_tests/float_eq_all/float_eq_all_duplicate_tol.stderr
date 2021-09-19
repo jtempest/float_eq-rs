@@ -1,4 +1,4 @@
-error: Expected only one Tol type name, previously saw `all_tol = "Tol1"`.
+error: Duplicate argument, previously saw `all_tol = "Tol1"`.
  --> $DIR/float_eq_all_duplicate_tol.rs:7:15
   |
 7 |     all_tol = "Tol2"

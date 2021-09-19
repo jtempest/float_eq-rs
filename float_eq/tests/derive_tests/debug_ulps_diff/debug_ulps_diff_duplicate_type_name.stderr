@@ -1,4 +1,4 @@
-error: Expected only one debug ULPs diff type name, previously saw `debug_ulps_diff = "Name1"`.
+error: Duplicate argument, previously saw `debug_ulps_diff = "Name1"`.
  --> $DIR/debug_ulps_diff_duplicate_type_name.rs:4:57
   |
 4 | #[float_eq(debug_ulps_diff = "Name1", debug_ulps_diff = "Name2")]

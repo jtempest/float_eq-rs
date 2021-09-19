@@ -50,7 +50,7 @@ fn expand_derive_float_eq(
     args: syn::AttributeArgs,
     item: syn::ItemStruct,
 ) -> Result<TokenStream, syn::Error> {
-    let arg_pairs = args.iter().map(read::name_type_pair);
+    let arg_pairs = args.iter().map(read::name_value_pair);
     let has_arg = |name| {
         arg_pairs.clone().any(|nv| {
             if let Ok(nv) = nv {
