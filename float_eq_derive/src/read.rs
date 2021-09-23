@@ -92,7 +92,9 @@ fn unnamed_field_info((n, field): (usize, &syn::Field)) -> FieldInfo {
 pub struct FloatEqAttr {
     struct_name: String,
     ulps_tol_type_name: Option<Ident>,
+    ulps_tol_derive_types: Option<Vec<Ident>>,
     debug_ulps_diff_type_name: Option<Ident>,
+    debug_ulps_diff_derive_types: Option<Vec<Ident>>,
     all_tol_type_name: Option<Ident>,
 }
 
@@ -107,6 +109,27 @@ help: try adding `#[float_eq(ulps_tol = "{}Ulps")]` to your type."#,
             );
             syn::Error::new(Span::call_site(), msg)
         })
+    }
+
+    pub fn ulps_tol_derive_types(&self) -> Vec<Ident> {
+        self.ulps_tol_derive_types
+            .as_ref()
+            .map_or_else(Self::default_derive_types, |v| v.clone())
+    }
+
+    pub fn debug_ulps_diff_derive_types(&self) -> Vec<Ident> {
+        self.debug_ulps_diff_derive_types
+            .as_ref()
+            .map_or_else(Self::default_derive_types, |v| v.clone())
+    }
+
+    fn default_derive_types() -> Vec<Ident> {
+        vec![
+            Ident::new("Debug", Span::call_site()),
+            Ident::new("Clone", Span::call_site()),
+            Ident::new("Copy", Span::call_site()),
+            Ident::new("PartialEq", Span::call_site()),
+        ]
     }
 
     pub fn debug_ulps_diff(&self) -> Result<&Ident, syn::Error> {
@@ -143,14 +166,31 @@ pub fn float_eq_attr(input: &DeriveInput) -> Result<FloatEqAttr, syn::Error> {
         struct_name: input.ident.to_string(),
         ..Default::default()
     };
+
     for nv in nv_pair_lists.into_iter().flatten() {
         let name = nv.name.to_string();
         if name == "ulps_tol" {
-            set_float_eq_attr_ident(&mut attr_values.ulps_tol_type_name, &nv)?;
+            set_float_eq_attr(&mut attr_values.ulps_tol_type_name, &nv, &parse_ident)?;
         } else if name == "debug_ulps_diff" {
-            set_float_eq_attr_ident(&mut attr_values.debug_ulps_diff_type_name, &nv)?;
+            set_float_eq_attr(
+                &mut attr_values.debug_ulps_diff_type_name,
+                &nv,
+                &parse_ident,
+            )?;
         } else if name == "all_tol" {
-            set_float_eq_attr_ident(&mut attr_values.all_tol_type_name, &nv)?;
+            set_float_eq_attr(&mut attr_values.all_tol_type_name, &nv, &parse_ident)?;
+        } else if name == "ulps_tol_derive" {
+            set_float_eq_attr(
+                &mut attr_values.ulps_tol_derive_types,
+                &nv,
+                &parse_ident_list,
+            )?;
+        } else if name == "debug_ulps_diff_derive" {
+            set_float_eq_attr(
+                &mut attr_values.debug_ulps_diff_derive_types,
+                &nv,
+                &parse_ident_list,
+            )?;
         } else {
             let msg = format!(r"'{}' is not a valid float_eq derive option.", name);
             return Err(syn::Error::new(nv.name.span(), msg));
@@ -160,30 +200,40 @@ pub fn float_eq_attr(input: &DeriveInput) -> Result<FloatEqAttr, syn::Error> {
     Ok(attr_values)
 }
 
-fn set_float_eq_attr_ident(
-    attr_value: &mut Option<Ident>,
+fn set_float_eq_attr<TAttr>(
+    attr_value: &mut Option<TAttr>,
     name_value_pair: &NameValuePair,
+    parse_fn: &dyn Fn(&LitStr) -> Result<TAttr, syn::Error>,
 ) -> Result<(), syn::Error> {
     if attr_value.is_none() {
-        if let Ok(ident) = name_value_pair.value.parse::<Ident>() {
-            *attr_value = Some(ident);
+        if let Ok(value) = parse_fn(&name_value_pair.value) {
+            *attr_value = Some(value);
             Ok(())
         } else {
             let msg = format!(
-                r#"Value `{}` for attribute `{}` is not a valid type name."#,
-                name_value_pair.name,
-                name_value_pair.value.value()
+                "Invalid value `{}` for attribute `{}`.",
+                name_value_pair.value.value(),
+                name_value_pair.name
             );
             Err(syn::Error::new(name_value_pair.value.span(), msg))
         }
     } else {
-        let msg = format!(
-            r#"Duplicate argument, previously saw `{} = "{}"`."#,
-            name_value_pair.name,
-            attr_value.as_ref().unwrap()
-        );
-        Err(syn::Error::new(name_value_pair.value.span(), msg))
+        let msg = format!("Duplicate `{}` argument", name_value_pair.name);
+        Err(syn::Error::new(name_value_pair.name.span(), msg))
     }
+}
+
+fn parse_ident(value: &LitStr) -> Result<Ident, syn::Error> {
+    value.parse::<Ident>()
+}
+
+fn parse_ident_list(value: &LitStr) -> Result<Vec<Ident>, syn::Error> {
+    Ok(value
+        .value()
+        .split(',')
+        .map(str::trim)
+        .map(|trait_name| Ident::new(trait_name, Span::call_site()))
+        .collect())
 }
 
 fn name_value_pair_list(

@@ -1,0 +1,5 @@
+error: Invalid value `{}` for attribute `ulps_tol`.
+ --> $DIR/float_eq_malformed_value.rs:4:23
+  |
+4 | #[float_eq(ulps_tol = "{}")]
+  |                       ^^^^

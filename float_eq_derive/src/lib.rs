@@ -148,13 +148,15 @@ fn expand_float_eq_ulps_tol(input: DeriveInput) -> Result<TokenStream, syn::Erro
         },
     };
 
+    let derive_types = params.ulps_tol_derive_types();
+
     let doc = format!(
         "Floating point ULPs tolerance representation derived from {}, used by float_eq.",
         struct_name.to_string()
     );
     Ok(quote! {
         #[doc = #doc]
-        #[derive(Clone, Copy, Debug, PartialEq)]
+        #[derive(#(#derive_types,)*)]
         #ulps_type
 
         impl float_eq::FloatEqUlpsTol for #struct_name {
@@ -206,9 +208,11 @@ fn expand_float_eq_debug_ulps_diff(input: DeriveInput) -> Result<TokenStream, sy
         },
     };
 
+    let derive_types = params.debug_ulps_diff_derive_types();
+
     Ok(quote! {
         #[doc(hidden)]
-        #[derive(Clone, Copy, Debug, PartialEq)]
+        #[derive(#(#derive_types,)*)]
         #ulps_type
 
         impl float_eq::FloatEqDebugUlpsDiff for #struct_name {
