@@ -5,7 +5,9 @@ use float_eq::{AssertFloatEq, FloatEq, FloatEqDebugUlpsDiff, FloatEqUlpsTol};
 )]
 #[float_eq(
     ulps_tol = "MyTupleTypeUlps",
-    debug_ulps_diff = "MyTupleTypeDebugUlpsDiff"
+    ulps_tol_derive = "Clone, Copy, Debug, PartialEq",
+    debug_ulps_diff = "MyTupleTypeDebugUlpsDiff",
+    debug_ulps_diff_derive = "Clone, Copy, Debug, PartialEq"
 )]
 struct MyTupleType(f32, f64);
 

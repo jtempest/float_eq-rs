@@ -1,5 +1,5 @@
 error: Duplicate `ulps_tol` argument
- --> $DIR/ulps_tol_duplicate_type_name.rs:4:32
+ --> $DIR/ulps_tol_duplicate_type_name.rs:7:5
   |
-4 | #[float_eq(ulps_tol = "Name1", ulps_tol = "Name2")]
-  |                                ^^^^^^^^
+7 |     ulps_tol = "Name2"
+  |     ^^^^^^^^

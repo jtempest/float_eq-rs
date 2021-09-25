@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Derived types no longer have a default set of derived traits, use the newly
+  added `ulps_tol_derive` and `debug_ulps_diff_derive` options to `#[float_eq]`
+  to provide a list of traits to be derived instead.
+
 ## [0.6.1] - 2021-07-31
 
 ### Changed

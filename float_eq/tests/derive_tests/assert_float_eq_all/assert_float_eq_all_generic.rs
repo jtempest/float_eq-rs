@@ -14,7 +14,6 @@ use float_eq::{
     FloatEqAll,
     AssertFloatEqAll,
 )]
-#[float_eq(ulps_tol = "MyComplexUlps")]
 struct MyComplexUlps<T> {
     re: T,
     im: T,

@@ -112,12 +112,14 @@ well as for slices, `Option`, `Vec`, `VecDeque`, `LinkedList`, `BTreeMap` and
 
 ## Derivable
 
-The extension traits may be easily derived in most cases:
+The extension traits may be derived for non-generic structs and tuple structs:
 
 ```rust
 #[derive_float_eq(
     ulps_tol = "PointUlps",
+    ulps_tol_derive = "Clone, Copy, Debug, PartialEq",
     debug_ulps_diff = "PointUlpsDebugUlpsDiff",
+    debug_ulps_diff_derive = "Clone, Copy, Debug, PartialEq",
     all_tol = "f64"
 )]
 #[derive(Debug, PartialEq, Clone, Copy)]

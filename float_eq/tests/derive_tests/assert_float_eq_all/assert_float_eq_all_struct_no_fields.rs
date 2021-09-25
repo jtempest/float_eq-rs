@@ -16,7 +16,9 @@ use float_eq::{
 )]
 #[float_eq(
     ulps_tol = "MyNoFieldsTypeUlps",
+    ulps_tol_derive = "Clone, Copy, Debug, PartialEq",
     debug_ulps_diff = "MyNoFieldsTypeDebugUlpsDiff",
+    debug_ulps_diff_derive = "Clone, Copy, Debug, PartialEq",
     all_tol = "f32"
 )]
 struct MyNoFieldsType;

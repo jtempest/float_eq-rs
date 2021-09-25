@@ -16,7 +16,9 @@ use float_eq::{
 )]
 #[float_eq(
     ulps_tol = "MyComplex32Ulps",
+    ulps_tol_derive = "Clone, Copy, Debug, PartialEq",
     debug_ulps_diff = "MyComplex32DebugUlpsDiff",
+    debug_ulps_diff_derive = "Clone, Copy, Debug, PartialEq",
     all_tol = "f32"
 )]
 struct MyComplex32(f32, f32);
