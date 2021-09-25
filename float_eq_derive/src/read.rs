@@ -114,13 +114,13 @@ help: try adding `#[float_eq(ulps_tol = "{}Ulps")]` to your type."#,
     pub fn ulps_tol_derive_types(&self) -> Vec<Ident> {
         self.ulps_tol_derive_types
             .as_ref()
-            .map_or_else(|| Vec::new(), |v| v.clone())
+            .map_or_else(Vec::new, |v| v.clone())
     }
 
     pub fn debug_ulps_diff_derive_types(&self) -> Vec<Ident> {
         self.debug_ulps_diff_derive_types
             .as_ref()
-            .map_or_else(|| Vec::new(), |v| v.clone())
+            .map_or_else(Vec::new, |v| v.clone())
     }
 
     pub fn debug_ulps_diff(&self) -> Result<&Ident, syn::Error> {
