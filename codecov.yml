@@ -1,6 +1,3 @@
-coverage:
-  precision: 1
-  round: down
-
 ignore:
-  - "float_eq_derive/src/*.rs"
+  - "float_eq/tests/**/*"
+  - "float_eq_derive/**/*"
