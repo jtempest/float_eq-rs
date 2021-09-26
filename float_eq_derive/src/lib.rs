@@ -24,7 +24,7 @@ mod read;
 /// used by `FloatEqAll::AllTol` then [`FloatEqAll`] and [`AssertFloatEqAll`]
 /// are also derived.
 ///
-/// See [How to compare custom types] for more information and example usage.
+/// See [How to derive the traits] for more information and example usage.
 ///
 /// [`FloatEqUlpsTol`]: trait.FloatEqUlpsTol.html
 /// [`FloatEqDebugUlpsDiff`]: trait.FloatEqDebugUlpsDiff.html
@@ -32,14 +32,14 @@ mod read;
 /// [`FloatEqAll`]: trait.FloatEqAll.html
 /// [`AssertFloatEq`]: trait.AssertFloatEq.html
 /// [`AssertFloatEqAll`]: trait.AssertFloatEqAll.html
-/// [How to compare custom types]: https://jtempest.github.io/float_eq-rs/book/how_to/compare_custom_types.html#derive_float_eq
+/// [How to derive the traits]: https://jtempest.github.io/float_eq-rs/book/how_to/derive_the_traits.html
 #[proc_macro_attribute]
 pub fn derive_float_eq(
     args: proc_macro::TokenStream,
     item: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {
     let args = parse_macro_input!(args as syn::AttributeArgs);
-    let item = parse_macro_input!(item as syn::ItemStruct);
+    let item = parse_macro_input!(item as syn::DeriveInput);
 
     expand_derive_float_eq(args, item)
         .unwrap_or_else(|e| e.to_compile_error())
@@ -48,7 +48,7 @@ pub fn derive_float_eq(
 
 fn expand_derive_float_eq(
     args: syn::AttributeArgs,
-    item: syn::ItemStruct,
+    item: syn::DeriveInput,
 ) -> Result<TokenStream, syn::Error> {
     let arg_pairs = args.iter().map(read::name_value_pair);
     let has_arg = |name| {
