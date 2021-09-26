@@ -1,0 +1,6 @@
+coverage:
+  precision: 1
+  round: down
+
+ignore:
+  - "float_eq_derive/*"
