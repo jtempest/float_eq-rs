@@ -3,4 +3,4 @@ coverage:
   round: down
 
 ignore:
-  - "float_eq_derive/*"
+  - "float_eq_derive/src/*.rs"
