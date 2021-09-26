@@ -1,3 +1,4 @@
 ignore:
+  - "float_eq/tests/*.rs"
   - "float_eq/tests/**/*"
   - "float_eq_derive/**/*"
