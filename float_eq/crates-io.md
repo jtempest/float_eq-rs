@@ -15,7 +15,7 @@ Add this to your cargo.toml:
 
 ```
 [dependencies]
-float_eq = "0.6"
+float_eq = "0.7"
 ```
 
 And, if you're using the 2015 edition, this to your crate root:
@@ -156,7 +156,7 @@ the default `std` feature. Use this in `Cargo.toml`:
 
 ```
 [dependencies.float_eq]
-version = "0.6"
+version = "0.7"
 default-features = false
 ```
 
