@@ -321,6 +321,7 @@ impl AssertFloatEqAll for Point {
 [assert_float_ne!]: ../../doc/float_eq/macro.assert_float_ne.html
 [AssertFloatEq]: ../../doc/float_eq/trait.AssertFloatEq.html
 [AssertFloatEqAll]: ../../doc/float_eq/trait.AssertFloatEqAll.html
+[DebugUlpsDiff]: ../../doc/float_eq/type.DebugUlpsDiff.html
 [FloatEq]: ../../doc/float_eq/trait.FloatEq.html
 [FloatEqAll]: ../../doc/float_eq/trait.FloatEqAll.html
 [FloatEqDebugUlpsDiff]: ../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html
