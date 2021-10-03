@@ -37,7 +37,7 @@ pub struct FieldInfoList<'a> {
 
 impl FieldInfoList<'_> {
     pub fn expand<F: std::ops::Fn(&FieldInfo) -> TokenStream>(&self, func: F) -> Vec<TokenStream> {
-        self.fields.iter().map(|f| func(f)).collect()
+        self.fields.iter().map(func).collect()
     }
 }
 
