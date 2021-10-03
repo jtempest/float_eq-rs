@@ -16,7 +16,7 @@
   - float_eq_derive/Cargo.toml
   - float_eq/crates-io.md
   - book/book.toml
-  - book/src/how_to/compare_custom_types.md
+  - book/src/how_to/derive_the_traits.md
 - Make release tag in git
   - git tag -s x.y.z -m "x.y.z release"
   - git push origin --tags
