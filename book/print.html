@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Documentation for float_eq 0.6.1</title>
+        <title>Documentation for float_eq 0.7.0</title>
         
         <meta name="robots" content="noindex" />
         
@@ -97,7 +97,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="tutorials.html"><strong aria-hidden="true">2.</strong> Tutorials</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorials/basic_usage.html"><strong aria-hidden="true">2.1.</strong> Basic usage</a></li></ol></li><li class="chapter-item expanded "><a href="how_to.html"><strong aria-hidden="true">3.</strong> How to</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="how_to/compare_floating_point_numbers.html"><strong aria-hidden="true">3.1.</strong> Compare floating point numbers</a></li><li class="chapter-item expanded "><a href="how_to/compare_composite_types.html"><strong aria-hidden="true">3.2.</strong> Compare composite types</a></li><li class="chapter-item expanded "><a href="how_to/interpret_assert_failure_messages.html"><strong aria-hidden="true">3.3.</strong> Interpret assert failure messages</a></li><li class="chapter-item expanded "><a href="how_to/compare_custom_types.html"><strong aria-hidden="true">3.4.</strong> Compare custom types</a></li></ol></li><li class="chapter-item expanded "><a href="background.html"><strong aria-hidden="true">4.</strong> Background</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="background/float_comparison_algorithms.html"><strong aria-hidden="true">4.1.</strong> Float comparison algorithms</a></li></ol></li><li class="chapter-item expanded "><a href="api_documentation.html"><strong aria-hidden="true">5.</strong> API documentation</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="about_this_documentation.html">About this documentation</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="tutorials.html"><strong aria-hidden="true">2.</strong> Tutorials</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorials/basic_usage.html"><strong aria-hidden="true">2.1.</strong> Basic usage</a></li></ol></li><li class="chapter-item expanded "><a href="how_to.html"><strong aria-hidden="true">3.</strong> How to</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="how_to/compare_floating_point_numbers.html"><strong aria-hidden="true">3.1.</strong> Compare floating point numbers</a></li><li class="chapter-item expanded "><a href="how_to/compare_composite_types.html"><strong aria-hidden="true">3.2.</strong> Compare composite types</a></li><li class="chapter-item expanded "><a href="how_to/interpret_assert_failure_messages.html"><strong aria-hidden="true">3.3.</strong> Interpret assert failure messages</a></li><li class="chapter-item expanded "><a href="how_to/compare_custom_types.html"><strong aria-hidden="true">3.4.</strong> Compare custom types</a></li><li class="chapter-item expanded "><a href="how_to/derive_the_traits.html"><strong aria-hidden="true">3.5.</strong> Derive the traits</a></li><li class="chapter-item expanded "><a href="how_to/manually_implement_the_traits.html"><strong aria-hidden="true">3.6.</strong> Manually implement the traits</a></li></ol></li><li class="chapter-item expanded "><a href="background.html"><strong aria-hidden="true">4.</strong> Background</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="background/float_comparison_algorithms.html"><strong aria-hidden="true">4.1.</strong> Float comparison algorithms</a></li></ol></li><li class="chapter-item expanded "><a href="api_documentation.html"><strong aria-hidden="true">5.</strong> API documentation</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="about_this_documentation.html">About this documentation</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -129,7 +129,7 @@
                         
                     </div>
 
-                    <h1 class="menu-title">Documentation for float_eq 0.6.1</h1>
+                    <h1 class="menu-title">Documentation for float_eq 0.7.0</h1>
 
                     <div class="right-buttons">
                         
@@ -741,6 +741,8 @@ most n representable values apart&quot;, for example you might use a tolerance o
 <li><a href="./how_to/compare_composite_types.html">Compare composite types</a></li>
 <li><a href="./how_to/interpret_assert_failure_messages.html">Interpret assert failure messages</a></li>
 <li><a href="./how_to/compare_custom_types.html">Compare custom types</a></li>
+<li><a href="./how_to/derive_the_traits.html">Derive the traits</a></li>
+<li><a href="./how_to/manually_implement_the_traits.html">Manually implement the traits</a></li>
 </ul>
 <h1><a class="header" href="#how-to-compare-floating-point-numbers" id="how-to-compare-floating-point-numbers">How to compare floating point numbers</a></h1>
 <ol>
@@ -842,54 +844,42 @@ difference, here <code>abs_diff</code>, <em>after</em> it has been scaled relati
 in this case <code>max(left, right)</code> since it is <code>rmax</code>.</li>
 </ul>
 <h1><a class="header" href="#how-to-compare-custom-types" id="how-to-compare-custom-types">How to compare custom types</a></h1>
-<p>To extend <code>float_eq</code> functionality over a new type, you should implement the
-relevant traits:</p>
+<p>To extend <code>float_eq</code> functionality over a new type requires implenting the
+relevant extension traits.</p>
 <ol>
 <li>
-<p><a href="how_to/../../doc/float_eq/macro.float_eq.html">float_eq!</a> and <a href="how_to/../../doc/float_eq/macro.float_ne.html">float_ne!</a> require <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a> and <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a>.</p>
+<p>If your type is a struct or tuple struct that consists of fields that already
+implement the required traits, then you may use a derive macro. See <a href="how_to/./derive_the_traits.html">How to
+derive the traits</a>.</p>
 </li>
 <li>
-<p>If your type is homogeneous, that is if it consists of fields that are all
-the same underlying floating point type, you should implement the optional
-<a href="how_to/../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a> to enable the <code>_all</code> comparison algorithms.</p>
-</li>
-<li>
-<p><a href="how_to/../../doc/float_eq/macro.assert_float_eq.html">assert_float_eq!</a> and <a href="how_to/../../doc/float_eq/macro.assert_float_ne.html">assert_float_ne!</a> require the same traits plus
-<a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a> and <a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a>. If you have implemented <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a>
-you should also implement <a href="how_to/../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFloatEqAll</a>.</p>
+<p>If your type cannot have the traits derived for it, of if you do not wish to
+enable the &quot;derive&quot; feature, see <a href="how_to/./manually_implement_the_traits.html">How to manually implement the traits</a>.</p>
 </li>
 </ol>
-<p>If your type is a non-generic struct or tuple struct that consists entirely of
-already supported fields, then the easiest way to implement these traits is to
-make use of the <code>#[derive_float_eq]</code> helper macro. It is also possible to
-<code>#[derive]</code> individual traits. If you cannot derive an implementation, then you
-will need to implement the traits <a href="how_to/compare_custom_types.html#implementing-the-traits-directly">directly</a>.</p>
-<h2><a class="header" href="#derive_float_eq" id="derive_float_eq">#[derive_float_eq]</a></h2>
-<p>If your type is a non-generic struct or tuple struct then you may derive the
-relevant traits using this helper macro. Enable the &quot;derive&quot; feature by adding
-this to your Cargo.toml:</p>
+<h1><a class="header" href="#how-to-derive-the-traits" id="how-to-derive-the-traits">How to derive the traits</a></h1>
+<p>This article will explain how to enable a new type for use with the <a href="how_to/../../doc/float_eq/macro.float_eq.html">float_eq!</a>,
+<a href="how_to/../../doc/float_eq/macro.float_ne.html">float_ne!</a>, <a href="how_to/../../doc/float_eq/macro.assert_float_eq.html">assert_float_eq!</a> and <a href="how_to/../../doc/float_eq/macro.assert_float_ne.html">assert_float_ne!</a> macros. However, deriving
+the necessary traits is currently only possible if this type is a struct or
+tuple struct and is not generic. If not, or if you do not wish to enable the
+derive feature, see <a href="how_to/./manually_implement_the_traits.html">How to manually implement the traits</a>.</p>
+<h2><a class="header" href="#enabling-the-derive-feature" id="enabling-the-derive-feature">Enabling the derive feature</a></h2>
+<p>Enable the optional &quot;derive&quot; feature in your Cargo.toml:</p>
 <pre><code class="language-toml">[dependencies.float_eq]
-version = &quot;0.6&quot;
+version = &quot;0.7&quot;
 features = [&quot;derive&quot;]
 </code></pre>
-<p>Add <a href="how_to/../../doc/float_eq/attr.derive_float_eq.html"><code>#[derive_float_eq]</code></a> to your
-type. The <code>ulps_tol</code> and <code>debug_ulps_diff</code> parameters are required. They are
-used to name two new types that match the structure of the type being derived
-from. The first is used to provide ULPs tolerance values per field, and the
-second is used to provide debug information for the differerence between values
-in ULPs.</p>
-<p>The <code>all_tol</code> parameter is optional, and ought to be provided if your type
-is homogeneous and consists of fields that are all the same underlying floating
-point type. If provided, it will additionally implement the traits required to
-use the <code>_all</code> variants of checks, using the given tolerance type (usually <code>f32</code>
-or <code>f64</code>). </p>
+<h2><a class="header" href="#deriving-the-required-traits" id="deriving-the-required-traits">Deriving the required traits</a></h2>
+<p>Add <a href="how_to/../../doc/float_eq/attr.derive_float_eq.html"><code>#[derive_float_eq]</code></a> to the
+new type. For example:</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive_float_eq(
     ulps_tol = &quot;PointUlps&quot;, 
+    ulps_tol_derive = &quot;Clone, Copy, Debug, PartialEq&quot;,
     debug_ulps_diff = &quot;PointDebugUlpsDiff&quot;,
-    all_tol = &quot;f64&quot;
+    debug_ulps_diff_derive = &quot;Clone, Copy, Debug, PartialEq&quot;
 )]
 #[derive(Debug, PartialEq, Clone, Copy)]
 struct Point {
@@ -898,9 +888,14 @@ struct Point {
 }
 <span class="boring">}
 </span></code></pre></pre>
-<p>This will generate the following two types in addition to implementing the
-relevant extension traits. These new types will derive <code>Debug</code>, <code>Clone</code>, <code>Copy</code>
-and <code>PartialEq</code>:</p>
+<p>The parameters:</p>
+<ul>
+<li><code>ulps_tol</code>: required, will name a new type to provide per-field <a href="how_to/../background/float_comparison_algorithms.html#units-in-the-last-place-ulps-comparison">ULPs</a> tolerances.</li>
+<li><code>ulps_tol_derive</code>: optional, provides a list of traits to derive on the <code>ulps_tol</code> type.</li>
+<li><code>debug_ulps_diff</code>: required, will name a new type used to display per-field <a href="how_to/../background/float_comparison_algorithms.html#units-in-the-last-place-ulps-comparison">ULPs</a> differences.</li>
+<li><code>debug_ulps_diff_derive</code>: optional, provides a list of traits to derive on the <code>debug_ulps_diff</code> type.</li>
+</ul>
+<p>This will implement two new types:</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -917,154 +912,74 @@ struct PointDebugUlpsDiff {
 }
 <span class="boring">}
 </span></code></pre></pre>
-<p>This enables the use of your type in the <code>float_eq</code> macros:</p>
+<p>This will also implement <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a>, <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a>, <a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a> and
+<a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a> for your type. You may now compare it as a composite type:</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let a = Point { x: 1.0, y: -2.0 };
 let b = Point { x: 1.1, y: -2.2 };
-
-assert_float_eq!(a, b, abs &lt;= Point { x: 0.15, y: 0.25 });
-assert_float_eq!(a, b, abs_all &lt;= 0.25);
-
 let c = Point { x: 1.000_000_000_000_000_9, y: -2.000_000_000_000_001_3 };
 let eps = f64::EPSILON;
 
+assert_float_eq!(a, b, abs &lt;= Point { x: 0.15, y: 0.25 });
 assert_float_eq!(a, c, rmax &lt;= Point { x: 4.0 * eps, y: 5.0 * eps });
-assert_float_eq!(a, c, rmax_all &lt;= 5.0 * eps);
-
 assert_float_eq!(a, c, ulps &lt;= PointUlps { x: 4, y: 3 });
+<span class="boring">}
+</span></code></pre></pre>
+<h2><a class="header" href="#enabling-the-_all-variants-of-checks" id="enabling-the-_all-variants-of-checks">Enabling the <code>_all</code> variants of checks</a></h2>
+<p>If your type is homogeneous, that is if it consists of fields that are all the
+same underlying floating point type, then you may provide the optional <code>all_tol</code>
+parameter to <code>#[derive_float_eq]</code> with that underlying type (usually <code>f32</code> or
+<code>f64</code>). This will enable the <code>_all</code> variants of checks for it:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive_float_eq(
+    ulps_tol = &quot;PointUlps&quot;, 
+    ulps_tol_derive = &quot;Clone, Copy, Debug, PartialEq&quot;,
+    debug_ulps_diff = &quot;PointDebugUlpsDiff&quot;,
+    debug_ulps_diflf_derive = &quot;Clone, Copy, Debug, PartialEq&quot;,
+    all_tol = &quot;f64&quot;
+)]
+#[derive(Debug, PartialEq, Clone, Copy)]
+struct Point {
+    x: f64,
+    y: f64,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>This will additionally implement the <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a> and <a href="how_to/../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFloatEqAll</a> for
+your type. You may now compare it using the <code>_all</code> check variants:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let a = Point { x: 1.0, y: -2.0 };
+let b = Point { x: 1.1, y: -2.2 };
+let c = Point { x: 1.000_000_000_000_000_9, y: -2.000_000_000_000_001_3 };
+let eps = f64::EPSILON;
+
+assert_float_eq!(a, b, abs_all &lt;= 0.25);
+assert_float_eq!(a, c, rmax_all &lt;= 5.0 * eps);
 assert_float_eq!(a, c, ulps_all &lt;= 4);
 <span class="boring">}
 </span></code></pre></pre>
-<h2><a class="header" href="#manually-derive-traits" id="manually-derive-traits">Manually #[derive] traits</a></h2>
-<p>If you cannot use <code>#[derive_float_eq]</code> then you may be able to derive individual
-traits manually. Enable the &quot;derive&quot; feature by adding this to your Cargo.toml:</p>
-<pre><code class="language-toml">[dependencies.float_eq]
-version = &quot;0.6&quot;
-features = [&quot;derive&quot;]
-</code></pre>
-<h3><a class="header" href="#derivefloatequlpstol" id="derivefloatequlpstol">#[derive(FloatEqUlpsTol)]</a></h3>
-<p>Add a <code>#[float_eq]</code> attribute and provide <code>ulps_tol</code>, which will be used as
-the name of a new type. This type will be structurally identical to the type
-being derived, using the same visibility as the parent type and with identically
-named fields that use the derived fields' types wrapped by <code>UlpsTol</code>. The
-new struct derives <code>Debug</code>, <code>Clone</code>, <code>Copy</code> and <code>PartialEq</code>.</p>
+<h2><a class="header" href="#deriving-individual-traits" id="deriving-individual-traits">Deriving individual traits</a></h2>
+<p>The <code>#[derive_float_eq]</code> macro is recommended but if required you may implement
+the traits by individually deriving them. The <code>#[float_eq]</code> attribute should be
+used to pass through the relevant parameters. For example:</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>#[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsTol)]
-#[float_eq(ulps_tol = &quot;PointUlps&quot;)]
-struct Point {
-    x: f64,
-    y: f64,
-}
-<span class="boring">}
-</span></code></pre></pre>
-<p>This will generate the following struct:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[derive(Debug, Clone, Copy, PartialEq)]
-struct PointUlps {
-    x: UlpsTol&lt;f64&gt;,
-    y: UlpsTol&lt;f64&gt;,
-}
-<span class="boring">}
-</span></code></pre></pre>
-<h3><a class="header" href="#derivefloateq" id="derivefloateq">#[derive(FloatEq)]</a></h3>
-<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a>. Add a <code>#[float_eq]</code> attribute and provide
-<code>ulps_tol</code>, which should match the name of the <code>FloatEqUlpsTol</code> type. Two
-instances are equal if all fields are equal, and not equal if any are not.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[derive(Debug, Clone, Copy, PartialEq, FloatEqUlpsTol, FloatEq)]
-#[float_eq(ulps_tol = &quot;PointUlps&quot;)]
-struct Point {
-    x: f64,
-    y: f64,
-}
-<span class="boring">}
-</span></code></pre></pre>
-<h3><a class="header" href="#derivefloateqall" id="derivefloateqall">#[derive(FloatEqAll)]</a></h3>
-<p>Add a <code>#[float_eq]</code> attribute and specify <code>all_tol</code>, which is the type to be
-used as <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html#associatedtype.AllTol">AllTol</a>, usually <code>f32</code> or <code>f64</code>. Two instances are equal if all
-fields are equal, and not equal if any are not.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[derive(Debug, Clone, Copy, PartialEq, FloatEqAll)]
-#[float_eq(ulps_tol = &quot;PointUlps&quot;, all_tol = &quot;f64&quot;)]
-struct Point {
-    x: f64,
-    y: f64,
-}
-<span class="boring">}
-</span></code></pre></pre>
-<h3><a class="header" href="#derivefloateqdebugulpsdiff" id="derivefloateqdebugulpsdiff">#[derive(FloatEqDebugUlpsDiff)]</a></h3>
-<p>Add a <code>#[float_eq]</code> attribute and provide <code>debug_ulps_diff</code>, which will be used
-as the name of a new type. This type will be structurally identical to the type
-being derived, using the same visibility as the parent type and with identically
-named fields that use the derived fields' types wrapped by <code>DebugUlpsDiff</code>. The
-new struct derives <code>Debug</code>, <code>Clone</code>, <code>Copy</code> and <code>PartialEq</code>.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[derive(Debug, Clone, Copy, PartialEq, FloatEqDebugUlpsDiff)]
-#[float_eq(debug_ulps_diff = &quot;PointDebugUlpsDiff&quot;)]
-struct Point {
-    x: f64,
-    y: f64,
-}
-<span class="boring">}
-</span></code></pre></pre>
-<p>This will generate the following struct:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[derive(Debug, Clone, Copy, PartialEq)]
-struct PointDebugUlpsDiff {
-    x: DebugUlpsDiff&lt;f64&gt;,
-    y: DebugUlpsDiff&lt;f64&gt;,
-}
-<span class="boring">}
-</span></code></pre></pre>
-<h3><a class="header" href="#deriveassertfloateq" id="deriveassertfloateq">#derive[(AssertFloatEq)]</a></h3>
-<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a>, <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a> and <a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a>. Add a
-<code>#[float_eq]</code> attribute and provide <code>ulps_tol</code> and <code>ulps_debug_diff</code>, which
-should match the name of the <code>UlpsTol</code> and <code>DebugUlpsDiff</code> types. Each
-field's tolerance is calculated via a recursive call to the algorithm being used.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[derive(Debug, Clone, Copy, PartialEq)]
-#[derive(FloatEqUlpsTol, FloatEq, FloatEqDebugUlpsDiff, AssertFloatEq)]
-#[float_eq(ulps_tol = &quot;PointUlps&quot;, debug_ulps_diff = &quot;PointDebugUlpsDiff&quot;)]
-struct Point {
-    x: f64,
-    y: f64,
-}
-<span class="boring">}
-</span></code></pre></pre>
-<h3><a class="header" href="#deriveassertfloateqall" id="deriveassertfloateqall">#[derive(AssertFloatEqAll)]</a></h3>
-<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a>, <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a>, <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a>, <a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a>
-and <a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a>. Add a <code>#[float_eq]</code> attribute and provide <code>ulps_tol</code>,
-<code>ulps_debug_diff</code>, and <code>all_tol</code>, which should match the names of the
-<code>UlpsTol</code>, <code>DebugUlpsDiff</code> and <code>AllTol</code> types. Each field's tolerance is
-calculated via a recursive call to the algorithm being used.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[derive(Debug, Clone, Copy, PartialEq)]
-#[derive(
-    FloatEqUlpsTol, FloatEq, FloatEqAll,
-    FloatEqDebugUlpsDiff, AssertFloatEq, AssertFloatEqAll
+</span>#[derive(
+    Debug, PartialEq, Clone, Copy, FloatEqUlpsTol, FloatEq,
+    FloatEqDebugUlpsDiff, AssertFloatEq
 )]
 #[float_eq(
-    ulps_tol = &quot;PointUlps&quot;,
-    debug_ulps_diff = &quot;PointUlpsDebugUlpsDiff&quot;,
-    all_tol = &quot;f64&quot;,
+    ulps_tol = &quot;PointUlps&quot;, 
+    ulps_tol_derive = &quot;Clone, Copy, Debug, PartialEq&quot;,
+    debug_ulps_diff = &quot;PointDebugUlpsDiff&quot;,
+    debug_ulps_diff_derive = &quot;Clone, Copy, Debug, PartialEq&quot;
 )]
 struct Point {
     x: f64,
@@ -1072,10 +987,29 @@ struct Point {
 }
 <span class="boring">}
 </span></code></pre></pre>
-<h2><a class="header" href="#implementing-the-traits-directly" id="implementing-the-traits-directly">Implementing the traits directly</a></h2>
-<p>If you cannot derive the implementations of the extension traits, then you may
-implement them manually. These implementations will be based on the same <code>Point</code>
-type as the derive examples:</p>
+<p>The <a href="how_to/../../doc/float_eq/macro.float_eq.html">float_eq!</a> and <a href="how_to/../../doc/float_eq/macro.float_ne.html">float_ne!</a> macros require <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a> and <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a>
+and may optionally use <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a>. Likewise, <a href="how_to/../../doc/float_eq/macro.assert_float_eq.html">assert_float_eq!</a> and 
+<a href="how_to/../../doc/float_eq/macro.assert_float_ne.html">assert_float_ne!</a> require <a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a> and <a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a> and may
+optionally use <a href="how_to/../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFloatEqAll</a>.</p>
+<table><thead><tr><th>Trait</th><th>Requires</th><th>Parameters</th></tr></thead><tbody>
+<tr><td><a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a></td><td></td><td><code>ulps_tol</code>, <code>ulps_tol_derive</code></td></tr>
+<tr><td><a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a></td><td>FloatEqUlpsTol</td><td></td></tr>
+<tr><td><a href="how_to/../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a></td><td>FloatEq</td><td><code>all_tol</code></td></tr>
+<tr><td><a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a></td><td></td><td><code>debug_ulps_diff</code>, <code>debug_ulps_diff_derive</code></td></tr>
+<tr><td><a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a></td><td>FloatEq, FloatEqDebugUlpsDiff</td><td></td></tr>
+<tr><td><a href="how_to/../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFloatEqAll</a></td><td>AssertFloatEq, FloatEqAll</td><td><code>all_tol</code></td></tr>
+</tbody></table>
+<h1><a class="header" href="#how-to-manually-implement-the-traits" id="how-to-manually-implement-the-traits">How to manually implement the traits</a></h1>
+<p>This article will explain how to enable a new type for use with the <a href="how_to/../../doc/float_eq/macro.float_eq.html">float_eq!</a>,
+<a href="how_to/../../doc/float_eq/macro.float_ne.html">float_ne!</a>, <a href="how_to/../../doc/float_eq/macro.assert_float_eq.html">assert_float_eq!</a> and <a href="how_to/../../doc/float_eq/macro.assert_float_ne.html">assert_float_ne!</a> macros. If your type is
+a struct or tuple struct and is not generic, then you may wish to derive these
+traits instead, see <a href="how_to/./derive_the_traits.html">How to derive the traits</a>.</p>
+<p>The <a href="how_to/../../doc/float_eq/macro.float_eq.html">float_eq!</a> and <a href="how_to/../../doc/float_eq/macro.float_ne.html">float_ne!</a> macros require <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a> and <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a>
+and may optionally use <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a>. Likewise, <a href="how_to/../../doc/float_eq/macro.assert_float_eq.html">assert_float_eq!</a> and 
+<a href="how_to/../../doc/float_eq/macro.assert_float_ne.html">assert_float_ne!</a> require <a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a> and <a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a> and may
+optionally use <a href="how_to/../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFloatEqAll</a>.</p>
+<h2><a class="header" href="#the-point-type" id="the-point-type">The Point type</a></h2>
+<p>By way of example, we will implement the traits for this Point type:</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -1086,8 +1020,8 @@ struct Point {
 }
 <span class="boring">}
 </span></code></pre></pre>
-<h3><a class="header" href="#implementing-floatequlpstol" id="implementing-floatequlpstol">Implementing FloatEqUlpsTol</a></h3>
-<p>Types should provide an <a href="how_to/../../doc/float_eq/type.UlpsTol.html">UlpsTol</a> representation for each of their fields:</p>
+<h2><a class="header" href="#implementing-floatequlpstol" id="implementing-floatequlpstol">Implementing FloatEqUlpsTol</a></h2>
+<p>Provide an <a href="how_to/../../doc/float_eq/type.UlpsTol.html">UlpsTol</a> representation for each of the fields:</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -1103,10 +1037,10 @@ impl FloatEqUlpsTol for Point {
 <span class="boring">}
 </span></code></pre></pre>
 <h3><a class="header" href="#implementing-floateq" id="implementing-floateq">Implementing FloatEq</a></h3>
-<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a>. Implementation is then usually a matter of
-calling through to an underlying <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a> method for each field in turn. If
-not, you will need to take a close look at the descriptions of the algorithms on
-a method by method basis:</p>
+<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a>. Implementation is usually a matter of calling through
+to an underlying <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a> method for each field in turn. If not, you will need
+to take a close look at the descriptions of the algorithms on a method by method
+basis:</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -1206,11 +1140,10 @@ impl FloatEqDebugUlpsDiff for Point {
 <span class="boring">}
 </span></code></pre></pre>
 <h3><a class="header" href="#implementing-assertfloateq" id="implementing-assertfloateq">Implementing AssertFloatEq</a></h3>
-<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a>, <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a> and <a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a>.
-Implementation is then usually a matter of simply calling through to an
-underlying <a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a> method for each field in turn. If not, you will need
-to take a close look at the descriptions of the algorithms on a method by method
-basis:</p>
+<p>Requires <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a>, <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a> and <a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a>. Implementation
+is then usually a matter of simply calling through to an underlying
+<a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a> method for each field in turn. If not, you will need to take a
+close look at the descriptions of the algorithms on a method by method basis:</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
