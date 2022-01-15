@@ -9,7 +9,7 @@ The [float_eq] crate provides an API for comparing floating point primitives,
 structs and collections for equality that allows users to communicate their
 reasoning and intent with respect to numeric error.
 
-This book is not designed to be read from cover to cover, but instead is a
+This guide is not designed to be read from cover to cover, but instead is a
 series of categorised articles. If you are unsure of how floats work or why they
 are considered difficult to use then begin with the [Basic Usage](./tutorials/basic_usage.md)
 guide, otherwise check out one of the categories for more:

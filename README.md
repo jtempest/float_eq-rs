@@ -17,7 +17,7 @@ algorithm(s) and tolerances intuitive to implementers and maintainers, and of
 providing clear output for debugging and development iteration.
 
 This readme is a quick tour of the crate. For introductory material, guides and
-discussion see [the float_eq book].
+discussion see [the float_eq guide].
 
 ## Usage
 
@@ -198,7 +198,7 @@ Release information is available in [CHANGELOG.md](CHANGELOG.md).
 
 [comparison algorithms]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html
 [open an issue]: https://github.com/jtempest/float_eq-rs/issues/
-[the float_eq book]: https://jtempest.github.io/float_eq-rs/book/introduction.html
+[the float_eq guide]: https://jtempest.github.io/float_eq-rs/book/introduction.html
 [`almost`]: https://crates.io/crates/almost
 [`approx`]: https://crates.io/crates/approx
 [`assert_float_eq`]: https://crates.io/crates/assert_float_eq

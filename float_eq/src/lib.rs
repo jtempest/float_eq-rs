@@ -1,7 +1,7 @@
 //! Compare IEEE floating point primitives, structs and collections for equality.
 //!
 //! This is API reference documentation. For introductory material, guides and
-//! discussion see [the float_eq book].
+//! discussion see [the float_eq guide].
 //!
 //! # Basic usage
 //!
@@ -82,7 +82,7 @@
 //! See [How to compare custom types].
 //!
 //! [How to compare custom types]: https://jtempest.github.io/float_eq-rs/book/how_to/compare_custom_types.html
-//! [the float_eq book]: https://jtempest.github.io/float_eq-rs/book/index.html
+//! [the float_eq guide]: https://jtempest.github.io/float_eq-rs/book/index.html
 //! [absolute tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#absolute-tolerance-comparison
 //! [relative tolerance comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#relative-tolerance-comparison
 //! [ULPs comparison]: https://jtempest.github.io/float_eq-rs/book/background/float_comparison_algorithms.html#units-in-the-last-place-ulps-comparison
