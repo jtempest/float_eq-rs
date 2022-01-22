@@ -150,7 +150,7 @@ mod assert_float_eq {
     #[should_panic(expected = r#"`float_eq!(left, right, ulps <= t)`
         left: `1.0`,
        right: `1.0000002`,
-    abs_diff: `0.00000023841858`,
+    abs_diff: `2.3841858e-7`,
    ulps_diff: `Some(2)`,
     [ulps] t: `1`"#)]
     fn ulps_fail() {
@@ -161,7 +161,7 @@ mod assert_float_eq {
     #[should_panic(expected = r#"`float_eq!(left, right, ulps_all <= t)`
         left: `1.0`,
        right: `1.0000002`,
-    abs_diff: `0.00000023841858`,
+    abs_diff: `2.3841858e-7`,
    ulps_diff: `Some(2)`,
 [ulps_all] t: `1`"#)]
     fn ulps_all_fail() {
@@ -459,7 +459,7 @@ mod assert_float_ne {
     #[should_panic(expected = r#"`float_ne!(left, right, ulps <= t)`
         left: `1.0`,
        right: `1.0000001`,
-    abs_diff: `0.00000011920929`,
+    abs_diff: `1.1920929e-7`,
    ulps_diff: `Some(1)`,
     [ulps] t: `1`"#)]
     fn ulps_fail() {
@@ -601,7 +601,7 @@ mod debug_assert_float_eq {
         should_panic(expected = r#"`float_eq!(left, right, ulps <= t)`
         left: `1.0`,
        right: `1.0000002`,
-    abs_diff: `0.00000023841858`,
+    abs_diff: `2.3841858e-7`,
    ulps_diff: `Some(2)`,
     [ulps] t: `1`"#)
     )]
@@ -824,7 +824,7 @@ mod debug_assert_float_ne {
         should_panic(expected = r#"`float_ne!(left, right, ulps <= t)`
         left: `1.0`,
        right: `1.0000001`,
-    abs_diff: `0.00000011920929`,
+    abs_diff: `1.1920929e-7`,
    ulps_diff: `Some(1)`,
     [ulps] t: `1`"#)
     )]

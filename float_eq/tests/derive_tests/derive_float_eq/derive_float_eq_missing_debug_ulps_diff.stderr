@@ -1,6 +1,6 @@
 error: Missing debug ULPs diff type name required to derive trait.
 
-help: try specifying `debug_ulps_diff = "MyComplex32DebugUlpsDiff"` in `derive_float_eq`.
+       help: try specifying `debug_ulps_diff = "MyComplex32DebugUlpsDiff"` in `derive_float_eq`.
  --> $DIR/derive_float_eq_missing_debug_ulps_diff.rs:3:1
   |
 3 | / #[derive_float_eq(
