@@ -152,7 +152,7 @@ fn expand_float_eq_ulps_tol(input: DeriveInput) -> Result<TokenStream, syn::Erro
 
     let doc = format!(
         "Floating point ULPs tolerance representation derived from {}, used by float_eq.",
-        struct_name.to_string()
+        struct_name
     );
     Ok(quote! {
         #[doc = #doc]
