@@ -327,4 +327,4 @@ impl AssertFloatEqAll for Point {
 [FloatEqDebugUlpsDiff]: ../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html
 [FloatEqUlpsTol]: ../../doc/float_eq/trait.FloatEqUlpsTol.html
 [UlpsTol]: ../../doc/float_eq/type.UlpsTol.html
-[How to derive the traits]: ./derive_the_traits.html
+[How to derive the traits]: ./derive_the_traits.md

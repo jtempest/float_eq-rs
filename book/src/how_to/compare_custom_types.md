@@ -10,5 +10,5 @@ derive the traits].
 2) If your type cannot have the traits derived for it, of if you do not wish to
 enable the "derive" feature, see [How to manually implement the traits].
 
-[How to derive the traits]: ./derive_the_traits.html
-[How to manually implement the traits]: ./manually_implement_the_traits.html
+[How to derive the traits]: ./derive_the_traits.md
+[How to manually implement the traits]: ./manually_implement_the_traits.md
