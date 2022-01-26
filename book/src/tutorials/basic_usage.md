@@ -286,7 +286,7 @@ determine the absolute distance between numbers in those ranges:
 
 This is why our addition was unexpectedly rounded up:
 
-- `0.1` is in the range 0.0625 to 0.125, which are all `0.0625 f64::EPSILON` apart.
+- `0.1` is in the range 0.0625 to 0.125, which are all `0.0625 * f64::EPSILON` apart.
 - `0.2` is in the range 0.125 to 0.25, which are all `0.125 * f64::EPSILON` apart.
 - `0.1 + 0.2` is in the range 0.25 to 0.5, which are all `0.25 * f64::EPSILON` apart.
 
@@ -585,7 +585,7 @@ toward zero are available.
 most n representable values apart", for example you might use a tolerance of
 `4.0 * f64::EPSILON`.
 
-[absolute tolerance comparison]: ../background/float_comparison_algorithms.html#absolute-tolerance-comparison
+[absolute tolerance comparison]: ../background/float_comparison_algorithms.md#absolute-tolerance-comparison
 [API documentation]: ../api_documentation.md
 [background]: ../background.md
 [catastrophic cancellation]: https://en.wikipedia.org/wiki/Catastrophic_cancellation
@@ -595,12 +595,12 @@ most n representable values apart", for example you might use a tolerance of
 [Numerical Analysis]: https://en.wikipedia.org/wiki/Numerical_analysis
 [numerically unstable]: https://nhigham.com/2020/08/04/what-is-numerical-stability/
 [old classic]: https://0.30000000000000004.com/
-[relative tolerance comparison]: ../background/float_comparison_algorithms.html#relative-tolerance-comparison
+[relative tolerance comparison]: ../background/float_comparison_algorithms.md#relative-tolerance-comparison
 [represented exactly]: https://www.exploringbinary.com/why-0-point-1-does-not-exist-in-floating-point/
 [roundoff error]: https://en.wikipedia.org/wiki/Round-off_error
 [specific tasks]: ../how_to.md
 [truncation error]: https://en.wikipedia.org/wiki/Truncation_error
-[ULPs comparison]: ../background/float_comparison_algorithms.html#units-in-the-last-place-ulps-comparison
+[ULPs comparison]: ../background/float_comparison_algorithms.md#units-in-the-last-place-ulps-comparison
 [underlying representation]: https://randomascii.wordpress.com/2012/01/23/stupid-float-tricks-2/
 [`assert_float_eq!`]: ../../doc/float_eq/macro.assert_float_eq.html
 [`float_eq!`]: ../../doc/float_eq/macro.float_eq.html
