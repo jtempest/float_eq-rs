@@ -154,5 +154,5 @@ optionally use [AssertFloatEqAll].
 [FloatEqAll]: ../../doc/float_eq/trait.FloatEqAll.html
 [FloatEqDebugUlpsDiff]: ../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html
 [FloatEqUlpsTol]: ../../doc/float_eq/trait.FloatEqUlpsTol.html
-[How to manually implement the traits]: ./manually_implement_the_traits.html
-[ULPs]: ../background/float_comparison_algorithms.html#units-in-the-last-place-ulps-comparison
+[How to manually implement the traits]: ./manually_implement_the_traits.md
+[ULPs]: ../background/float_comparison_algorithms.md#units-in-the-last-place-ulps-comparison
