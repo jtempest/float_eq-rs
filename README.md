@@ -177,8 +177,8 @@ Other optional features:
 
 ## Related efforts
 
-The [`approx`], [`float-cmp`] and [`assert_float_eq`] crates provide similar
-floating point comparison capabilities to `float_eq`. The [`almost`] crate
+The [`approx`], [`float-cmp`], [`assert_float_eq`] and [`is_close`] crates provide
+similar floating point comparison capabilities to `float_eq`. The [`almost`] crate
 divides its API into comparison of floats against zero and non-zero values. The
 [`efloat`] crate provides an `f32` equivalent type that tracks the maximum
 possible error bounds that may have occured due to rounding.
@@ -205,6 +205,7 @@ Release information is available in [CHANGELOG.md](CHANGELOG.md).
 [`efloat`]: https://crates.io/crates/efloat
 [`float-cmp`]: https://crates.io/crates/float-cmp
 [`ieee754`]: https://crates.io/crates/ieee754
+[`is_close`]: https://docs.rs/is_close/latest/is_close/
 
 <br>
 
