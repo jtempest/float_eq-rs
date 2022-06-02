@@ -24,3 +24,9 @@ guide, otherwise check out one of the categories for more:
 [float_eq]: http://crates.io/crates/float_eq
 [Floating point types]: https://floating-point-gui.de/formats/fp/
 [numeric error]: https://en.wikipedia.org/wiki/Numerical_error
+
+-----------
+
+Thanks go to everyone who has provided feedback and patiently answered my questions, particularly Robin Leroy. This guide's structure was inspired by the [Diátaxis Framework].
+
+[Diátaxis Framework]: https://diataxis.fr/
