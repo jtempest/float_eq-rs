@@ -12,8 +12,13 @@
   - [Manually implement the traits](./how_to/manually_implement_the_traits.md) 
 - [Background](./background.md)
   - [Float comparison algorithms](./background/float_comparison_algorithms.md)
+  - [Resources](./background/resources.md)
 - [API documentation](./api_documentation.md)
 
 -----------
 
-[About this documentation](./about_this_documentation.md)
+Thanks go to everyone who has provided feedback and patiently answered my questions, especially Robin Leroy.
+
+This guide's structure was inspired by the [Diátaxis Framework].
+
+[Diátaxis Framework]: https://diataxis.fr/
