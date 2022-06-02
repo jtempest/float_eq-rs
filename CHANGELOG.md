@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2022-06-02
+Added some resource links to the documentation and promoted the crate to
+release version 1.0.0, as it has been stable for some time now.
+
 ## [0.7.0] - 2021-10-03
 Bumped up the version number since this release includes breaking API changes.
 
@@ -176,7 +180,8 @@ Bumped up the version number since this release includes breaking API changes.
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/jtempest/float_eq-rs/compare/0.7.0...HEAD
+[Unreleased]: https://github.com/jtempest/float_eq-rs/compare/1.0.0...HEAD
+[1.0.0]: https://github.com/jtempest/float_eq-rs/releases/tag/1.0.0
 [0.7.0]: https://github.com/jtempest/float_eq-rs/releases/tag/0.7.0
 [0.6.1]: https://github.com/jtempest/float_eq-rs/releases/tag/0.6.1
 [0.6.0]: https://github.com/jtempest/float_eq-rs/releases/tag/0.6.0

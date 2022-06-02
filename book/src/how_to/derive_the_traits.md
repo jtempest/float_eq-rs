@@ -12,7 +12,7 @@ Enable the optional "derive" feature in your Cargo.toml:
 
 ```toml
 [dependencies.float_eq]
-version = "0.7"
+version = "1"
 features = ["derive"]
 ```
 
