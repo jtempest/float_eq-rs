@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Compare composite types - Documentation for float_eq 1.0.0</title>
+        <title>Resources - Documentation for float_eq 1.0.0</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -75,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../tutorials.html"><strong aria-hidden="true">2.</strong> Tutorials</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../tutorials/basic_usage.html"><strong aria-hidden="true">2.1.</strong> Basic usage</a></li></ol></li><li class="chapter-item expanded "><a href="../how_to.html"><strong aria-hidden="true">3.</strong> How to</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../how_to/compare_floating_point_numbers.html"><strong aria-hidden="true">3.1.</strong> Compare floating point numbers</a></li><li class="chapter-item expanded "><a href="../how_to/compare_composite_types.html" class="active"><strong aria-hidden="true">3.2.</strong> Compare composite types</a></li><li class="chapter-item expanded "><a href="../how_to/interpret_assert_failure_messages.html"><strong aria-hidden="true">3.3.</strong> Interpret assert failure messages</a></li><li class="chapter-item expanded "><a href="../how_to/compare_custom_types.html"><strong aria-hidden="true">3.4.</strong> Compare custom types</a></li><li class="chapter-item expanded "><a href="../how_to/derive_the_traits.html"><strong aria-hidden="true">3.5.</strong> Derive the traits</a></li><li class="chapter-item expanded "><a href="../how_to/manually_implement_the_traits.html"><strong aria-hidden="true">3.6.</strong> Manually implement the traits</a></li></ol></li><li class="chapter-item expanded "><a href="../background.html"><strong aria-hidden="true">4.</strong> Background</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../background/float_comparison_algorithms.html"><strong aria-hidden="true">4.1.</strong> Float comparison algorithms</a></li><li class="chapter-item expanded "><a href="../background/resources.html"><strong aria-hidden="true">4.2.</strong> Resources</a></li></ol></li><li class="chapter-item expanded "><a href="../api_documentation.html"><strong aria-hidden="true">5.</strong> API documentation</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../tutorials.html"><strong aria-hidden="true">2.</strong> Tutorials</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../tutorials/basic_usage.html"><strong aria-hidden="true">2.1.</strong> Basic usage</a></li></ol></li><li class="chapter-item expanded "><a href="../how_to.html"><strong aria-hidden="true">3.</strong> How to</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../how_to/compare_floating_point_numbers.html"><strong aria-hidden="true">3.1.</strong> Compare floating point numbers</a></li><li class="chapter-item expanded "><a href="../how_to/compare_composite_types.html"><strong aria-hidden="true">3.2.</strong> Compare composite types</a></li><li class="chapter-item expanded "><a href="../how_to/interpret_assert_failure_messages.html"><strong aria-hidden="true">3.3.</strong> Interpret assert failure messages</a></li><li class="chapter-item expanded "><a href="../how_to/compare_custom_types.html"><strong aria-hidden="true">3.4.</strong> Compare custom types</a></li><li class="chapter-item expanded "><a href="../how_to/derive_the_traits.html"><strong aria-hidden="true">3.5.</strong> Derive the traits</a></li><li class="chapter-item expanded "><a href="../how_to/manually_implement_the_traits.html"><strong aria-hidden="true">3.6.</strong> Manually implement the traits</a></li></ol></li><li class="chapter-item expanded "><a href="../background.html"><strong aria-hidden="true">4.</strong> Background</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../background/float_comparison_algorithms.html"><strong aria-hidden="true">4.1.</strong> Float comparison algorithms</a></li><li class="chapter-item expanded "><a href="../background/resources.html" class="active"><strong aria-hidden="true">4.2.</strong> Resources</a></li></ol></li><li class="chapter-item expanded "><a href="../api_documentation.html"><strong aria-hidden="true">5.</strong> API documentation</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -134,49 +134,41 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="how-to-compare-composite-types"><a class="header" href="#how-to-compare-composite-types">How to compare composite types</a></h1>
-<ol>
-<li>Composite types such as arrays, tuples and structs may be compared by
-specifying a per-field tolerance in an instance of the same type:</li>
-</ol>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let a = [1.0, -2.0, 3.0];
-let b = [-1.0, 2.0, 3.5];
-assert_float_eq!(a, b, abs &lt;= [2.0, 4.0, 0.5]);
-
-let c = Complex32 { re: 2.0, im: 4.000_002 };
-let d = Complex32 { re: 2.000_000_5, im: 4.0 };
-assert_float_eq!(c, d, rmax &lt;= Complex32 { re: 0.000_000_25, im: 0.000_000_5 });
-assert_float_eq!(c, d, ulps &lt;= Complex32Ulps { re: 2, im: 4 });
-<span class="boring">}
-</span></code></pre></pre>
-<ol start="2">
-<li>Homogeneous types may also support the <code>_all</code> variants of the checks, which
-allow you to specify a single tolerance to use across all fields:</li>
-</ol>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>assert_float_eq!(a, b, abs_all &lt;= 4.0);
-
-assert_float_eq!(c, d, rmax_all &lt;= 0.000_000_5);
-assert_float_eq!(c, d, ulps_all &lt;= 4);
-<span class="boring">}
-</span></code></pre></pre>
-<ol start="3">
-<li>Checks may be extended over new types by implementing the <a href="./compare_custom_types.html">extension traits</a>.</li>
-</ol>
+                        <h1 id="resources"><a class="header" href="#resources">Resources</a></h1>
+<p>An assortment of articles, papers and books that provide insight into how to approach floating point numerics and error analysis.</p>
+<ul>
+<li><a href="https://www-cs-faculty.stanford.edu/%7Eknuth/taocp.html">The Art of Computer Programming Vol. 2: Seminumerical Algorithms, p214-283</a> - on the accuracy of floating point.</li>
+<li><a href="https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/">Comparing Floating Point Numbers, 2012 Edition</a> - the rest of this series is very good, too.</li>
+<li><a href="https://blog.m-ou.se/floats/">Converting Integers to Floats Using Hyperfocus</a></li>
+<li><a href="https://blog.demofox.org/2017/11/21/floating-point-precision/">Demystifying Floating Point Precision</a></li>
+<li><a href="https://www.exploringbinary.com/floating-point-questions-are-endless-on-stackoverflow-com/">Floating-Point Questions Are Endless on stackoverflow.com</a></li>
+<li><a href="https://matthew-brett.github.io/teaching/floating_error.html">Floating point error</a></li>
+<li><a href="https://evanw.github.io/float-toy/">Float toy</a> - a fantastic little demo page for gaining an insight into what the bits in a floating point number represent.</li>
+<li><a href="https://www.geeksforgeeks.org/ieee-standard-754-floating-point-numbers/">IEEE Standard 754 Floating Point Numbers</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Interval_arithmetic">Interval arithmetic</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Loss_of_significance">Loss of significance</a></li>
+<li><a href="https://people.eecs.berkeley.edu/%7Ewkahan/Triangle.pdf">Miscalculating Area and Angles of a Needle-like Triangle</a></li>
+<li><a href="https://epubs.siam.org/doi/book/10.1137/1.9780898718072">Numerical Computing with IEEE Floating Point Arithmetic</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Numerical_stability">Numerical Stability</a></li>
+<li><a href="https://github.com/mockingbirdnest/Principia/wiki/On-the-dynamical-stability-of-Principia&#x27;s-modified-Jool-system">On the dynamical stability of Principia's modified Jool system</a></li>
+<li><a href="http://marc-b-reynolds.github.io/math/2019/02/06/Posit1.html">Posit: thin triangle other tricks (REVEALED!)</a></li>
+<li><a href="https://home.iitk.ac.in/%7Epranab/ESO208/rajesh/03-04/Errors.pdf">Round-off/Truncation Errors &amp; Numerical Cancellation</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Sterbenz_lemma">Sterbenz lemma</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Truncation_error">Truncation error</a></li>
+<li><a href="https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html">What Every Computer Scientist Should Know About Floating-Point Arithmetic</a> - a comprehensive mathematical treatment.</li>
+<li><a href="https://floating-point-gui.de/">What Every Programmer Should Know About Floating-Point Arithmetic</a> - a useful introductory guide with cheat sheets for common programming languages.</li>
+<li><a href="https://nhigham.com/2020/08/04/what-is-numerical-stability/">What is Numerical Stability?</a></li>
+<li><a href="https://www.exploringbinary.com/why-0-point-1-does-not-exist-in-floating-point/">Why 0.1 Does Not Exist In Floating-Point</a></li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../how_to/compare_floating_point_numbers.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../background/float_comparison_algorithms.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                            <a rel="next" href="../how_to/interpret_assert_failure_messages.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../api_documentation.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         <div style="clear: both"></div>
@@ -185,10 +177,10 @@ assert_float_eq!(c, d, ulps_all &lt;= 4);
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../how_to/compare_floating_point_numbers.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../background/float_comparison_algorithms.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                    <a rel="next" href="../how_to/interpret_assert_failure_messages.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="../api_documentation.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
