@@ -30,8 +30,8 @@ new type. For example:
 )]
 #[derive(Debug, PartialEq, Clone, Copy)]
 struct Point {
-    x: f64,
-    y: f64,
+    pub x: f64,
+    pub y: f64,
 }
 ```
 
@@ -46,14 +46,14 @@ This will implement two new types:
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq)]
 struct PointUlps {
-    x: UlpsTol<f64>,
-    y: UlpsTol<f64>,
+    pub x: UlpsTol<f64>,
+    pub y: UlpsTol<f64>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 struct PointDebugUlpsDiff {
-    x: DebugUlpsDiff<f64>,
-    y: DebugUlpsDiff<f64>,
+    pub x: DebugUlpsDiff<f64>,
+    pub y: DebugUlpsDiff<f64>,
 }
 ```
 
@@ -88,8 +88,8 @@ parameter to `#[derive_float_eq]` with that underlying type (usually `f32` or
 )]
 #[derive(Debug, PartialEq, Clone, Copy)]
 struct Point {
-    x: f64,
-    y: f64,
+    pub x: f64,
+    pub y: f64,
 }
 ```
 
@@ -125,8 +125,8 @@ used to pass through the relevant parameters. For example:
     debug_ulps_diff_derive = "Clone, Copy, Debug, PartialEq"
 )]
 struct Point {
-    x: f64,
-    y: f64,
+    pub x: f64,
+    pub y: f64,
 }
 ```
 

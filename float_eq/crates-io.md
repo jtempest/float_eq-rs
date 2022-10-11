@@ -59,7 +59,7 @@ field-by-field basis:
 let a = Complex32 { re: 2.0, im: 4.000_002 };
 let b = Complex32 { re: 2.000_000_5, im: 4.0 };
 
-assert_float_eq!(a, b, ulps <= Complex32Ulps { re: 2, im: 4 });
+assert_float_eq!(a, b, ulps <= ComplexUlps32 { re: 2, im: 4 });
 ```
 
 ...and if they are homogeneous, with a uniformly applied tolerance across all

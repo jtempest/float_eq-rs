@@ -17,8 +17,8 @@ By way of example, we will implement the traits for this Point type:
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq)]
 struct Point {
-    x: f64,
-    y: f64,
+    pub x: f64,
+    pub y: f64,
 }
 ```
 
@@ -29,8 +29,8 @@ Provide an [UlpsTol] representation for each of the fields:
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq)]
 struct PointUlps {
-    x: UlpsTol<f64>,
-    y: UlpsTol<f64>,
+    pub x: UlpsTol<f64>,
+    pub y: UlpsTol<f64>,
 }
 
 impl FloatEqUlpsTol for Point {
@@ -132,8 +132,8 @@ Types should provide a [DebugUlpsDiff] representation for each of their fields:
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq)]
 struct PointDebugUlpsDiff {
-    x: DebugUlpsDiff<f64>,
-    y: DebugUlpsDiff<f64>,
+    pub x: DebugUlpsDiff<f64>,
+    pub y: DebugUlpsDiff<f64>,
 }
 
 impl FloatEqDebugUlpsDiff for Point {
