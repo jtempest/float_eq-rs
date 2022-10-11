@@ -11,6 +11,7 @@ use num_complex::Complex;
 /// implements those too.
 ///
 /// [`num::Complex<T>`]: https://docs.rs/num/0.3.0/num/struct.Complex.html
+#[allow(clippy::derive_partial_eq_without_eq)] // Most likely this is going to use floats, and we don't want to derive Eq for those
 #[derive(Clone, Debug, PartialEq)]
 pub struct ComplexUlps<T> {
     /// Real portion of the complex number in ULPs.
