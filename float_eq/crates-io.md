@@ -113,9 +113,9 @@ The extension traits may be derived for non-generic structs and tuple structs:
     all_tol = "f64"
 )]
 #[derive(Debug, PartialEq, Clone, Copy)]
-struct Point {
-    x: f64,
-    y: f64,
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
 }
 
 let a = Point { x: 1.0, y: -2.0 };

@@ -126,7 +126,7 @@ fn expand_float_eq_ulps_tol(input: DeriveInput) -> Result<TokenStream, syn::Erro
             let ulps_fields = fields.expand(|field| {
                 let name = &field.name;
                 let ty = &field.ty;
-                quote! { #name: float_eq::UlpsTol<#ty> }
+                quote! { #vis #name: float_eq::UlpsTol<#ty> }
             });
             quote! {
                 #vis struct #ulps_name {
@@ -137,7 +137,7 @@ fn expand_float_eq_ulps_tol(input: DeriveInput) -> Result<TokenStream, syn::Erro
         read::FieldListType::Tuple => {
             let ulps_fields = fields.expand(|field| {
                 let ty = &field.ty;
-                quote! { float_eq::UlpsTol<#ty> }
+                quote! { #vis float_eq::UlpsTol<#ty> }
             });
             quote! {
                 #vis struct #ulps_name( #(#ulps_fields,)* );

@@ -122,15 +122,9 @@ fn debug_all_tol() {
 
     assert_eq!(a.debug_abs_all_tol(&b, &0.2), Complex32::new(0.2, 0.2));
     assert_eq!(a.debug_rel_all_tol(&b, &0.2), Complex32::new(0.5, 0.85));
-    assert_eq!(
-        a.debug_rmax_all_tol(&b, &0.2),
-        Complex32::new(0.5, 0.85)
-    );
+    assert_eq!(a.debug_rmax_all_tol(&b, &0.2), Complex32::new(0.5, 0.85));
     assert_eq!(a.debug_rmin_all_tol(&b, &0.2), Complex32::new(0.4, 0.8));
-    assert_eq!(
-        a.debug_r1st_all_tol(&b, &0.2),
-        Complex32::new(0.4, 0.85)
-    );
+    assert_eq!(a.debug_r1st_all_tol(&b, &0.2), Complex32::new(0.4, 0.85));
     assert_eq!(a.debug_r2nd_all_tol(&b, &0.2), Complex32::new(0.5, 0.8));
     assert_eq!(a.debug_ulps_all_tol(&b, &2), ComplexUlps32::new(2, 2));
 }

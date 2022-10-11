@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Fixed a bug where field visibility was not respected when deriving the Ulps
+  type (https://github.com/jtempest/float_eq-rs/issues/24).
 
 ## [1.0.0] - 2022-06-02
 Added some resource links to the documentation and promoted the crate to

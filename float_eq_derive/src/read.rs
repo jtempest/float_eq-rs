@@ -2,7 +2,7 @@ use proc_macro2::{Ident, Span, TokenStream};
 use quote::ToTokens;
 use syn::{
     spanned::Spanned, Attribute, Data, DeriveInput, Fields, FieldsNamed, FieldsUnnamed, Lit,
-    LitInt, LitStr, Meta, NestedMeta, Type,
+    LitInt, LitStr, Meta, NestedMeta, Type, Visibility,
 };
 
 pub enum FieldName<'a> {
@@ -22,6 +22,7 @@ impl ToTokens for FieldName<'_> {
 pub struct FieldInfo<'a> {
     pub name: FieldName<'a>,
     pub ty: &'a Type,
+    pub vis: &'a Visibility,
 }
 
 pub enum FieldListType {
@@ -78,6 +79,7 @@ fn named_field_info(field: &syn::Field) -> FieldInfo {
     FieldInfo {
         name: FieldName::Ident(field.ident.as_ref().expect("Expected named field")),
         ty: &field.ty,
+        vis: &field.vis,
     }
 }
 
@@ -85,6 +87,7 @@ fn unnamed_field_info((n, field): (usize, &syn::Field)) -> FieldInfo {
     FieldInfo {
         name: FieldName::Num(Lit::Int(LitInt::new(&format!("{}", n), Span::call_site()))),
         ty: &field.ty,
+        vis: &field.vis,
     }
 }
 

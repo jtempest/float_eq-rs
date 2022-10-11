@@ -68,6 +68,7 @@ fn tests() {
 
     // #[derive_float_eq(...)]
     t.pass("tests/derive_tests/derive_float_eq/derive_float_eq.rs");
+    t.pass("tests/derive_tests/derive_float_eq/derive_float_eq_tuple_struct.rs");
     t.pass("tests/derive_tests/derive_float_eq/derive_float_eq_all.rs");
     t.pass("tests/derive_tests/derive_float_eq/derive_float_eq_all_custom_debug.rs");
     t.compile_fail("tests/derive_tests/derive_float_eq/derive_float_eq_missing_ulps_tol.rs");
