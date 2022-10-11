@@ -1,5 +1,5 @@
 mod my_module {
-    use float_eq::{derive_float_eq, UlpsTol};
+    use float_eq::derive_float_eq;
 
     #[derive_float_eq(
         ulps_tol = "MyComplex32Ulps",
