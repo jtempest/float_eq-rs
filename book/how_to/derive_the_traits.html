@@ -3,8 +3,11 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Derive the traits - Documentation for float_eq 1.0.0</title>
+        <title>Derive the traits - Documentation for float_eq 1.0.1</title>
+
+
         <!-- Custom HTML head -->
+        
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,15 +19,18 @@
         <link rel="stylesheet" href="../css/general.css">
         <link rel="stylesheet" href="../css/chrome.css">
         <link rel="stylesheet" href="../css/print.css" media="print">
+
         <!-- Fonts -->
         <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
         <link rel="stylesheet" href="../fonts/fonts.css">
+
         <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="../highlight.css">
         <link rel="stylesheet" href="../tomorrow-night.css">
         <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
+
     </head>
     <body>
         <!-- Provide site root to javascript -->
@@ -83,7 +89,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky bordered">
                     <div class="left-buttons">
                         <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -104,12 +110,13 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Documentation for float_eq 1.0.0</h1>
+                    <h1 class="menu-title">Documentation for float_eq 1.0.1</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
+
                     </div>
                 </div>
 
@@ -123,6 +130,7 @@
                         </ul>
                     </div>
                 </div>
+
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
                 <script type="text/javascript">
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
@@ -149,8 +157,7 @@ features = [&quot;derive&quot;]
 <h2 id="deriving-the-required-traits"><a class="header" href="#deriving-the-required-traits">Deriving the required traits</a></h2>
 <p>Add <a href="../../doc/float_eq/attr.derive_float_eq.html"><code>#[derive_float_eq]</code></a> to the
 new type. For example:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive_float_eq(
     ulps_tol = &quot;PointUlps&quot;, 
@@ -160,8 +167,8 @@ new type. For example:</p>
 )]
 #[derive(Debug, PartialEq, Clone, Copy)]
 struct Point {
-    x: f64,
-    y: f64,
+    pub x: f64,
+    pub y: f64,
 }
 <span class="boring">}
 </span></code></pre></pre>
@@ -173,26 +180,24 @@ struct Point {
 <li><code>debug_ulps_diff_derive</code>: optional, provides a list of traits to derive on the <code>debug_ulps_diff</code> type.</li>
 </ul>
 <p>This will implement two new types:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(Debug, Clone, Copy, PartialEq)]
 struct PointUlps {
-    x: UlpsTol&lt;f64&gt;,
-    y: UlpsTol&lt;f64&gt;,
+    pub x: UlpsTol&lt;f64&gt;,
+    pub y: UlpsTol&lt;f64&gt;,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 struct PointDebugUlpsDiff {
-    x: DebugUlpsDiff&lt;f64&gt;,
-    y: DebugUlpsDiff&lt;f64&gt;,
+    pub x: DebugUlpsDiff&lt;f64&gt;,
+    pub y: DebugUlpsDiff&lt;f64&gt;,
 }
 <span class="boring">}
 </span></code></pre></pre>
 <p>This will also implement <a href="../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a>, <a href="../../doc/float_eq/trait.FloatEq.html">FloatEq</a>, <a href="../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a> and
 <a href="../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a> for your type. You may now compare it as a composite type:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let a = Point { x: 1.0, y: -2.0 };
 let b = Point { x: 1.1, y: -2.2 };
@@ -209,8 +214,7 @@ assert_float_eq!(a, c, ulps &lt;= PointUlps { x: 4, y: 3 });
 same underlying floating point type, then you may provide the optional <code>all_tol</code>
 parameter to <code>#[derive_float_eq]</code> with that underlying type (usually <code>f32</code> or
 <code>f64</code>). This will enable the <code>_all</code> variants of checks for it:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive_float_eq(
     ulps_tol = &quot;PointUlps&quot;, 
@@ -221,15 +225,14 @@ parameter to <code>#[derive_float_eq]</code> with that underlying type (usually 
 )]
 #[derive(Debug, PartialEq, Clone, Copy)]
 struct Point {
-    x: f64,
-    y: f64,
+    pub x: f64,
+    pub y: f64,
 }
 <span class="boring">}
 </span></code></pre></pre>
 <p>This will additionally implement the <a href="../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a> and <a href="../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFloatEqAll</a> for
 your type. You may now compare it using the <code>_all</code> check variants:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let a = Point { x: 1.0, y: -2.0 };
 let b = Point { x: 1.1, y: -2.2 };
@@ -245,8 +248,7 @@ assert_float_eq!(a, c, ulps_all &lt;= 4);
 <p>The <code>#[derive_float_eq]</code> macro is recommended but if required you may implement
 the traits by individually deriving them. The <code>#[float_eq]</code> attribute should be
 used to pass through the relevant parameters. For example:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(
     Debug, PartialEq, Clone, Copy, FloatEqUlpsTol, FloatEq,
@@ -259,8 +261,8 @@ used to pass through the relevant parameters. For example:</p>
     debug_ulps_diff_derive = &quot;Clone, Copy, Debug, PartialEq&quot;
 )]
 struct Point {
-    x: f64,
-    y: f64,
+    pub x: f64,
+    pub y: f64,
 }
 <span class="boring">}
 </span></code></pre></pre>
@@ -268,7 +270,7 @@ struct Point {
 and may optionally use <a href="../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a>. Likewise, <a href="../../doc/float_eq/macro.assert_float_eq.html">assert_float_eq!</a> and 
 <a href="../../doc/float_eq/macro.assert_float_ne.html">assert_float_ne!</a> require <a href="../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a> and <a href="../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a> and may
 optionally use <a href="../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFloatEqAll</a>.</p>
-<table><thead><tr><th>Trait</th><th>Requires</th><th>Parameters</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Trait</th><th>Requires</th><th>Parameters</th></tr></thead><tbody>
 <tr><td><a href="../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a></td><td></td><td><code>ulps_tol</code>, <code>ulps_tol_derive</code></td></tr>
 <tr><td><a href="../../doc/float_eq/trait.FloatEq.html">FloatEq</a></td><td>FloatEqUlpsTol</td><td></td></tr>
 <tr><td><a href="../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a></td><td>FloatEq</td><td><code>all_tol</code></td></tr>
@@ -276,7 +278,7 @@ optionally use <a href="../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFl
 <tr><td><a href="../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a></td><td>FloatEq, FloatEqDebugUlpsDiff</td><td></td></tr>
 <tr><td><a href="../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFloatEqAll</a></td><td>AssertFloatEq, FloatEqAll</td><td><code>all_tol</code></td></tr>
 </tbody></table>
-
+</div>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
@@ -284,9 +286,11 @@ optionally use <a href="../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFl
                             <a rel="prev" href="../how_to/compare_custom_types.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
+
                             <a rel="next" href="../how_to/manually_implement_the_traits.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
+
                         <div style="clear: both"></div>
                     </nav>
                 </div>
@@ -296,6 +300,7 @@ optionally use <a href="../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFl
                     <a rel="prev" href="../how_to/compare_custom_types.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
+
                     <a rel="next" href="../how_to/manually_implement_the_traits.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
@@ -303,16 +308,24 @@ optionally use <a href="../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFl
 
         </div>
 
+
+
+
         <script type="text/javascript">
             window.playground_copyable = true;
         </script>
+
+
         <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+
         <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
         <script src="../book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
+
+
     </body>
 </html>

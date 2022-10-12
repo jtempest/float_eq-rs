@@ -3,8 +3,11 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Basic usage - Documentation for float_eq 1.0.0</title>
+        <title>Basic usage - Documentation for float_eq 1.0.1</title>
+
+
         <!-- Custom HTML head -->
+        
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,15 +19,18 @@
         <link rel="stylesheet" href="../css/general.css">
         <link rel="stylesheet" href="../css/chrome.css">
         <link rel="stylesheet" href="../css/print.css" media="print">
+
         <!-- Fonts -->
         <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
         <link rel="stylesheet" href="../fonts/fonts.css">
+
         <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="../highlight.css">
         <link rel="stylesheet" href="../tomorrow-night.css">
         <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
+
     </head>
     <body>
         <!-- Provide site root to javascript -->
@@ -83,7 +89,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky bordered">
                     <div class="left-buttons">
                         <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -104,12 +110,13 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Documentation for float_eq 1.0.0</h1>
+                    <h1 class="menu-title">Documentation for float_eq 1.0.1</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
+
                     </div>
                 </div>
 
@@ -123,6 +130,7 @@
                         </ul>
                     </div>
                 </div>
+
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
                 <script type="text/javascript">
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
@@ -137,8 +145,7 @@
                         <h1 id="basic-usage"><a class="header" href="#basic-usage">Basic usage</a></h1>
 <p>So you have attempted to perform a simple floating point calculation in Rust,
 perhaps an <a href="https://0.30000000000000004.com/">old classic</a>:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let sum = 0.1 + 0.2;
 
@@ -153,8 +160,7 @@ if sum == 0.3 {
 <pre><code class="language-txt">Something has gone horribly wrong!
 </code></pre>
 <p>What's going on? Let's take a closer look at the result of the sum:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>println!(&quot;0.1 + 0.2 = {}&quot;, sum);
 <span class="boring">}
@@ -171,8 +177,7 @@ is performed using binary arithmetic and finally is converted back into a
 decimal representation to be printed.</p>
 <p>We can see how these values have been rounded by printing them with a high
 enough precision:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>println!(&quot;0.1 -&gt; {:.55}&quot;, 0.1);
 println!(&quot;0.2 -&gt; {:.55}&quot;, 0.2);
@@ -184,8 +189,7 @@ println!(&quot;0.2 -&gt; {:.55}&quot;, 0.2);
 <h2 id="close-so-very-close"><a class="header" href="#close-so-very-close">Close, so very close</a></h2>
 <p>Very few decimal numbers may be exactly represented in binary. Only powers of
 two:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>println!(&quot;4.0   -&gt; {:.55}&quot;, 4.0);
 println!(&quot;2.0   -&gt; {:.55}&quot;, 2.0);
@@ -203,8 +207,7 @@ println!(&quot;0.125 -&gt; {:.55}&quot;, 0.125);
 0.125 -&gt; 0.1250000000000000000000000000000000000000000000000000000
 </code></pre>
 <p>And sums of powers of two:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>println!(&quot;{:.55}&quot;, 0.5 + 0.25);
 println!(&quot;{:.55}&quot;, 4.0 + 0.5 + 0.125);
@@ -232,8 +235,7 @@ point arithmetic. If the only problem was the initial roundoff error, then we
 could reasonably expect the sum 0.1 + 0.2 to be computed exactly and be equal
 to the converted constant 0.3 when we test it with <code>==</code>.</p>
 <p>It is not:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let sum = 0.1 + 0.2;
 
@@ -289,8 +291,7 @@ changes.</p>
 4,294,967,296 different values using their 32 bits, but they make very different
 choices as to what those values are.</p>
 <p>The positive range of <code>i32</code> can represent:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>0
 1
@@ -300,8 +301,7 @@ choices as to what those values are.</p>
 <span class="boring">}
 </span></code></pre></pre>
 <p>The positive range of <code>f32</code> can represent:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>0.0
 ...
@@ -337,8 +337,7 @@ numbers</a> in the range from <code>f32::MIN_POSITIVE</code> to <code>f32::MAX</
 <p>The absolute distance between each pair of adjacent normal <code>f32</code> values varies
 depending on their size but their relative distance is always very close to
 1.0000001. We can illustrate this with some help from the <a href="https://crates.io/crates/ieee754">ieee754</a> crate:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use ieee754::Ieee754;
 
@@ -436,8 +435,7 @@ the tolerance. This is what the <a href="../../doc/float_eq/macro.float_eq.html"
 two values lies within a specified tolerance and is invoked with the syntax
 <code>abs &lt;= tol</code>. We have calculated that in our very simple example the values may
 differ by at most <code>0.25 * f64::EPSILON</code>:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use float_eq::float_eq;
 
@@ -461,8 +459,7 @@ use <code>r2nd &lt;= tol</code>. With a relative tolerance comparison, the toler
 specified as if we were testing a value in the range 1.0 to 2.0, so
 <code>f64::EPSILON</code> indicates we are expecting our operands to be no more than one
 representable value apart from each other<sup class="footnote-reference"><a href="#relative">3</a></sup>:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">use float_eq::float_eq;
 </span><span class="boring">let sum = 0.1 + 0.2;
@@ -484,8 +481,7 @@ adjacent integer values above and below. By using <code>ulps &lt;= tol</code> to
 these checks, the tolerance is the maximum number of representable values apart
 they may be regardless of their magnitude. In our example, we know they may be
 at most one representable <code>f64</code> value apart:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">use float_eq::float_eq;
 </span><span class="boring">let sum = 0.1 + 0.2;
@@ -504,8 +500,7 @@ boolean <a href="../../doc/float_eq/macro.float_eq.html"><code>float_eq!</code><
 advanced comparison techniques, we will define a very simple numerical
 integrator. This function takes an initial value and step size, then advances
 the value by an arbitrary number of steps:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn integrate(initial: f64, step: f64, count: usize) -&gt; f64 {
     let mut sum = initial;
@@ -518,8 +513,7 @@ the value by an arbitrary number of steps:</p>
 </span></code></pre></pre>
 <p>Say we want to unit test a number of different sets of input to this algorithm,
 we might build ourselves a wrapper for it:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn test_integrate(initial: f64, step: f64, count: usize, expected: f64) {
     let actual = integrate(initial, step, count);
@@ -532,8 +526,7 @@ form, and that you may use any of the same algorithms if you wish. Arbitrarily,
 we have begun with the same tolerance as for our first example comparison. This
 means that the equivalent of our first simple comparison will pass this test
 just fine:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>test_integrate(0.2, 0.1, 1, 0.3);
 <span class="boring">}
@@ -541,16 +534,14 @@ just fine:</p>
 <h3 id="drifting-away"><a class="header" href="#drifting-away">Drifting away</a></h3>
 <p>Let's add some tests which use an increasing step size. Our first two are within
 the existing expected tolerance:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>test_integrate(0.0, 0.1, 1, 0.1);
 test_integrate(0.0, 0.1, 10, 1.0);
 <span class="boring">}
 </span></code></pre></pre>
 <p>But when we look at 100 steps, we find that our test fails:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>test_integrate(0.0, 0.1, 100, 10.0);
 <span class="boring">}
@@ -581,8 +572,7 @@ each one of those provides an answer accurate to within 0.5 ULPs, so they have
 accumulated more error than a single step or ten steps would. We might reason
 that our tolerance should therefore be some function of the number of steps,
 perhaps <code>(count * 0.5) * f64::EPSILON</code>:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn test_integrate(initial: f64, step: f64, count: usize, expected: f64) {
     let actual = integrate(initial, step, count);
@@ -596,8 +586,7 @@ perhaps <code>(count * 0.5) * f64::EPSILON</code>:</p>
 </span></code></pre></pre>
 <h3 id="absolute-zero"><a class="header" href="#absolute-zero">Absolute zero</a></h3>
 <p>Let's take a look at another failure case, when we count backwards to zero:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>test_integrate(10.0, -0.1, 100, 0.0);
 <span class="boring">}
@@ -624,8 +613,7 @@ one that takes into account the nature of the calculation itself. It needs to be
 an absolute test, since we may be comparing versus zero. It should also scale
 relative to the largest intermediate value in the calculation and take into
 account the potential rounding errors from our repeated addition:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn test_integrate(initial: f64, step: f64, count: usize, expected: f64) {
     let actual = integrate(initial, step, count);
@@ -641,8 +629,7 @@ calculation being performed and frequently the particular inputs.</p>
 <h3 id="custom-messages"><a class="header" href="#custom-messages">Custom messages</a></h3>
 <p>The assert macros may include a custom message in the same manner as the
 standard Rust asserts:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>assert_float_eq!(
     actual,
@@ -690,9 +677,11 @@ most n representable values apart&quot;, for example you might use a tolerance o
                             <a rel="prev" href="../tutorials.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
+
                             <a rel="next" href="../how_to.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
+
                         <div style="clear: both"></div>
                     </nav>
                 </div>
@@ -702,6 +691,7 @@ most n representable values apart&quot;, for example you might use a tolerance o
                     <a rel="prev" href="../tutorials.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
+
                     <a rel="next" href="../how_to.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
@@ -709,16 +699,24 @@ most n representable values apart&quot;, for example you might use a tolerance o
 
         </div>
 
+
+
+
         <script type="text/javascript">
             window.playground_copyable = true;
         </script>
+
+
         <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+
         <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
         <script src="../book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
+
+
     </body>
 </html>

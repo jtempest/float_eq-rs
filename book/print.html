@@ -3,9 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Documentation for float_eq 1.0.0</title>
+        <title>Documentation for float_eq 1.0.1</title>
         <meta name="robots" content="noindex" />
+
+
         <!-- Custom HTML head -->
+        
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,15 +20,18 @@
         <link rel="stylesheet" href="css/general.css">
         <link rel="stylesheet" href="css/chrome.css">
         <link rel="stylesheet" href="css/print.css" media="print">
+
         <!-- Fonts -->
         <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link rel="stylesheet" href="fonts/fonts.css">
+
         <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
+
     </head>
     <body>
         <!-- Provide site root to javascript -->
@@ -84,7 +90,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky bordered">
                     <div class="left-buttons">
                         <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -105,12 +111,13 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Documentation for float_eq 1.0.0</h1>
+                    <h1 class="menu-title">Documentation for float_eq 1.0.1</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
+
                     </div>
                 </div>
 
@@ -124,6 +131,7 @@
                         </ul>
                     </div>
                 </div>
+
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
                 <script type="text/javascript">
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
@@ -162,8 +170,7 @@ guide, otherwise check out one of the categories for more:</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="basic-usage"><a class="header" href="#basic-usage">Basic usage</a></h1>
 <p>So you have attempted to perform a simple floating point calculation in Rust,
 perhaps an <a href="https://0.30000000000000004.com/">old classic</a>:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let sum = 0.1 + 0.2;
 
@@ -178,8 +185,7 @@ if sum == 0.3 {
 <pre><code class="language-txt">Something has gone horribly wrong!
 </code></pre>
 <p>What's going on? Let's take a closer look at the result of the sum:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>println!(&quot;0.1 + 0.2 = {}&quot;, sum);
 <span class="boring">}
@@ -196,8 +202,7 @@ is performed using binary arithmetic and finally is converted back into a
 decimal representation to be printed.</p>
 <p>We can see how these values have been rounded by printing them with a high
 enough precision:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>println!(&quot;0.1 -&gt; {:.55}&quot;, 0.1);
 println!(&quot;0.2 -&gt; {:.55}&quot;, 0.2);
@@ -209,8 +214,7 @@ println!(&quot;0.2 -&gt; {:.55}&quot;, 0.2);
 <h2 id="close-so-very-close"><a class="header" href="#close-so-very-close">Close, so very close</a></h2>
 <p>Very few decimal numbers may be exactly represented in binary. Only powers of
 two:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>println!(&quot;4.0   -&gt; {:.55}&quot;, 4.0);
 println!(&quot;2.0   -&gt; {:.55}&quot;, 2.0);
@@ -228,8 +232,7 @@ println!(&quot;0.125 -&gt; {:.55}&quot;, 0.125);
 0.125 -&gt; 0.1250000000000000000000000000000000000000000000000000000
 </code></pre>
 <p>And sums of powers of two:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>println!(&quot;{:.55}&quot;, 0.5 + 0.25);
 println!(&quot;{:.55}&quot;, 4.0 + 0.5 + 0.125);
@@ -257,8 +260,7 @@ point arithmetic. If the only problem was the initial roundoff error, then we
 could reasonably expect the sum 0.1 + 0.2 to be computed exactly and be equal
 to the converted constant 0.3 when we test it with <code>==</code>.</p>
 <p>It is not:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let sum = 0.1 + 0.2;
 
@@ -314,8 +316,7 @@ changes.</p>
 4,294,967,296 different values using their 32 bits, but they make very different
 choices as to what those values are.</p>
 <p>The positive range of <code>i32</code> can represent:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>0
 1
@@ -325,8 +326,7 @@ choices as to what those values are.</p>
 <span class="boring">}
 </span></code></pre></pre>
 <p>The positive range of <code>f32</code> can represent:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>0.0
 ...
@@ -362,8 +362,7 @@ numbers</a> in the range from <code>f32::MIN_POSITIVE</code> to <code>f32::MAX</
 <p>The absolute distance between each pair of adjacent normal <code>f32</code> values varies
 depending on their size but their relative distance is always very close to
 1.0000001. We can illustrate this with some help from the <a href="https://crates.io/crates/ieee754">ieee754</a> crate:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use ieee754::Ieee754;
 
@@ -461,8 +460,7 @@ the tolerance. This is what the <a href="tutorials/../../doc/float_eq/macro.floa
 two values lies within a specified tolerance and is invoked with the syntax
 <code>abs &lt;= tol</code>. We have calculated that in our very simple example the values may
 differ by at most <code>0.25 * f64::EPSILON</code>:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use float_eq::float_eq;
 
@@ -486,8 +484,7 @@ use <code>r2nd &lt;= tol</code>. With a relative tolerance comparison, the toler
 specified as if we were testing a value in the range 1.0 to 2.0, so
 <code>f64::EPSILON</code> indicates we are expecting our operands to be no more than one
 representable value apart from each other<sup class="footnote-reference"><a href="#relative">3</a></sup>:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">use float_eq::float_eq;
 </span><span class="boring">let sum = 0.1 + 0.2;
@@ -509,8 +506,7 @@ adjacent integer values above and below. By using <code>ulps &lt;= tol</code> to
 these checks, the tolerance is the maximum number of representable values apart
 they may be regardless of their magnitude. In our example, we know they may be
 at most one representable <code>f64</code> value apart:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">use float_eq::float_eq;
 </span><span class="boring">let sum = 0.1 + 0.2;
@@ -529,8 +525,7 @@ boolean <a href="tutorials/../../doc/float_eq/macro.float_eq.html"><code>float_e
 advanced comparison techniques, we will define a very simple numerical
 integrator. This function takes an initial value and step size, then advances
 the value by an arbitrary number of steps:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn integrate(initial: f64, step: f64, count: usize) -&gt; f64 {
     let mut sum = initial;
@@ -543,8 +538,7 @@ the value by an arbitrary number of steps:</p>
 </span></code></pre></pre>
 <p>Say we want to unit test a number of different sets of input to this algorithm,
 we might build ourselves a wrapper for it:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn test_integrate(initial: f64, step: f64, count: usize, expected: f64) {
     let actual = integrate(initial, step, count);
@@ -557,8 +551,7 @@ form, and that you may use any of the same algorithms if you wish. Arbitrarily,
 we have begun with the same tolerance as for our first example comparison. This
 means that the equivalent of our first simple comparison will pass this test
 just fine:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>test_integrate(0.2, 0.1, 1, 0.3);
 <span class="boring">}
@@ -566,16 +559,14 @@ just fine:</p>
 <h3 id="drifting-away"><a class="header" href="#drifting-away">Drifting away</a></h3>
 <p>Let's add some tests which use an increasing step size. Our first two are within
 the existing expected tolerance:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>test_integrate(0.0, 0.1, 1, 0.1);
 test_integrate(0.0, 0.1, 10, 1.0);
 <span class="boring">}
 </span></code></pre></pre>
 <p>But when we look at 100 steps, we find that our test fails:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>test_integrate(0.0, 0.1, 100, 10.0);
 <span class="boring">}
@@ -606,8 +597,7 @@ each one of those provides an answer accurate to within 0.5 ULPs, so they have
 accumulated more error than a single step or ten steps would. We might reason
 that our tolerance should therefore be some function of the number of steps,
 perhaps <code>(count * 0.5) * f64::EPSILON</code>:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn test_integrate(initial: f64, step: f64, count: usize, expected: f64) {
     let actual = integrate(initial, step, count);
@@ -621,8 +611,7 @@ perhaps <code>(count * 0.5) * f64::EPSILON</code>:</p>
 </span></code></pre></pre>
 <h3 id="absolute-zero"><a class="header" href="#absolute-zero">Absolute zero</a></h3>
 <p>Let's take a look at another failure case, when we count backwards to zero:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>test_integrate(10.0, -0.1, 100, 0.0);
 <span class="boring">}
@@ -649,8 +638,7 @@ one that takes into account the nature of the calculation itself. It needs to be
 an absolute test, since we may be comparing versus zero. It should also scale
 relative to the largest intermediate value in the calculation and take into
 account the potential rounding errors from our repeated addition:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn test_integrate(initial: f64, step: f64, count: usize, expected: f64) {
     let actual = integrate(initial, step, count);
@@ -666,8 +654,7 @@ calculation being performed and frequently the particular inputs.</p>
 <h3 id="custom-messages"><a class="header" href="#custom-messages">Custom messages</a></h3>
 <p>The assert macros may include a custom message in the same manner as the
 standard Rust asserts:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>assert_float_eq!(
     actual,
@@ -733,8 +720,7 @@ the value after the <code>&lt;=</code>. For example, to compare two <code>f32</c
 second operand:</p>
 </li>
 </ol>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>float_eq!(a, b, r2nd &lt;= tol)
 <span class="boring">}
@@ -745,8 +731,7 @@ they are not, you can use <a href="how_to/../../doc/float_eq/macro.assert_float_
 syntax is the same, and may optionally include formatted text after the
 comparisons as with standard Rust asserts:</li>
 </ol>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>assert_float_eq!(a, b, r2nd &lt;= tol);
 assert_float_eq!(a, b, r2nd &lt;= tol, &quot;Example context: {}&quot;, context);
@@ -757,8 +742,7 @@ assert_float_eq!(a, b, r2nd &lt;= tol, &quot;Example context: {}&quot;, context)
 <li>Composite types such as arrays, tuples and structs may be compared by
 specifying a per-field tolerance in an instance of the same type:</li>
 </ol>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let a = [1.0, -2.0, 3.0];
 let b = [-1.0, 2.0, 3.5];
@@ -767,15 +751,14 @@ assert_float_eq!(a, b, abs &lt;= [2.0, 4.0, 0.5]);
 let c = Complex32 { re: 2.0, im: 4.000_002 };
 let d = Complex32 { re: 2.000_000_5, im: 4.0 };
 assert_float_eq!(c, d, rmax &lt;= Complex32 { re: 0.000_000_25, im: 0.000_000_5 });
-assert_float_eq!(c, d, ulps &lt;= Complex32Ulps { re: 2, im: 4 });
+assert_float_eq!(c, d, ulps &lt;= ComplexUlps32 { re: 2, im: 4 });
 <span class="boring">}
 </span></code></pre></pre>
 <ol start="2">
 <li>Homogeneous types may also support the <code>_all</code> variants of the checks, which
 allow you to specify a single tolerance to use across all fields:</li>
 </ol>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>assert_float_eq!(a, b, abs_all &lt;= 4.0);
 
@@ -786,11 +769,12 @@ assert_float_eq!(c, d, ulps_all &lt;= 4);
 <ol start="3">
 <li>Checks may be extended over new types by implementing the <a href="how_to/./compare_custom_types.html">extension traits</a>.</li>
 </ol>
+<p><em>Note that to compare num::Complex32 you will need to enable the &quot;num&quot; feature
+for float_eq.</em></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="how-to-interpret-assert-failure-messages"><a class="header" href="#how-to-interpret-assert-failure-messages">How to interpret assert failure messages</a></h1>
 <p>Assertion failure messages provide context information that hopefully helps
 in determining how a check failed. For example, this line:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>assert_float_eq!(4.0f32, 4.000_008, rmax &lt;= 0.000_001);
 <span class="boring">}
@@ -844,8 +828,7 @@ features = [&quot;derive&quot;]
 <h2 id="deriving-the-required-traits"><a class="header" href="#deriving-the-required-traits">Deriving the required traits</a></h2>
 <p>Add <a href="how_to/../../doc/float_eq/attr.derive_float_eq.html"><code>#[derive_float_eq]</code></a> to the
 new type. For example:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive_float_eq(
     ulps_tol = &quot;PointUlps&quot;, 
@@ -855,8 +838,8 @@ new type. For example:</p>
 )]
 #[derive(Debug, PartialEq, Clone, Copy)]
 struct Point {
-    x: f64,
-    y: f64,
+    pub x: f64,
+    pub y: f64,
 }
 <span class="boring">}
 </span></code></pre></pre>
@@ -868,26 +851,24 @@ struct Point {
 <li><code>debug_ulps_diff_derive</code>: optional, provides a list of traits to derive on the <code>debug_ulps_diff</code> type.</li>
 </ul>
 <p>This will implement two new types:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(Debug, Clone, Copy, PartialEq)]
 struct PointUlps {
-    x: UlpsTol&lt;f64&gt;,
-    y: UlpsTol&lt;f64&gt;,
+    pub x: UlpsTol&lt;f64&gt;,
+    pub y: UlpsTol&lt;f64&gt;,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 struct PointDebugUlpsDiff {
-    x: DebugUlpsDiff&lt;f64&gt;,
-    y: DebugUlpsDiff&lt;f64&gt;,
+    pub x: DebugUlpsDiff&lt;f64&gt;,
+    pub y: DebugUlpsDiff&lt;f64&gt;,
 }
 <span class="boring">}
 </span></code></pre></pre>
 <p>This will also implement <a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a>, <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a>, <a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a> and
 <a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a> for your type. You may now compare it as a composite type:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let a = Point { x: 1.0, y: -2.0 };
 let b = Point { x: 1.1, y: -2.2 };
@@ -904,8 +885,7 @@ assert_float_eq!(a, c, ulps &lt;= PointUlps { x: 4, y: 3 });
 same underlying floating point type, then you may provide the optional <code>all_tol</code>
 parameter to <code>#[derive_float_eq]</code> with that underlying type (usually <code>f32</code> or
 <code>f64</code>). This will enable the <code>_all</code> variants of checks for it:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive_float_eq(
     ulps_tol = &quot;PointUlps&quot;, 
@@ -916,15 +896,14 @@ parameter to <code>#[derive_float_eq]</code> with that underlying type (usually 
 )]
 #[derive(Debug, PartialEq, Clone, Copy)]
 struct Point {
-    x: f64,
-    y: f64,
+    pub x: f64,
+    pub y: f64,
 }
 <span class="boring">}
 </span></code></pre></pre>
 <p>This will additionally implement the <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a> and <a href="how_to/../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFloatEqAll</a> for
 your type. You may now compare it using the <code>_all</code> check variants:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let a = Point { x: 1.0, y: -2.0 };
 let b = Point { x: 1.1, y: -2.2 };
@@ -940,8 +919,7 @@ assert_float_eq!(a, c, ulps_all &lt;= 4);
 <p>The <code>#[derive_float_eq]</code> macro is recommended but if required you may implement
 the traits by individually deriving them. The <code>#[float_eq]</code> attribute should be
 used to pass through the relevant parameters. For example:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(
     Debug, PartialEq, Clone, Copy, FloatEqUlpsTol, FloatEq,
@@ -954,8 +932,8 @@ used to pass through the relevant parameters. For example:</p>
     debug_ulps_diff_derive = &quot;Clone, Copy, Debug, PartialEq&quot;
 )]
 struct Point {
-    x: f64,
-    y: f64,
+    pub x: f64,
+    pub y: f64,
 }
 <span class="boring">}
 </span></code></pre></pre>
@@ -963,7 +941,7 @@ struct Point {
 and may optionally use <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a>. Likewise, <a href="how_to/../../doc/float_eq/macro.assert_float_eq.html">assert_float_eq!</a> and 
 <a href="how_to/../../doc/float_eq/macro.assert_float_ne.html">assert_float_ne!</a> require <a href="how_to/../../doc/float_eq/trait.FloatEqDebugUlpsDiff.html">FloatEqDebugUlpsDiff</a> and <a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a> and may
 optionally use <a href="how_to/../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFloatEqAll</a>.</p>
-<table><thead><tr><th>Trait</th><th>Requires</th><th>Parameters</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Trait</th><th>Requires</th><th>Parameters</th></tr></thead><tbody>
 <tr><td><a href="how_to/../../doc/float_eq/trait.FloatEqUlpsTol.html">FloatEqUlpsTol</a></td><td></td><td><code>ulps_tol</code>, <code>ulps_tol_derive</code></td></tr>
 <tr><td><a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a></td><td>FloatEqUlpsTol</td><td></td></tr>
 <tr><td><a href="how_to/../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a></td><td>FloatEq</td><td><code>all_tol</code></td></tr>
@@ -971,7 +949,7 @@ optionally use <a href="how_to/../../doc/float_eq/trait.AssertFloatEqAll.html">A
 <tr><td><a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a></td><td>FloatEq, FloatEqDebugUlpsDiff</td><td></td></tr>
 <tr><td><a href="how_to/../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFloatEqAll</a></td><td>AssertFloatEq, FloatEqAll</td><td><code>all_tol</code></td></tr>
 </tbody></table>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="how-to-manually-implement-the-traits"><a class="header" href="#how-to-manually-implement-the-traits">How to manually implement the traits</a></h1>
+</div><div style="break-before: page; page-break-before: always;"></div><h1 id="how-to-manually-implement-the-traits"><a class="header" href="#how-to-manually-implement-the-traits">How to manually implement the traits</a></h1>
 <p>This article will explain how to enable a new type for use with the <a href="how_to/../../doc/float_eq/macro.float_eq.html">float_eq!</a>,
 <a href="how_to/../../doc/float_eq/macro.float_ne.html">float_ne!</a>, <a href="how_to/../../doc/float_eq/macro.assert_float_eq.html">assert_float_eq!</a> and <a href="how_to/../../doc/float_eq/macro.assert_float_ne.html">assert_float_ne!</a> macros. If your type is
 a struct or tuple struct and is not generic, then you may wish to derive these
@@ -982,25 +960,23 @@ and may optionally use <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html"
 optionally use <a href="how_to/../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFloatEqAll</a>.</p>
 <h2 id="the-point-type"><a class="header" href="#the-point-type">The Point type</a></h2>
 <p>By way of example, we will implement the traits for this Point type:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(Debug, Clone, Copy, PartialEq)]
 struct Point {
-    x: f64,
-    y: f64,
+    pub x: f64,
+    pub y: f64,
 }
 <span class="boring">}
 </span></code></pre></pre>
 <h2 id="implementing-floatequlpstol"><a class="header" href="#implementing-floatequlpstol">Implementing FloatEqUlpsTol</a></h2>
 <p>Provide an <a href="how_to/../../doc/float_eq/type.UlpsTol.html">UlpsTol</a> representation for each of the fields:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(Debug, Clone, Copy, PartialEq)]
 struct PointUlps {
-    x: UlpsTol&lt;f64&gt;,
-    y: UlpsTol&lt;f64&gt;,
+    pub x: UlpsTol&lt;f64&gt;,
+    pub y: UlpsTol&lt;f64&gt;,
 }
 
 impl FloatEqUlpsTol for Point {
@@ -1013,8 +989,7 @@ impl FloatEqUlpsTol for Point {
 to an underlying <a href="how_to/../../doc/float_eq/trait.FloatEq.html">FloatEq</a> method for each field in turn. If not, you will need
 to take a close look at the descriptions of the algorithms on a method by method
 basis:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>impl FloatEq for Point {
     type Tol = Point;
@@ -1057,8 +1032,7 @@ likely <code>f32</code> or <code>f64</code>. Implementation is then usually a ma
 through to an underlying <a href="how_to/../../doc/float_eq/trait.FloatEqAll.html">FloatEqAll</a> method for each field in turn. If not, you
 will need to take a close look at the descriptions of the algorithms on a method
 by method basis:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>impl FloatEqAll for Point {
     type AllTol = f64;
@@ -1097,13 +1071,12 @@ by method basis:</p>
 </span></code></pre></pre>
 <h3 id="implementing-floateqdebugulpsdiff"><a class="header" href="#implementing-floateqdebugulpsdiff">Implementing FloatEqDebugUlpsDiff</a></h3>
 <p>Types should provide a <a href="how_to/../../doc/float_eq/type.DebugUlpsDiff.html">DebugUlpsDiff</a> representation for each of their fields:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(Debug, Clone, Copy, PartialEq)]
 struct PointDebugUlpsDiff {
-    x: DebugUlpsDiff&lt;f64&gt;,
-    y: DebugUlpsDiff&lt;f64&gt;,
+    pub x: DebugUlpsDiff&lt;f64&gt;,
+    pub y: DebugUlpsDiff&lt;f64&gt;,
 }
 
 impl FloatEqDebugUlpsDiff for Point {
@@ -1116,8 +1089,7 @@ impl FloatEqDebugUlpsDiff for Point {
 is then usually a matter of simply calling through to an underlying
 <a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</a> method for each field in turn. If not, you will need to take a
 close look at the descriptions of the algorithms on a method by method basis:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>impl AssertFloatEq for Point {
     type DebugAbsDiff = Self;
@@ -1211,8 +1183,7 @@ and <a href="how_to/../../doc/float_eq/trait.AssertFloatEq.html">AssertFloatEq</
 through to an underlying <a href="how_to/../../doc/float_eq/trait.AssertFloatEqAll.html">AssertFloatEqAll</a> method for each field in turn. If
 not, you will need to take a close look at the descriptions of the algorithms on
 a method by method basis:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>impl AssertFloatEqAll for Point {
     type AllDebugTol = Self;
@@ -1300,8 +1271,7 @@ difference between them to an absolute tolerance. Mathematically, this is:</p>
 <pre><code>|a - b| &lt;= tol
 </code></pre>
 <p>Equivalent to, using <code>f32</code> as an example:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn float_eq_abs(a: f32, b: f32, tol: f32) -&gt; bool {
     // the PartialEq check covers equality of infinities
@@ -1335,8 +1305,7 @@ one of the inputs. Mathematically, this is:</p>
 <pre><code>|a - b| &lt;= func(|a|, |b|) * tol
 </code></pre>
 <p>Equivalent to, using <code>f32</code> as an example:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn float_eq_relative(a: f32, b: f32, tol: f32) -&gt; bool {
     // the PartialEq check covers equality of infinities
@@ -1374,8 +1343,7 @@ than the small rounding errors this form would imply.</p>
 representable values between them. This works by interpreting the bitwise
 representation of the input values as integers and comparing the absolute
 difference between those. Equivalent to, using <code>f32</code> as an example:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn float_eq_ulps(a: f32, b: f32, tol: u32) -&gt; bool {
     if a.is_nan() || b.is_nan() {
@@ -1405,7 +1373,7 @@ different signs.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="resources"><a class="header" href="#resources">Resources</a></h1>
 <p>An assortment of articles, papers and books that provide insight into how to approach floating point numerics and error analysis.</p>
 <ul>
-<li><a href="https://www-cs-faculty.stanford.edu/%7Eknuth/taocp.html">The Art of Computer Programming Vol. 2: Seminumerical Algorithms, p214-283</a> - on the accuracy of floating point.</li>
+<li><a href="https://www-cs-faculty.stanford.edu/~knuth/taocp.html">The Art of Computer Programming Vol. 2: Seminumerical Algorithms, p214-283</a> - on the accuracy of floating point.</li>
 <li><a href="https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/">Comparing Floating Point Numbers, 2012 Edition</a> - the rest of this series is very good, too.</li>
 <li><a href="https://blog.m-ou.se/floats/">Converting Integers to Floats Using Hyperfocus</a></li>
 <li><a href="https://blog.demofox.org/2017/11/21/floating-point-precision/">Demystifying Floating Point Precision</a></li>
@@ -1415,12 +1383,12 @@ different signs.</p>
 <li><a href="https://www.geeksforgeeks.org/ieee-standard-754-floating-point-numbers/">IEEE Standard 754 Floating Point Numbers</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Interval_arithmetic">Interval arithmetic</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Loss_of_significance">Loss of significance</a></li>
-<li><a href="https://people.eecs.berkeley.edu/%7Ewkahan/Triangle.pdf">Miscalculating Area and Angles of a Needle-like Triangle</a></li>
+<li><a href="https://people.eecs.berkeley.edu/~wkahan/Triangle.pdf">Miscalculating Area and Angles of a Needle-like Triangle</a></li>
 <li><a href="https://epubs.siam.org/doi/book/10.1137/1.9780898718072">Numerical Computing with IEEE Floating Point Arithmetic</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Numerical_stability">Numerical Stability</a></li>
 <li><a href="https://github.com/mockingbirdnest/Principia/wiki/On-the-dynamical-stability-of-Principia&#x27;s-modified-Jool-system">On the dynamical stability of Principia's modified Jool system</a></li>
 <li><a href="http://marc-b-reynolds.github.io/math/2019/02/06/Posit1.html">Posit: thin triangle other tricks (REVEALED!)</a></li>
-<li><a href="https://home.iitk.ac.in/%7Epranab/ESO208/rajesh/03-04/Errors.pdf">Round-off/Truncation Errors &amp; Numerical Cancellation</a></li>
+<li><a href="https://home.iitk.ac.in/~pranab/ESO208/rajesh/03-04/Errors.pdf">Round-off/Truncation Errors &amp; Numerical Cancellation</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Sterbenz_lemma">Sterbenz lemma</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Truncation_error">Truncation error</a></li>
 <li><a href="https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html">What Every Computer Scientist Should Know About Floating-Point Arithmetic</a> - a comprehensive mathematical treatment.</li>
@@ -1435,31 +1403,42 @@ different signs.</p>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+
+
                         <div style="clear: both"></div>
                     </nav>
                 </div>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
             </nav>
 
         </div>
 
+
+
+
         <script type="text/javascript">
             window.playground_copyable = true;
         </script>
+
+
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+
         <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
         <script src="book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
+
         <script type="text/javascript">
         window.addEventListener('load', function() {
             window.setTimeout(window.print, 100);
         });
         </script>
+
     </body>
 </html>
