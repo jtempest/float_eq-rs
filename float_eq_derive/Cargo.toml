@@ -1,6 +1,6 @@
 [package]
 name = "float_eq_derive"
-version = "1.0.1"
+version = "1.0.2-pre"
 authors = ["jtempest"]
 license = "MIT OR Apache-2.0"
 description = "Derive macro support for float_eq."

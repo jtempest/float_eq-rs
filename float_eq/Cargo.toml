@@ -1,6 +1,6 @@
 [package]
 name = "float_eq"
-version = "1.0.1"
+version = "1.0.2-pre"
 authors = ["jtempest"]
 license = "MIT OR Apache-2.0"
 description = "Compare IEEE floating point primitives, structs and collections for equality."
