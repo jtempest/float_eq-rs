@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.1] - 2022-10-12
 
 ### Fixed
 - Fixed a bug where field visibility was not respected when deriving the Ulps
@@ -188,7 +188,8 @@ Bumped up the version number since this release includes breaking API changes.
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/jtempest/float_eq-rs/compare/1.0.0...HEAD
+[Unreleased]: https://github.com/jtempest/float_eq-rs/compare/1.0.1...HEAD
+[1.0.1]: https://github.com/jtempest/float_eq-rs/releases/tag/1.0.1
 [1.0.0]: https://github.com/jtempest/float_eq-rs/releases/tag/1.0.0
 [0.7.0]: https://github.com/jtempest/float_eq-rs/releases/tag/0.7.0
 [0.6.1]: https://github.com/jtempest/float_eq-rs/releases/tag/0.6.1

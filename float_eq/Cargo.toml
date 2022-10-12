@@ -1,6 +1,6 @@
 [package]
 name = "float_eq"
-version = "1.0.0"
+version = "1.0.1"
 authors = ["jtempest"]
 license = "MIT OR Apache-2.0"
 description = "Compare IEEE floating point primitives, structs and collections for equality."
@@ -32,7 +32,7 @@ version = "0.4"
 optional = true
 
 [dependencies.float_eq_derive]
-version = "=1.0.0"
+version = "=1.0.1"
 optional = true
 path = "../float_eq_derive"
 
