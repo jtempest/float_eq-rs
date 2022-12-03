@@ -83,7 +83,7 @@ parameter to `#[derive_float_eq]` with that underlying type (usually `f32` or
     ulps_tol = "PointUlps", 
     ulps_tol_derive = "Clone, Copy, Debug, PartialEq",
     debug_ulps_diff = "PointDebugUlpsDiff",
-    debug_ulps_diflf_derive = "Clone, Copy, Debug, PartialEq",
+    debug_ulps_diff_derive = "Clone, Copy, Debug, PartialEq",
     all_tol = "f64"
 )]
 #[derive(Debug, PartialEq, Clone, Copy)]
