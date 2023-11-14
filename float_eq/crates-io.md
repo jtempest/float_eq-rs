@@ -2,8 +2,8 @@
 
 Compare IEEE floating point primitives, structs and collections for equality.
 
-This crate provides an API with a focus on making the choices of comparison 
-algorithm(s) and tolerances intuitive to implementers and maintainers, and of
+This crate provides an API with a focus on (1) making the choices of comparison
+algorithm(s) and tolerances intuitive to implementers and maintainers, and (2)
 providing clear output for debugging and development iteration.
 
 This readme is a quick tour of the crate. For introductory material, guides and
